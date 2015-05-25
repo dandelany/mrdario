@@ -80,10 +80,8 @@ module.exports = function(grunt) {
     });
 
     //
-    //grunt.registerTask('serve', function(target) {
-    //    return grunt.task.run(['webpack-dev-server']);
-    //});
-    //
+    grunt.registerTask('default', 'webpack-dev-server');
+
     //grunt.registerTask('examples', function(target) {
     //    return grunt.task.run(['webpack-dev-server']);
     //});
@@ -91,3 +89,5 @@ module.exports = function(grunt) {
     //grunt.registerTask('build', ['clean', 'babel', 'webpack:build', 'uglify']);
     //grunt.registerTask('build', ['clean', 'babel']);
 };
+
+

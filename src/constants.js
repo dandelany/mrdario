@@ -4,6 +4,7 @@ export default {
     PLAYFIELD_WIDTH: 8,
     PLAYFIELD_HEIGHT: 12,
 
+
     MODES: keyMirror({
         LOADING: null,
         TITLE: null,
@@ -32,7 +33,8 @@ export default {
         PILL_TOP: null,
         PILL_BOTTOM: null,
         PILL_LEFT: null,
-        PILL_RIGHT: null
+        PILL_RIGHT: null,
+        PILL_SEGMENT: null
     }),
 
     COLORS: keyMirror({

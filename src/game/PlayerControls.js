@@ -1,4 +1,3 @@
-const {INPUTS} = require('./constants');
 const key = require('keymaster');
 const _ =  require('lodash');
 const {EventEmitter} = require('events');
