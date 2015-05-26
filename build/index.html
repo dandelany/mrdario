@@ -3,6 +3,31 @@
 <head lang="en">
     <meta charset="UTF-8">
     <title>Mr. Dario</title>
+
+    <style>
+        .game-playfield {
+            background: #666;
+        }
+        .game-grid-cell.grid-type-empty {
+            background-color: transparent;
+        }
+        .game-grid-cell.grid-type-pill_top {
+            background: blue;
+            border-radius: 50px 50px 0 0;
+        }
+        .game-grid-cell.grid-type-pill_bottom {
+            background: yellow;
+            border-radius: 0 0 50px 50px;
+        }
+        .game-grid-cell.grid-type-pill_left {
+            background: blue;
+            border-radius: 50px 0 0 50px;
+        }
+        .game-grid-cell.grid-type-pill_right {
+            background: yellow;
+            border-radius: 0 50px 50px 0;
+        }
+    </style>
 </head>
 <body>
 

@@ -4,7 +4,6 @@ export default {
     PLAYFIELD_WIDTH: 8,
     PLAYFIELD_HEIGHT: 12,
 
-
     MODES: keyMirror({
         LOADING: null,
         TITLE: null,

@@ -6,6 +6,7 @@
   "private": true,
   "main": "lib/index.js",
   "dependencies": {
+    "babel": "^5.4.7",
     "event-emitter": "^0.3.3",
     "events": "^1.0.2",
     "fixed-data-table": "^0.1.2",
