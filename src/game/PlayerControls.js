@@ -6,7 +6,6 @@ const {EventEmitter} = require('events');
 export default class PlayerControls extends EventEmitter {
     constructor(keyBindings) {
         super();
-        //this.keyBindings = keyBindings;
         this.registerKeys(keyBindings);
         this.callbacks = {};
     }
@@ -20,7 +19,7 @@ export default class PlayerControls extends EventEmitter {
     }
 
     handleInput(inputType) {
-        console.log('input ' + inputType);
+        //console.log('input ' + inputType);
         super.emit(inputType);
     }
 

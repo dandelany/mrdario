@@ -33,12 +33,14 @@ export default {
         PILL_BOTTOM: null,
         PILL_LEFT: null,
         PILL_RIGHT: null,
-        PILL_SEGMENT: null
+        PILL_SEGMENT: null,
+        DESTROYED: null
     }),
 
-    COLORS: keyMirror({
-        RED: null,
-        BLUE: null,
-        YELLOW: null
-    })
+    //COLORS: keyMirror({
+    //    RED: null,
+    //    BLUE: null,
+    //    YELLOW: null
+    //}),
+    COLORS: [0, 1, 2]
 };
