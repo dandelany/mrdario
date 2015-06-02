@@ -52,6 +52,8 @@ export default class Playfield extends EventEmitter {
                     {name: 'reset', from: '*', to: MODES.LOADING}
                 ]
             }),
+            // sequence of pill colors to use
+            pillSequence,
             // callbacks called when grid changes, game is won, or game is lost
             onChange, onWin, onLose,
             // width and height of grid
@@ -73,7 +75,9 @@ export default class Playfield extends EventEmitter {
             counters: {
                 playTicks: 0,
                 cascadeTicks: 0,
-                destroyTicks: 0
+                destroyTicks: 0,
+                pillSequenceIndex: 0,
+                pillCount: 0
             },
 
             // the grid, single source of truth for game state
@@ -114,21 +118,17 @@ export default class Playfield extends EventEmitter {
 
                 if(this.counters.playTicks > this.playGravity) {
                     this.counters.playTicks = 0;
-                    //const didMove = this.movePill('down');
-                    const {grid, pill, didMove} = movePill(this.grid, this.pill, 'down');
-                    //const {grid, pill, didMove} = moveCells(this.grid, this.pill, 'down');
-                    _.assign(this, {grid, pill});
+                    const didMove = this.movePill('down');
                     if(!didMove) {
                         this.modeMachine.reconcile();
-                        //this.modeMachine.ready();
                     }
                 }
-
 
                 break;
 
             case MODES.RECONCILE:
                 // grid is locked, check for same-color lines
+                // todo: exclude cells which are falling
                 const lines = findLines(this.grid);
                 if(lines.length) {
                     // set cells in lines to destroyed
@@ -136,6 +136,7 @@ export default class Playfield extends EventEmitter {
                     // turn widowed pill halves into rounded 1-square pill segments
                     findWidows(this.grid).forEach(this.setPillSegment.bind(this));
                     this.modeMachine.destroy();
+                    // todo win if viruses are gone
                 } else this.modeMachine.cascade(); // no lines, cascade falling debris
                 break;
 
@@ -150,10 +151,39 @@ export default class Playfield extends EventEmitter {
                 break;
 
             case MODES.CASCADE:
-                // todo make debris fall
-                // find lines of 4 or more same colors in a row
-                console.log('CASCADING!!');
-                this.modeMachine.ready();
+
+                if(this.counters.cascadeTicks === 0) {
+                    let {fallingCells, grid} = dropDebris(this.grid); // check if there is debris to drop
+                }
+
+                if(this.counters.cascadeTicks % this.cascadeGravity === 0) {
+                    let {fallingCells, grid} = dropDebris(this.grid); // check if there is debris to drop
+                    if(!fallingCells.length) { // nothing to drop, ready for another pill
+                        this.modeMachine.ready();
+                        return;
+                    }
+
+                    if(this.counters.cascadeTicks !== 0) {
+                        // if not the first cascade frame, actually move the falling pieces
+                        _.assign(this, {grid});
+                        // look ahead to next cascade to check if we need to reconcile
+                        let nextCascade = dropDebris(grid);
+                        if(nextCascade.fallingCells.length < fallingCells.length) {
+                            // some of the falling cells from this cascade have stopped
+                            // so we need to reconcile them (look for lines)
+                            // mark falling pieces so we ignore them during reconcile (falling pieces cant make lines)
+                            // mutates grid
+
+                            //this.grid.forEach((row, i) => console.log(row));
+                            this.grid.forEach((row, i) => row.forEach((col, j) => this.grid[i][j].isFalling = false));
+                            nextCascade.fallingCells.forEach(([i, j]) => this.grid[i][j].isFalling = true);
+                            console.log(this.grid);
+                            this.modeMachine.reconcile();
+                            return;
+                        }
+                    }
+                }
+                this.counters.cascadeTicks++;
                 break;
         }
     }
@@ -163,10 +193,7 @@ export default class Playfield extends EventEmitter {
         if(_.includes([INPUTS.LEFT, INPUTS.RIGHT, INPUTS.DOWN], input)) {
             let direction = (input === INPUTS.LEFT) ? 'left' :
                             (input === INPUTS.RIGHT) ? 'right' : 'down';
-            //this.movePill(direction);
-            const {grid, pill, didMove} = movePill(this.grid, this.pill, direction);
-            //const {grid, pill, didMove} = moveCells(this.grid, this.pill, direction);
-            _.assign(this, {grid, pill});
+            this.movePill(direction);
 
         } else if(_.includes([INPUTS.ROTATE_LEFT, INPUTS.ROTATE_RIGHT], input)) {
             let direction = (input === INPUTS.ROTATE_LEFT) ? 'left' : 'right';
@@ -185,48 +212,31 @@ export default class Playfield extends EventEmitter {
         // todo: if entry place is blocked, lose the game
 
         // add new pill to grid
+
         let row = this.grid[0];
         const pillCol = Math.floor(row.length / 2) - 1;
+        const pillColors = this.pillSequence[this.counters.pillSequenceIndex];
 
-        row[pillCol] = {type: GRID_OBJECTS.PILL_LEFT, color: COLORS[0]};
-        row[pillCol+1] = {type: GRID_OBJECTS.PILL_RIGHT, color: COLORS[1]};
+        row[pillCol] = _.assign({type: GRID_OBJECTS.PILL_LEFT}, pillColors[0]);
+        row[pillCol+1] = _.assign({type: GRID_OBJECTS.PILL_RIGHT}, pillColors[1]);
         this.pill = [[0, pillCol], [0, pillCol+1]];
+
+        this.counters.pillSequenceIndex++;
+        if(this.counters.pillSequenceIndex == this.pillSequence.length) this.counters.pillSequenceIndex = 0;
+        this.counters.pillCount++;
     }
 
     movePill(direction) {
-        let {grid, pill} = this;
-        const dRow = (direction === 'down') ? 1 : (direction === 'up') ? -1 : 0;
-        const dCol = (direction === 'right') ? 1 : (direction === 'left') ? -1 : 0;
-        if(Math.abs(dRow) + Math.abs(dCol) == 0) throw "invalid direction";
-        if(!direction) return false;
-
-        if(!canPillMove(grid, pill, direction)) return false;
-
-        var pillSegments = _.map(pill, ([segRow, segCol]) => grid[segRow][segCol]);
-
-        if(Math.abs(dRow) > 0) { // move up or down
-            grid[pill[0][0] + dRow][pill[0][1]] = pillSegments[0];
-            grid[pill[1][0] + dRow][pill[1][1]] = pillSegments[1];
-
-            let emptyRowI = (isPillVertical(grid, pill) && dRow < 0) ? pill[1][0] : pill[0][0];
-            grid[emptyRowI][pill[0][1]] = emptyObject();
-            grid[emptyRowI][pill[1][1]] = emptyObject();
-
-        } else if(Math.abs(dCol) > 0) { // move left or right
-            grid[pill[0][0]][pill[0][1] + dCol] = pillSegments[0];
-            grid[pill[1][0]][pill[1][1] + dCol] = pillSegments[1];
-
-            let emptyColI = ((!isPillVertical(grid, pill)) && dCol < 0) ? pill[1][1] : pill[0][1];
-            grid[pill[0][0]][emptyColI] = emptyObject();
-            grid[pill[1][0]][emptyColI] = emptyObject();
-        }
-
-        this.pill = [[pill[0][0] + dRow, pill[0][1] + dCol], [pill[1][0] + dRow, pill[1][1] + dCol]];
-        return true;
+        const {grid, pill, didMove} = movePill(this.grid, this.pill, direction);
+        if(didMove) _.assign(this, {grid, pill});
+        return didMove;
     }
     rotatePill(direction) {
+        // todo move to pure function
+        // todo rename to 'cw' and 'ccw' rather than left and right
         // http://tetrisconcept.net/wiki/Dr._Mario#Rotation_system
         const {grid, pill} = this;
+        // todo refactor to get rid of getPillNeighbors
         const pillNeighbors = getPillNeighbors(grid, pill);
         const isVertical = isPillVertical(grid, pill);
         const [pillRow, pillCol] = pill[0];
@@ -324,9 +334,17 @@ function getCellNeighbors(grid, [rowI, colI]) {
     }
 }
 
-function canCellMove(grid, cell, direction) {
+function canMoveCell(grid, cell, direction) {
     return isEmpty(getCellNeighbors(grid, cell)[direction]);
 }
+
+function canMovePill(grid, pill, direction) {
+    return _.every(getPillNeighbors(grid, pill)[direction], isEmpty);
+}
+
+// todo implement canMoveCells for an arbitrary set of cells?
+// then get rid of canPillMove and getPillNeighbors
+
 
 function getPillNeighbors(grid, pill) {
     const isVertical = isPillVertical(grid, pill);
@@ -345,13 +363,8 @@ function getPillNeighbors(grid, pill) {
     };
 }
 
-
-function canPillMove(grid, pill, direction) {
-    return _.every(getPillNeighbors(grid, pill)[direction], isEmpty);
-}
-
 function moveCell(grid, cell, direction) {
-    if(!canCellMove(grid, cell, direction)) return {grid, cell, didMove: false};
+    if(!canMoveCell(grid, cell, direction)) return {grid, cell, didMove: false};
     const [dRow, dCol] = deltaRowCol(direction);
     const [rowI, colI] = cell;
     grid[rowI + dRow][colI + dCol] = grid[rowI][colI];
@@ -361,12 +374,11 @@ function moveCell(grid, cell, direction) {
 }
 
 function moveCells(grid, cells, direction) {
-    // WARNING mutates the grid
-    // move several cells (eg. a pill) at once
+    // WARNING mutates the grid, todo: make pure/immutable
+    // move a set of cells (eg. a pill) at once
     // either they all move, or none of them move
     const [dRow, dCol] = deltaRowCol(direction);
-    const oldGrid = grid;
-    grid = oldGrid.map(row => row.slice());
+    let newGrid = grid.map(row => row.slice());
 
     let sortedCells = cells.slice().sort((a, b) => {
         // sort the cells, so when moving eg. down, the furthest cell down moves first
@@ -376,63 +388,34 @@ function moveCells(grid, cells, direction) {
 
     for(var i=0; i<sortedCells.length; i++) {
         let cell = sortedCells[i];
-        let moved = moveCell(grid, cell, direction);
+        let moved = moveCell(newGrid, cell, direction);
         // move unsuccessful, return original grid
-        if(!moved.didMove) return {grid: oldGrid, cells, didMove: false};
-        // move successful, update grid
-        grid = moved.grid;
+        if(!moved.didMove) return {grid, cells, didMove: false};
+        // move successful
+        newGrid = moved.grid;
     }
     // all moves successful, update (unsorted) cells with new locations
     const newCells = cells.map(([rowI, colI]) => [rowI + dRow, colI + dCol]);
-    return {grid, cells: newCells, didMove: true};
+    return {grid: newGrid, cells: newCells, didMove: true};
 }
 
 function movePill(grid, pill, direction) {
-    // WARNING mutates the grid
-    // todo make pure/immutable
-    //if(!canPillMove(grid, pill, direction)) return {grid, pill, didMove: false};
-    //
-    //const [dRow, dCol] = deltaRowCol(direction);
-    //const pillSegments = _.map(pill, ([segRow, segCol]) => grid[segRow][segCol]);
-    //const [[pill1RowI, pill1ColI], [pill2RowI, pill2ColI]] = pill;
-    //
+    // WARNING mutates the grid, todo: make pure/immutable
     let cells, didMove;
     ({grid, cells, didMove} = moveCells(grid, pill, direction));
     return {grid, pill: cells, didMove};
-
-
-
-    //if(Math.abs(dRow) > 0) { // move up or down
-    //    grid[pill1RowI + dRow][pill1ColI] = pillSegments[0];
-    //    grid[pill2RowI + dRow][pill2ColI] = pillSegments[1];
-    //
-    //    let emptyRowI = (isPillVertical(grid, pill) && dRow < 0) ? pill2RowI : pill1RowI;
-    //    grid[emptyRowI][pill1ColI] = emptyObject();
-    //    grid[emptyRowI][pill2ColI] = emptyObject();
-    //
-    //} else if(Math.abs(dCol) > 0) { // move left or right
-    //    grid[pill1RowI][pill1ColI + dCol] = pillSegments[0];
-    //    grid[pill2RowI][pill2ColI + dCol] = pillSegments[1];
-    //
-    //    let emptyColI = ((!isPillVertical(grid, pill)) && dCol < 0) ? pill2ColI : pill1ColI;
-    //    grid[pill1RowI][emptyColI] = emptyObject();
-    //    grid[pill2RowI][emptyColI] = emptyObject();
-    //}
-
-    pill = [[pill1RowI + dRow, pill1ColI + dCol], [pill2RowI + dRow, pill2ColI + dCol]];
-    return {grid, pill, didMove: true};
 }
 
 // the main reconcile function, looks for lines of 4 or more of the same color in the grid
-function findLines(grid, lineLength = 4) {
+function findLines(grid, lineLength = 4, excludeFlag = 'isFalling') {
     const horizontalLines = _(grid).map((row, rowI) => {
-        return findLinesIn(row, lineLength).map(line => line.map(colI => [rowI, colI]));
+        return findLinesIn(row, lineLength, excludeFlag).map(line => line.map(colI => [rowI, colI]));
     }).flatten().value();
 
     // reslice grid into [col][row] instead of [row][col] format to check columns
     const gridCols = _.range(grid[0].length).map(colI => grid.map(row => row[colI]));
     const verticalLines = _(gridCols).map((col, colI) => {
-        return findLinesIn(col, lineLength).map(line => line.map(rowI => [rowI, colI]));
+        return findLinesIn(col, lineLength, excludeFlag).map(line => line.map(rowI => [rowI, colI]));
     }).flatten().value();
 
     console.log('lines:', horizontalLines, verticalLines);
@@ -440,18 +423,19 @@ function findLines(grid, lineLength = 4) {
 }
 
 // find same-color lines within a single row or column
-function findLinesIn(row, lineLength = 4) {
+function findLinesIn(row, lineLength = 4, excludeFlag = 'isFalling') {
     let lastColor = undefined;
     let curLine = [];
     return _.reduce(row, (result, cell, i) => {
         const color = cell.color;
-        if(color != lastColor) {
+        const shouldExclude = excludeFlag && !!cell[excludeFlag];
+        if(i > 0 && (color != lastColor || shouldExclude)) {
             // different color, end the current line and add to result if long enough
             if(curLine.length >= lineLength) result.push(curLine);
             curLine = [];
         }
-        // add to current line if non-empty
-        if(!_.isUndefined(color)) curLine.push(i);
+        // add cell to current line if non-empty and non-excluded
+        if(!_.isUndefined(color) && !shouldExclude) curLine.push(i);
         // end of row, add last line to result if long enough
         if(i == row.length-1 && (curLine.length >= lineLength)) result.push(curLine);
 
@@ -485,6 +469,29 @@ function findWidows(grid) {
 }
 
 // find pieces in the grid which are unsupported and should fall in cascade
-function findFallingDebris(grid) {
+function dropDebris(grid) {
+    // start at the bottom of the grid and move up,
+    // seeing which pieces can fall
+    const oldGrid = grid;
+    grid = grid.map(row => row.slice());
+    let fallingCells = [];
 
+    for(var rowI = grid.length-2; rowI >= 0; rowI--) {
+        const row = grid[rowI];
+        for(var colI = 0; colI < row.length; colI++) {
+            const obj = grid[rowI][colI];
+            let didMove = false;
+            if(obj.type === GRID_OBJECTS.PILL_SEGMENT) {
+                ({grid, didMove} = moveCell(grid, [rowI, colI], 'down'));
+                if(didMove) fallingCells.push([rowI, colI]);
+            } else if(obj.type === GRID_OBJECTS.PILL_LEFT) {
+                ({grid, didMove} = moveCells(grid, [[rowI, colI], [rowI, colI+1]], 'down'));
+                if(didMove) fallingCells.push([rowI, colI], [rowI, colI+1]);
+            } else if(obj.type === GRID_OBJECTS.PILL_TOP) {
+                ({grid, didMove} = moveCells(grid, [[rowI, colI], [rowI+1, colI]], 'down'));
+                if(didMove) fallingCells.push([rowI, colI], [rowI+1, colI]);
+            }
+        }
+    }
+    return {grid, fallingCells};
 }
