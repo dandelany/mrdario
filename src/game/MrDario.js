@@ -7,28 +7,16 @@ import PlayerControls from './PlayerControls';
 
 import {
     PLAYFIELD_WIDTH, PLAYFIELD_HEIGHT,
-    MODES, INPUTS, GRID_OBJECTS, COLORS, KEY_BINDINGS
+    MODES, INPUTS, GRID_OBJECTS, COLORS, DEFAULT_KEYS
 } from '../constants';
 
-const defaultKeys = {
-    [MODES.TITLE]: { [INPUTS.PLAY]: 'enter, space, escape' },
-    [MODES.PLAYING]: {
-        [INPUTS.LEFT]: 'left',
-        [INPUTS.RIGHT]: 'right',
-        [INPUTS.UP]: 'up',
-        [INPUTS.DOWN]: 'down',
-        [INPUTS.ROTATE_LEFT]: 'a',
-        [INPUTS.ROTATE_RIGHT]: 's',
-        [INPUTS.PAUSE]: 'escape'
-    },
-    [MODES.PAUSED]: { [INPUTS.RESUME]: 'enter, space, escape' },
-    [MODES.WON]: { [INPUTS.RESET]: 'enter, space, escape' },
-    [MODES.LOST]: { [INPUTS.RESET]: 'enter, space, escape' }
-};
+import Immutable from 'immutable';
+const {List, Map} = Immutable;
 
+window.Immutable = Immutable;
 
 export default class MrDario {
-    constructor({render=_.noop, keyBindings = defaultKeys, width = PLAYFIELD_WIDTH, height = PLAYFIELD_HEIGHT}) {
+    constructor({render=_.noop, keyBindings = DEFAULT_KEYS, width = PLAYFIELD_WIDTH, height = PLAYFIELD_HEIGHT}) {
         _.assign(this, {
             width, height, render,
             modeMachine: StateMachine.create({ // finite state machine of game modes
@@ -60,7 +48,7 @@ export default class MrDario {
         this.playerInput.on(INPUTS.RESUME, () => this.modeMachine.resume());
         this.playerInput.on(INPUTS.RESET, () => this.modeMachine.reset());
 
-        const playInputs = [INPUTS.LEFT, INPUTS.RIGHT, INPUTS.DOWN, INPUTS.ROTATE_LEFT, INPUTS.ROTATE_RIGHT];
+        const playInputs = [INPUTS.LEFT, INPUTS.RIGHT, INPUTS.DOWN, INPUTS.ROTATE_CCW, INPUTS.ROTATE_CW];
         playInputs.forEach(inputType => {
             this.playerInput.on(inputType, () => this.enqueuePlayInput(inputType));
         });

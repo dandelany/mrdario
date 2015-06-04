@@ -2,20 +2,8 @@ import _  from 'lodash';
 import {EventEmitter} from 'events';
 import keyMirror from 'keymirror';
 import StateMachine  from 'javascript-state-machine';
-import { GRID_OBJECTS, INPUTS, COLORS } from './../constants';
+import { GRID_OBJECTS, INPUTS, COLORS, GRAVITY_TABLE } from './../constants';
 
-// http://tetrisconcept.net/wiki/Dr._Mario#Gravity
-// # of frames it takes player pill to drop 1 row at speed [index]
-const GRAVITY_TABLE = [
-    69, 67, 65, 63, 61,  59, 57, 55, 53, 51,
-    49, 47, 45, 43, 41,  39, 37, 35, 33, 31,
-    29, 27, 25, 23, 21,  19, 18, 17, 16, 15,
-    14, 13, 12, 11, 10,   9,  9,  8,  8,  7,
-    7,  6,  6,  5,  5,   5,  5,  5,  5,  5,
-    5,  5,  5,  5,  5,   4,  4,  4,  4,  4,
-    3,  3,  3,  3,  3,   2,  2,  2,  2,  2,
-    1
-];
 function gravityFrames(speed) { return GRAVITY_TABLE[Math.min(speed, GRAVITY_TABLE.length - 1)]; }
 
 const MODES = keyMirror({
@@ -40,7 +28,7 @@ export default class Playfield extends EventEmitter {
             // finite state machine representing playfield mode
             modeMachine: StateMachine.create({
                 initial: MODES.LOADING,
-                events: [
+                events: [ // transitions between states
                     {name: 'loaded', from: MODES.LOADING, to: MODES.READY},
                     {name: 'play', from: MODES.READY, to: MODES.PLAYING},
                     {name: 'reconcile', from: [MODES.PLAYING, MODES.CASCADE], to: MODES.RECONCILE},
@@ -195,8 +183,8 @@ export default class Playfield extends EventEmitter {
                             (input === INPUTS.RIGHT) ? 'right' : 'down';
             this.movePill(direction);
 
-        } else if(_.includes([INPUTS.ROTATE_LEFT, INPUTS.ROTATE_RIGHT], input)) {
-            let direction = (input === INPUTS.ROTATE_LEFT) ? 'left' : 'right';
+        } else if(_.includes([INPUTS.ROTATE_CCW, INPUTS.ROTATE_CW], input)) {
+            let direction = (input === INPUTS.ROTATE_CCW) ? 'ccw' : 'cw';
             this.rotatePill(direction);
         }
     }
@@ -363,6 +351,7 @@ function getPillNeighbors(grid, pill) {
     };
 }
 
+
 function moveCell(grid, cell, direction) {
     if(!canMoveCell(grid, cell, direction)) return {grid, cell, didMove: false};
     const [dRow, dCol] = deltaRowCol(direction);
@@ -400,10 +389,8 @@ function moveCells(grid, cells, direction) {
 }
 
 function movePill(grid, pill, direction) {
-    // WARNING mutates the grid, todo: make pure/immutable
-    let cells, didMove;
-    ({grid, cells, didMove} = moveCells(grid, pill, direction));
-    return {grid, pill: cells, didMove};
+    const moved = moveCells(grid, pill, direction);
+    return {grid: moved.grid, pill: moved.cells, didMove: moved.didMove};
 }
 
 // the main reconcile function, looks for lines of 4 or more of the same color in the grid
@@ -494,4 +481,8 @@ function dropDebris(grid) {
         }
     }
     return {grid, fallingCells};
+}
+
+function generateViruses(grid, level, remainingViruses) {
+
 }

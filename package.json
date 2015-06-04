@@ -12,6 +12,7 @@
     "events": "^1.0.2",
     "fixed-data-table": "^0.1.2",
     "highland": "^2.5.0",
+    "immutable": "^3.7.3",
     "javascript-state-machine": "^2.3.5",
     "keyboardjs": "^0.4.2",
     "keymaster": "^1.6.2",
