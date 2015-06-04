@@ -16,6 +16,10 @@ const MODES = keyMirror({
     ENDED: null // game has ended
 });
 
+import {
+    movePill
+} from './gameFunctions'
+
 export default class Playfield extends EventEmitter {
     constructor({
             width = 8, height = 12, baseSpeed = 15, cascadeSpeed = 15,
@@ -198,6 +202,7 @@ export default class Playfield extends EventEmitter {
 
     givePill() {
         // todo: if entry place is blocked, lose the game
+        // todo move to immutable pure function
 
         // add new pill to grid
 

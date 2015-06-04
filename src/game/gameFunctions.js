@@ -31,11 +31,27 @@ export function getCellObj(grid, cell) { // cell is [rowI, colI] coordinates
     return grid.getIn(cell);
 }
 
+export function givePill(grid, pillColors) {
+    // todo: if entry place is blocked, lose the game
+    // add new pill to grid
+    let row = grid.get(0);
+    const pillCol = Math.floor(row.size / 2) - 1;
+    const pill = [[0, pillCol], [0, pillCol+1]];
+    //const pillColors = this.pillSequence[this.counters.pillSequenceIndex];
+    const pillObjLeft = Map(_.assign({type: GRID_OBJECTS.PILL_LEFT}, pillColors[0]));
+    const pillObjRight = Map(_.assign({type: GRID_OBJECTS.PILL_RIGHT}, pillColors[1]));
+
+    grid = grid.setIn([0, pillCol], pillObjLeft);
+    grid = grid.setIn([1, pillCol+1], pillObjRight);
+
+    return {grid, pill};
+}
+
 export function isPillVertical(grid, pillCells) {
     return isPillTop(grid.getIn(pillCells[0]));
 }
 
-function getCellNeighbors(grid, [rowI, colI]) {
+export function getCellNeighbors(grid, [rowI, colI]) {
     // returns the neighbors of the grid cell at [rowI, colI]
     return {
         up: (rowI <= 0) ?                       null : grid.getIn([rowI - 1, colI]),
@@ -45,11 +61,11 @@ function getCellNeighbors(grid, [rowI, colI]) {
     }
 }
 
-function canMoveCell(grid, cell, direction) {
+export function canMoveCell(grid, cell, direction) {
     return isEmpty(getCellNeighbors(grid, cell)[direction]);
 }
 
-function deltaRowCol(direction, distance = 1) {
+export function deltaRowCol(direction, distance = 1) {
     // create the [dRow, dCol] needed for a move in given direction and distance eg. up 1 is [-1, 0]
     const dRow = (direction === 'down') ?  distance : (direction === 'up') ? -distance : 0;
     const dCol = (direction === 'right') ? distance : (direction === 'left') ? -distance : 0;
@@ -82,7 +98,7 @@ function deltaRowCol(direction, distance = 1) {
 // }
 
 
-function moveCell(grid, cell, direction) {
+export function moveCell(grid, cell, direction) {
     if(!canMoveCell(grid, cell, direction)) return {grid, cell, didMove: false};
     const [dRow, dCol] = deltaRowCol(direction);
     const [rowI, colI] = cell;
@@ -94,7 +110,7 @@ function moveCell(grid, cell, direction) {
     return {grid, cell, didMove: true}
 }
 
-function moveCells(grid, cells, direction) {
+export function moveCells(grid, cells, direction) {
     // move a set of cells (eg. a pill) at once
     // either they ALL move successfully, or none of them move
     const [dRow, dCol] = deltaRowCol(direction);
@@ -118,12 +134,12 @@ function moveCells(grid, cells, direction) {
     return {grid, cells, didMove: true};
 }
 
-function movePill(grid, pill, direction) {
+export function movePill(grid, pill, direction) {
     const moved = moveCells(grid, pill, direction);
     return {grid: moved.grid, pill: moved.cells, didMove: moved.didMove};
 }
 
-function rotatePill(grid, pill, direction) {
+export function rotatePill(grid, pill, direction) {
     // http://tetrisconcept.net/wiki/Dr._Mario#Rotation_system
     const pillNeighbors = [getCellNeighbors(grid, pill[0]), getCellNeighbors(grid, pill[1])];
     const isVertical = isPillVertical(grid, pill);
@@ -168,11 +184,8 @@ function rotatePill(grid, pill, direction) {
 }
 
 
-
-
-
 // the main reconcile function, looks for lines of 4 or more of the same color in the grid
-function findLines(grid, lineLength = 4, excludeFlag = 'isFalling') {
+export function findLines(grid, lineLength = 4, excludeFlag = 'isFalling') {
     const horizontalLines = _.flatten(grid.map((row, rowI) => {
         return findLinesIn(row, lineLength, excludeFlag).map(line => line.map(colI => [rowI, colI]));
     }).toJS());
@@ -188,7 +201,7 @@ function findLines(grid, lineLength = 4, excludeFlag = 'isFalling') {
 }
 
 // find same-color lines within a single row or column
-function findLinesIn(row, lineLength = 4, excludeFlag = 'isFalling') {
+export function findLinesIn(row, lineLength = 4, excludeFlag = 'isFalling') {
     let lastColor = undefined;
     let curLine = [];
 
@@ -211,7 +224,7 @@ function findLinesIn(row, lineLength = 4, excludeFlag = 'isFalling') {
 }
 
 // find "widows", half-pill pieces whose other halves have been destroyed
-function findWidows(grid) {
+export function findWidows(grid) {
     const {PILL_LEFT, PILL_RIGHT, PILL_TOP, PILL_BOTTOM} = GRID_OBJECTS;
     const pillTypes = [PILL_LEFT, PILL_RIGHT, PILL_TOP, PILL_BOTTOM];
 
@@ -236,7 +249,7 @@ function findWidows(grid) {
 }
 
 // find pieces in the grid which are unsupported and should fall in cascade
-function dropDebris(grid) {
+export function dropDebris(grid) {
     // start at the bottom of the grid and move up,
     // seeing which pieces can fall
     //const oldGrid = grid;
