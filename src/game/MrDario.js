@@ -72,7 +72,7 @@ export default class MrDario {
         // minimal description of game state to render
         return {
             mode: this.modeMachine.current,
-            grid: this.playfield.grid
+            grid: this.playfield.grid.toJS()
         };
     }
 
