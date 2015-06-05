@@ -63,7 +63,7 @@ let constants = {
     // http://tetrisconcept.net/wiki/Dr._Mario#Virus_Generation
     // highest row where viruses can be generated at virus level [index]
     // inverse of original because we count from top
-    MAX_VIRUS_ROW_TABLE: [
+    MIN_VIRUS_ROW_TABLE: [
         10, 10, 10, 10, 10,  10, 10, 10, 10, 10,
         10, 10, 10, 10, 10,  9,  9,  8,  8,  7
     ],

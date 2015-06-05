@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import Immutable from 'immutable';
 const {List, Map} = Immutable;
-import { GRID_OBJECTS, COLORS } from './../constants';
+import { GRID_OBJECTS, COLORS, MIN_VIRUS_ROW_TABLE } from './../constants';
 
 // these are pure stateless functions which contain the majority of the game logic
 // they use Immutable objects to represent the grid and return new objects on 'mutation'
@@ -62,7 +62,6 @@ export class Grid {
         this.grid.forEach((row, rowI) => row.forEach((cell, colI) => {
             const shouldRemove = isDestroyed(this.grid.getIn([rowI,colI]));
             if(shouldRemove) this.removeCell([rowI, colI]);
-
         }))
     }
     setPillSegment([rowI, colI]) {
@@ -81,20 +80,89 @@ export function generatePillSequence(colors, count=128) {
     return _.times(count, () => [{color: _.sample(colors)}, {color: _.sample(colors)}]);
 }
 
+function nextGridCell([rowI, colI], numRows, numCols) {
+    colI++;
+    if(colI === numCols) { colI = 0; rowI++; }
+    if(rowI === numRows) { return null; }
+    return [rowI, colI]
+}
+export function generateViruses(grid, level, remainingViruses, colors) {
+    const numRows = grid.size;
+    const numCols = grid.get(0).size;
+    //Generate a random number in range [1,16].
+//    If the random number in step 1 is greater than the maximum allowed row (seed the "Virus Level"/"Maximum Row" table above), go back to step 1.
+
+    let vRow = _.random(minVirusRow(level), numRows-1);
+    //Generate a random number in range [1,8] and use for the candidate virus X coordinate, with 1 on the left and 8 on the right.
+
+    let vCol = _.random(0, numCols-1);
+
+    //    Use the number generated in step 1 as the candidate virus Y coordinate, with 1 on the bottom and 16 the top.
+    //    Using the number of remaining viruses as the numerator, take the remainder of division by 4.
+
+    let colorSeed = remainingViruses % (colors.length + 1);
+
+    //Using the remainder calculated in step 5, with 0 = Yellow, 1 = Red, and 2 = Blue, if the remainder was 3, do the following, else use the integer to select the currently selected virus color as specified earlier this sentence:
+    //    Randomly generate an integer in range [0,15].
+    //    Select from the "PRNG Output" table above the virus color matching the integer generated in step 6.1.
+
+    let color = (colorSeed === colors.length) ? _.sample(colors) : colors[colorSeed];
+
+    //    Do repeatedly the following while the current candidate virus position is filled:
+    //    Increment the candidate virus X position.
+    //    If the candidate virus X position is now 9:
+    //Set the candidate virus X position to 1 and increment the candidate virus Y position
+    //If the candidate virus Y position is now 17:
+    //Return the number of remaining viruses to generate.
+
+
+    let nearby = _.values(getCellNeighbors(grid, [vRow, vCol], 2));
+    let isValidLocation = !_.every(colors, color => _.any(nearby, obj => isColor(obj, color)));
+    
+
+    while(!isEmpty(grid.getIn([vRow, vCol]))) {
+        let next = nextGridCell([vRow, vCol], numRows, numCols);
+        if(_.isNull(next)) return remainingViruses;
+        [vRow, vCol] = next;
+    }
+
+
+
+    //    Check in all four cardinal directions 2 cells away from the candidate virus position the virus contents of the bottle.
+    //    If all three colors are present in the four checked cells, go back to step 7.1 (don't do step 7).
+    //If the four checked cells in step 8 lacks the currently selected virus color, go to step 13.
+    //If the currently selected virus type is yellow, change the currently selected virus color to blue; if the currently selected virus type is red, change the currently selected virus color to yellow; if the currently selected virus color is blue, change the currently selected virus color to red.
+    //    Go to step 8.
+    //Set the candidate virus position in the bottle to the currently selected virus color.
+    //    Return the number of remaining viruses less one.
+}
+
+function minVirusRow(level) {
+    return MIN_VIRUS_ROW_TABLE[Math.min(level, MIN_VIRUS_ROW_TABLE.length - 1)];
+}
+
 export function emptyObject() {
     return Map({type: GRID_OBJECTS.EMPTY});
+}
+export function virusObject(color) {
+    return Map({type: GRID_OBJECTS.VIRUS, color});
 }
 
 export function emptyGrid(width, height) {
     return List(_.times(height, () => List(_.times(width, emptyObject))));
 }
 
+
+function isColor(obj, color) {
+    return !_.isNull(obj) && obj.get && obj.get('color') === color
+}
 export function isObjType(obj, type) {
     return obj && obj.get && obj.get('type') === type
 }
 export const isEmpty = _.partialRight(isObjType, GRID_OBJECTS.EMPTY);
 export const isDestroyed = _.partialRight(isObjType, GRID_OBJECTS.DESTROYED);
 export const isPillTop = _.partialRight(isObjType, GRID_OBJECTS.PILL_TOP);
+
 
 export function getCellObj(grid, cell) { // cell is [rowI, colI] coordinates
     return grid.getIn(cell);
@@ -119,13 +187,13 @@ export function isPillVertical(grid, pillCells) {
     return isPillTop(grid.getIn(pillCells[0]));
 }
 
-export function getCellNeighbors(grid, [rowI, colI]) {
+export function getCellNeighbors(grid, [rowI, colI], distance = 1) {
     // returns the neighbors of the grid cell at [rowI, colI]
     return {
-        up: (rowI <= 0) ?                       null : grid.getIn([rowI - 1, colI]),
-        down: (rowI >= grid.size - 1) ?         null : grid.getIn([rowI + 1, colI]),
-        left: (colI <= 0) ?                     null : grid.getIn([rowI, colI - 1]),
-        right: (colI >= grid.get(0).size - 1) ? null : grid.getIn([rowI, colI + 1])
+        up: (rowI - distance < 0) ?                       null : grid.getIn([rowI - distance, colI]),
+        down: (rowI + distance > grid.size - 1) ?         null : grid.getIn([rowI + distance, colI]),
+        left: (colI - distance < 0) ?                     null : grid.getIn([rowI, colI - distance]),
+        right: (colI + distance > grid.get(0).size - 1) ? null : grid.getIn([rowI, colI + distance])
     }
 }
 
