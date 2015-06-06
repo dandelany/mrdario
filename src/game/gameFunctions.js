@@ -14,8 +14,9 @@ export class Grid {
         this.grid = generateViruses(this.grid, 5, COLORS);
     }
     givePill(pillColors) {
-        const {grid, pill} = givePill(this.grid, pillColors);
+        const {grid, pill, didGive} = givePill(this.grid, pillColors);
         _.assign(this, {grid, pill});
+        return didGive;
     }
     movePill(direction) {
         const {grid, pill, didMove} = movePill(this.grid, this.pill, direction);
@@ -182,13 +183,16 @@ export function givePill(grid, pillColors) {
     let row = grid.get(0);
     const pillCol = Math.floor(row.size / 2) - 1;
     const pill = [[0, pillCol], [0, pillCol+1]];
+
+    if(!_.every(pill, cell => isEmpty(grid.getIn(cell))))
+        return {grid, pill, didGive: false};
+
     const pillObjLeft = Map(_.assign({type: GRID_OBJECTS.PILL_LEFT}, pillColors[0]));
     const pillObjRight = Map(_.assign({type: GRID_OBJECTS.PILL_RIGHT}, pillColors[1]));
-
     grid = grid.setIn([0, pillCol], pillObjLeft);
     grid = grid.setIn([0, pillCol+1], pillObjRight);
 
-    return {grid, pill};
+    return {grid, pill, didGive: true};
 }
 
 export function isPillVertical(grid, pillCells) {

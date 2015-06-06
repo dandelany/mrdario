@@ -55,9 +55,20 @@ const MrDario = React.createClass({
                 </div>;
                 break;
             case MODES.PLAYING:
+            case MODES.WON:
+            case MODES.LOST:
                 contents = <Playfield grid={this.props.grid}></Playfield>
                 break;
         }
+
+        if(this.props.mode === MODES.WON || this.props.mode === MODES.LOST) {
+            contents = <div>
+                <h2>You {this.props.mode}!</h2>
+                <h3>Press spacebar to reset</h3>
+                {contents}
+            </div>;
+        }
+
         return <div>
             <h2>Mr Dario</h2>
             <div className="game-container">

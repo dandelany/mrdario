@@ -95,8 +95,8 @@ export default class Playfield extends EventEmitter {
                 break;
 
             case MODES.READY:
-                this.givePill();
-                this.modeMachine.play();
+                if(this.givePill()) this.modeMachine.play();
+                else this.modeMachine.lose();
                 break;
 
             case MODES.PLAYING:
@@ -125,16 +125,6 @@ export default class Playfield extends EventEmitter {
                 if(hadLines) this.modeMachine.destroy();
                 else this.modeMachine.cascade(); // no lines, cascade falling debris
                 // todo win if viruses are gone
-
-                //const lines = findLines(this.grid);
-                //if(lines.length) {
-                //    // set cells in lines to destroyed
-                //    _.flatten(lines).forEach(this.destroyCell.bind(this));
-                //    // turn widowed pill halves into rounded 1-square pill segments
-                //    findWidows(this.grid).forEach(this.setPillSegment.bind(this));
-                //    this.modeMachine.destroy();
-                //    // todo win if viruses are gone
-                //} else this.modeMachine.cascade();
                 break;
 
             case MODES.DESTRUCTION:
@@ -152,14 +142,9 @@ export default class Playfield extends EventEmitter {
                 if(this.counters.cascadeTicks === 0) {
                     // check if there is any debris to drop
                     let {fallingCells} = this.grid.flagFallingCells(this.grid);
-
                     // nothing to drop, ready for another pill
                     if(!fallingCells.length) this.modeMachine.ready();
 
-                    //if(!fallingCells.length) {
-                    //    this.modeMachine.ready();
-                    //    //return;
-                    //} else this.fallingCells = fallingCells;
                 } else if(this.counters.cascadeTicks % this.cascadeGravity === 0) {
                     // drop the cells for the current cascade
                     const dropped = this.grid.dropDebris();
@@ -175,6 +160,10 @@ export default class Playfield extends EventEmitter {
                     }
                 }
                 this.counters.cascadeTicks++;
+                break;
+
+            case MODES.ENDED:
+                console.log('ended!');
                 break;
         }
     }
@@ -193,15 +182,16 @@ export default class Playfield extends EventEmitter {
     }
 
     givePill() {
-        // todo: if entry place is blocked, lose the game
-
         const pillColors = this.pillSequence[this.counters.pillSequenceIndex];
+        // try to add a new pill, false if blocked
+        const didGive = this.grid.givePill(pillColors);
 
-        this.grid.givePill(pillColors);
-
-        this.counters.pillSequenceIndex++; // todo no need to save this it can be derived from pillcount % length
-        if(this.counters.pillSequenceIndex == this.pillSequence.length) this.counters.pillSequenceIndex = 0;
-        this.counters.pillCount++;
+        if(didGive) {
+            this.counters.pillSequenceIndex++; // todo no need to save this it can be derived from pillcount % length
+            if(this.counters.pillSequenceIndex == this.pillSequence.length) this.counters.pillSequenceIndex = 0;
+            this.counters.pillCount++;
+        }
+        return didGive;
     }
 
     movePill(direction) {
@@ -212,9 +202,4 @@ export default class Playfield extends EventEmitter {
         const didMove = this.grid.rotatePill(direction);
         return didMove;
     }
-}
-
-function generateViruses(grid, level, remainingViruses) {
-
-
 }

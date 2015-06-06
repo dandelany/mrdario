@@ -31,7 +31,11 @@ export default class MrDario {
                     {name: 'reset',  from: ['*'], to: MODES.TITLE}
                 ]
             }),
-            playfield: new Playfield({width, height}),
+            playfield: new Playfield({
+                width, height,
+                onWin: this.onGameWin.bind(this),
+                onLose: this.onGameLose.bind(this)
+            }),
             playerInput: new PlayerControls(keyBindings),
             playInputQueue: []
         });
@@ -66,6 +70,20 @@ export default class MrDario {
         this.modeMachine.onplay = (event, lastMode, newMode) => {
             console.log('onplay', event, lastMode, newMode);
         };
+        this.modeMachine.onreset = () => {
+            this.playfield = new Playfield({
+                width: this.width, height: this.height,
+                onWin: this.onGameWin.bind(this),
+                onLose: this.onGameLose.bind(this)
+            })
+        }
+    }
+
+    onGameWin() {
+        this.modeMachine.win();
+    }
+    onGameLose() {
+        this.modeMachine.lose();
     }
 
     getState() {
