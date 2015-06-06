@@ -45,7 +45,7 @@ let constants = {
 
     // width and height of game grid
     PLAYFIELD_WIDTH: 8,
-    PLAYFIELD_HEIGHT: 12,
+    PLAYFIELD_HEIGHT: 16,
 
     // http://tetrisconcept.net/wiki/Dr._Mario#Gravity
     // # of frames it takes player pill to drop 1 row at speed [index]
@@ -63,10 +63,10 @@ let constants = {
     // http://tetrisconcept.net/wiki/Dr._Mario#Virus_Generation
     // highest row where viruses can be generated at virus level [index]
     // inverse of original because we count from top
-    MIN_VIRUS_ROW_TABLE: [
-        10, 10, 10, 10, 10,  10, 10, 10, 10, 10,
-        10, 10, 10, 10, 10,  9,  9,  8,  8,  7
-    ],
+    MIN_VIRUS_ROW_TABLE:
+        _.times(15, _.constant(4)).concat([
+            3, 3, 2, 2, 1
+        ]),
 
     // http://www.gamefaqs.com/nes/587241-dr-mario/faqs/9483
     // # of viruses at virus level [index]
@@ -91,12 +91,12 @@ constants.DEFAULT_KEYS = {
     [MODES.TITLE]: { [INPUTS.PLAY]: 'enter, space, escape' },
     [MODES.PLAYING]: {
         [INPUTS.LEFT]: 'left',
-            [INPUTS.RIGHT]: 'right',
-            [INPUTS.UP]: 'up',
-            [INPUTS.DOWN]: 'down',
-            [INPUTS.ROTATE_CCW]: 'a',
-            [INPUTS.ROTATE_CW]: 's',
-            [INPUTS.PAUSE]: 'escape'
+        [INPUTS.RIGHT]: 'right',
+        [INPUTS.UP]: 'up',
+        [INPUTS.DOWN]: 'down',
+        [INPUTS.ROTATE_CCW]: 'a',
+        [INPUTS.ROTATE_CW]: 's',
+        [INPUTS.PAUSE]: 'escape'
     },
     [MODES.PAUSED]: { [INPUTS.RESUME]: 'enter, space, escape' },
     [MODES.WON]: { [INPUTS.RESET]: 'enter, space, escape' },

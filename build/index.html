@@ -5,6 +5,10 @@
     <title>Mr. Dario</title>
 
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
         .game-playfield {
             background: #666;
         }
@@ -33,6 +37,10 @@
         }
         .game-grid-cell.grid-type-destroyed {
             background: orange;
+        }
+
+        .game-grid-cell.grid-type-virus {
+            border: 4px dotted white;
         }
 
         .game-grid-cell.grid-color-0 {

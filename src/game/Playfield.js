@@ -22,7 +22,7 @@ const {Grid, generatePillSequence} = game;
 
 export default class Playfield extends EventEmitter {
     constructor({
-            width = 8, height = 12, baseSpeed = 15, cascadeSpeed = 15,
+            width = 8, height = 16, baseSpeed = 15, cascadeSpeed = 15,
             destroyTicks = 20,
             onChange = _.noop, onWin = _.noop, onLose = _.noop,
             pillSequence = generatePillSequence(COLORS)
@@ -90,6 +90,7 @@ export default class Playfield extends EventEmitter {
         // the main game loop, called once per game tick
         switch (this.modeMachine.current) {
             case MODES.LOADING:
+                this.grid.generateViruses();
                 this.modeMachine.loaded();
                 break;
 

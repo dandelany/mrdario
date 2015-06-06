@@ -31,7 +31,7 @@ export default class MrDario {
                     {name: 'reset',  from: ['*'], to: MODES.TITLE}
                 ]
             }),
-            playfield: new Playfield({}),
+            playfield: new Playfield({width, height}),
             playerInput: new PlayerControls(keyBindings),
             playInputQueue: []
         });
