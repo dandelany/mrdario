@@ -1,30 +1,22 @@
 {
-  "name": "react-datascope",
-  "description": "Datascope component for filtering, searching and sorting data",
+  "name": "mrdario",
+  "description": "Mr. Dario - a Dr. Mario clone in ES6",
   "author": "Dan Delany <dan.delany@gmail.com>",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "private": true,
-  "main": "lib/index.js",
+  "main": "src/index.js",
   "dependencies": {
-    "babel": "^5.4.7",
     "classnames": "^2.1.2",
-    "event-emitter": "^0.3.3",
     "events": "^1.0.2",
-    "fixed-data-table": "^0.1.2",
-    "highland": "^2.5.0",
     "immutable": "^3.7.3",
     "javascript-state-machine": "^2.3.5",
-    "keyboardjs": "^0.4.2",
     "keymaster": "^1.6.2",
     "keymirror": "^0.1.1",
-    "lodash": ">=3.8.0",
-    "rx": "^2.5.2"
-  },
-  "peerDependencies": {
-    "react": ">=0.13.0"
+    "lodash": "^3.8.0",
+    "react": "^0.13.3"
   },
   "devDependencies": {
-    "babel": "^5.2.15",
+    "babel": "^5.4.7",
     "babel-core": "^5.2.15",
     "babel-loader": "^5.0.0",
     "grunt": "~0.4.5",

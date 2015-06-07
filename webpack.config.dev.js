@@ -4,6 +4,8 @@ var webpack = require('webpack');
 module.exports = {
     context: __dirname,
     entry: [
+        'webpack-dev-server/client?http://localhost:6767',
+        'webpack/hot/only-dev-server',
         './src/main.jsx'
     ],
     output: {
@@ -11,11 +13,11 @@ module.exports = {
         filename: 'bundle.js',
         publicPath: '/assets/'
     },
-    //devtool: 'source-map',
+    devtool: 'source-map',
 
     plugins: [
-        new webpack.NoErrorsPlugin(),
-        new webpack.optimize.UglifyJsPlugin()
+        new webpack.HotModuleReplacementPlugin(),
+        new webpack.NoErrorsPlugin()
     ],
     resolve: {
         extensions: ['', '.js', '.jsx']
@@ -24,7 +26,7 @@ module.exports = {
         loaders: [
             {
                 test: /\.jsx?$/,
-                loaders: ['babel-loader'],
+                loaders: ['react-hot', 'babel-loader'],
                 exclude: /node_modules/
             }
         ]

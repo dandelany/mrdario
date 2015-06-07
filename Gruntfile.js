@@ -1,6 +1,7 @@
 'use strict';
 var _ = require('lodash');
 var webpackConfig = require('./webpack.config.js');
+var webpackDevConfig = require('./webpack.config.dev.js');
 
 module.exports = function(grunt) {
     // Load grunt tasks automatically
@@ -37,14 +38,7 @@ module.exports = function(grunt) {
 
         // also create a self-contained bundle version
         webpack: {
-            build: {
-                entry: './lib/index.js',
-                output: {
-                    path: 'build/',
-                    filename: 'react-datascope.js'
-                }
-            },
-            examples: webpackConfig
+            options: webpackConfig
         },
 
         // minify bundle
@@ -65,13 +59,15 @@ module.exports = function(grunt) {
         //    sayBuiltJs: { command: 'say "built js" -v Cellos' }
         //},
 
+
+
         'webpack-dev-server': {
             dev: {
                 hot: true,
                 port: 6767,
                 contentBase: './build',
-                webpack: webpackConfig,
-                publicPath: webpackConfig.output.publicPath,
+                webpack: webpackDevConfig,
+                publicPath: webpackDevConfig.output.publicPath,
                 historyApiFallback: true,
                 keepalive: true
             }
