@@ -11,7 +11,7 @@ export class Grid {
         this.grid = emptyGrid(width, height);
     }
     generateViruses() {
-        this.grid = generateViruses(this.grid, 0, COLORS);
+        this.grid = generateViruses(this.grid, 3, COLORS);
     }
     givePill(pillColors) {
         const {grid, pill, didGive} = givePill(this.grid, pillColors);
