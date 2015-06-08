@@ -45,6 +45,11 @@ const MrDario = React.createClass({
             case MODES.TITLE:
                 contents = <div className="game-title">
                     <h3>Welcome to Mr. Dario!</h3>
+                    <h4>Keyboard controls:</h4>
+                    <div>
+                        <p>Arrow keys to move</p>
+                        <p><strong>A</strong> and <strong>S</strong> to rotate</p>
+                    </div>
                     <h4>Press spacebar to play</h4>
                 </div>;
                 break;
