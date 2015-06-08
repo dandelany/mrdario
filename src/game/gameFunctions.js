@@ -11,7 +11,7 @@ export class Grid {
         this.grid = emptyGrid(width, height);
     }
     generateViruses() {
-        this.grid = generateViruses(this.grid, 2, COLORS);
+        this.grid = generateViruses(this.grid, 0, COLORS);
     }
     givePill(pillColors) {
         const {grid, pill, didGive} = givePill(this.grid, pillColors);
@@ -39,6 +39,9 @@ export class Grid {
         this.grid = this.grid.map(row => row.map(cell => cell.set('isFalling', false)));
         fallingCells.forEach(cell => this.grid = this.grid.setIn(cell.concat(['isFalling']), true));
         return {fallingCells, grid};
+    }
+    hasViruses() {
+        return hasViruses(this.grid);
     }
 
     // todo clean these up
@@ -171,7 +174,11 @@ export function isObjType(obj, type) {
 export const isEmpty = _.partialRight(isObjType, GRID_OBJECTS.EMPTY);
 export const isDestroyed = _.partialRight(isObjType, GRID_OBJECTS.DESTROYED);
 export const isPillTop = _.partialRight(isObjType, GRID_OBJECTS.PILL_TOP);
+export const isVirus = _.partialRight(isObjType, GRID_OBJECTS.VIRUS);
 
+export function hasViruses(grid) {
+    return !grid.every(row => row.every(cell => !isVirus(cell)));
+}
 
 export function getCellObj(grid, cell) { // cell is [rowI, colI] coordinates
     return grid.getIn(cell);

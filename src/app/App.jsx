@@ -1,43 +1,37 @@
-import { MODES } from '../constants';
+import { MODES, SPEED_LEVELS } from '../constants';
 import React from 'react';
+import RadioGroup from 'react-radio-group';
 import cx from 'classnames';
 
-const Playfield = React.createClass({
-    getDefaultProps() {
+import Playfield from './components/Playfield.jsx';
+
+const GameSettings = React.createClass({
+    propTypes: {
+        speedLevels: React.PropTypes.object
+    },
+    getInitialState() {
         return {
-            cellSize: 30
+            level: 0,
+            speed: null
         }
     },
     render() {
-        const numRows = this.props.grid.length;
-        const numCols = this.props.grid[0].length;
-        const cellSize = this.props.cellSize;
-
-
-        return <div
-            className="game-playfield"
-            style={{position: 'relative', width: numCols * cellSize, height: numRows * cellSize}}
-            >
-            {this.props.grid.map((row, rowI) => {
-                return row.map((cell, colI) => {
-                    const className = cx('game-grid-cell',
-                        _.isUndefined(cell.type) ? null : `grid-type-${cell.type.toLowerCase()}`,
-                        _.isUndefined(cell.color) ? null : `grid-color-${cell.color}`
-                    );
-                    return <div
-                        className={className}
-                        style={{
-                            position: 'absolute',
-                            width: cellSize,
-                            height: cellSize,
-                            top: rowI * cellSize,
-                            left: colI * cellSize
-                            }}
-                        >
-                    </div>
-                })
-            })}
-        </div>;
+        return <div>
+            <div>
+                Virus level
+                <input type="text" value={this.state.level}/>
+            </div>
+            <div>
+                <RadioGroup name="speed" value={this.state.speed}>
+                    {_.map(this.props.speedLevels, speed => {
+                        return <label for={speed}>
+                            <input type="radio" value={speed} />
+                            {speed}
+                        </label>
+                    })}
+                </RadioGroup>
+            </div>
+        </div>
     }
 });
 
@@ -78,10 +72,18 @@ const MrDario = React.createClass({
     }
 });
 
+
+
 export default class App {
     constructor(el) {
         this.el = el;
+        this.game = null;
     }
+
+    onStartGame() {
+
+    }
+
     render(gameState, dt) {
         const {mode, grid} = gameState;
         React.render(<MrDario {...gameState} />, this.el);

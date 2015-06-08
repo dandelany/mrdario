@@ -7,6 +7,8 @@ var _ = require('lodash');
 const Game = require('./game/MrDario');
 const App = require('./app/App.jsx');
 
+
+
 var app = new App(document.getElementById('container'));
 
 window.game = new Game({render: app.render.bind(app)});

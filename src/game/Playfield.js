@@ -39,7 +39,7 @@ export default class Playfield extends EventEmitter {
                     {name: 'destroy', from: MODES.RECONCILE, to: MODES.DESTRUCTION},
                     {name: 'cascade', from: [MODES.RECONCILE, MODES.DESTRUCTION], to: MODES.CASCADE},
                     {name: 'ready', from: MODES.CASCADE, to: MODES.READY},
-                    {name: 'win', from: MODES.CASCADE, to: MODES.ENDED},
+                    {name: 'win', from: MODES.RECONCILE, to: MODES.ENDED},
                     {name: 'lose', from: MODES.READY, to: MODES.ENDED},
                     {name: 'reset', from: '*', to: MODES.LOADING}
                 ]
@@ -122,9 +122,11 @@ export default class Playfield extends EventEmitter {
             case MODES.RECONCILE:
                 // grid is locked, check for same-color lines
                 const hadLines = this.grid.destroyLines();
-                if(hadLines) this.modeMachine.destroy();
+                const hasViruses = this.grid.hasViruses();
+
+                if(!hasViruses) this.modeMachine.win(); // killed all viruses, you win
+                else if(hadLines) this.modeMachine.destroy(); // destroy the marked lines
                 else this.modeMachine.cascade(); // no lines, cascade falling debris
-                // todo win if viruses are gone
                 break;
 
             case MODES.DESTRUCTION:
