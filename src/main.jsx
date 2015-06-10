@@ -2,9 +2,9 @@ var React = require('react/addons');
 var _ = require('lodash');
 //require("babel/polyfill");
 
-//const MrDario = require('./app');
+//const OnePlayerGameController = require('./app');
 
-const Game = require('./game/MrDario');
+const Game = require('./game/OnePlayerGameController');
 const App = require('./app/App.jsx');
 
 
