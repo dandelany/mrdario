@@ -2,7 +2,7 @@ import _ from 'lodash';
 import React from 'react/addons';
 import StateMachine from 'javascript-state-machine';
 
-import Playfield from './Playfield';
+import Playfield from './Game';
 import PlayerControls from './PlayerControls';
 
 import {
@@ -15,7 +15,7 @@ const {List, Map} = Immutable;
 
 window.Immutable = Immutable;
 
-export default class MrDario {
+export default class OnePlayerGameController {
     constructor({render=_.noop, keyBindings = DEFAULT_KEYS, width = PLAYFIELD_WIDTH, height = PLAYFIELD_HEIGHT}) {
         _.assign(this, {
             width, height, render,
@@ -31,7 +31,7 @@ export default class MrDario {
                     {name: 'reset',  from: ['*'], to: MODES.TITLE}
                 ]
             }),
-            playfield: new Playfield({
+            game: new Playfield({
                 width, height,
                 onWin: this.onGameWin.bind(this),
                 onLose: this.onGameLose.bind(this)
@@ -71,7 +71,7 @@ export default class MrDario {
             console.log('onplay', event, lastMode, newMode);
         };
         this.modeMachine.onreset = () => {
-            this.playfield = new Playfield({
+            this.game = new Playfield({
                 width: this.width, height: this.height,
                 onWin: this.onGameWin.bind(this),
                 onLose: this.onGameLose.bind(this)
@@ -90,7 +90,7 @@ export default class MrDario {
         // minimal description of game state to render
         return {
             mode: this.modeMachine.current,
-            grid: this.playfield.grid.toJS()
+            grid: this.game.grid.toJS()
         };
     }
 
@@ -116,7 +116,7 @@ export default class MrDario {
             this.dt = this.dt - slowStep;
             //update(this.step);
             if(this.modeMachine.current == MODES.PLAYING) {
-                this.playfield.tick(this.playInputQueue);
+                this.game.tick(this.playInputQueue);
                 this.playInputQueue = [];
             }
         }

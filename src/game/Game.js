@@ -20,7 +20,7 @@ import * as game from './gameFunctions';
 
 const {Grid, generatePillSequence} = game;
 
-export default class Playfield extends EventEmitter {
+export default class Game extends EventEmitter {
     constructor({
             width = 8, height = 16, baseSpeed = 15, cascadeSpeed = 15,
             destroyTicks = 20,
