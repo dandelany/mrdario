@@ -6,7 +6,7 @@ import { GRID_OBJECTS, COLORS, VIRUS_COUNT_TABLE, MIN_VIRUS_ROW_TABLE } from './
 // these are pure stateless functions which contain the majority of the game logic
 // they use Immutable objects to represent the grid and return new objects on 'mutation'
 
-export class Grid {
+export class Playfield {
     constructor({width = 8, height = 12}) {
         this.grid = emptyGrid(width, height);
     }
@@ -34,6 +34,8 @@ export class Grid {
         return {fallingCells, grid};
     }
     flagFallingCells() {
+        // todo refactor, do we really need to flag falling cells?
+        // findLines should be able to detect which cells are falling so no need for this
         let {fallingCells, grid} = dropDebris(this.grid); // check if there is debris to drop
         this.grid = this.grid.map(row => row.map(cell => cell.set('isFalling', false)));
         this.grid = this.grid.map(row => row.map(cell => cell.set('isFalling', false)));

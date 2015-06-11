@@ -2,7 +2,7 @@ import _ from 'lodash';
 import React from 'react/addons';
 import StateMachine from 'javascript-state-machine';
 
-import Playfield from './Game';
+import Game from './Game';
 import PlayerControls from './PlayerControls';
 
 import {
@@ -11,15 +11,22 @@ import {
 } from '../constants';
 
 import Immutable from 'immutable';
-const {List, Map} = Immutable;
-
 window.Immutable = Immutable;
 
+// a game controller class for the basic 1-player game, played entirely on the client (in browser)
+// controls the frame timing and must tick the Game object once per frame
+// controls the high-level game state and must call render() when game state changes
+
 export default class OnePlayerGameController {
-    constructor({render=_.noop, keyBindings = DEFAULT_KEYS, width = PLAYFIELD_WIDTH, height = PLAYFIELD_HEIGHT}) {
+    constructor({render = _.noop, keyBindings = DEFAULT_KEYS, width = PLAYFIELD_WIDTH, height = PLAYFIELD_HEIGHT}) {
         _.assign(this, {
-            width, height, render,
-            modeMachine: StateMachine.create({ // finite state machine of game modes
+            // width and height of the playfield grid, in grid units
+            width, height,
+            // render function which is called when game state changes
+            // this is the only connection between game logic and presentation
+            render,
+            // a finite state machine representing game mode, & transitions between modes
+            modeMachine: StateMachine.create({
                 initial: MODES.LOADING,
                 events: [
                     {name: 'loaded', from: MODES.LOADING, to: MODES.TITLE},
@@ -31,21 +38,32 @@ export default class OnePlayerGameController {
                     {name: 'reset',  from: ['*'], to: MODES.TITLE}
                 ]
             }),
-            game: new Playfield({
-                width, height,
-                onWin: this.onGameWin.bind(this),
-                onLose: this.onGameLose.bind(this)
-            }),
             playerInput: new PlayerControls(keyBindings),
             playInputQueue: []
         });
 
+        this.initGame();
         this.attachModeEvents();
         this.attachInputEvents();
         this.modeMachine.loaded();
-        this.run({});
+    }
+    initGame() {
+        const {width, height} = this;
+        this.game = new Game({
+            width, height,
+            onWin: () => this.modeMachine.win(),
+            onLose: () => this.modeMachine.lose()
+        });
     }
 
+    attachModeEvents() {
+        this.modeMachine.onenterstate = (event, lastMode, newMode) => {
+            this.render(this.getState()); // re-render on any mode change
+            this.playerInput.setMode(newMode); // switch key binding mode
+        };
+        this.modeMachine.onplay = () => this.run();
+        this.modeMachine.onreset = () => this.initGame();
+    }
     attachInputEvents() {
         this.playerInput.on(INPUTS.PLAY, () => this.modeMachine.play());
         this.playerInput.on(INPUTS.PAUSE, () => this.modeMachine.pause());
@@ -58,43 +76,11 @@ export default class OnePlayerGameController {
         });
     }
     enqueuePlayInput(inputType) {
-        if(!this.modeMachine.current === MODES.PLAYING) return;
-        this.playInputQueue = this.playInputQueue.concat(inputType);
+        if (this.modeMachine.current !== MODES.PLAYING) return;
+        this.playInputQueue.push(inputType);
     }
 
-    attachModeEvents() {
-        this.modeMachine.onenterstate = (event, lastMode, newMode) => {
-            console.log('mode transition:', event, lastMode, newMode);
-            this.playerInput.setMode(newMode); // switch key binding mode
-        };
-        this.modeMachine.onplay = (event, lastMode, newMode) => {
-            console.log('onplay', event, lastMode, newMode);
-        };
-        this.modeMachine.onreset = () => {
-            this.game = new Playfield({
-                width: this.width, height: this.height,
-                onWin: this.onGameWin.bind(this),
-                onLose: this.onGameLose.bind(this)
-            })
-        }
-    }
-
-    onGameWin() {
-        this.modeMachine.win();
-    }
-    onGameLose() {
-        this.modeMachine.lose();
-    }
-
-    getState() {
-        // minimal description of game state to render
-        return {
-            mode: this.modeMachine.current,
-            grid: this.game.grid.toJS()
-        };
-    }
-
-    run({fps = 60, slow = 1}) {
+    run({fps = 60, slow = 1} = {}) {
         const step = 1 / fps,
             slowStep = slow * step;
 
@@ -108,22 +94,28 @@ export default class OnePlayerGameController {
     }
 
     tick() {
+        if(this.modeMachine.current !== MODES.PLAYING) return;
         const now = timestamp();
         const {dt, last, slow, slowStep} = this;
 
         this.dt = dt + Math.min(1, (now - last) / 1000);
         while(this.dt > slowStep) {
             this.dt = this.dt - slowStep;
-            //update(this.step);
-            if(this.modeMachine.current == MODES.PLAYING) {
-                this.game.tick(this.playInputQueue);
-                this.playInputQueue = [];
-            }
+            this.game.tick(this.playInputQueue);
+            this.playInputQueue = [];
         }
 
         this.render(this.getState(), this.dt/slow);
         this.last = now;
         requestAnimationFrame(this.tick.bind(this));
+    }
+
+    getState() {
+        // minimal description of game state to render
+        return {
+            mode: this.modeMachine.current,
+            grid: this.game.playfield.toJS()
+        };
     }
 }
 

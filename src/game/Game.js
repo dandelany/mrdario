@@ -16,9 +16,9 @@ const MODES = keyMirror({
     ENDED: null // game has ended
 });
 // the functions which make up the core game logic
-import * as game from './gameFunctions';
+import {Playfield, generatePillSequence} from './Playfield';
 
-const {Grid, generatePillSequence} = game;
+//const {Playfield, generatePillSequence} = game;
 
 export default class Game extends EventEmitter {
     constructor({
@@ -26,10 +26,11 @@ export default class Game extends EventEmitter {
             destroyTicks = 20,
             onChange = _.noop, onWin = _.noop, onLose = _.noop,
             pillSequence = generatePillSequence(COLORS)
-        }) {
+        } = {}) {
+
         super();
         _.assign(this, {
-            // finite state machine representing playfield mode
+            // finite state machine representing game mode
             modeMachine: StateMachine.create({
                 initial: MODES.LOADING,
                 events: [ // transitions between states
@@ -73,29 +74,44 @@ export default class Game extends EventEmitter {
             },
 
             // the grid, single source of truth for game state
-            grid: new Grid({width, height})
+            playfield: new Playfield({width, height})
         });
 
-        this.modeMachine.onenterstate = (event, lastMode, newMode) => {
-            console.log('playfield mode transition:', event, lastMode, newMode);
-        };
-        this.modeMachine.onreset = (event, lastMode, newMode) => {};
+        //this.modeMachine.onenterstate = (event, lastMode, newMode) => {
+        //    console.log('playfield mode transition:', event, lastMode, newMode);
+        //};
+        //this.modeMachine.onreset = (event, lastMode, newMode) => {};
         this.modeMachine.onplay = () => this.counters.playTicks = 0;
         this.modeMachine.ondestroy = () => this.counters.destroyTicks = 0;
         this.modeMachine.oncascade = () => this.counters.cascadeTicks = 0;
         this.modeMachine.onwin = () => this.onWin();
         this.modeMachine.onlose = () => this.onLose();
     }
+
+    handleInput(input) {
+        if(_.includes([INPUTS.LEFT, INPUTS.RIGHT, INPUTS.DOWN], input)) {
+            let direction = (input === INPUTS.DOWN) ? 'down' :
+                (input === INPUTS.LEFT) ? 'left' : 'right';
+            this.playfield.movePill(direction);
+
+        } else if(_.includes([INPUTS.ROTATE_CCW, INPUTS.ROTATE_CW], input)) {
+            let direction = (input === INPUTS.ROTATE_CCW) ? 'ccw' : 'cw';
+            this.playfield.rotatePill(direction);
+        }
+    }
+
     tick(inputQueue) {
         // the main game loop, called once per game tick
         switch (this.modeMachine.current) {
             case MODES.LOADING:
-                this.grid.generateViruses();
+                this.playfield.generateViruses();
                 this.modeMachine.loaded();
                 break;
 
             case MODES.READY:
+                // try to add a pill to the playfield
                 if(this.givePill()) this.modeMachine.play();
+                // if it didn't work, pill entrance is blocked and we lose
                 else this.modeMachine.lose();
                 break;
 
@@ -111,18 +127,16 @@ export default class Game extends EventEmitter {
 
                 if(this.counters.playTicks > this.playGravity) {
                     this.counters.playTicks = 0;
-                    const didMove = this.movePill('down');
-                    if(!didMove) {
-                        this.modeMachine.reconcile();
-                    }
+                    const didMove = this.playfield.movePill('down');
+                    if(!didMove) this.modeMachine.reconcile();
                 }
 
                 break;
 
             case MODES.RECONCILE:
-                // grid is locked, check for same-color lines
-                const hadLines = this.grid.destroyLines();
-                const hasViruses = this.grid.hasViruses();
+                // playfield is locked, check for same-color lines
+                const hadLines = this.playfield.destroyLines();
+                const hasViruses = this.playfield.hasViruses();
 
                 if(!hasViruses) this.modeMachine.win(); // killed all viruses, you win
                 else if(hadLines) this.modeMachine.destroy(); // destroy the marked lines
@@ -133,7 +147,7 @@ export default class Game extends EventEmitter {
                 // stay in destruction state a few ticks to animate destruction
                 if(this.counters.destroyTicks >= this.destroyTicks) {
                     // empty the destroyed cells
-                    this.grid.removeDestroyed();
+                    this.playfield.removeDestroyed();
                     this.modeMachine.cascade();
                 }
                 this.counters.destroyTicks++;
@@ -143,17 +157,17 @@ export default class Game extends EventEmitter {
 
                 if(this.counters.cascadeTicks === 0) {
                     // check if there is any debris to drop
-                    let {fallingCells} = this.grid.flagFallingCells(this.grid);
+                    let {fallingCells} = this.playfield.flagFallingCells();
                     // nothing to drop, ready for another pill
                     if(!fallingCells.length) this.modeMachine.ready();
 
                 } else if(this.counters.cascadeTicks % this.cascadeGravity === 0) {
                     // drop the cells for the current cascade
-                    const dropped = this.grid.dropDebris();
+                    const dropped = this.playfield.dropDebris();
                     // compute the next cascade
                     // flag falling cells for next cascade so they are excluded by reconciler
                     // (falling pieces cant make lines)
-                    const next = this.grid.flagFallingCells();
+                    const next = this.playfield.flagFallingCells();
 
                     if(next.fallingCells.length < dropped.fallingCells.length) {
                         // some of the falling cells from this cascade have stopped
@@ -170,23 +184,12 @@ export default class Game extends EventEmitter {
         }
     }
 
-    handleInput(input) {
-        console.log('got input', input);
-        if(_.includes([INPUTS.LEFT, INPUTS.RIGHT, INPUTS.DOWN], input)) {
-            let direction = (input === INPUTS.LEFT) ? 'left' :
-                            (input === INPUTS.RIGHT) ? 'right' : 'down';
-            this.movePill(direction);
 
-        } else if(_.includes([INPUTS.ROTATE_CCW, INPUTS.ROTATE_CW], input)) {
-            let direction = (input === INPUTS.ROTATE_CCW) ? 'ccw' : 'cw';
-            this.rotatePill(direction);
-        }
-    }
 
     givePill() {
         const pillColors = this.pillSequence[this.counters.pillSequenceIndex];
         // try to add a new pill, false if blocked
-        const didGive = this.grid.givePill(pillColors);
+        const didGive = this.playfield.givePill(pillColors);
 
         if(didGive) {
             this.counters.pillSequenceIndex++; // todo no need to save this it can be derived from pillcount % length
@@ -194,14 +197,5 @@ export default class Game extends EventEmitter {
             this.counters.pillCount++;
         }
         return didGive;
-    }
-
-    movePill(direction) {
-        const didMove = this.grid.movePill(direction);
-        return didMove;
-    }
-    rotatePill(direction) {
-        const didMove = this.grid.rotatePill(direction);
-        return didMove;
     }
 }
