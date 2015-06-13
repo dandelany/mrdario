@@ -3,8 +3,8 @@
 
 ## [MrDar.io](http://mrdar.io)
 
-![](https://cdn.rawgit.com/dandelany/mrdario/master/src/app/svg/virus_green.svg)
-![](https://cdn.rawgit.com/dandelany/mrdario/master/src/app/svg/virus_orange.svg)
-![](https://cdn.rawgit.com/dandelany/mrdario/master/src/app/svg/virus_purple.svg)
+<img src="https://cdn.rawgit.com/dandelany/mrdario/master/src/app/svg/virus_green.svg" width="31%" />
+<img src="https://cdn.rawgit.com/dandelany/mrdario/master/src/app/svg/virus_orange.svg" width="31%" />
+<img src="https://cdn.rawgit.com/dandelany/mrdario/master/src/app/svg/virus_purple.svg" width="31%" />
 
 
