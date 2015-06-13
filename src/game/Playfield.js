@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import Immutable from 'immutable';
 const {List, Map} = Immutable;
-import { GRID_OBJECTS, COLORS, VIRUS_COUNT_TABLE, MIN_VIRUS_ROW_TABLE } from './../constants';
+import { GRID_OBJECTS, COLORS, VIRUS_COUNT_TABLE, MIN_VIRUS_ROW_TABLE } from 'constants';
 
 // these are pure stateless functions which contain the majority of the game logic
 // they use Immutable objects to represent the grid and return new objects on 'mutation'

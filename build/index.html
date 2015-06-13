@@ -5,6 +5,21 @@
     <title>Mr. Dario</title>
 
     <style>
+        @keyframes popup {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(4);
+            }
+            90% {
+                transform: scale(0.5);
+            }
+        }
+        .popup {
+            animation: popup 1.2s 0.5s ease infinite;
+        }
+
         * {
             box-sizing: border-box;
         }

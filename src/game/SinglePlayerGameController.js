@@ -2,13 +2,13 @@ import _ from 'lodash';
 import React from 'react/addons';
 import StateMachine from 'javascript-state-machine';
 
-import Game from './Game';
-import PlayerControls from './PlayerControls';
+import Game from 'game/Game';
+import PlayerControls from 'game/PlayerControls';
 
 import {
     PLAYFIELD_WIDTH, PLAYFIELD_HEIGHT,
     MODES, INPUTS, GRID_OBJECTS, COLORS, DEFAULT_KEYS
-} from '../constants';
+} from 'constants';
 
 import Immutable from 'immutable';
 window.Immutable = Immutable;
@@ -17,35 +17,45 @@ window.Immutable = Immutable;
 // controls the frame timing and must tick the Game object once per frame
 // controls the high-level game state and must call render() when game state changes
 
-export default class OnePlayerGameController {
-    constructor({render = _.noop, keyBindings = DEFAULT_KEYS, width = PLAYFIELD_WIDTH, height = PLAYFIELD_HEIGHT}) {
+export default class SinglePlayerGameController {
+    constructor({
+        render = _.noop, fps = 60, slow = 1,
+        keyBindings = DEFAULT_KEYS,
+        width = PLAYFIELD_WIDTH, height = PLAYFIELD_HEIGHT
+    } = {}) {
         _.assign(this, {
             // width and height of the playfield grid, in grid units
             width, height,
             // render function which is called when game state changes
             // this is the only connection between game logic and presentation
             render,
+            // frames (this.tick/render calls) per second
+            fps,
+            step: 1 / fps,
+            // slow motion factor, to simulate faster/slower gameplay for debugging
+            slowStep: slow * (1 / fps),
+
             // a finite state machine representing game mode, & transitions between modes
             modeMachine: StateMachine.create({
-                initial: MODES.LOADING,
+                initial: MODES.READY,
                 events: [
-                    {name: 'loaded', from: MODES.LOADING, to: MODES.TITLE},
-                    {name: 'play',   from: MODES.TITLE,   to: MODES.PLAYING},
+                    {name: 'play',   from: MODES.READY,   to: MODES.PLAYING},
                     {name: 'pause',  from: MODES.PLAYING, to: MODES.PAUSED},
                     {name: 'resume', from: MODES.PAUSED,  to: MODES.PLAYING},
                     {name: 'win',    from: MODES.PLAYING, to: MODES.WON},
                     {name: 'lose',   from: MODES.PLAYING, to: MODES.LOST},
-                    {name: 'reset',  from: ['*'], to: MODES.TITLE}
+                    {name: 'reset',  from: ['*'], to: MODES.READY},
+                    {name: 'end',    from: ['*'], to: MODES.ENDED}
                 ]
             }),
             playerInput: new PlayerControls(keyBindings),
-            playInputQueue: []
+            moveInputQueue: []
         });
 
         this.initGame();
         this.attachModeEvents();
         this.attachInputEvents();
-        this.modeMachine.loaded();
+        this.render(this.getState());
     }
     initGame() {
         const {width, height} = this;
@@ -70,41 +80,45 @@ export default class OnePlayerGameController {
         this.playerInput.on(INPUTS.RESUME, () => this.modeMachine.resume());
         this.playerInput.on(INPUTS.RESET, () => this.modeMachine.reset());
 
-        const playInputs = [INPUTS.LEFT, INPUTS.RIGHT, INPUTS.DOWN, INPUTS.ROTATE_CCW, INPUTS.ROTATE_CW];
-        playInputs.forEach(inputType => {
-            this.playerInput.on(inputType, () => this.enqueuePlayInput(inputType));
-        });
+        const moveInputs = [INPUTS.LEFT, INPUTS.RIGHT, INPUTS.DOWN, INPUTS.ROTATE_CCW, INPUTS.ROTATE_CW];
+        moveInputs.forEach(input => this.playerInput.on(input, this.enqueueMoveInput.bind(this, input)));
+
+        this.playerInput.setMode(MODES.READY);
     }
-    enqueuePlayInput(inputType) {
+    enqueueMoveInput(input, event) {
+        // queue a user move, to be sent to the game on the next tick
         if (this.modeMachine.current !== MODES.PLAYING) return;
-        this.playInputQueue.push(inputType);
+        this.moveInputQueue.push(input);
+        event.preventDefault();
     }
 
-    run({fps = 60, slow = 1} = {}) {
-        const step = 1 / fps,
-            slowStep = slow * step;
+    play() {
+        this.modeMachine.play();
+    }
 
-        _.assign(this, {
-            dt: 0,
-            last: timestamp(),
-            fps, slow, step, slowStep
-        });
-
+    run() {
+        // called when gameplay starts, to initialize the game loop
+        _.assign(this, {dt: 0, last: timestamp()});
         requestAnimationFrame(this.tick.bind(this));
     }
 
     tick() {
+        // called once per frame
         if(this.modeMachine.current !== MODES.PLAYING) return;
         const now = timestamp();
         const {dt, last, slow, slowStep} = this;
 
+        // allows the number of ticks to stay consistent
+        // even if FPS changes or lags due to performance
         this.dt = dt + Math.min(1, (now - last) / 1000);
         while(this.dt > slowStep) {
             this.dt = this.dt - slowStep;
-            this.game.tick(this.playInputQueue);
-            this.playInputQueue = [];
+            // tick the game, sending current queue of moves
+            this.game.tick(this.moveInputQueue);
+            this.moveInputQueue = [];
         }
 
+        // render with the current game state
         this.render(this.getState(), this.dt/slow);
         this.last = now;
         requestAnimationFrame(this.tick.bind(this));
@@ -116,6 +130,12 @@ export default class OnePlayerGameController {
             mode: this.modeMachine.current,
             grid: this.game.playfield.toJS()
         };
+    }
+
+    cleanup() {
+        // cleanup the game when we're done
+        this.modeMachine.end();
+        this.playerInput.removeAllListeners();
     }
 }
 

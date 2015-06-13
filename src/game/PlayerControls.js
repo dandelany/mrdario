@@ -18,9 +18,9 @@ export default class PlayerControls extends EventEmitter {
         }, this)
     }
 
-    handleInput(inputType) {
+    handleInput(inputType, event) {
         //console.log('input ' + inputType);
-        super.emit(inputType);
+        super.emit(inputType, event);
     }
 
     setMode(mode) {

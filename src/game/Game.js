@@ -2,9 +2,9 @@ import _  from 'lodash';
 import {EventEmitter} from 'events';
 import keyMirror from 'keymirror';
 import StateMachine  from 'javascript-state-machine';
-import { GRID_OBJECTS, INPUTS, COLORS, GRAVITY_TABLE } from './../constants';
 
-function gravityFrames(speed) { return GRAVITY_TABLE[Math.min(speed, GRAVITY_TABLE.length - 1)]; }
+import { GRID_OBJECTS, INPUTS, COLORS, GRAVITY_TABLE } from './../constants';
+import {Playfield, generatePillSequence} from './Playfield';
 
 const MODES = keyMirror({
     LOADING: null, // use this time to populate viruses slowly like in real game?
@@ -15,10 +15,6 @@ const MODES = keyMirror({
     DESTRUCTION: null, // lines are being destroyed
     ENDED: null // game has ended
 });
-// the functions which make up the core game logic
-import {Playfield, generatePillSequence} from './Playfield';
-
-//const {Playfield, generatePillSequence} = game;
 
 export default class Game extends EventEmitter {
     constructor({
@@ -184,8 +180,6 @@ export default class Game extends EventEmitter {
         }
     }
 
-
-
     givePill() {
         const pillColors = this.pillSequence[this.counters.pillSequenceIndex];
         // try to add a new pill, false if blocked
@@ -199,3 +193,5 @@ export default class Game extends EventEmitter {
         return didGive;
     }
 }
+
+function gravityFrames(speed) { return GRAVITY_TABLE[Math.min(speed, GRAVITY_TABLE.length - 1)]; }

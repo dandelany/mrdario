@@ -2,12 +2,12 @@ const keyMirror = require('keymirror');
 
 let constants = {
     MODES: keyMirror({
-        LOADING: null,
-        TITLE: null,
+        READY: null,
         PLAYING: null,
         PAUSED: null,
         WON: null,
-        LOST: null
+        LOST: null,
+        ENDED: null
     }),
 
     INPUTS: keyMirror({
@@ -88,7 +88,7 @@ constants.BASE_SPEED_TABLE = {
 };
 
 constants.DEFAULT_KEYS = {
-    [MODES.TITLE]: { [INPUTS.PLAY]: 'enter, space, escape' },
+    [MODES.READY]: { [INPUTS.PLAY]: 'enter, space, escape' },
     [MODES.PLAYING]: {
         [INPUTS.LEFT]: 'left',
         [INPUTS.RIGHT]: 'right',
