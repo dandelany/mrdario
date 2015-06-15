@@ -42075,7 +42075,7 @@
 	
 	var _routesJsx2 = _interopRequireDefault(_routesJsx);
 	
-	var _componentsPlayfieldJsx = __webpack_require__(260);
+	var _componentsPlayfieldJsx = __webpack_require__(262);
 	
 	var _componentsPlayfieldJsx2 = _interopRequireDefault(_componentsPlayfieldJsx);
 	
@@ -45507,11 +45507,11 @@
 	
 	var _componentsPagesTitlePageJsx2 = _interopRequireDefault(_componentsPagesTitlePageJsx);
 	
-	var _componentsPagesGameSettingsJsx = __webpack_require__(234);
+	var _componentsPagesGameSettingsJsx = __webpack_require__(235);
 	
 	var _componentsPagesGameSettingsJsx2 = _interopRequireDefault(_componentsPagesGameSettingsJsx);
 	
-	var _componentsPagesSinglePlayerGameJsx = __webpack_require__(235);
+	var _componentsPagesSinglePlayerGameJsx = __webpack_require__(237);
 	
 	var _componentsPagesSinglePlayerGameJsx2 = _interopRequireDefault(_componentsPagesSinglePlayerGameJsx);
 	
@@ -45520,9 +45520,9 @@
 	exports['default'] = _react2['default'].createElement(
 	    Route,
 	    { name: 'app', path: '/', handler: _componentsAppContainerJsx2['default'] },
-	    _react2['default'].createElement(Route, { name: 'settings', handler: _componentsPagesGameSettingsJsx2['default'] }),
-	    _react2['default'].createElement(Route, { name: 'single', path: 'single/:level/:speed', handler: _componentsPagesSinglePlayerGameJsx2['default'] }),
-	    _react2['default'].createElement(DefaultRoute, { handler: _componentsPagesTitlePageJsx2['default'] })
+	    _react2['default'].createElement(Route, { name: 'settings', path: '', handler: _componentsPagesGameSettingsJsx2['default'] }),
+	    _react2['default'].createElement(Route, { name: 'single', path: 'game/level/:level/speed/:speed', handler: _componentsPagesSinglePlayerGameJsx2['default'] }),
+	    _react2['default'].createElement(DefaultRoute, { name: 'title', handler: _componentsPagesTitlePageJsx2['default'] })
 	);
 	module.exports = exports['default'];
 
@@ -45538,48 +45538,70 @@
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
+	var _lodash = __webpack_require__(175);
+	
+	var _lodash2 = _interopRequireDefault(_lodash);
+	
 	var _react = __webpack_require__(191);
 	
 	var _react2 = _interopRequireDefault(_react);
 	
 	var _reactRouter = __webpack_require__(188);
 	
-	var _rawAppSvgVirus_orangeSvg = __webpack_require__(232);
+	var _appImgAztec_smallSvg = __webpack_require__(232);
 	
-	var _rawAppSvgVirus_orangeSvg2 = _interopRequireDefault(_rawAppSvgVirus_orangeSvg);
+	var _appImgAztec_smallSvg2 = _interopRequireDefault(_appImgAztec_smallSvg);
+	
+	var oranges = ['#BE1E2D', '#F05A28', '#F6921E'];
+	var greens = ['#009345', '#006838', '#8BC53F', '#37B34A'];
+	var purples = ['#5251A1', '#A376CD', '#744B9D', '#7A6ED4'];
+	var colorGroups = [oranges, greens, purples];
 	
 	var TitlePage = _react2['default'].createClass({
 	    displayName: 'TitlePage',
+	
+	    getDefaultProps: function getDefaultProps() {
+	        return {
+	            windowSize: {
+	                width: 800,
+	                height: 600
+	            }
+	        };
+	    },
 	
 	    render: function render() {
 	        return _react2['default'].createElement(
 	            'div',
 	            { className: 'page-title' },
 	            _react2['default'].createElement(
-	                'h3',
+	                'h1',
 	                null,
-	                'Welcome to Mr. Dario!'
+	                'Mr. Dario'
 	            ),
 	            _react2['default'].createElement(
 	                'div',
 	                { className: 'title-game-options' },
 	                _react2['default'].createElement(
-	                    _reactRouter.Link,
-	                    { to: 'settings' },
-	                    'One Player'
+	                    'div',
+	                    null,
+	                    _react2['default'].createElement(
+	                        'div',
+	                        { className: 'title-game-option' },
+	                        _react2['default'].createElement(
+	                            _reactRouter.Link,
+	                            { to: 'settings' },
+	                            'One Player'
+	                        )
+	                    )
 	                ),
 	                _react2['default'].createElement(
 	                    'div',
-	                    null,
-	                    'Multiplayer coming soon'
+	                    { className: 'title-game-option' },
+	                    'Multiplayer',
+	                    _react2['default'].createElement('br', null),
+	                    'coming soon'
 	                )
-	            ),
-	            _react2['default'].createElement(
-	                'h4',
-	                null,
-	                'Press spacebar to play'
-	            ),
-	            _react2['default'].createElement('div', { dangerouslySetInnerHTML: createMarkup(_rawAppSvgVirus_orangeSvg2['default']) })
+	            )
 	        );
 	    }
 	});
@@ -45595,7 +45617,7 @@
 /* 232 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = "<?xml version=\"1.0\" encoding=\"iso-8859-1\"?>\r\n<!-- Generator: Adobe Illustrator 18.1.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->\r\n<svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" x=\"0px\" y=\"0px\"\r\n\t viewBox=\"0 0 137.759 139.935\" style=\"enable-background:new 0 0 137.759 139.935;\" xml:space=\"preserve\">\r\n<g id=\"virus_x5F_orange\">\r\n\t<g>\r\n\t\t<path d=\"M14.777,123c-3.528,0.787-6.936,1.904-10.396,2.147c-1.43,0.1-3.431-1.348-4.279-2.73\r\n\t\t\tc-0.455-0.741,0.72-3.065,1.619-4.277c2.652-3.578,5.534-6.958,8.54-10.681c-8.881-6.414-7.416-13.516-2.145-20.385\r\n\t\t\tc-2.177-1.801-3.913-3.275-5.686-4.696c-2.328-1.865-2.224-4.07-1.267-6.775c1.932-5.459,3.717-10.986,5.346-16.559\r\n\t\t\tc2.129-7.287,6.624-12.067,12.88-15.295c1.016-0.524,2.063-1.918,2.298-3.095c0.718-3.591,1.047-7.273,1.703-12.253\r\n\t\t\tc-5.128,4.657-9.202,2.344-13.416,0.134c-2.943-1.544-3.743-3.843-3.621-7.171c0.115-3.155,2.277-3.484,4.122-4.757\r\n\t\t\tc2.188-1.51,4.454-3.512,5.683-5.901c3.827-7.436,9.37-11.631,17.207-10.533c3.455,0.484,6.603,3.245,9.994,4.689\r\n\t\t\tc1.401,0.597,3.33,1.103,4.583,0.534c8.047-3.659,16.165-5.34,24.942-3.54c4.736,0.971,9.686,0.679,14.531,1.081\r\n\t\t\tc4.813,0.399,9.024,2.61,13.166,5.143c0.942,0.576,3.12,0.554,3.646-0.143c2.13-2.824,4.812-2.738,7.656-2.526\r\n\t\t\tc5.943,0.442,11.975,0.558,16.84,5.099c1.03,0.961,2.299,1.899,2.835,3.156c3.611,8.484,6.189,17.243,5.121,26.785\r\n\t\t\tc-0.058,0.516-0.092,1.251-0.398,1.486c-3.929,3.003-2.25,6.466-1.091,10.213c2.965,9.586,3.159,19.417,1.63,29.353\r\n\t\t\tc-0.546,3.548-0.449,7.226-1.142,10.731c-1.434,7.256-2.518,14.724-5.001,21.574c-3.112,8.585-9.074,15.153-16.164,20.371\r\n\t\t\tc-6.542,4.814-14.003,5.836-21.636,5.751c-9.932-0.111-19.862-0.669-29.793-0.673c-9.557-0.004-19.114,0.663-28.669,0.601\r\n\t\t\tc-3.66-0.024-7.582-0.562-10.911-2.076C17.499,135.053,13.342,130.42,14.777,123z M21.723,70.597\r\n\t\t\tc1.207-0.852,1.796-1.626,2.39-1.63c3.903-0.03,5.651,3.373,7.037,6.311c0.821,1.741,0.54,4.901-0.431,6.661\r\n\t\t\tc-2.933,5.312-7.628,4.845-12.201,2.922c-3.692-1.552-6.281-0.055-7.486,3.362c-1.24,3.517-1.826,7.394-2.143,11.168\r\n\t\t\tc-0.254,3.032,1.924,4.213,4.784,3.842c2.486-0.323,5.405-0.75,7.523,0.301c10.701,5.308,22.154,5.291,33.489,6.285\r\n\t\t\tc1.842,0.161,3.809,0.24,5.446,1.021c1.164,0.555,2.466,2.148,2.61,3.422c0.136,1.199-1.164,2.587-1.832,3.893\r\n\t\t\tc-0.396,0.043-0.791,0.087-1.187,0.13c0.7-4.475-1.575-4.536-4.284-4.684c-9.304-0.51-18.601-1.206-27.89-1.979\r\n\t\t\tc-3.959-0.33-7.471,1.785-7.487,4.826c-0.013,2.463,0.192,4.991-0.245,7.374c-0.902,4.92,0.722,8.709,5.136,9.607\r\n\t\t\tc5.214,1.061,10.522,1.714,15.817,2.121c3.09,0.238,6.237-0.562,9.354-0.526c7.583,0.088,15.186,0.884,22.74,0.486\r\n\t\t\tc9.869-0.52,19.679,1.266,29.711-1.88c6.192-1.942,11.383-4.486,15.708-9.066c9.586-10.15,11.529-23.814,13.236-37.221\r\n\t\t\tc1.395-10.955,2.128-22.115-0.729-33.038c-0.685-2.618-1.396-5.475-4.769-5.697c-5.729-0.377-7.416,0.541-8.769,4.485\r\n\t\t\tc-3.673,10.7-3.437,21.979-4.394,33.089c-0.722,8.383-1.252,16.808-2.455,25.115c-1.318,9.101-4.989,16.809-13.57,20.456\r\n\t\t\tc-1.173,0.499-2.534,0.485-3.808,0.708c-0.209-0.464-0.418-0.928-0.626-1.392c5.599-2.941,9.755-7.253,11.762-12.752\r\n\t\t\tc-2.457-0.869-5.565-0.932-6.863-2.618c-4.208-5.466-4.349-18.706,1.044-23.033c-1.613-4.035-3.214-8.041-5.146-12.874\r\n\t\t\tc0.923,18.193-2.484,31.652-7.423,36.601c-0.348-1.182-1.136-2.418-0.836-3.059c4.049-8.629,4.233-17.995,4.36-27.282\r\n\t\t\tc0.11-8.038,0.436-15.935,4.125-24.168c-4.605,1.896-6.33,5.451-7.58,9.082c-3.143,9.13-8.327,15.37-17.53,17.782\r\n\t\t\tc-10.349,2.712-20.005,2.846-28.85-4.64c-0.482-0.408-2.727,0.387-3.025,1.142c-2.838,7.171-0.301,14.135,7.162,15.417\r\n\t\t\tc4.9,0.842,9.955,0.975,14.931,0.873c5.6-0.115,10.172,1.378,13.477,6.622c1.724,2.736,2.455,7.814,0.969,10.437\r\n\t\t\tc-1.773,3.131-6.474,5.216-10.53,4.149c1.598-1.111,2.723-2.004,3.939-2.717c3.116-1.827,3.777-4.847,3.404-8.256\r\n\t\t\tc-0.32-2.92-1.895-4.843-4.636-5.428c-1.812-0.387-3.637-0.78-5.473-0.937c-5.084-0.434-10.245-0.315-15.247-1.231\r\n\t\t\tc-4.655-0.852-8.974-2.724-11.377-8.019c-2.423-5.339-1.132-9.935,1.58-14.301c1.093-1.76,0.85-2.9,0.28-4.645\r\n\t\t\tc-1.22-3.734-2.311-7.555-3.031-11.432c-1.083-5.833,1.649-10.936,3.172-16.264c0.752-2.632,0.787-5.051-2.54-5.726\r\n\t\t\tc-2.037-0.413-4.042-1.006-5.662-1.417c-1.419,1.336-2.448,2.818-3.819,3.51c-7.197,3.634-11.574,9.597-13.606,17.832\r\n\t\t\tc-0.964,3.908-1.91,7.974-3.733,11.436c-1.524,2.895,0.215,4.473,1.224,6.011c0.613,0.935,3.149,1.353,4.274,0.771\r\n\t\t\tc3.59-1.859,6.977-1.037,10.407,0.049c2.79,0.883,4.805,0.454,6.088-2.721c1.302-3.221-0.261-5.104-2.341-6.783\r\n\t\t\tC24.487,71.783,23.381,71.438,21.723,70.597z M102.239,16.746c-0.376-0.679-0.918-1.972-1.714-3.045\r\n\t\t\tc-4.396-5.916-10.643-7.746-17.163-8.094C75.444,5.186,67.483,5.24,59.56,5.593c-6.319,0.282-11.571,3.437-15.387,8.981\r\n\t\t\tc-0.461,0.67-0.518,2.073-0.206,2.887c1.723,4.488,4.711,7.172,9.257,8.433c9.263,2.57,18.611,3.326,28.06,2.394\r\n\t\t\tc5.02-0.495,10.076-1.311,14.935-2.712C99.594,24.602,101.743,21.623,102.239,16.746z M83.822,53.649\r\n\t\t\tc0.005-0.538,0.01-1.077,0.016-1.615c-8.808-1.249-17.616-2.499-26.592-3.772c-0.401,10.684-1.228,21.404-15.643,20.73\r\n\t\t\tc2.948,5.626,6.193,9.878,11.969,10.456c3.365,0.337,6.832,0.538,10.157,0.044c4.624-0.687,8.725-3.198,10.25-8.156\r\n\t\t\tc1.771-5.758,2.686-11.824,3.958-17.687C79.784,53.649,81.803,53.649,83.822,53.649z M112.42,31.184\r\n\t\t\tc-2.352,1.893-3.892,3.537-5.732,4.547c-9.857,5.41-20.607,5.474-31.265,5.433c-5.682-0.022-11.401-0.762-17.032-1.689\r\n\t\t\tc-8.854-1.458-18.056-2.13-24.632-10.23c-0.878-1.081-3.195-2.346-3.708-1.922c-1.289,1.065-2.313,2.945-2.713,4.693\r\n\t\t\tc-0.389,1.699-0.056,3.689,0.334,5.454c0.175,0.794,1.281,1.902,1.93,1.875c0.749-0.031,1.828-1.019,2.091-1.842\r\n\t\t\tc0.313-0.979-0.089-2.224-0.181-3.349c2.466-0.573,3.458,0.291,3.689,3.036c0.292,3.468,1.594,6.489,5.506,6.657\r\n\t\t\tc2.006,0.087,4.018-0.004,6.027,0.007c4.81,0.026,9.837-0.898,14.388,0.29c10.944,2.858,21.962,3.584,33.03,2.569\r\n\t\t\tc5.7-0.522,11.399-1.812,16.279-6.079C113.69,37.787,112.893,35.059,112.42,31.184z M40.01,11.418\r\n\t\t\tc-2.103,1.333-4.151,1.999-5.279,3.481c-2.232,2.933-0.925,11.225,2.075,13.392c2.654,1.918,5.513,3.878,8.545,4.733\r\n\t\t\tc5.945,1.675,12.032,3.101,18.138,3.694c7.269,0.706,14.644,0.878,21.928,0.426c5.228-0.324,10.348-2.627,15.577-2.976\r\n\t\t\tc4.489-0.3,6.574-3.275,8.037-6.667c1.351-3.129,1.607-6.893-1.407-10.4c-1.173,1.857-2.04,3.412-3.075,4.824\r\n\t\t\tc-1.41,1.926-2.672,4.174-4.483,5.527c-5.559,4.152-12.085,5.427-18.644,5.568c-9.447,0.203-18.773-1.015-27.98-3.668\r\n\t\t\tC43.441,26.47,40.43,23.06,40.01,11.418z M124.237,12.349c1.494,4.264,3.166,8.469,4.375,12.825c0.377,1.36-0.498,3.126-0.8,4.706\r\n\t\t\tc-0.967-1.141-2.293-2.114-2.832-3.455c-1.562-3.884-2.341-8.209-4.287-11.821c-2.845-5.281-9.361-8.033-14.432-2.254\r\n\t\t\tc4.363,1.656,6.056,3.096,7.299,7.697c1.187,4.391,2.606,8.993,2.452,13.443c-0.156,4.493,0.8,9.416,4.142,10.185\r\n\t\t\tc5.629,1.294,11.362-0.731,12.001-5.784C133.372,28.27,130.909,19.445,124.237,12.349z M115.5,46.341\r\n\t\t\tc-0.738-0.094-1.712-0.547-2.085-0.215c-4.616,4.11-10.374,3.873-15.765,5.181c-5.384,1.306-11.489,1.874-14.746,7.549\r\n\t\t\tc-2.347,4.089-4.235,8.704-5.322,13.358c-1.314,5.628-5.055,8.394-9.261,10.018c-6.341,2.448-12.888,2.998-19.61,0.216\r\n\t\t\tc-6.884-2.849-13.009-14.019-10.961-21.439c1.099-3.981,2.212-7.958,3.318-11.937c-1.307-0.028-2.233,0.458-2.48,1.206\r\n\t\t\tc-0.986,2.986-1.943,6.011-2.575,9.101c-1.293,6.32-0.738,12.619,2.795,17.854c1.985,2.941,5.144,5.151,8.111,7.091\r\n\t\t\tc6.441,4.213,13.617,2.579,20.356,1.524c6.293-0.985,10.603-5.704,13.463-12.031c1.956-4.328,4.265-8.588,7.042-12.338\r\n\t\t\tc3.832-5.173,9.379-5.701,15.233-5.629C110.314,55.94,113.644,53.082,115.5,46.341z M110.602,71.637\r\n\t\t\tc-0.346-7.384-2.597-10.829-7.285-7.972c-2.108,1.284-3.881,4.233-4.633,6.823c-0.942,3.245-0.804,6.895-0.879,10.377\r\n\t\t\tc-0.034,1.556,0.088,3.607,0.958,4.58c1.327,1.484,3.316,2.897,5.119,3.053c1.238,0.107,3.435-1.715,3.822-3.118\r\n\t\t\tC109.109,80.28,109.931,74.995,110.602,71.637z M34.087,11.366c-0.321-0.276-0.641-0.552-0.962-0.827\r\n\t\t\tc-4.211,0.946-5.331,2.098-8.031,5.663c-2.093,2.763-4.643,5.219-7.308,7.349c-2.095,1.674-2.984,1.089-3.716-0.554\r\n\t\t\tc2.883-3.367,5.352-6.508,8.074-9.369c4.005-4.209,7.822-9.262,14.531-5.54c0.669,0.371,1.759-0.141,3.043-0.288\r\n\t\t\tc-6.372-5.515-14.569-3.823-18.996,3.09c-2.129,3.324-4.911,6.16-7.392,9.223c-0.858,1.059-2.537,2.362-2.354,3.151\r\n\t\t\tc0.296,1.274,1.654,2.741,2.864,3.194c3.378,1.267,7.038,1.344,9.653-1.611C27.256,20.592,30.577,15.882,34.087,11.366z\r\n\t\t\t M102.871,94.119c-0.595,0.31-1.609,0.577-2.292,1.24c-3.195,3.1-3.757,13.735,0.111,17.289c2.039,1.874,4.115,1.321,4.898-1.03\r\n\t\t\tc1.259-3.784,2.321-7.81,2.506-11.786C108.221,97.093,106.449,94.556,102.871,94.119z M22.17,108.573\r\n\t\t\tc-4.533-2.521-7.853-0.665-10.47,3.403c-1.69,2.626-4.103,4.7-6.082,7.126c-0.488,0.599-0.544,1.61-0.798,2.431\r\n\t\t\tc0.336,0.335,0.673,0.671,1.009,1.006c2.315-1.5,5.425-2.432,6.771-4.625C15.065,113.903,17.735,110.518,22.17,108.573z\r\n\t\t\t M50.185,47.405c-7.686,1.732-5.686,8.705-7.873,14.304c1.899-0.249,3.585,0.086,4.387-0.671\r\n\t\t\tC50.323,57.618,50.314,52.909,50.185,47.405z\"/>\r\n\t\t<path style=\"fill:#F15A29;\" d=\"M21.723,70.597c1.658,0.841,2.764,1.186,3.626,1.882c2.08,1.678,3.643,3.562,2.341,6.783\r\n\t\t\tc-1.283,3.175-3.298,3.604-6.088,2.721c-3.43-1.086-6.818-1.908-10.407-0.049c-1.124,0.582-3.66,0.165-4.274-0.771\r\n\t\t\tc-1.009-1.538-2.748-3.116-1.224-6.011c1.823-3.462,2.769-7.528,3.733-11.436c2.032-8.235,6.408-14.198,13.606-17.832\r\n\t\t\tc1.371-0.692,2.4-2.174,3.819-3.51c1.62,0.411,3.625,1.004,5.662,1.417c3.327,0.675,3.292,3.095,2.54,5.726\r\n\t\t\tc-1.523,5.328-4.255,10.431-3.172,16.264c0.72,3.877,1.811,7.698,3.031,11.432c0.57,1.745,0.814,2.884-0.28,4.645\r\n\t\t\tc-2.712,4.366-4.003,8.962-1.58,14.301c2.403,5.295,6.722,7.167,11.377,8.019c5.002,0.916,10.163,0.797,15.247,1.231\r\n\t\t\tc1.836,0.157,3.661,0.55,5.473,0.937c2.741,0.585,4.317,2.508,4.636,5.428c0.373,3.408-0.288,6.429-3.404,8.256\r\n\t\t\tc-1.216,0.713-2.341,1.606-3.939,2.717c4.056,1.068,8.757-1.018,10.53-4.149c1.485-2.623,0.755-7.701-0.969-10.437\r\n\t\t\tc-3.304-5.243-7.877-6.737-13.477-6.622c-4.976,0.102-10.031-0.031-14.931-0.873c-7.462-1.282-10-8.246-7.162-15.417\r\n\t\t\tc0.298-0.754,2.544-1.549,3.025-1.142c8.845,7.486,18.501,7.352,28.85,4.64c9.203-2.412,14.387-8.652,17.53-17.782\r\n\t\t\tc1.25-3.63,2.975-7.186,7.58-9.082c-3.689,8.233-4.015,16.13-4.125,24.168c-0.127,9.287-0.311,18.653-4.36,27.282\r\n\t\t\tc-0.301,0.641,0.488,1.877,0.836,3.059c4.939-4.95,8.346-18.408,7.423-36.601c1.931,4.832,3.533,8.839,5.146,12.874\r\n\t\t\tc-5.393,4.327-5.252,17.567-1.044,23.033c1.298,1.686,4.406,1.749,6.863,2.618c-2.008,5.5-6.164,9.811-11.762,12.752\r\n\t\t\tc0.209,0.464,0.418,0.928,0.626,1.392c1.274-0.223,2.635-0.209,3.808-0.708c8.581-3.647,12.253-11.355,13.57-20.456\r\n\t\t\tc1.203-8.307,1.734-16.732,2.455-25.115c0.956-11.11,0.721-22.389,4.394-33.089c1.354-3.944,3.041-4.862,8.769-4.485\r\n\t\t\tc3.373,0.222,4.084,3.079,4.769,5.697c2.857,10.923,2.124,22.083,0.729,33.038c-1.707,13.407-3.65,27.071-13.236,37.221\r\n\t\t\tc-4.325,4.579-9.516,7.124-15.708,9.066c-10.033,3.146-19.842,1.36-29.711,1.88c-7.554,0.398-15.157-0.398-22.74-0.486\r\n\t\t\tc-3.117-0.036-6.264,0.764-9.354,0.526c-5.295-0.407-10.604-1.06-15.817-2.121c-4.414-0.898-6.039-4.687-5.136-9.607\r\n\t\t\tc0.437-2.383,0.232-4.911,0.245-7.374c0.016-3.041,3.528-5.155,7.487-4.826c9.289,0.773,18.586,1.469,27.89,1.979\r\n\t\t\tc2.709,0.148,4.984,0.21,4.284,4.684c0.396-0.043,0.791-0.087,1.187-0.13c0.668-1.305,1.968-2.694,1.832-3.893\r\n\t\t\tc-0.144-1.274-1.446-2.866-2.61-3.422c-1.637-0.781-3.604-0.859-5.446-1.021c-11.335-0.994-22.788-0.977-33.489-6.285\r\n\t\t\tc-2.118-1.051-5.038-0.624-7.523-0.301c-2.86,0.372-5.038-0.81-4.784-3.842c0.316-3.774,0.903-7.652,2.143-11.168\r\n\t\t\tc1.205-3.417,3.794-4.914,7.486-3.362c4.573,1.923,9.268,2.39,12.201-2.922c0.971-1.759,1.253-4.92,0.431-6.661\r\n\t\t\tc-1.386-2.938-3.134-6.341-7.037-6.311C23.519,68.971,22.93,69.745,21.723,70.597z M108.919,124.96\r\n\t\t\tc4.505-2.007,5.417-6.468,6.452-10.259c2.097-7.684,3.418-15.624,4.846-23.504c0.429-2.366,0.322-4.9,0.086-7.314\r\n\t\t\tc-0.061-0.622-1.545-1.081-2.823-1.902C116.095,97.249,114.672,111.553,108.919,124.96z\"/>\r\n\t\t<path style=\"fill:#F15A29;\" d=\"M102.239,16.746c-0.496,4.876-2.645,7.856-6.02,8.829c-4.859,1.402-9.915,2.217-14.935,2.712\r\n\t\t\tc-9.449,0.932-18.798,0.177-28.06-2.394c-4.545-1.261-7.534-3.945-9.257-8.433c-0.313-0.814-0.256-2.217,0.206-2.887\r\n\t\t\tc3.816-5.544,9.068-8.699,15.387-8.981c7.923-0.353,15.884-0.407,23.801,0.015c6.52,0.347,12.767,2.178,17.163,8.094\r\n\t\t\tC101.321,14.774,101.863,16.067,102.239,16.746z\"/>\r\n\t\t<path style=\"fill:#FFFFFF;\" d=\"M83.822,53.649c-2.019,0-4.038,0-5.886,0c-1.272,5.864-2.187,11.929-3.958,17.687\r\n\t\t\tc-1.525,4.959-5.625,7.469-10.25,8.156c-3.325,0.494-6.792,0.292-10.157-0.044c-5.777-0.578-9.021-4.83-11.969-10.456\r\n\t\t\tc14.416,0.674,15.242-10.046,15.643-20.73c8.976,1.273,17.784,2.522,26.592,3.772C83.833,52.573,83.827,53.111,83.822,53.649z\"/>\r\n\t\t<path style=\"fill:#F7941E;\" d=\"M112.42,31.184c0.473,3.875,1.27,6.603-1.989,9.452c-4.881,4.267-10.58,5.556-16.279,6.079\r\n\t\t\tc-11.068,1.015-22.085,0.288-33.03-2.569c-4.551-1.188-9.578-0.264-14.388-0.29c-2.009-0.011-4.021,0.079-6.027-0.007\r\n\t\t\tc-3.912-0.169-5.214-3.19-5.506-6.657c-0.231-2.746-1.223-3.61-3.689-3.036c0.092,1.125,0.494,2.37,0.181,3.349\r\n\t\t\tc-0.263,0.823-1.342,1.81-2.091,1.842c-0.648,0.027-1.754-1.081-1.93-1.875c-0.39-1.766-0.723-3.755-0.334-5.454\r\n\t\t\tc0.4-1.748,1.425-3.627,2.713-4.693c0.513-0.424,2.83,0.841,3.708,1.922c6.576,8.1,15.777,8.772,24.632,10.23\r\n\t\t\tc5.63,0.927,11.35,1.667,17.032,1.689c10.659,0.042,21.408-0.023,31.265-5.433C108.528,34.721,110.068,33.077,112.42,31.184z\"/>\r\n\t\t<path style=\"fill:#F7941E;\" d=\"M40.01,11.418c0.42,11.642,3.431,15.052,13.433,17.934c9.207,2.653,18.533,3.871,27.98,3.668\r\n\t\t\tc6.559-0.141,13.085-1.416,18.644-5.568c1.811-1.353,3.072-3.601,4.483-5.527c1.034-1.412,1.902-2.967,3.075-4.824\r\n\t\t\tc3.014,3.506,2.758,7.271,1.407,10.4c-1.464,3.392-3.548,6.367-8.037,6.667c-5.229,0.349-10.349,2.652-15.577,2.976\r\n\t\t\tc-7.284,0.452-14.659,0.28-21.928-0.426c-6.106-0.593-12.192-2.019-18.138-3.694c-3.032-0.854-5.891-2.815-8.545-4.733\r\n\t\t\tc-2.999-2.167-4.306-10.459-2.075-13.392C35.859,13.417,37.908,12.751,40.01,11.418z\"/>\r\n\t\t<path style=\"fill:#F7941E;\" d=\"M124.237,12.349c6.672,7.096,9.135,15.922,7.919,25.541c-0.639,5.052-6.372,7.078-12.001,5.784\r\n\t\t\tc-3.343-0.769-4.299-5.692-4.142-10.185c0.155-4.45-1.265-9.052-2.452-13.443c-1.244-4.601-2.936-6.041-7.299-7.697\r\n\t\t\tc5.071-5.778,11.587-3.027,14.432,2.254c1.946,3.613,2.725,7.937,4.287,11.821c0.539,1.341,1.865,2.314,2.832,3.455\r\n\t\t\tc0.302-1.58,1.177-3.345,0.8-4.706C127.403,20.818,125.731,16.612,124.237,12.349z\"/>\r\n\t\t<path style=\"fill:#F7941E;\" d=\"M115.5,46.341c-1.857,6.741-5.186,9.599-12.486,9.508c-5.854-0.072-11.401,0.456-15.233,5.629\r\n\t\t\tc-2.778,3.75-5.086,8.01-7.042,12.338c-2.86,6.326-7.17,11.045-13.463,12.031c-6.739,1.055-13.915,2.689-20.356-1.524\r\n\t\t\tc-2.967-1.94-6.126-4.149-8.111-7.091c-3.533-5.236-4.087-11.534-2.795-17.854c0.632-3.09,1.589-6.114,2.575-9.101\r\n\t\t\tc0.247-0.748,1.173-1.234,2.48-1.206c-1.106,3.979-2.219,7.955-3.318,11.937c-2.048,7.42,4.076,18.59,10.961,21.439\r\n\t\t\tc6.723,2.782,13.27,2.232,19.61-0.216c4.205-1.623,7.947-4.389,9.261-10.018c1.087-4.654,2.975-9.269,5.322-13.358\r\n\t\t\tc3.257-5.675,9.362-6.243,14.746-7.549c5.391-1.308,11.149-1.07,15.765-5.181C113.789,45.794,114.763,46.248,115.5,46.341z\"/>\r\n\t\t<path style=\"fill:#BE1E2D;\" d=\"M110.602,71.637c-0.671,3.358-1.493,8.643-2.898,13.742c-0.386,1.403-2.584,3.224-3.822,3.118\r\n\t\t\tc-1.803-0.156-3.792-1.569-5.119-3.053c-0.87-0.973-0.992-3.024-0.958-4.58c0.075-3.482-0.063-7.131,0.879-10.377\r\n\t\t\tc0.752-2.59,2.526-5.538,4.633-6.823C108.005,60.808,110.256,64.253,110.602,71.637z\"/>\r\n\t\t<path style=\"fill:#F7941E;\" d=\"M34.087,11.366c-3.51,4.516-6.83,9.226-10.594,13.48c-2.615,2.955-6.275,2.878-9.653,1.611\r\n\t\t\tc-1.21-0.454-2.568-1.921-2.864-3.194c-0.183-0.789,1.496-2.092,2.354-3.151c2.48-3.063,5.263-5.899,7.392-9.223\r\n\t\t\tc4.427-6.913,12.624-8.604,18.996-3.09c-1.284,0.147-2.374,0.659-3.043,0.288c-6.709-3.722-10.526,1.33-14.531,5.54\r\n\t\t\tc-2.722,2.861-5.191,6.002-8.074,9.369c0.732,1.643,1.621,2.228,3.716,0.554c2.665-2.129,5.216-4.586,7.308-7.349\r\n\t\t\tc2.7-3.565,3.82-4.716,8.031-5.663C33.446,10.815,33.766,11.09,34.087,11.366z\"/>\r\n\t\t<path style=\"fill:#BE1E2D;\" d=\"M102.871,94.119c3.578,0.438,5.35,2.974,5.223,5.713c-0.185,3.976-1.247,8.002-2.506,11.786\r\n\t\t\tc-0.783,2.352-2.858,2.905-4.898,1.03c-3.868-3.554-3.306-14.189-0.111-17.289C101.262,94.695,102.276,94.429,102.871,94.119z\"/>\r\n\t\t<path style=\"fill:#BE1E2D;\" d=\"M22.17,108.573c-4.435,1.945-7.105,5.33-9.568,9.342c-1.346,2.193-4.456,3.124-6.771,4.625\r\n\t\t\tc-0.336-0.335-0.673-0.671-1.009-1.006c0.254-0.822,0.309-1.832,0.798-2.431c1.978-2.427,4.392-4.5,6.082-7.126\r\n\t\t\tC14.317,107.908,17.637,106.052,22.17,108.573z\"/>\r\n\t\t<path style=\"fill:#BE1E2D;\" d=\"M50.185,47.405c0.129,5.504,0.137,10.213-3.486,13.633c-0.802,0.757-2.488,0.422-4.387,0.671\r\n\t\t\tC44.499,56.11,42.499,49.137,50.185,47.405z\"/>\r\n\t\t<path d=\"M108.919,124.96c5.754-13.407,7.177-27.711,8.561-42.978c1.278,0.822,2.762,1.281,2.823,1.902\r\n\t\t\tc0.236,2.414,0.343,4.948-0.086,7.314c-1.428,7.879-2.749,15.82-4.846,23.504C114.336,118.493,113.424,122.953,108.919,124.96z\"/>\r\n\t</g>\r\n</g>\r\n<g id=\"Layer_1\">\r\n</g>\r\n</svg>\r\n"
+	module.exports = __webpack_require__.p + "5aa60fe7ef65e5dfbcc3032f4af12f82.svg"
 
 /***/ },
 /* 233 */
@@ -45615,20 +45637,37 @@
 	
 	var _reactRouter = __webpack_require__(188);
 	
+	var _appComponentsAztecCalendar = __webpack_require__(234);
+	
+	var _appComponentsAztecCalendar2 = _interopRequireDefault(_appComponentsAztecCalendar);
+	
 	var AppContainer = _react2['default'].createClass({
 	    displayName: 'AppContainer',
 	
 	    // top level react component
+	    mixins: [_reactRouter.State],
+	    componentWillMount: function componentWillMount() {
+	        this.onResize();
+	    },
+	    onResize: function onResize() {
+	        this.setState({ width: window.innerWidth, height: window.innerHeight });
+	    },
+	
 	    render: function render() {
+	        var _state = this.state;
+	        var width = _state.width;
+	        var height = _state.height;
+	
+	        var shouldAnimate = this.getPathname() === '/';
 	        return _react2['default'].createElement(
 	            'div',
-	            null,
+	            { id: 'mrdario', style: { width: '100%', height: '100%' } },
+	            _react2['default'].createElement(_appComponentsAztecCalendar2['default'], { width: width, height: height, shouldAnimate: shouldAnimate }),
 	            _react2['default'].createElement(
-	                'h3',
-	                null,
-	                'Mr. Dario'
-	            ),
-	            _react2['default'].createElement(_reactRouter.RouteHandler, null)
+	                'div',
+	                { className: 'mrdario-page' },
+	                _react2['default'].createElement(_reactRouter.RouteHandler, { windowSize: { width: width, height: height } })
+	            )
 	        );
 	    }
 	});
@@ -45656,11 +45695,159 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
+	var _appImgAztec_smallSvg = __webpack_require__(232);
+	
+	var _appImgAztec_smallSvg2 = _interopRequireDefault(_appImgAztec_smallSvg);
+	
+	var oranges = ['#BE1E2D', '#F05A28', '#F6921E'];
+	var greens = ['#009345', '#006838', '#8BC53F', '#37B34A'];
+	var purples = ['#5251A1', '#A376CD', '#744B9D', '#7A6ED4'];
+	var colorGroups = [null, oranges, greens, purples];
+	
+	var AztecCalendar = _react2['default'].createClass({
+	    displayName: 'AztecCalendar',
+	
+	    getDefaultProps: function getDefaultProps() {
+	        return {
+	            width: 600,
+	            height: 600,
+	            shouldAnimate: true
+	        };
+	    },
+	    componentDidMount: function componentDidMount() {
+	        var _this = this;
+	
+	        var svgEl = _react2['default'].findDOMNode(this.refs.svg);
+	        svgEl.addEventListener('load', function () {
+	            var svg = svgEl.contentDocument;
+	            var paths = svg ? svg.getElementsByTagName('path') : [];
+	            if (paths.length) {
+	                var circles = svg.getElementsByTagName('circle') || [];
+	                paths = Array.prototype.slice.call(paths);
+	                circles = Array.prototype.slice.call(circles);
+	                _this.onLoadedSvg(paths.concat(circles));
+	            }
+	        });
+	    },
+	    componentWillReceiveProps: function componentWillReceiveProps(newProps) {
+	        if (newProps.shouldAnimate === false && this.changeTimer) {
+	            clearInterval(this.changeTimer);
+	            delete this.changeTimer;
+	        } else if (newProps.shouldAnimate === true && !this.changeTimer) this.changeTimer = setInterval(this.changeAnimation, 4000);
+	    },
+	    componentWillUnmount: function componentWillUnmount() {
+	        if (this.changeTimer) clearInterval(this.changeTimer);
+	        if (this.animation) clearInterval(this.animation);
+	    },
+	
+	    onLoadedSvg: function onLoadedSvg(paths) {
+	        this.paths = paths;
+	
+	        var bgPaths = [];
+	        var bgColors = [];
+	        var borderPaths = [];
+	        _lodash2['default'].each(paths, function (path) {
+	            var fill = path.getAttribute('fill');
+	            if (!fill || !fill.length) borderPaths.push(path); // return;
+	            else {
+	                bgPaths.push(path);
+	                bgColors.push(fill);
+	            }
+	        });
+	        console.log(_lodash2['default'].uniq(bgColors));
+	        console.log(bgPaths.length, 'paths');
+	        //borderPaths.forEach(path => path.setAttribute('fill', 'transparent'));
+	
+	        _lodash2['default'].assign(this, { bgPaths: bgPaths, bgColors: bgColors, borderPaths: borderPaths });
+	
+	        this.colorGroupIndex = 0;
+	        if (this.props.shouldAnimate) this.changeTimer = setInterval(this.changeAnimation, 2000);
+	    },
+	
+	    changeAnimation: function changeAnimation() {
+	        var _this2 = this;
+	
+	        this.animIndex = 0;
+	        this.colorGroupIndex = (this.colorGroupIndex + 1) % colorGroups.length;
+	        this.colorGroup = colorGroups[this.colorGroupIndex];
+	
+	        var bgPaths = this.bgPaths;
+	        var bgColors = this.bgColors;
+	        var colorGroup = this.colorGroup;
+	
+	        var pathIndexChunks = _lodash2['default'].chunk(_lodash2['default'].shuffle(_lodash2['default'].range(bgPaths.length)), 3);
+	
+	        this.animation = setInterval(function () {
+	            var animIndex = _this2.animIndex;
+	
+	            if (animIndex >= pathIndexChunks.length) {
+	                clearInterval(_this2.animation);
+	            } else {
+	                if (!colorGroup) {
+	                    // animate to original colors
+	                    var pathIndices = pathIndexChunks[animIndex];
+	                    pathIndices.forEach(function (i) {
+	                        return bgPaths[i].setAttribute('fill', bgColors[i]);
+	                    });
+	                } else {
+	                    var pathIndices = pathIndexChunks[animIndex];
+	                    pathIndices.forEach(function (i) {
+	                        var trueColor = bgColors[i];
+	                        var useTrueColor = _lodash2['default'].includes(colorGroup.concat(['#FFF', '#FFFFFF']), trueColor);
+	                        var newColor = useTrueColor ? trueColor : _lodash2['default'].sample(colorGroup);
+	                        bgPaths[i].setAttribute('fill', newColor);
+	                    });
+	                }
+	            }
+	            _this2.animIndex += 1;
+	        }, 1);
+	    },
+	
+	    render: function render() {
+	        return _react2['default'].createElement(
+	            'div',
+	            { className: 'aztec-calendar' },
+	            _react2['default'].createElement('object', { type: 'image/svg+xml',
+	                ref: 'svg',
+	                width: this.props.width,
+	                height: this.props.height,
+	                data: _appImgAztec_smallSvg2['default'] })
+	        );
+	    }
+	});
+	
+	exports['default'] = AztecCalendar;
+	module.exports = exports['default'];
+
+/***/ },
+/* 235 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, '__esModule', {
+	    value: true
+	});
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+	
+	var _lodash = __webpack_require__(175);
+	
+	var _lodash2 = _interopRequireDefault(_lodash);
+	
+	var _react = __webpack_require__(191);
+	
+	var _react2 = _interopRequireDefault(_react);
+	
 	var _reactRouter = __webpack_require__(188);
 	
 	var _reactRadioGroup = __webpack_require__(228);
 	
 	var _reactRadioGroup2 = _interopRequireDefault(_reactRadioGroup);
+	
+	var _reactSlider = __webpack_require__(236);
+	
+	var _reactSlider2 = _interopRequireDefault(_reactSlider);
 	
 	var GameSettings = _react2['default'].createClass({
 	    displayName: 'GameSettings',
@@ -45680,15 +45867,40 @@
 	            speedLevels: []
 	        };
 	    },
+	
+	    onChangeLevel: function onChangeLevel(level) {
+	        this.setState({ level: level });
+	    },
+	
 	    render: function render() {
 	        return _react2['default'].createElement(
 	            'div',
 	            null,
 	            _react2['default'].createElement(
+	                'h2',
+	                null,
+	                'Mr. Dario'
+	            ),
+	            _react2['default'].createElement(
+	                'h3',
+	                null,
+	                'Level ',
+	                this.state.level
+	            ),
+	            _react2['default'].createElement(
 	                'div',
 	                null,
-	                'Virus level',
-	                _react2['default'].createElement('input', { type: 'text', value: this.state.level })
+	                _react2['default'].createElement(_reactSlider2['default'], {
+	                    value: this.state.level,
+	                    onChange: this.onChangeLevel,
+	                    min: 0, max: 20,
+	                    className: 'horizontal-slider'
+	                })
+	            ),
+	            _react2['default'].createElement(
+	                'h3',
+	                null,
+	                'Speed'
 	            ),
 	            _react2['default'].createElement(
 	                'div',
@@ -45741,7 +45953,7 @@
 	                null,
 	                _react2['default'].createElement(
 	                    _reactRouter.Link,
-	                    { to: 'single', params: { level: 3, speed: 10 } },
+	                    { to: 'single', params: { level: this.state.level, speed: 10 } },
 	                    'Play'
 	                )
 	            )
@@ -45753,7 +45965,738 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 235 */
+/* 236 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;(function (root, factory) {
+	  if (true) {
+	    !(__WEBPACK_AMD_DEFINE_ARRAY__ = [__webpack_require__(191)], __WEBPACK_AMD_DEFINE_FACTORY__ = (factory), __WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ? (__WEBPACK_AMD_DEFINE_FACTORY__.apply(exports, __WEBPACK_AMD_DEFINE_ARRAY__)) : __WEBPACK_AMD_DEFINE_FACTORY__), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
+	  } else if (typeof exports === 'object') {
+	    module.exports = factory(require('react'));
+	  } else {
+	    root.ReactSlider = factory(root.React);
+	  }
+	}(this, function (React) {
+	
+	  /**
+	   * To prevent text selection while dragging.
+	   * http://stackoverflow.com/questions/5429827/how-can-i-prevent-text-element-selection-with-cursor-drag
+	   */
+	  function pauseEvent(e) {
+	    if (e.stopPropagation) e.stopPropagation();
+	    if (e.preventDefault) e.preventDefault();
+	    e.cancelBubble = true;
+	    e.returnValue = false;
+	    return false;
+	  }
+	
+	  function stopPropagation(e) {
+	    if (e.stopPropagation) e.stopPropagation();
+	    e.cancelBubble = true;
+	  }
+	
+	
+	  /**
+	   * Spreads `count` values equally between `min` and `max`.
+	   */
+	  function linspace(min, max, count) {
+	    var range = (max - min) / (count - 1);
+	    var res = [];
+	    for (var i = 0; i < count; i++) {
+	      res.push(min + range * i);
+	    }
+	    return res;
+	  }
+	
+	  function ensureArray(x) {
+	    return x == null ? [] : Array.isArray(x) ? x : [x];
+	  }
+	
+	  function undoEnsureArray(x) {
+	    return x != null && x.length === 1 ? x[0] : x;
+	  }
+	
+	  // undoEnsureArray(ensureArray(x)) === x
+	
+	  var ReactSlider = React.createClass({
+	    displayName: 'ReactSlider',
+	
+	    propTypes: {
+	
+	      /**
+	       * The minimum value of the slider.
+	       */
+	      min: React.PropTypes.number,
+	
+	      /**
+	       * The maximum value of the slider.
+	       */
+	      max: React.PropTypes.number,
+	
+	      /**
+	       * Value to be added or subtracted on each step the slider makes.
+	       * Must be greater than zero.
+	       * `max - min` should be evenly divisible by the step value.
+	       */
+	      step: React.PropTypes.number,
+	
+	      /**
+	       * The minimal distance between any pair of handles.
+	       * Must be positive, but zero means they can sit on top of each other.
+	       */
+	      minDistance: React.PropTypes.number,
+	
+	      /**
+	       * Determines the initial positions of the handles and the number of handles if the component has no children.
+	       *
+	       * If a number is passed a slider with one handle will be rendered.
+	       * If an array is passed each value will determine the position of one handle.
+	       * The values in the array must be sorted.
+	       * If the component has children, the length of the array must match the number of children.
+	       */
+	      defaultValue: React.PropTypes.oneOfType([
+	        React.PropTypes.number,
+	        React.PropTypes.arrayOf(React.PropTypes.number)
+	      ]),
+	
+	      /**
+	       * Like `defaultValue` but for [controlled components](http://facebook.github.io/react/docs/forms.html#controlled-components).
+	       */
+	      value: React.PropTypes.oneOfType([
+	        React.PropTypes.number,
+	        React.PropTypes.arrayOf(React.PropTypes.number)
+	      ]),
+	
+	      /**
+	       * Determines whether the slider moves horizontally (from left to right) or vertically (from top to bottom).
+	       */
+	      orientation: React.PropTypes.oneOf(['horizontal', 'vertical']),
+	
+	      /**
+	       * The css class set on the slider node.
+	       */
+	      className: React.PropTypes.string,
+	
+	      /**
+	       * The css class set on each handle node.
+	       *
+	       * In addition each handle will receive a numbered css class of the form `${handleClassName}-${i}`,
+	       * e.g. `handle-0`, `handle-1`, ...
+	       */
+	      handleClassName: React.PropTypes.string,
+	
+	      /**
+	       * The css class set on the handle that is currently being moved.
+	       */
+	      handleActiveClassName: React.PropTypes.string,
+	
+	      /**
+	       * If `true` bars between the handles will be rendered.
+	       */
+	      withBars: React.PropTypes.bool,
+	
+	      /**
+	       * The css class set on the bars between the handles.
+	       * In addition bar fragment will receive a numbered css class of the form `${barClassName}-${i}`,
+	       * e.g. `bar-0`, `bar-1`, ...
+	       */
+	      barClassName: React.PropTypes.string,
+	
+	      /**
+	       * If `true` the active handle will push other handles
+	       * within the constraints of `min`, `max`, `step` and `minDistance`.
+	       */
+	      pearling: React.PropTypes.bool,
+	
+	      /**
+	       * If `true` the handles can't be moved.
+	       */
+	      disabled: React.PropTypes.bool,
+	
+	      /**
+	       * Disables handle move when clicking the slider bar
+	       */
+	      snapDragDisabled: React.PropTypes.bool,
+	
+	      /**
+	       * Inverts the slider.
+	       */
+	      invert: React.PropTypes.bool,
+	
+	      /**
+	       * Callback called before starting to move a handle.
+	       */
+	      onBeforeChange: React.PropTypes.func,
+	
+	      /**
+	       * Callback called on every value change.
+	       */
+	      onChange: React.PropTypes.func,
+	
+	      /**
+	       * Callback called only after moving a handle has ended.
+	       */
+	      onAfterChange: React.PropTypes.func
+	    },
+	
+	    getDefaultProps: function () {
+	      return {
+	        min: 0,
+	        max: 100,
+	        step: 1,
+	        minDistance: 0,
+	        defaultValue: 0,
+	        orientation: 'horizontal',
+	        className: 'slider',
+	        handleClassName: 'handle',
+	        handleActiveClassName: 'active',
+	        barClassName: 'bar',
+	        withBars: false,
+	        pearling: false,
+	        disabled: false,
+	        snapDragDisabled: false,
+	        invert: false
+	      };
+	    },
+	
+	    getInitialState: function () {
+	      var value = this._or(ensureArray(this.props.value), ensureArray(this.props.defaultValue));
+	
+	      // reused throughout the component to store results of iterations over `value`
+	      this.tempArray = value.slice();
+	
+	      var zIndices = [];
+	      for (var i = 0; i < value.length; i++) {
+	        value[i] = this._trimAlignValue(value[i], this.props);
+	        zIndices.push(i);
+	      }
+	
+	      return {
+	        index: -1,
+	        upperBound: 0,
+	        sliderLength: 0,
+	        value: value,
+	        zIndices: zIndices
+	      };
+	    },
+	
+	    // Keep the internal `value` consistent with an outside `value` if present.
+	    // This basically allows the slider to be a controlled component.
+	    componentWillReceiveProps: function (newProps) {
+	      var value = this._or(ensureArray(newProps.value), this.state.value);
+	
+	      // ensure the array keeps the same size as `value`
+	      this.tempArray = value.slice();
+	
+	      for (var i = 0; i < value.length; i++) {
+	        this.state.value[i] = this._trimAlignValue(value[i], newProps);
+	      }
+	    },
+	
+	    // Check if the arity of `value` or `defaultValue` matches the number of children (= number of custom handles).
+	    // If no custom handles are provided, just returns `value` if present and `defaultValue` otherwise.
+	    // If custom handles are present but neither `value` nor `defaultValue` are applicable the handles are spread out
+	    // equally.
+	    _or: function (value, defaultValue) {
+	      var count = React.Children.count(this.props.children);
+	      switch (count) {
+	        case 0:
+	          return value.length > 0 ? value : defaultValue;
+	        case value.length:
+	          return value;
+	        case defaultValue.length:
+	          return defaultValue;
+	        default:
+	          if (value.length !== count || defaultValue.length !== count) {
+	            console.warn(this.constructor.displayName + ": Number of values does not match number of children.");
+	          }
+	          return linspace(this.props.min, this.props.max, count);
+	      }
+	    },
+	
+	    componentDidMount: function () {
+	      window.addEventListener('resize', this._handleResize);
+	      this._handleResize();
+	    },
+	
+	    componentWillUnmount: function () {
+	      window.removeEventListener('resize', this._handleResize);
+	    },
+	
+	    getValue: function () {
+	      return undoEnsureArray(this.state.value);
+	    },
+	
+	    _handleResize: function () {
+	      var slider = this.refs.slider.getDOMNode();
+	      var handle = this.refs.handle0.getDOMNode();
+	      var rect = slider.getBoundingClientRect();
+	
+	      var size = this._sizeKey();
+	
+	      var sliderMax = rect[this._posMaxKey()];
+	      var sliderMin = rect[this._posMinKey()];
+	
+	      this.setState({
+	        upperBound: slider[size] - handle[size],
+	        sliderLength: Math.abs(sliderMax - sliderMin),
+	        handleSize: handle[size],
+	        sliderStart: this.props.invert ? sliderMax : sliderMin
+	      });
+	    },
+	
+	    // calculates the offset of a handle in pixels based on its value.
+	    _calcOffset: function (value) {
+	      var ratio = (value - this.props.min) / (this.props.max - this.props.min);
+	      return ratio * this.state.upperBound;
+	    },
+	
+	    // calculates the value corresponding to a given pixel offset, i.e. the inverse of `_calcOffset`.
+	    _calcValue: function (offset) {
+	      var ratio = offset / this.state.upperBound;
+	      return ratio * (this.props.max - this.props.min) + this.props.min;
+	    },
+	
+	    _buildHandleStyle: function (offset, i) {
+	      var style = {
+	        position: 'absolute',
+	        willChange: this.state.index >= 0 ? this._posMinKey() : '',
+	        zIndex: this.state.zIndices.indexOf(i) + 1
+	      };
+	      style[this._posMinKey()] = offset + 'px';
+	      return style;
+	    },
+	
+	    _buildBarStyle: function (min, max) {
+	      var obj = {
+	        position: 'absolute',
+	        willChange: this.state.index >= 0 ? this._posMinKey() + ',' + this._posMaxKey() : ''
+	      };
+	      obj[this._posMinKey()] = min;
+	      obj[this._posMaxKey()] = max;
+	      return obj;
+	    },
+	
+	    _getClosestIndex: function (pixelOffset) {
+	      var minDist = Number.MAX_VALUE;
+	      var closestIndex = -1;
+	
+	      var value = this.state.value;
+	      var l = value.length;
+	
+	      for (var i = 0; i < l; i++) {
+	        var offset = this._calcOffset(value[i]);
+	        var dist = Math.abs(pixelOffset - offset);
+	        if (dist < minDist) {
+	          minDist = dist;
+	          closestIndex = i;
+	        }
+	      }
+	
+	      return closestIndex;
+	    },
+	
+	    // Snaps the nearest handle to the value corresponding to `position` and calls `callback` with that handle's index.
+	    _forceValueFromPosition: function (position, callback) {
+	      var pixelOffset = position - this.state.sliderStart;
+	      if (this.props.invert) pixelOffset = this.state.sliderLength - pixelOffset;
+	      pixelOffset -= (this.state.handleSize / 2);
+	
+	      var closestIndex = this._getClosestIndex(pixelOffset);
+	
+	      var nextValue = this._trimAlignValue(this._calcValue(pixelOffset));
+	      var value = this.state.value;
+	      value[closestIndex] = nextValue;
+	
+	      this.setState({value: value}, callback.bind(this, closestIndex));
+	    },
+	
+	    _getMousePosition: function (e) {
+	      return [
+	        e['page' + this._axisKey()],
+	        e['page' + this._orthogonalAxisKey()]
+	      ];
+	    },
+	
+	    _getTouchPosition: function (e) {
+	      var touch = e.touches[0];
+	      return [
+	        touch['page' + this._axisKey()],
+	        touch['page' + this._orthogonalAxisKey()]
+	      ];
+	    },
+	
+	    _getMouseEventMap: function () {
+	      return {
+	        'mousemove': this._onMouseMove,
+	        'mouseup': this._onMouseUp
+	      }
+	    },
+	
+	    _getTouchEventMap: function () {
+	      return {
+	        'touchmove': this._onTouchMove,
+	        'touchend': this._onTouchEnd
+	      }
+	    },
+	
+	    // create the `mousedown` handler for the i-th handle
+	    _createOnMouseDown: function (i) {
+	      return function (e) {
+	        if (this.props.disabled) return;
+	        var position = this._getMousePosition(e);
+	        this._start(i, position[0]);
+	        this._addHandlers(this._getMouseEventMap());
+	        pauseEvent(e);
+	      }.bind(this);
+	    },
+	
+	    // create the `touchstart` handler for the i-th handle
+	    _createOnTouchStart: function (i) {
+	      return function (e) {
+	        if (this.props.disabled || e.touches.length > 1) return;
+	        var position = this._getTouchPosition(e);
+	        this.startPosition = position;
+	        this.isScrolling = undefined; // don't know yet if the user is trying to scroll
+	        this._start(i, position[0]);
+	        this._addHandlers(this._getTouchEventMap());
+	        stopPropagation(e);
+	      }.bind(this);
+	    },
+	
+	    _addHandlers: function (eventMap) {
+	      for (var key in eventMap) {
+	        document.addEventListener(key, eventMap[key], false);
+	      }
+	    },
+	
+	    _removeHandlers: function (eventMap) {
+	      for (var key in eventMap) {
+	        document.removeEventListener(key, eventMap[key], false);
+	      }
+	    },
+	
+	    _start: function (i, position) {
+	      if (document.activeElement) document.activeElement.blur();
+	
+	      this._fireEvent('onBeforeChange');
+	
+	      var zIndices = this.state.zIndices;
+	      zIndices.splice(zIndices.indexOf(i), 1); // remove wherever the element is
+	      zIndices.push(i); // add to end
+	
+	      this.setState({
+	        startValue: this.state.value[i],
+	        startPosition: position,
+	        index: i,
+	        zIndices: zIndices
+	      });
+	    },
+	
+	    _onMouseUp: function () {
+	      this._onEnd(this._getMouseEventMap());
+	    },
+	
+	    _onTouchEnd: function () {
+	      this._onEnd(this._getTouchEventMap());
+	    },
+	
+	    _onEnd: function (eventMap) {
+	      this._removeHandlers(eventMap);
+	      this.setState({index: -1}, this._fireEvent.bind(this, 'onAfterChange'));
+	    },
+	
+	    _onMouseMove: function (e) {
+	      var position = this._getMousePosition(e);
+	      this._move(position[0]);
+	    },
+	
+	    _onTouchMove: function (e) {
+	      if (e.touches.length > 1) return;
+	
+	      var position = this._getTouchPosition(e);
+	
+	      if (typeof this.isScrolling === 'undefined') {
+	        var diffMainDir = position[0] - this.startPosition[0];
+	        var diffScrollDir = position[1] - this.startPosition[1];
+	        this.isScrolling = Math.abs(diffScrollDir) > Math.abs(diffMainDir);
+	      }
+	
+	      if (this.isScrolling) {
+	        this.setState({index: -1});
+	        return;
+	      }
+	
+	      pauseEvent(e);
+	
+	      this._move(position[0]);
+	    },
+	
+	    _move: function (position) {
+	      var props = this.props;
+	      var state = this.state;
+	      var index = state.index;
+	
+	      var value = state.value;
+	      var l = value.length;
+	      var oldValue = value[index];
+	
+	      var diffPosition = position - state.startPosition;
+	      if (props.invert) diffPosition *= -1;
+	
+	      var diffValue = diffPosition / (state.sliderLength - state.handleSize) * (props.max - props.min);
+	      var newValue = this._trimAlignValue(state.startValue + diffValue);
+	
+	      var minDistance = props.minDistance;
+	
+	      // if "pearling" (= handles pushing each other) is disabled,
+	      // prevent the handle from getting closer than `minDistance` to the previous or next handle.
+	      if (!props.pearling) {
+	        if (index > 0) {
+	          var valueBefore = value[index - 1];
+	          if (newValue < valueBefore + minDistance) {
+	            newValue = valueBefore + minDistance;
+	          }
+	        }
+	
+	        if (index < l - 1) {
+	          var valueAfter = value[index + 1];
+	          if (newValue > valueAfter - minDistance) {
+	            newValue = valueAfter - minDistance;
+	          }
+	        }
+	      }
+	
+	      value[index] = newValue;
+	
+	      // if "pearling" is enabled, let the current handle push the pre- and succeeding handles.
+	      if (props.pearling && l > 1) {
+	        if (newValue > oldValue) {
+	          this._pushSucceeding(l, value, minDistance, index);
+	          this._trimSucceeding(l, value, minDistance, props.max);
+	        }
+	        else if (newValue < oldValue) {
+	          this._pushPreceding(l, value, minDistance, index);
+	          this._trimPreceding(l, value, minDistance, props.min);
+	        }
+	      }
+	
+	      // Normally you would use `shouldComponentUpdate`, but since the slider is a low-level component,
+	      // the extra complexity might be worth the extra performance.
+	      if (newValue !== oldValue) {
+	        this.setState({value: value}, this._fireEvent.bind(this, 'onChange'));
+	      }
+	    },
+	
+	    _pushSucceeding: function (l, value, minDistance, index) {
+	      var i, padding;
+	      for (i = index, padding = value[i] + minDistance;
+	           value[i + 1] != null && padding > value[i + 1];
+	           i++, padding = value[i] + minDistance) {
+	        value[i + 1] = this._alignValue(padding);
+	      }
+	    },
+	
+	    _trimSucceeding: function (l, nextValue, minDistance, max) {
+	      for (var i = 0; i < l; i++) {
+	        var padding = max - i * minDistance;
+	        if (nextValue[l - 1 - i] > padding) {
+	          nextValue[l - 1 - i] = padding;
+	        }
+	      }
+	    },
+	
+	    _pushPreceding: function (l, value, minDistance, index) {
+	      var i, padding;
+	      for (i = index, padding = value[i] - minDistance;
+	           value[i - 1] != null && padding < value[i - 1];
+	           i--, padding = value[i] - minDistance) {
+	        value[i - 1] = this._alignValue(padding);
+	      }
+	    },
+	
+	    _trimPreceding: function (l, nextValue, minDistance, min) {
+	      for (var i = 0; i < l; i++) {
+	        var padding = min + i * minDistance;
+	        if (nextValue[i] < padding) {
+	          nextValue[i] = padding;
+	        }
+	      }
+	    },
+	
+	    _axisKey: function () {
+	      var orientation = this.props.orientation;
+	      if (orientation === 'horizontal') return 'X';
+	      if (orientation === 'vertical') return 'Y';
+	    },
+	
+	    _orthogonalAxisKey: function () {
+	      var orientation = this.props.orientation;
+	      if (orientation === 'horizontal') return 'Y';
+	      if (orientation === 'vertical') return 'X';
+	    },
+	
+	    _posMinKey: function () {
+	      var orientation = this.props.orientation;
+	      if (orientation === 'horizontal') return this.props.invert ? 'right' : 'left';
+	      if (orientation === 'vertical') return this.props.invert ? 'bottom' : 'top';
+	    },
+	
+	    _posMaxKey: function () {
+	      var orientation = this.props.orientation;
+	      if (orientation === 'horizontal') return this.props.invert ? 'left' : 'right';
+	      if (orientation === 'vertical') return this.props.invert ? 'top' : 'bottom';
+	    },
+	
+	    _sizeKey: function () {
+	      var orientation = this.props.orientation;
+	      if (orientation === 'horizontal') return 'clientWidth';
+	      if (orientation === 'vertical') return 'clientHeight';
+	    },
+	
+	    _trimAlignValue: function (val, props) {
+	      return this._alignValue(this._trimValue(val, props), props);
+	    },
+	
+	    _trimValue: function (val, props) {
+	      props = props || this.props;
+	
+	      if (val <= props.min) val = props.min;
+	      if (val >= props.max) val = props.max;
+	
+	      return val;
+	    },
+	
+	    _alignValue: function (val, props) {
+	      props = props || this.props;
+	
+	      var valModStep = (val - props.min) % props.step;
+	      var alignValue = val - valModStep;
+	
+	      if (Math.abs(valModStep) * 2 >= props.step) {
+	        alignValue += (valModStep > 0) ? props.step : (-props.step);
+	      }
+	
+	      return parseFloat(alignValue.toFixed(5));
+	    },
+	
+	    _renderHandle: function (style, child, i) {
+	      var className = this.props.handleClassName + ' ' +
+	        (this.props.handleClassName + '-' + i) + ' ' +
+	        (this.state.index === i ? this.props.handleActiveClassName : '');
+	
+	      return (
+	        React.createElement('div', {
+	            ref: 'handle' + i,
+	            key: 'handle' + i,
+	            className: className,
+	            style: style,
+	            onMouseDown: this._createOnMouseDown(i),
+	            onTouchStart: this._createOnTouchStart(i)
+	          },
+	          child
+	        )
+	      );
+	    },
+	
+	    _renderHandles: function (offset) {
+	      var l = offset.length;
+	
+	      var styles = this.tempArray;
+	      for (var i = 0; i < l; i++) {
+	        styles[i] = this._buildHandleStyle(offset[i], i);
+	      }
+	
+	      var res = this.tempArray;
+	      var renderHandle = this._renderHandle;
+	      if (React.Children.count(this.props.children) > 0) {
+	        React.Children.forEach(this.props.children, function (child, i) {
+	          res[i] = renderHandle(styles[i], child, i);
+	        });
+	      } else {
+	        for (i = 0; i < l; i++) {
+	          res[i] = renderHandle(styles[i], null, i);
+	        }
+	      }
+	      return res;
+	    },
+	
+	    _renderBar: function (i, offsetFrom, offsetTo) {
+	      return (
+	        React.createElement('div', {
+	          key: 'bar' + i,
+	          ref: 'bar' + i,
+	          className: this.props.barClassName + ' ' + this.props.barClassName + '-' + i,
+	          style: this._buildBarStyle(offsetFrom, this.state.upperBound - offsetTo)
+	        })
+	      );
+	    },
+	
+	    _renderBars: function (offset) {
+	      var bars = [];
+	      var lastIndex = offset.length - 1;
+	
+	      bars.push(this._renderBar(0, 0, offset[0]));
+	
+	      for (var i = 0; i < lastIndex; i++) {
+	        bars.push(this._renderBar(i + 1, offset[i], offset[i + 1]));
+	      }
+	
+	      bars.push(this._renderBar(lastIndex + 1, offset[lastIndex], this.state.upperBound));
+	
+	      return bars;
+	    },
+	
+	    _onSliderMouseDown: function (e) {
+	      if (this.props.disabled || this.props.snapDragDisabled) return;
+	      var position = this._getMousePosition(e);
+	      this._forceValueFromPosition(position[0], function (i) {
+	        this._fireEvent('onChange');
+	        this._start(i, position[0]);
+	        this._addHandlers(this._getMouseEventMap());
+	      }.bind(this));
+	      pauseEvent(e);
+	    },
+	
+	    _fireEvent: function (event) {
+	      if (this.props[event]) {
+	        this.props[event](undoEnsureArray(this.state.value));
+	      }
+	    },
+	
+	    render: function () {
+	      var state = this.state;
+	      var props = this.props;
+	
+	      var offset = this.tempArray;
+	      var value = state.value;
+	      var l = value.length;
+	      for (var i = 0; i < l; i++) {
+	        offset[i] = this._calcOffset(value[i], i);
+	      }
+	
+	      var bars = props.withBars ? this._renderBars(offset) : null;
+	      var handles = this._renderHandles(offset);
+	
+	      return (
+	        React.createElement('div', {
+	            ref: 'slider',
+	            style: {position: 'relative'},
+	            className: props.className + (props.disabled ? ' disabled' : ''),
+	            onMouseDown: this._onSliderMouseDown
+	          },
+	          bars,
+	          handles
+	        )
+	      );
+	    }
+	  });
+	
+	  return ReactSlider;
+	}));
+
+/***/ },
+/* 237 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -45772,11 +46715,15 @@
 	
 	var _react2 = _interopRequireDefault(_react);
 	
-	var _reflux = __webpack_require__(237);
+	var _reflux = __webpack_require__(238);
 	
 	var _reflux2 = _interopRequireDefault(_reflux);
 	
-	var _appStoresGameStore = __webpack_require__(236);
+	var _reactRouter = __webpack_require__(188);
+	
+	var _reactRouter2 = _interopRequireDefault(_reactRouter);
+	
+	var _appStoresGameStore = __webpack_require__(260);
 	
 	var _appStoresGameStore2 = _interopRequireDefault(_appStoresGameStore);
 	
@@ -45784,7 +46731,7 @@
 	
 	var _gameSinglePlayerGameController2 = _interopRequireDefault(_gameSinglePlayerGameController);
 	
-	var _appComponentsPlayfield = __webpack_require__(260);
+	var _appComponentsPlayfield = __webpack_require__(262);
 	
 	var _appComponentsPlayfield2 = _interopRequireDefault(_appComponentsPlayfield);
 	
@@ -45792,24 +46739,32 @@
 	    displayName: 'SinglePlayerGame',
 	
 	    //mixins: [Reflux.connect(gameStore)], // bind gameStore.state directly to this.state
+	    mixins: [_reactRouter2['default'].State],
 	    getInitialState: function getInitialState() {
 	        return { game: null };
 	    },
+	
 	    componentDidMount: function componentDidMount() {
 	        this.game = new _gameSinglePlayerGameController2['default']({
 	            render: this.updateGameState
 	        });
 	        this.game.play();
 	    },
+	    componentWillUnmount: function componentWillUnmount() {
+	        this.game.cleanup();
+	    },
+	
 	    updateGameState: function updateGameState(gameState) {
 	        this.setState({ game: gameState });
 	    },
+	
 	    render: function render() {
 	        var hasGame = this.game && this.state.game;
 	        var hasGrid = hasGame && this.state.game.grid;
 	        return _react2['default'].createElement(
 	            'div',
 	            null,
+	            this.getParams().level,
 	            hasGrid ? _react2['default'].createElement(_appComponentsPlayfield2['default'], { grid: this.state.game.grid }) : ''
 	        );
 	    }
@@ -45819,91 +46774,40 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 236 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	Object.defineProperty(exports, '__esModule', {
-	    value: true
-	});
-	
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
-	
-	var _lodash = __webpack_require__(175);
-	
-	var _lodash2 = _interopRequireDefault(_lodash);
-	
-	var _reflux = __webpack_require__(237);
-	
-	var _reflux2 = _interopRequireDefault(_reflux);
-	
-	var _appActions = __webpack_require__(259);
-	
-	var _appActions2 = _interopRequireDefault(_appActions);
-	
-	var _gameSinglePlayerGameController = __webpack_require__(177);
-	
-	var _gameSinglePlayerGameController2 = _interopRequireDefault(_gameSinglePlayerGameController);
-	
-	var listenables = _lodash2['default'].pick(_appActions2['default'], ['startSinglePlayerGame']);
-	exports['default'] = _reflux2['default'].createStore({
-	    listenables: listenables,
-	    init: function init() {
-	        this.state = {};
-	    },
-	    onStartSinglePlayerGame: function onStartSinglePlayerGame() {
-	        var _this = this;
-	
-	        this.setState({
-	            activeGame: new _gameSinglePlayerGameController2['default']({ render: function render(gameState) {
-	                    _this.setState({ gameState: gameState });
-	                    _this.trigger(_this.state);
-	                } })
-	        });
-	    },
-	    setState: function setState(obj) {
-	        // synchronous, unlike react's setState
-	        _lodash2['default'].assign(this.state, obj);
-	    }
-	});
-	module.exports = exports['default'];
-
-/***/ },
-/* 237 */
-/***/ function(module, exports, __webpack_require__) {
-
-	module.exports = __webpack_require__(238);
-
-
-/***/ },
 /* 238 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports.ActionMethods = __webpack_require__(240);
+	module.exports = __webpack_require__(239);
+
+
+/***/ },
+/* 239 */
+/***/ function(module, exports, __webpack_require__) {
+
+	exports.ActionMethods = __webpack_require__(241);
 	
-	exports.ListenerMethods = __webpack_require__(241);
+	exports.ListenerMethods = __webpack_require__(242);
 	
-	exports.PublisherMethods = __webpack_require__(252);
+	exports.PublisherMethods = __webpack_require__(253);
 	
-	exports.StoreMethods = __webpack_require__(253);
+	exports.StoreMethods = __webpack_require__(254);
 	
-	exports.createAction = __webpack_require__(254);
+	exports.createAction = __webpack_require__(255);
 	
-	exports.createStore = __webpack_require__(248);
+	exports.createStore = __webpack_require__(249);
 	
-	exports.connect = __webpack_require__(255);
+	exports.connect = __webpack_require__(256);
 	
-	exports.connectFilter = __webpack_require__(256);
+	exports.connectFilter = __webpack_require__(257);
 	
-	exports.ListenerMixin = __webpack_require__(257);
+	exports.ListenerMixin = __webpack_require__(258);
 	
-	exports.listenTo = __webpack_require__(239);
+	exports.listenTo = __webpack_require__(240);
 	
-	exports.listenToMany = __webpack_require__(258);
+	exports.listenToMany = __webpack_require__(259);
 	
 	
-	var maker = __webpack_require__(247).staticJoinCreator;
+	var maker = __webpack_require__(248).staticJoinCreator;
 	
 	exports.joinTrailing = exports.all = maker("last"); // Reflux.all alias for backward compatibility
 	
@@ -45913,7 +46817,7 @@
 	
 	exports.joinConcat = maker("all");
 	
-	var _ = __webpack_require__(242);
+	var _ = __webpack_require__(243);
 	
 	exports.EventEmitter = _.EventEmitter;
 	
@@ -45942,7 +46846,7 @@
 	 * Sets the eventmitter that Reflux uses
 	 */
 	exports.setEventEmitter = function(ctx) {
-	    var _ = __webpack_require__(242);
+	    var _ = __webpack_require__(243);
 	    exports.EventEmitter = _.EventEmitter = ctx;
 	};
 	
@@ -45951,7 +46855,7 @@
 	 * Sets the Promise library that Reflux uses
 	 */
 	exports.setPromise = function(ctx) {
-	    var _ = __webpack_require__(242);
+	    var _ = __webpack_require__(243);
 	    exports.Promise = _.Promise = ctx;
 	};
 	
@@ -45961,7 +46865,7 @@
 	 * @param {Function} factory has the signature `function(resolver) { return [new Promise]; }`
 	 */
 	exports.setPromiseFactory = function(factory) {
-	    var _ = __webpack_require__(242);
+	    var _ = __webpack_require__(243);
 	    _.createPromise = factory;
 	};
 	
@@ -45970,14 +46874,14 @@
 	 * Sets the method used for deferring actions and stores
 	 */
 	exports.nextTick = function(nextTick) {
-	    var _ = __webpack_require__(242);
+	    var _ = __webpack_require__(243);
 	    _.nextTick = nextTick;
 	};
 	
 	/**
 	 * Provides the set of created actions and stores for introspection
 	 */
-	exports.__keep = __webpack_require__(249);
+	exports.__keep = __webpack_require__(250);
 	
 	/**
 	 * Warn if Function.prototype.bind not available
@@ -45992,10 +46896,10 @@
 
 
 /***/ },
-/* 239 */
+/* 240 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Reflux = __webpack_require__(238);
+	var Reflux = __webpack_require__(239);
 	
 	
 	/**
@@ -46034,7 +46938,7 @@
 
 
 /***/ },
-/* 240 */
+/* 241 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -46046,11 +46950,11 @@
 
 
 /***/ },
-/* 241 */
+/* 242 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var _ = __webpack_require__(242),
-	    maker = __webpack_require__(247).instanceJoinCreator;
+	var _ = __webpack_require__(243),
+	    maker = __webpack_require__(248).instanceJoinCreator;
 	
 	/**
 	 * Extract child listenables from a parent from their
@@ -46272,7 +47176,7 @@
 
 
 /***/ },
-/* 242 */
+/* 243 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*
@@ -46307,7 +47211,7 @@
 	    return typeof value === 'function';
 	};
 	
-	exports.EventEmitter = __webpack_require__(243);
+	exports.EventEmitter = __webpack_require__(244);
 	
 	exports.nextTick = function(callback) {
 	    setTimeout(callback, 0);
@@ -46329,7 +47233,7 @@
 	    return o;
 	};
 	
-	exports.Promise = __webpack_require__(244);
+	exports.Promise = __webpack_require__(245);
 	
 	exports.createPromise = function(resolver) {
 	    return new exports.Promise(resolver);
@@ -46347,7 +47251,7 @@
 
 
 /***/ },
-/* 243 */
+/* 244 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -46582,19 +47486,19 @@
 
 
 /***/ },
-/* 244 */
+/* 245 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(global, setImmediate) {/*! Native Promise Only
 	    v0.7.8-a (c) Kyle Simpson
 	    MIT License: http://getify.mit-license.org
 	*/
-	!function(t,n,e){n[t]=n[t]||e(),"undefined"!=typeof module&&module.exports?module.exports=n[t]:"function"=="function"&&__webpack_require__(246)&&!(__WEBPACK_AMD_DEFINE_RESULT__ = function(){return n[t]}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__))}("Promise","undefined"!=typeof global?global:this,function(){"use strict";function t(t,n){l.add(t,n),h||(h=y(l.drain))}function n(t){var n,e=typeof t;return null==t||"object"!=e&&"function"!=e||(n=t.then),"function"==typeof n?n:!1}function e(){for(var t=0;t<this.chain.length;t++)o(this,1===this.state?this.chain[t].success:this.chain[t].failure,this.chain[t]);this.chain.length=0}function o(t,e,o){var r,i;try{e===!1?o.reject(t.msg):(r=e===!0?t.msg:e.call(void 0,t.msg),r===o.promise?o.reject(TypeError("Promise-chain cycle")):(i=n(r))?i.call(r,o.resolve,o.reject):o.resolve(r))}catch(c){o.reject(c)}}function r(o){var c,u,a=this;if(!a.triggered){a.triggered=!0,a.def&&(a=a.def);try{(c=n(o))?(u=new f(a),c.call(o,function(){r.apply(u,arguments)},function(){i.apply(u,arguments)})):(a.msg=o,a.state=1,a.chain.length>0&&t(e,a))}catch(s){i.call(u||new f(a),s)}}}function i(n){var o=this;o.triggered||(o.triggered=!0,o.def&&(o=o.def),o.msg=n,o.state=2,o.chain.length>0&&t(e,o))}function c(t,n,e,o){for(var r=0;r<n.length;r++)!function(r){t.resolve(n[r]).then(function(t){e(r,t)},o)}(r)}function f(t){this.def=t,this.triggered=!1}function u(t){this.promise=t,this.state=0,this.triggered=!1,this.chain=[],this.msg=void 0}function a(n){if("function"!=typeof n)throw TypeError("Not a function");if(0!==this.__NPO__)throw TypeError("Not a promise");this.__NPO__=1;var o=new u(this);this.then=function(n,r){var i={success:"function"==typeof n?n:!0,failure:"function"==typeof r?r:!1};return i.promise=new this.constructor(function(t,n){if("function"!=typeof t||"function"!=typeof n)throw TypeError("Not a function");i.resolve=t,i.reject=n}),o.chain.push(i),0!==o.state&&t(e,o),i.promise},this["catch"]=function(t){return this.then(void 0,t)};try{n.call(void 0,function(t){r.call(o,t)},function(t){i.call(o,t)})}catch(c){i.call(o,c)}}var s,h,l,p=Object.prototype.toString,y="undefined"!=typeof setImmediate?function(t){return setImmediate(t)}:setTimeout;try{Object.defineProperty({},"x",{}),s=function(t,n,e,o){return Object.defineProperty(t,n,{value:e,writable:!0,configurable:o!==!1})}}catch(d){s=function(t,n,e){return t[n]=e,t}}l=function(){function t(t,n){this.fn=t,this.self=n,this.next=void 0}var n,e,o;return{add:function(r,i){o=new t(r,i),e?e.next=o:n=o,e=o,o=void 0},drain:function(){var t=n;for(n=e=h=void 0;t;)t.fn.call(t.self),t=t.next}}}();var g=s({},"constructor",a,!1);return a.prototype=g,s(g,"__NPO__",0,!1),s(a,"resolve",function(t){var n=this;return t&&"object"==typeof t&&1===t.__NPO__?t:new n(function(n,e){if("function"!=typeof n||"function"!=typeof e)throw TypeError("Not a function");n(t)})}),s(a,"reject",function(t){return new this(function(n,e){if("function"!=typeof n||"function"!=typeof e)throw TypeError("Not a function");e(t)})}),s(a,"all",function(t){var n=this;return"[object Array]"!=p.call(t)?n.reject(TypeError("Not an array")):0===t.length?n.resolve([]):new n(function(e,o){if("function"!=typeof e||"function"!=typeof o)throw TypeError("Not a function");var r=t.length,i=Array(r),f=0;c(n,t,function(t,n){i[t]=n,++f===r&&e(i)},o)})}),s(a,"race",function(t){var n=this;return"[object Array]"!=p.call(t)?n.reject(TypeError("Not an array")):new n(function(e,o){if("function"!=typeof e||"function"!=typeof o)throw TypeError("Not a function");c(n,t,function(t,n){e(n)},o)})}),a});
+	!function(t,n,e){n[t]=n[t]||e(),"undefined"!=typeof module&&module.exports?module.exports=n[t]:"function"=="function"&&__webpack_require__(247)&&!(__WEBPACK_AMD_DEFINE_RESULT__ = function(){return n[t]}.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__))}("Promise","undefined"!=typeof global?global:this,function(){"use strict";function t(t,n){l.add(t,n),h||(h=y(l.drain))}function n(t){var n,e=typeof t;return null==t||"object"!=e&&"function"!=e||(n=t.then),"function"==typeof n?n:!1}function e(){for(var t=0;t<this.chain.length;t++)o(this,1===this.state?this.chain[t].success:this.chain[t].failure,this.chain[t]);this.chain.length=0}function o(t,e,o){var r,i;try{e===!1?o.reject(t.msg):(r=e===!0?t.msg:e.call(void 0,t.msg),r===o.promise?o.reject(TypeError("Promise-chain cycle")):(i=n(r))?i.call(r,o.resolve,o.reject):o.resolve(r))}catch(c){o.reject(c)}}function r(o){var c,u,a=this;if(!a.triggered){a.triggered=!0,a.def&&(a=a.def);try{(c=n(o))?(u=new f(a),c.call(o,function(){r.apply(u,arguments)},function(){i.apply(u,arguments)})):(a.msg=o,a.state=1,a.chain.length>0&&t(e,a))}catch(s){i.call(u||new f(a),s)}}}function i(n){var o=this;o.triggered||(o.triggered=!0,o.def&&(o=o.def),o.msg=n,o.state=2,o.chain.length>0&&t(e,o))}function c(t,n,e,o){for(var r=0;r<n.length;r++)!function(r){t.resolve(n[r]).then(function(t){e(r,t)},o)}(r)}function f(t){this.def=t,this.triggered=!1}function u(t){this.promise=t,this.state=0,this.triggered=!1,this.chain=[],this.msg=void 0}function a(n){if("function"!=typeof n)throw TypeError("Not a function");if(0!==this.__NPO__)throw TypeError("Not a promise");this.__NPO__=1;var o=new u(this);this.then=function(n,r){var i={success:"function"==typeof n?n:!0,failure:"function"==typeof r?r:!1};return i.promise=new this.constructor(function(t,n){if("function"!=typeof t||"function"!=typeof n)throw TypeError("Not a function");i.resolve=t,i.reject=n}),o.chain.push(i),0!==o.state&&t(e,o),i.promise},this["catch"]=function(t){return this.then(void 0,t)};try{n.call(void 0,function(t){r.call(o,t)},function(t){i.call(o,t)})}catch(c){i.call(o,c)}}var s,h,l,p=Object.prototype.toString,y="undefined"!=typeof setImmediate?function(t){return setImmediate(t)}:setTimeout;try{Object.defineProperty({},"x",{}),s=function(t,n,e,o){return Object.defineProperty(t,n,{value:e,writable:!0,configurable:o!==!1})}}catch(d){s=function(t,n,e){return t[n]=e,t}}l=function(){function t(t,n){this.fn=t,this.self=n,this.next=void 0}var n,e,o;return{add:function(r,i){o=new t(r,i),e?e.next=o:n=o,e=o,o=void 0},drain:function(){var t=n;for(n=e=h=void 0;t;)t.fn.call(t.self),t=t.next}}}();var g=s({},"constructor",a,!1);return a.prototype=g,s(g,"__NPO__",0,!1),s(a,"resolve",function(t){var n=this;return t&&"object"==typeof t&&1===t.__NPO__?t:new n(function(n,e){if("function"!=typeof n||"function"!=typeof e)throw TypeError("Not a function");n(t)})}),s(a,"reject",function(t){return new this(function(n,e){if("function"!=typeof n||"function"!=typeof e)throw TypeError("Not a function");e(t)})}),s(a,"all",function(t){var n=this;return"[object Array]"!=p.call(t)?n.reject(TypeError("Not an array")):0===t.length?n.resolve([]):new n(function(e,o){if("function"!=typeof e||"function"!=typeof o)throw TypeError("Not a function");var r=t.length,i=Array(r),f=0;c(n,t,function(t,n){i[t]=n,++f===r&&e(i)},o)})}),s(a,"race",function(t){var n=this;return"[object Array]"!=p.call(t)?n.reject(TypeError("Not an array")):new n(function(e,o){if("function"!=typeof e||"function"!=typeof o)throw TypeError("Not a function");c(n,t,function(t,n){e(n)},o)})}),a});
 	
-	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(245).setImmediate))
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(246).setImmediate))
 
 /***/ },
-/* 245 */
+/* 246 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(setImmediate, clearImmediate) {var nextTick = __webpack_require__(4).nextTick;
@@ -46673,10 +47577,10 @@
 	exports.clearImmediate = typeof clearImmediate === "function" ? clearImmediate : function(id) {
 	  delete immediateIds[id];
 	};
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(245).setImmediate, __webpack_require__(245).clearImmediate))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(246).setImmediate, __webpack_require__(246).clearImmediate))
 
 /***/ },
-/* 246 */
+/* 247 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(__webpack_amd_options__) {module.exports = __webpack_amd_options__;
@@ -46684,7 +47588,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, {}))
 
 /***/ },
-/* 247 */
+/* 248 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -46692,8 +47596,8 @@
 	 */
 	
 	var slice = Array.prototype.slice,
-	    _ = __webpack_require__(242),
-	    createStore = __webpack_require__(248),
+	    _ = __webpack_require__(243),
+	    createStore = __webpack_require__(249),
 	    strategyMethodNames = {
 	        strict: "joinStrict",
 	        first: "joinLeading",
@@ -46796,15 +47700,15 @@
 
 
 /***/ },
-/* 248 */
+/* 249 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var _ = __webpack_require__(242),
-	    Reflux = __webpack_require__(238),
-	    Keep = __webpack_require__(249),
-	    mixer = __webpack_require__(250),
+	var _ = __webpack_require__(243),
+	    Reflux = __webpack_require__(239),
+	    Keep = __webpack_require__(250),
+	    mixer = __webpack_require__(251),
 	    allowed = {preEmit:1,shouldEmit:1},
-	    bindMethods = __webpack_require__(251);
+	    bindMethods = __webpack_require__(252);
 	
 	/**
 	 * Creates an event emitting Data Store. It is mixed in with functions
@@ -46863,7 +47767,7 @@
 
 
 /***/ },
-/* 249 */
+/* 250 */
 /***/ function(module, exports, __webpack_require__) {
 
 	exports.createdStores = [];
@@ -46881,10 +47785,10 @@
 
 
 /***/ },
-/* 250 */
+/* 251 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var _ = __webpack_require__(242);
+	var _ = __webpack_require__(243);
 	
 	module.exports = function mix(def) {
 	    var composed = {
@@ -46944,7 +47848,7 @@
 
 
 /***/ },
-/* 251 */
+/* 252 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports = function(store, definition) {
@@ -46973,10 +47877,10 @@
 
 
 /***/ },
-/* 252 */
+/* 253 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var _ = __webpack_require__(242);
+	var _ = __webpack_require__(243);
 	
 	/**
 	 * A module of methods for object that you want to be able to listen to.
@@ -47160,7 +48064,7 @@
 
 
 /***/ },
-/* 253 */
+/* 254 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -47172,12 +48076,12 @@
 
 
 /***/ },
-/* 254 */
+/* 255 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var _ = __webpack_require__(242),
-	    Reflux = __webpack_require__(238),
-	    Keep = __webpack_require__(249),
+	var _ = __webpack_require__(243),
+	    Reflux = __webpack_require__(239),
+	    Keep = __webpack_require__(250),
 	    allowed = {preEmit:1,shouldEmit:1};
 	
 	/**
@@ -47243,11 +48147,11 @@
 
 
 /***/ },
-/* 255 */
+/* 256 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Reflux = __webpack_require__(238),
-	    _ = __webpack_require__(242);
+	var Reflux = __webpack_require__(239),
+	    _ = __webpack_require__(243);
 	
 	module.exports = function(listenable,key){
 	    return {
@@ -47275,11 +48179,11 @@
 
 
 /***/ },
-/* 256 */
+/* 257 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Reflux = __webpack_require__(238),
-	  _ = __webpack_require__(242);
+	var Reflux = __webpack_require__(239),
+	  _ = __webpack_require__(243);
 	
 	module.exports = function(listenable, key, filterFunc) {
 	    filterFunc = _.isFunction(key) ? key : filterFunc;
@@ -47320,11 +48224,11 @@
 
 
 /***/ },
-/* 257 */
+/* 258 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var _ = __webpack_require__(242),
-	    ListenerMethods = __webpack_require__(241);
+	var _ = __webpack_require__(243),
+	    ListenerMethods = __webpack_require__(242);
 	
 	/**
 	 * A module meant to be consumed as a mixin by a React component. Supplies the methods from
@@ -47343,10 +48247,10 @@
 
 
 /***/ },
-/* 258 */
+/* 259 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Reflux = __webpack_require__(238);
+	var Reflux = __webpack_require__(239);
 	
 	/**
 	 * A mixin factory for a React component. Meant as a more convenient way of using the `listenerMixin`,
@@ -47382,7 +48286,7 @@
 
 
 /***/ },
-/* 259 */
+/* 260 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -47393,7 +48297,58 @@
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
 	
-	var _reflux = __webpack_require__(237);
+	var _lodash = __webpack_require__(175);
+	
+	var _lodash2 = _interopRequireDefault(_lodash);
+	
+	var _reflux = __webpack_require__(238);
+	
+	var _reflux2 = _interopRequireDefault(_reflux);
+	
+	var _appActions = __webpack_require__(261);
+	
+	var _appActions2 = _interopRequireDefault(_appActions);
+	
+	var _gameSinglePlayerGameController = __webpack_require__(177);
+	
+	var _gameSinglePlayerGameController2 = _interopRequireDefault(_gameSinglePlayerGameController);
+	
+	var listenables = _lodash2['default'].pick(_appActions2['default'], ['startSinglePlayerGame']);
+	exports['default'] = _reflux2['default'].createStore({
+	    listenables: listenables,
+	    init: function init() {
+	        this.state = {};
+	    },
+	    onStartSinglePlayerGame: function onStartSinglePlayerGame() {
+	        var _this = this;
+	
+	        this.setState({
+	            activeGame: new _gameSinglePlayerGameController2['default']({ render: function render(gameState) {
+	                    _this.setState({ gameState: gameState });
+	                    _this.trigger(_this.state);
+	                } })
+	        });
+	    },
+	    setState: function setState(obj) {
+	        // synchronous, unlike react's setState
+	        _lodash2['default'].assign(this.state, obj);
+	    }
+	});
+	module.exports = exports['default'];
+
+/***/ },
+/* 261 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	Object.defineProperty(exports, '__esModule', {
+	    value: true
+	});
+	
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { 'default': obj }; }
+	
+	var _reflux = __webpack_require__(238);
 	
 	var _reflux2 = _interopRequireDefault(_reflux);
 	
@@ -47405,7 +48360,7 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 260 */
+/* 262 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -47432,31 +48387,31 @@
 	
 	var _constants = __webpack_require__(182);
 	
-	var _rawAppSvgVirus_orangeSvg = __webpack_require__(232);
+	var _rawAppSvgVirus_orangeSvg = __webpack_require__(264);
 	
 	var _rawAppSvgVirus_orangeSvg2 = _interopRequireDefault(_rawAppSvgVirus_orangeSvg);
 	
-	var _rawAppSvgVirus_purpleSvg = __webpack_require__(262);
+	var _rawAppSvgVirus_purpleSvg = __webpack_require__(265);
 	
 	var _rawAppSvgVirus_purpleSvg2 = _interopRequireDefault(_rawAppSvgVirus_purpleSvg);
 	
-	var _rawAppSvgVirus_greenSvg = __webpack_require__(261);
+	var _rawAppSvgVirus_greenSvg = __webpack_require__(263);
 	
 	var _rawAppSvgVirus_greenSvg2 = _interopRequireDefault(_rawAppSvgVirus_greenSvg);
 	
-	var _rawAppSvgPill_orangeSvg = __webpack_require__(263);
+	var _rawAppSvgPill_orangeSvg = __webpack_require__(266);
 	
 	var _rawAppSvgPill_orangeSvg2 = _interopRequireDefault(_rawAppSvgPill_orangeSvg);
 	
-	var _rawAppSvgPill_purpleSvg = __webpack_require__(264);
+	var _rawAppSvgPill_purpleSvg = __webpack_require__(267);
 	
 	var _rawAppSvgPill_purpleSvg2 = _interopRequireDefault(_rawAppSvgPill_purpleSvg);
 	
-	var _rawAppSvgPill_greenSvg = __webpack_require__(265);
+	var _rawAppSvgPill_greenSvg = __webpack_require__(268);
 	
 	var _rawAppSvgPill_greenSvg2 = _interopRequireDefault(_rawAppSvgPill_greenSvg);
 	
-	var _rawAppSvgDestroyedSvg = __webpack_require__(266);
+	var _rawAppSvgDestroyedSvg = __webpack_require__(269);
 	
 	var _rawAppSvgDestroyedSvg2 = _interopRequireDefault(_rawAppSvgDestroyedSvg);
 	
@@ -47565,37 +48520,43 @@
 	module.exports = exports['default'];
 
 /***/ },
-/* 261 */
+/* 263 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports = "<?xml version=\"1.0\" encoding=\"iso-8859-1\"?>\r\n<!-- Generator: Adobe Illustrator 18.1.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->\r\n<svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" x=\"0px\" y=\"0px\"\r\n\t viewBox=\"0 0 139.918 139.83\" style=\"enable-background:new 0 0 139.918 139.83;\" xml:space=\"preserve\">\r\n<g id=\"virus_x5F_green\">\r\n\t<g>\r\n\t\t<path d=\"M12.626,118.102c-3.226-0.879-5.876-1.883-8.619-2.284c-4.434-0.648-4.583-3.547-3.321-6.379\r\n\t\t\tc3.535-7.933,2.568-15.992,1.686-24.17c-0.431-3.992-0.604-8.126,0.003-12.065c0.358-2.323,2.192-4.622,3.86-6.516\r\n\t\t\tc2.489-2.828,3.488-4.934,0.198-8.162c-1.659-1.628-2.392-4.953-2.203-7.413c0.5-6.512,1.599-12.993,2.703-19.446\r\n\t\t\tc1.687-9.857,7.68-16.992,16.12-22.067c10.877-6.541,22.914-9.462,35.704-9.429C67.363,0.191,76.005-0.3,84.568,0.298\r\n\t\t\tc9.865,0.689,19.736,1.928,29.464,3.668c8.488,1.519,15.468,6.45,20.414,13.097c2.873,3.861,5.013,9.103,5.214,13.815\r\n\t\t\tc0.479,11.235,0.35,22.604-0.916,33.771c-1.314,11.589-3.513,23.203-6.709,34.433c-2.821,9.912-4.773,20.613-13.037,28.185\r\n\t\t\tc-2.861,2.621-6.208,5.077-9.792,6.542c-8.251,3.37-16.931,5.198-25.995,5.257c-7.741,0.05-15.49,0.944-23.215,0.733\r\n\t\t\tc-4.436-0.121-8.92-1.408-13.224-2.681c-11.199-3.312-22.592-4.452-34.23-3.704c-3.48,0.224-7.571-0.126-7.829-3.97\r\n\t\t\tc-0.182-2.707,2.295-5.703,3.95-8.354C9.403,119.906,11.039,119.255,12.626,118.102z M37.629,115.737\r\n\t\t\tc-0.143,0.555-0.287,1.11-0.43,1.665c-1.25,0.057-2.504,0.217-3.748,0.156c-7.006-0.345-14.013-0.154-19.945,3.92\r\n\t\t\tc-2.07,1.422-3.09,4.294-4.589,6.504c2.43,0.568,4.835,1.463,7.294,1.64c6.289,0.453,12.723-0.078,18.878,0.993\r\n\t\t\tc11.049,1.922,21.685,6.214,33.172,5.608c9.287-0.49,18.577-1.072,27.831-1.949c2.546-0.241,4.971-1.689,8.429-2.935\r\n\t\t\tc-5.676-2.808-9.738-5.769-15.115-1.912c-1.971,1.414-5.458,2.01-7.855,1.426c-4.931-1.202-5.669-4.373-3.178-10.378\r\n\t\t\tc-0.628-0.363-1.237-0.905-1.946-1.091c-3.668-0.966-5.476-3.559-4.222-6.765c0.928-2.372,3.357-4.377,5.533-6.023\r\n\t\t\tc1.213-0.917,3.452-0.44,4.91-1.184c1.719-0.877,4.315-2.307,4.418-3.65c0.64-8.378,6.833-12.682,13.05-16.193\r\n\t\t\tc3.646-2.059,4.472-4.154,4.437-7.522c-0.022-2.174,0.033-4.35-0.011-6.524c-0.155-7.723-3.003-14.746-7.392-20.857\r\n\t\t\tc-5.886-8.194-15.718-8.883-24.49-8.244c-9.635,0.702-19.064,4.05-28.594,6.198c-1.06,0.239-2.193,0.169-4.257,0.307\r\n\t\t\tc1.412-1.443,1.884-2.113,2.527-2.536c0.901-0.593,1.883-1.148,2.912-1.466c12.125-3.744,24.334-7.214,37.242-4.576\r\n\t\t\tc9.62,1.966,17.811,5.961,21.124,15.969c0.665,2.01,1.549,3.96,2.094,5.998c1.555,5.807,3.881,11.501,1.844,17.745\r\n\t\t\tc-0.878,2.692,0.594,3.694,3.378,2.649c1.286-10.287,0.063-20.229-4.585-29.543c-4.189-8.395-10.652-14.502-20.584-15.688\r\n\t\t\tc-6.275-0.749-12.649-0.807-18.985-0.957c-7.967-0.188-15.508,1.596-22.631,5.116c-1.331,0.658-2.859,0.938-4.296,1.393\r\n\t\t\tc-0.215-0.442-0.43-0.883-0.645-1.325c2.331-1.599,4.661-3.197,7.011-4.809c-0.367-0.886-0.777-1.557-0.925-2.278\r\n\t\t\tc-1.643-8.041-3.162-16.109-4.956-24.117c-0.245-1.091-2.148-2.88-2.721-2.694c-8.536,2.759-16.157,7.154-19.908,15.424\r\n\t\t\tc-2.678,5.902-4.678,12.302-5.641,18.671c-0.767,5.077-1.751,10.528,2.076,15.581c2.978,3.932,1.883,8.131-2.197,10.773\r\n\t\t\tc-4.135,2.678-4.861,6.652-3.831,10.348c2.741,9.833,1.858,19.375-0.87,28.932c-1.009,3.534,0.116,5.269,3.919,5.428\r\n\t\t\tc6.311,0.264,12.631,0.471,18.923,0.988C32.633,114.158,35.116,115.118,37.629,115.737z M127.301,90.113\r\n\t\t\tc0.775-4.434,1.582-8.29,2.101-12.182c1.11-8.325,2.172-16.658,3.065-25.006c1.077-10.067,2.103-20.068-1.839-29.966\r\n\t\t\tc-3.607-9.057-10.535-13.516-19.786-15.204c-0.969-0.177-2.933,1.156-3.318,2.186c-3.076,8.221-5.963,16.513-8.691,24.851\r\n\t\t\tc-0.451,1.377-0.485,3.735,0.374,4.537c10.392,9.706,15.185,21.712,15.779,35.47c0.123,2.852-0.465,5.733-0.702,8.349\r\n\t\t\tC118.426,85.363,122.452,87.518,127.301,90.113z M76.309,18.073c-4.755-2.817-3.132-6.273-2.973-9.501\r\n\t\t\tc0.059-1.209-0.796-2.46-1.234-3.692c-0.996,1.047-2.595,1.976-2.843,3.17c-0.352,1.694,0.472,3.587,0.447,5.39\r\n\t\t\tc-0.016,1.183-0.643,2.358-0.997,3.537c-1.312-1.555-1.334-2.9-1.639-4.18c-2.012-8.434-2.766-8.914-12.1-7.986\r\n\t\t\tc-0.627,0.062-1.534-0.03-1.817,0.324c-0.847,1.06-2.214,2.442-2.024,3.457c1.337,7.146,3.206,14.198,4.496,21.35\r\n\t\t\tc0.575,3.188,2.088,3.907,5.088,3.838c7.026-0.163,14.06-0.016,21.09-0.061c1.521-0.01,3.846,0.26,4.435-0.545\r\n\t\t\tc6.073-8.308,9.523-17.539,9.826-27.605c-6.693,0-12.855,0-19.755,0C76.309,10.056,76.309,13.777,76.309,18.073z M90.161,107.958\r\n\t\t\tc0.005,8.497,5.672,17.015,14.002,19.512c2.486,0.745,6.724-0.083,8.512-1.81c6.554-6.326,9.963-14.378,12.171-23.177\r\n\t\t\tc1.442-5.746,0.148-9.847-4.655-12.578c-2.977-1.693-6.681-2.755-10.132-2.968C98.606,86.233,90.155,95.391,90.161,107.958z\r\n\t\t\t M87.364,113.777c-0.093-3.528-0.459-5.756-4.151-5.559c-4.681,0.249-8.174,2.47-8.392,5.439c-0.238,3.245,1.944,4.46,4.336,3.792\r\n\t\t\tC82.112,116.625,86.87,118.165,87.364,113.777z M93.036,124.832c-1.641-1.906-3.123-5.012-4.56-4.993\r\n\t\t\tc-2.617,0.035-5.403,1.652-7.697,3.2c-0.736,0.497-0.753,3.365,0.005,4.231c0.823,0.941,3.078,1.367,4.45,1.028\r\n\t\t\tC87.571,127.722,89.706,126.371,93.036,124.832z\"/>\r\n\t\t<path style=\"fill:#39B54A;\" d=\"M37.629,115.737c-2.513-0.619-4.996-1.579-7.544-1.789c-6.292-0.517-12.611-0.724-18.923-0.988\r\n\t\t\tc-3.803-0.159-4.928-1.894-3.919-5.428c2.728-9.557,3.611-19.098,0.87-28.932c-1.03-3.696-0.304-7.671,3.831-10.348\r\n\t\t\tc4.08-2.642,5.176-6.841,2.197-10.773c-3.827-5.053-2.843-10.503-2.076-15.581c0.962-6.37,2.963-12.769,5.641-18.671\r\n\t\t\tc3.752-8.269,11.372-12.664,19.908-15.424c0.573-0.185,2.476,1.603,2.721,2.694c1.795,8.009,3.314,16.076,4.956,24.117\r\n\t\t\tc0.147,0.721,0.557,1.392,0.925,2.278c-2.35,1.612-4.68,3.21-7.011,4.809c0.215,0.442,0.43,0.883,0.645,1.325\r\n\t\t\tc1.437-0.455,2.965-0.735,4.296-1.393c7.123-3.519,14.664-5.304,22.631-5.116c6.335,0.15,12.71,0.208,18.985,0.957\r\n\t\t\tc9.932,1.186,16.395,7.293,20.584,15.688c4.648,9.315,5.87,19.256,4.585,29.543c-2.784,1.045-4.256,0.043-3.378-2.649\r\n\t\t\tc2.037-6.244-0.289-11.938-1.844-17.745c-0.546-2.038-1.429-3.988-2.094-5.998c-3.313-10.008-11.504-14.003-21.124-15.969\r\n\t\t\tc-12.909-2.638-25.117,0.831-37.242,4.576c-1.03,0.318-2.011,0.874-2.912,1.466c-0.643,0.423-1.114,1.093-2.527,2.536\r\n\t\t\tc2.064-0.138,3.197-0.068,4.257-0.307c9.53-2.148,18.959-5.496,28.594-6.198c8.772-0.639,18.604,0.05,24.49,8.244\r\n\t\t\tc4.389,6.111,7.238,13.134,7.392,20.857c0.044,2.174-0.011,4.349,0.011,6.524c0.035,3.368-0.792,5.463-4.437,7.522\r\n\t\t\tc-6.217,3.511-12.41,7.815-13.05,16.193c-0.103,1.343-2.699,2.773-4.418,3.65c-1.458,0.744-3.698,0.267-4.91,1.184\r\n\t\t\tc-2.176,1.646-4.605,3.65-5.533,6.023c-1.254,3.205,0.555,5.798,4.222,6.765c0.708,0.187,1.318,0.729,1.946,1.091\r\n\t\t\tc-2.491,6.005-1.754,9.176,3.178,10.378c2.397,0.584,5.884-0.012,7.855-1.426c5.377-3.857,9.44-0.896,15.115,1.912\r\n\t\t\tc-3.458,1.246-5.883,2.694-8.429,2.935c-9.255,0.877-18.544,1.458-27.831,1.949c-11.487,0.606-22.122-3.686-33.172-5.608\r\n\t\t\tc-6.155-1.071-12.589-0.54-18.878-0.993c-2.459-0.177-4.864-1.072-7.294-1.64c1.499-2.21,2.519-5.083,4.589-6.504\r\n\t\t\tc5.932-4.073,12.939-4.265,19.945-3.92c1.243,0.061,2.498-0.098,3.748-0.156C37.342,116.847,37.485,116.292,37.629,115.737z\r\n\t\t\t M50.633,58.963c-3.731,0.538-4.877,2.425-4.412,5.585c0.424,2.882,0.679,5.791,0.894,8.696c0.124,1.678,0.023,3.371,0.023,5.057\r\n\t\t\tc0.557,0.023,1.115,0.046,1.672,0.07c0.695-3.039,1.39-6.078,2.085-9.118c0.452,0.021,0.905,0.042,1.357,0.063\r\n\t\t\tc0.387,3.02,0.774,6.041,1.161,9.061c0.312-0.043,0.625-0.086,0.937-0.129c0.346-2.663,0.693-5.327,1.039-7.99\r\n\t\t\tc0.458,0.022,0.916,0.045,1.374,0.067c0.695,2.737,1.391,5.473,2.147,8.449c3.566-2.334-2.731-7.49,4.04-7.741\r\n\t\t\tc0.399,2.421,0.784,4.759,1.17,7.097c0.418-0.024,0.836-0.048,1.254-0.072c0.331-2.667,0.662-5.334,0.993-8.001\r\n\t\t\tc0.426,0.079,0.851,0.158,1.277,0.237c0.513,2.434,1.026,4.867,1.54,7.301c0.568-0.057,1.136-0.113,1.704-0.17\r\n\t\t\tc0.151-2.737,0.303-5.475,0.454-8.212c0.315-0.019,0.631-0.037,0.946-0.056c0.859,2.444,1.717,4.888,2.576,7.332\r\n\t\t\tc1.239-0.992,1.817-1.942,1.773-2.864c-0.168-3.51-0.645-7.006-0.802-10.516c-0.154-3.445-2.755-5.288-6.507-4.39\r\n\t\t\tc4.456,3.906,4.728,6.871,0.575,7.436c-5.356,0.729-10.946,0.973-16.292,0.317c-5.594-0.687-5.506-1.254-2.781-5.884\r\n\t\t\tC51.007,60.284,50.739,59.73,50.633,58.963z M23.14,101.103c0.123-0.026,0.247-0.051,0.37-0.077\r\n\t\t\tc-0.382-1.449-0.448-3.098-1.241-4.286c-0.715-1.071-2.219-2.249-3.39-2.264c-1.306-0.017-3.432,0.959-3.787,1.973\r\n\t\t\tc-0.889,2.538-1.568,5.425-1.182,8.009c0.256,1.719,2.49,3.158,3.839,4.722c1.797-1.609,3.757-3.086,5.304-4.898\r\n\t\t\tC23.599,103.642,23.14,102.187,23.14,101.103z\"/>\r\n\t\t<path style=\"fill:#8DC63F;\" d=\"M127.301,90.113c-4.849-2.595-8.875-4.749-13.018-6.966c0.237-2.617,0.825-5.497,0.702-8.349\r\n\t\t\tc-0.594-13.757-5.387-25.763-15.779-35.47c-0.859-0.802-0.824-3.16-0.374-4.537c2.728-8.338,5.615-16.63,8.691-24.851\r\n\t\t\tc0.385-1.029,2.349-2.362,3.318-2.186c9.251,1.688,16.18,6.147,19.786,15.204c3.942,9.898,2.915,19.899,1.839,29.966\r\n\t\t\tc-0.893,8.349-1.955,16.682-3.065,25.006C128.883,81.823,128.076,85.679,127.301,90.113z\"/>\r\n\t\t<path style=\"fill:#8DC63F;\" d=\"M76.309,18.073c0-4.296,0-8.017,0-12.506c6.899,0,13.061,0,19.755,0\r\n\t\t\tc-0.303,10.067-3.754,19.298-9.826,27.605c-0.589,0.806-2.914,0.536-4.435,0.545c-7.03,0.045-14.064-0.101-21.09,0.061\r\n\t\t\tc-3.001,0.069-4.514-0.65-5.088-3.838c-1.289-7.152-3.159-14.205-4.496-21.35c-0.19-1.016,1.177-2.397,2.024-3.457\r\n\t\t\tc0.283-0.354,1.19-0.261,1.817-0.324c9.335-0.928,10.089-0.447,12.1,7.986c0.306,1.281,0.327,2.626,1.639,4.18\r\n\t\t\tc0.354-1.179,0.981-2.354,0.997-3.537c0.025-1.803-0.799-3.696-0.447-5.39c0.248-1.195,1.847-2.123,2.843-3.17\r\n\t\t\tc0.438,1.232,1.294,2.483,1.234,3.692C73.177,11.8,71.554,15.257,76.309,18.073z\"/>\r\n\t\t<path style=\"fill:#009444;\" d=\"M90.161,107.958c-0.007-12.567,8.445-21.726,19.898-21.02c3.451,0.213,7.155,1.275,10.132,2.968\r\n\t\t\tc4.803,2.731,6.098,6.831,4.655,12.578c-2.208,8.799-5.618,16.852-12.171,23.177c-1.788,1.726-6.026,2.555-8.512,1.81\r\n\t\t\tC95.833,124.974,90.166,116.456,90.161,107.958z M116.953,106.259c0.08-3.708-2.955-7.091-6.294-7.018\r\n\t\t\tc-3.399,0.075-7.816,4.605-8.016,8.22c-0.198,3.595,2.933,6.29,7.418,6.383C113.904,113.924,116.858,110.673,116.953,106.259z\"/>\r\n\t\t<path style=\"fill:#006838;\" d=\"M87.364,113.777c-0.493,4.388-5.251,2.848-8.207,3.672c-2.392,0.667-4.574-0.547-4.336-3.792\r\n\t\t\tc0.218-2.969,3.711-5.19,8.392-5.439C86.905,108.021,87.271,110.249,87.364,113.777z\"/>\r\n\t\t<path style=\"fill:#006838;\" d=\"M93.036,124.832c-3.33,1.539-5.465,2.89-7.801,3.467c-1.373,0.339-3.627-0.087-4.45-1.028\r\n\t\t\tc-0.758-0.866-0.741-3.735-0.005-4.231c2.294-1.549,5.08-3.165,7.697-3.2C89.914,119.819,91.395,122.926,93.036,124.832z\"/>\r\n\t\t<path d=\"M50.633,58.963c0.106,0.768,0.374,1.321,0.195,1.625c-2.724,4.63-2.812,5.197,2.781,5.884\r\n\t\t\tc5.346,0.656,10.936,0.412,16.292-0.317c4.154-0.565,3.881-3.53-0.575-7.436c3.752-0.898,6.353,0.944,6.507,4.39\r\n\t\t\tc0.157,3.51,0.633,7.006,0.802,10.516c0.044,0.922-0.534,1.872-1.773,2.864c-0.859-2.444-1.717-4.888-2.576-7.332\r\n\t\t\tc-0.315,0.019-0.631,0.037-0.946,0.056c-0.151,2.737-0.303,5.475-0.454,8.212c-0.568,0.057-1.136,0.113-1.704,0.17\r\n\t\t\tc-0.513-2.434-1.026-4.867-1.54-7.301c-0.426-0.079-0.851-0.158-1.277-0.237c-0.331,2.667-0.662,5.334-0.993,8.001\r\n\t\t\tc-0.418,0.024-0.836,0.048-1.254,0.072c-0.385-2.338-0.77-4.675-1.17-7.097c-6.771,0.251-0.474,5.407-4.04,7.741\r\n\t\t\tc-0.756-2.976-1.451-5.713-2.147-8.449c-0.458-0.022-0.916-0.045-1.374-0.067c-0.346,2.663-0.693,5.327-1.039,7.99\r\n\t\t\tc-0.312,0.043-0.625,0.086-0.937,0.129c-0.387-3.02-0.774-6.041-1.161-9.061c-0.452-0.021-0.905-0.042-1.357-0.063\r\n\t\t\tc-0.695,3.039-1.39,6.078-2.085,9.118c-0.557-0.023-1.115-0.046-1.672-0.07c0-1.686,0.102-3.38-0.023-5.057\r\n\t\t\tc-0.215-2.905-0.47-5.815-0.894-8.696C45.756,61.387,46.902,59.501,50.633,58.963z\"/>\r\n\t\t<path d=\"M23.14,101.103c0,1.083,0.459,2.539-0.087,3.179c-1.547,1.811-3.507,3.289-5.304,4.898\r\n\t\t\tc-1.349-1.564-3.583-3.003-3.839-4.722c-0.385-2.584,0.293-5.471,1.182-8.009c0.355-1.014,2.481-1.99,3.787-1.973\r\n\t\t\tc1.171,0.015,2.675,1.193,3.39,2.264c0.793,1.188,0.859,2.838,1.241,4.286C23.386,101.052,23.263,101.078,23.14,101.103z\r\n\t\t\t M17.183,106.206c5.247-1.939,2.431-5.784,3.229-9.908C14.406,99.003,17.304,103.015,17.183,106.206z\"/>\r\n\t\t<path d=\"M116.953,106.259c-0.095,4.415-3.049,7.665-6.892,7.585c-4.485-0.093-7.616-2.788-7.418-6.383\r\n\t\t\tc0.2-3.615,4.617-8.145,8.016-8.22C113.999,99.167,117.033,102.551,116.953,106.259z M115.231,106.453\r\n\t\t\tc-2.183-1.992-3.623-3.306-5.063-4.621c-1.555,1.706-3.448,3.253-4.43,5.229c-0.249,0.501,2.612,3.533,3.677,3.352\r\n\t\t\tC111.275,110.098,112.851,108.192,115.231,106.453z\"/>\r\n\t\t<path style=\"fill:#006838;\" d=\"M17.183,106.206c0.121-3.191-2.778-7.203,3.229-9.908C19.614,100.422,22.43,104.267,17.183,106.206\r\n\t\t\tz\"/>\r\n\t\t<path style=\"fill:#006838;\" d=\"M115.231,106.453c-2.38,1.74-3.956,3.645-5.816,3.961c-1.065,0.181-3.925-2.851-3.677-3.352\r\n\t\t\tc0.982-1.976,2.875-3.523,4.43-5.229C111.608,103.146,113.048,104.46,115.231,106.453z\"/>\r\n\t</g>\r\n</g>\r\n<g id=\"Layer_1\">\r\n</g>\r\n</svg>\r\n"
 
 /***/ },
-/* 262 */
-/***/ function(module, exports, __webpack_require__) {
-
-	module.exports = "<?xml version=\"1.0\" encoding=\"iso-8859-1\"?>\r\n<!-- Generator: Adobe Illustrator 18.1.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->\r\n<svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" x=\"0px\" y=\"0px\"\r\n\t viewBox=\"0 0 137.633 140.182\" style=\"enable-background:new 0 0 137.633 140.182;\" xml:space=\"preserve\">\r\n<g id=\"virus_x5F_purple\">\r\n\t<g id=\"EngFRM.tif\">\r\n\t\t<g>\r\n\t\t\t<path d=\"M15.223,106.899c-2.729-1.527-5.192-3.084-7.81-4.322c-2.965-1.403-5.613-2.794-5.555-6.688\r\n\t\t\t\tc0.056-3.776,2.079-6.05,5.243-7.674C7.85,87.83,8.516,87.29,9.2,86.835c-0.256-0.431-0.345-0.814-0.542-0.88\r\n\t\t\t\tC0.348,83.2-2.01,75.947,1.713,66.264c3.533-9.187,8.566-17.399,14.549-25.184c4.412-5.74,8.295-11.876,12.528-17.755\r\n\t\t\t\tc5.475-7.604,13.018-12.79,21.536-16.303c10.986-4.531,22.676-5.911,34.542-6.647c8.464-0.526,16.691-0.702,25.128,0.865\r\n\t\t\t\tc8.634,1.604,14.938,5.678,19.293,13.006c5.262,8.854,7.412,18.594,7.677,28.71c0.37,14.154,1.12,28.36,0.293,42.463\r\n\t\t\t\tc-0.537,9.161-2.904,18.396-5.755,27.183c-2.011,6.197-7.214,11.039-13.266,13.797c-7.258,3.307-14.863,6.024-22.545,8.218\r\n\t\t\t\tc-7.276,2.079-14.783,3.774-22.302,4.51c-9.532,0.934-19.218,1.373-28.762,0.798c-6.82-0.411-13.493-2.84-18.197-8.568\r\n\t\t\t\tc-3.66-4.457-7.723-7.134-14.176-5.112c-1.856,0.582-6.422-1.802-6.876-3.555c-0.801-3.087-0.239-7.202,1.347-10.004\r\n\t\t\t\tC8.067,110.316,11.663,109.194,15.223,106.899z M133.34,71.973c-3.193,2.71-5.801,5.318-8.789,7.391\r\n\t\t\t\tc-13.396,9.295-31.439,0.53-35.714-14.068c-3.155-10.771-1.78-21.017,2.355-30.876c6.044-14.41,17.623-24.511,34.522-18.105\r\n\t\t\t\tc-3.068-6.164-7.788-9.729-12.884-10.775c-2.48,1.687-4.13,2.809-5.78,3.931c-0.417-1.638-0.833-3.275-1.383-5.436\r\n\t\t\t\tc-1.643-0.196-4.358-0.981-6.984-0.753C86.549,4.331,74.255,4.761,62.37,7.135C49.526,9.7,38.354,16.24,30.463,27.096\r\n\t\t\t\tc-6.553,9.015-13.38,17.905-19.061,27.447c-3.552,5.965-6.34,12.863-7.404,19.659c-1.158,7.396,1.276,8.925,8.693,6.281\r\n\t\t\t\tc2.889-1.03,6.238-1.044,9.38-1.061c3.541-0.019,6.24-2.293,6.402-5.991c0.168-3.841-1.542-5.896-5.571-5.854\r\n\t\t\t\tc-1.134,0.012-2.27-0.168-3.405-0.26c-0.131-0.387-0.261-0.774-0.392-1.161c1.411-0.718,2.78-1.942,4.24-2.06\r\n\t\t\t\tc4.457-0.359,7.519,3.779,7.964,10.294c0.276,4.046-2.653,7.403-6.824,7.687c-1.824,0.124-3.665,0.061-5.497,0.02\r\n\t\t\t\tc-3.667-0.082-5.723,2.149-6.254,5.24c-0.269,1.564,0.882,3.654,1.953,5.098c2.559,3.452,5.452,6.661,8.21,9.969\r\n\t\t\t\tc-0.244,0.318-0.488,0.636-0.732,0.954c-1.309-0.875-2.861-1.536-3.874-2.67c-1.98-2.216-3.487-4.856-5.53-7.004\r\n\t\t\t\tc-1.102-1.158-2.884-2.188-4.406-2.258c-0.889-0.04-2.623,1.921-2.633,2.994c-0.013,1.542,0.769,3.838,1.962,4.514\r\n\t\t\t\tc5.385,3.048,11.039,5.633,16.588,8.399c1.128,0.562,2.224,1.186,3.335,1.781c-0.129,0.368-0.258,0.736-0.388,1.104\r\n\t\t\t\tc-3.313,0-6.629-0.086-9.939,0.021c-4.311,0.14-9.299,3.646-9.743,7.235c-0.174,1.411,1.092,2.996,1.703,4.502\r\n\t\t\t\tc1.234-0.915,2.912-1.579,3.616-2.794c1.992-3.438,4.009-6.488,8.522-6.06c-2.217,2.571-4.38,5.08-6.211,7.203\r\n\t\t\t\tc4.341,2.462,8.46,3.638,10.773,6.331c6.612,7.702,15.111,10.033,24.604,9.809c6.784-0.16,13.539-1.279,20.325-1.684\r\n\t\t\t\tc10.691-0.638,21.153-2.384,31.067-6.425c6.17-2.515,12.835-4.704,17.953-8.7c10.776-8.412,11.482-21.269,12.999-33.204\r\n\t\t\t\tc-1.987-0.257-3.726-0.483-5.466-0.708c-0.035-0.616-0.07-1.232-0.105-1.848c1.722-0.567,3.444-1.134,5.547-1.826\r\n\t\t\t\tC132.995,79.31,133.157,75.86,133.34,71.973z M102.692,53.843c-0.413,0.156-0.825,0.313-1.238,0.469\r\n\t\t\t\tc1.535,3.922,2.088,8.78,4.808,11.573c5.823,5.98,14.779,3.935,20.647-3.684c7.337-9.528,6.151-20.214,3.653-30.936\r\n\t\t\t\tc-0.233-0.999-1.273-1.974-2.181-2.632c-6.045-4.383-15.127-2.8-19.217,3.537C104.927,38.737,102.241,45.857,102.692,53.843z\r\n\t\t\t\t M132.626,60.845c-3.379,3.103-6.088,6.031-9.239,8.378c-4.491,3.345-9.913,4.699-15.036,2.33\r\n\t\t\t\tc-5.628-2.602-9.109-7.286-9.338-13.929c-0.255-7.388,0.155-14.642,3.748-21.285c4.022-7.437,10.696-14.374,19.611-13.131\r\n\t\t\t\tc2.263,0.316,4.495,0.854,8.174,1.568c-1.778-2.078-2.476-3.492-3.617-4.134c-10.84-6.101-21.403-3.404-28.273,6.928\r\n\t\t\t\tc-4.456,6.702-6.373,14.007-7.281,22.056c-0.712,6.32-0.327,12.152,1.7,17.896c3.189,9.039,16.345,14.424,26.119,11.046\r\n\t\t\t\tC126.543,76.028,132.874,68.041,132.626,60.845z\"/>\r\n\t\t\t<path style=\"fill:#754B9E;\" d=\"M133.34,71.973c-0.183,3.887-0.345,7.337-0.475,10.096c-2.104,0.693-3.825,1.259-5.547,1.826\r\n\t\t\t\tc0.035,0.616,0.07,1.232,0.105,1.848c1.739,0.225,3.479,0.451,5.466,0.708c-1.517,11.935-2.223,24.792-12.999,33.204\r\n\t\t\t\tc-5.118,3.996-11.784,6.185-17.953,8.7c-9.914,4.041-20.376,5.788-31.067,6.425c-6.785,0.405-13.541,1.523-20.325,1.684\r\n\t\t\t\tc-9.493,0.224-17.992-2.107-24.604-9.809c-2.312-2.694-6.432-3.869-10.773-6.331c1.83-2.123,3.994-4.632,6.211-7.203\r\n\t\t\t\tc-4.513-0.427-6.529,2.623-8.522,6.06c-0.705,1.216-2.383,1.879-3.616,2.794c-0.611-1.506-1.877-3.091-1.703-4.502\r\n\t\t\t\tc0.443-3.589,5.432-7.095,9.743-7.235c3.31-0.107,6.626-0.021,9.939-0.021c0.129-0.368,0.258-0.736,0.388-1.104\r\n\t\t\t\tc-1.111-0.595-2.207-1.219-3.335-1.781c-5.549-2.766-11.203-5.351-16.588-8.399c-1.194-0.676-1.975-2.972-1.962-4.514\r\n\t\t\t\tc0.009-1.072,1.744-3.034,2.633-2.994c1.522,0.069,3.304,1.099,4.406,2.258c2.043,2.147,3.55,4.787,5.53,7.004\r\n\t\t\t\tc1.013,1.134,2.565,1.795,3.874,2.67c0.244-0.318,0.488-0.636,0.732-0.954c-2.758-3.307-5.65-6.517-8.21-9.969\r\n\t\t\t\tc-1.071-1.444-2.222-3.534-1.953-5.098c0.531-3.091,2.588-5.322,6.254-5.24c1.832,0.041,3.672,0.104,5.497-0.02\r\n\t\t\t\tc4.171-0.284,7.1-3.64,6.824-7.687c-0.444-6.515-3.506-10.654-7.964-10.294c-1.46,0.118-2.829,1.342-4.24,2.06\r\n\t\t\t\tc0.131,0.387,0.261,0.774,0.392,1.161c1.135,0.092,2.271,0.272,3.405,0.26c4.029-0.042,5.739,2.013,5.571,5.854\r\n\t\t\t\tc-0.162,3.698-2.861,5.973-6.402,5.991c-3.142,0.016-6.491,0.031-9.38,1.061c-7.417,2.644-9.851,1.115-8.693-6.281\r\n\t\t\t\tc1.064-6.796,3.853-13.694,7.404-19.659c5.682-9.542,12.508-18.432,19.061-27.447C38.354,16.24,49.526,9.7,62.37,7.135\r\n\t\t\t\tc11.885-2.374,24.179-2.804,36.314-3.853c2.626-0.227,5.341,0.558,6.984,0.753c0.55,2.161,0.966,3.798,1.383,5.436\r\n\t\t\t\tc1.65-1.122,3.3-2.244,5.78-3.931c5.096,1.046,9.815,4.611,12.884,10.775C108.814,9.909,97.235,20.01,91.191,34.42\r\n\t\t\t\tc-4.135,9.859-5.509,20.105-2.355,30.876c4.275,14.598,22.319,23.364,35.714,14.068C127.538,77.291,130.147,74.683,133.34,71.973\r\n\t\t\t\tz M64.189,100.551c0.861-6.241-7.04-11.782-13.65-12.02c-7.085-0.255-12.392,5.029-12.772,12.324\r\n\t\t\t\tc-0.254,4.876,7.273,10.338,14.144,10.264C57.863,111.054,64.127,105.662,64.189,100.551z M64.111,43.748\r\n\t\t\t\tc-2.675-2.429-5.267-1.214-7.698,0.239c-6.128,3.664-12.293,6.742-19.873,4.734c-1.003-0.266-2.512,1.338-3.889,2.136\r\n\t\t\t\tc2.666,1.374,4.688,1.841,5.807,3.096c4.222,4.735,11.13,5.312,15.656,0.771C57.51,51.316,60.607,47.618,64.111,43.748z\r\n\t\t\t\t M54.247,124.018c2.42-2.9,3.866-4.632,5.313-6.365c-1.751-1.256-3.359-3.21-5.289-3.598c-2.637-0.53-4.832,1.456-4.482,4.126\r\n\t\t\t\tC50.003,119.82,52.019,121.227,54.247,124.018z M67.595,95.746c2.187-2.727,4.426-4.274,4.593-6.017\r\n\t\t\t\tc0.253-2.626-2.223-4.512-4.786-3.77c-1.64,0.475-3.507,2.641-3.821,4.315C63.358,91.466,65.549,93.103,67.595,95.746z\r\n\t\t\t\t M64.108,107.897c2.786,1.946,4.491,4.05,5.875,3.861c1.574-0.216,3.923-2.434,3.987-3.867c0.069-1.547-2.28-4.605-3.28-4.49\r\n\t\t\t\tC68.826,103.614,67.174,105.648,64.108,107.897z M88.353,20.997c-2.097-1.469-3.46-3.164-4.562-3.011\r\n\t\t\t\tc-1.428,0.198-2.648,1.867-3.958,2.903c1.105,1.046,2.199,2.914,3.319,2.93C84.574,23.839,86.018,22.356,88.353,20.997z\r\n\t\t\t\t M86.088,84.742c-2.19-1.769-3.475-3.489-4.273-3.29c-1.155,0.287-2.493,1.863-2.724,3.08c-0.157,0.83,1.371,2.721,2.275,2.808\r\n\t\t\t\tC82.463,87.445,83.696,86.148,86.088,84.742z M116.596,96.467c-1.445-1.538-2.653-3.409-3.149-3.24\r\n\t\t\t\tc-1.485,0.507-2.691,1.812-4.006,2.806c1.197,1.086,2.251,2.509,3.661,3.091C113.662,99.355,115.008,97.725,116.596,96.467z\r\n\t\t\t\t M105.892,98.452c-2.154-1.711-3.452-3.502-4.487-3.364c-1.178,0.157-2.477,1.898-3.004,3.23\r\n\t\t\t\tc-0.229,0.579,1.459,2.724,2.061,2.641C101.998,100.745,103.414,99.679,105.892,98.452z M92.74,14.591\r\n\t\t\t\tc0.677,0.321,1.355,0.642,2.032,0.962c1.141-1.596,2.282-3.193,3.423-4.789c-1.439-0.602-2.879-1.204-4.318-1.805\r\n\t\t\t\tC93.498,10.836,93.119,12.714,92.74,14.591z M80.528,73.291c-1.574-1.213-2.841-2.886-3.727-2.707\r\n\t\t\t\tc-1.274,0.257-2.773,1.702-3.181,2.956c-0.215,0.66,1.819,2.924,2.601,2.814C77.559,76.165,78.71,74.681,80.528,73.291z\r\n\t\t\t\t M78.391,44.693c-1.934-1.615-3.443-3.303-3.796-3.092c-1.225,0.73-2.479,2.003-2.84,3.308c-0.175,0.631,1.622,2.537,2.512,2.528\r\n\t\t\t\tC75.387,47.426,76.491,46.044,78.391,44.693z M77.434,36.03c1.332-1.844,2.913-3.099,2.729-4.003\r\n\t\t\t\tc-0.253-1.24-1.843-2.214-2.86-3.302c-0.986,0.971-2.79,1.97-2.757,2.906C74.589,32.879,76.061,34.078,77.434,36.03z\r\n\t\t\t\t M89.751,88.494c-1.117,1.949-2.263,3.189-2.44,4.551c-0.1,0.771,1.393,1.743,2.168,2.625c1.037-1.246,2.374-2.373,2.954-3.801\r\n\t\t\t\tC92.649,91.341,91.082,90.104,89.751,88.494z M70.793,61.866c0.704,0.633,1.408,1.265,2.112,1.898\r\n\t\t\t\tc1.36-1.315,2.72-2.63,4.08-3.944c-1.056-0.906-2.113-1.813-3.169-2.719C72.809,58.688,71.801,60.277,70.793,61.866z\r\n\t\t\t\t M126.87,92.749c-2.029-1.44-3.084-2.712-4.254-2.826c-0.722-0.07-2.147,1.565-2.258,2.545c-0.076,0.675,1.486,2.038,2.451,2.177\r\n\t\t\t\tC123.751,94.78,124.863,93.751,126.87,92.749z\"/>\r\n\t\t\t<path style=\"fill:#754B9E;\" d=\"M102.692,53.843c-0.452-7.986,2.235-15.106,6.472-21.672c4.09-6.338,13.172-7.92,19.217-3.537\r\n\t\t\t\tc0.908,0.658,1.948,1.633,2.181,2.632c2.498,10.722,3.685,21.408-3.653,30.936c-5.867,7.619-14.823,9.663-20.647,3.684\r\n\t\t\t\tc-2.72-2.793-3.273-7.651-4.808-11.573C101.867,54.156,102.28,53.999,102.692,53.843z\"/>\r\n\t\t\t<path style=\"fill:#5151A3;\" d=\"M132.626,60.845c0.248,7.196-6.083,15.183-13.432,17.723c-9.775,3.378-22.93-2.007-26.119-11.046\r\n\t\t\t\tc-2.027-5.744-2.412-11.576-1.7-17.896c0.907-8.049,2.824-15.354,7.281-22.056c6.87-10.333,17.433-13.029,28.273-6.928\r\n\t\t\t\tc1.141,0.642,1.839,2.056,3.617,4.134c-3.679-0.714-5.91-1.253-8.174-1.568c-8.915-1.243-15.589,5.694-19.611,13.131\r\n\t\t\t\tc-3.593,6.644-4.003,13.897-3.748,21.285c0.229,6.643,3.71,11.327,9.338,13.929c5.123,2.368,10.545,1.015,15.036-2.33\r\n\t\t\t\tC126.538,66.877,129.247,63.948,132.626,60.845z\"/>\r\n\t\t\t<path d=\"M64.189,100.551c-0.062,5.111-6.327,10.503-12.278,10.568c-6.871,0.075-14.398-5.388-14.144-10.264\r\n\t\t\t\tc0.38-7.295,5.687-12.579,12.772-12.324C57.149,88.769,65.05,94.31,64.189,100.551z M51.301,107.53\r\n\t\t\t\tc6.32,0.004,9.225-2.4,9.255-7.658c0.027-4.771-4.002-7.777-10.443-7.793c-5.451-0.013-7.932,2.428-7.924,7.796\r\n\t\t\t\tC42.198,105.265,44.888,107.526,51.301,107.53z\"/>\r\n\t\t\t<path d=\"M64.111,43.748c-3.503,3.87-6.601,7.569-9.996,10.976c-4.526,4.541-11.433,3.963-15.656-0.771\r\n\t\t\t\tc-1.119-1.255-3.141-1.721-5.807-3.096c1.377-0.797,2.886-2.401,3.889-2.136c7.58,2.009,13.745-1.07,19.873-4.734\r\n\t\t\t\tC58.843,42.533,61.435,41.319,64.111,43.748z M43.325,53.73c5.207,2.397,8.881,0.884,10.331-4.012\r\n\t\t\t\tC50.285,51.027,46.913,52.337,43.325,53.73z\"/>\r\n\t\t\t<path d=\"M54.247,124.018c-2.228-2.79-4.243-4.198-4.458-5.837c-0.35-2.67,1.845-4.656,4.482-4.126\r\n\t\t\t\tc1.93,0.388,3.538,2.342,5.289,3.598C58.113,119.385,56.667,121.118,54.247,124.018z\"/>\r\n\t\t\t<path d=\"M67.595,95.746c-2.046-2.643-4.238-4.279-4.014-5.472c0.314-1.674,2.18-3.84,3.821-4.315\r\n\t\t\t\tc2.563-0.742,5.039,1.144,4.786,3.77C72.021,91.471,69.783,93.019,67.595,95.746z\"/>\r\n\t\t\t<path d=\"M64.108,107.897c3.066-2.249,4.717-4.283,6.581-4.496c1.001-0.114,3.349,2.943,3.28,4.49\r\n\t\t\t\tc-0.064,1.433-2.412,3.651-3.987,3.867C68.599,111.948,66.895,109.843,64.108,107.897z\"/>\r\n\t\t\t<path d=\"M88.353,20.997c-2.335,1.359-3.779,2.843-5.201,2.822c-1.12-0.016-2.214-1.884-3.319-2.93\r\n\t\t\t\tc1.31-1.036,2.53-2.705,3.958-2.903C84.893,17.833,86.256,19.528,88.353,20.997z\"/>\r\n\t\t\t<path d=\"M86.088,84.742c-2.391,1.406-3.625,2.703-4.721,2.598c-0.905-0.086-2.433-1.978-2.275-2.808\r\n\t\t\t\tc0.231-1.217,1.569-2.793,2.724-3.08C82.612,81.253,83.898,82.973,86.088,84.742z\"/>\r\n\t\t\t<path d=\"M116.596,96.467c-1.588,1.258-2.934,2.888-3.494,2.657c-1.409-0.582-2.464-2.005-3.661-3.091\r\n\t\t\t\tc1.315-0.994,2.521-2.299,4.006-2.806C113.943,93.057,115.151,94.929,116.596,96.467z\"/>\r\n\t\t\t<path d=\"M105.892,98.452c-2.478,1.227-3.894,2.294-5.431,2.506c-0.602,0.083-2.29-2.062-2.061-2.641\r\n\t\t\t\tc0.528-1.331,1.826-3.073,3.004-3.23C102.441,94.95,103.738,96.741,105.892,98.452z\"/>\r\n\t\t\t<path d=\"M92.74,14.591c0.379-1.878,0.758-3.755,1.137-5.633c1.439,0.602,2.879,1.204,4.318,1.805\r\n\t\t\t\tc-1.141,1.596-2.282,3.193-3.423,4.789C94.095,15.233,93.417,14.912,92.74,14.591z\"/>\r\n\t\t\t<path d=\"M80.528,73.291c-1.819,1.391-2.97,2.875-4.307,3.063c-0.781,0.11-2.815-2.154-2.601-2.814\r\n\t\t\t\tc0.408-1.254,1.907-2.699,3.181-2.956C77.687,70.404,78.955,72.077,80.528,73.291z\"/>\r\n\t\t\t<path d=\"M78.391,44.693c-1.9,1.351-3.005,2.733-4.124,2.744c-0.89,0.009-2.687-1.897-2.512-2.528\r\n\t\t\t\tc0.361-1.305,1.615-2.578,2.84-3.308C74.948,41.39,76.457,43.078,78.391,44.693z\"/>\r\n\t\t\t<path d=\"M77.434,36.03c-1.373-1.951-2.845-3.15-2.889-4.399c-0.033-0.936,1.771-1.935,2.757-2.906\r\n\t\t\t\tc1.017,1.088,2.608,2.061,2.86,3.302C80.347,32.93,78.766,34.186,77.434,36.03z\"/>\r\n\t\t\t<path d=\"M89.751,88.494c1.33,1.611,2.897,2.847,2.683,3.375c-0.58,1.428-1.917,2.555-2.954,3.801\r\n\t\t\t\tc-0.775-0.882-2.268-1.854-2.168-2.625C87.488,91.682,88.634,90.443,89.751,88.494z\"/>\r\n\t\t\t<path d=\"M70.793,61.866c1.008-1.589,2.015-3.177,3.023-4.766c1.056,0.906,2.113,1.813,3.169,2.719\r\n\t\t\t\tc-1.36,1.315-2.72,2.63-4.08,3.944C72.201,63.131,71.497,62.498,70.793,61.866z\"/>\r\n\t\t\t<path d=\"M126.87,92.749c-2.007,1.002-3.119,2.031-4.061,1.895c-0.965-0.139-2.527-1.501-2.451-2.177\r\n\t\t\t\tc0.11-0.98,1.535-2.616,2.258-2.545C123.786,90.036,124.841,91.309,126.87,92.749z\"/>\r\n\t\t\t<path style=\"fill:#5151A3;\" d=\"M51.301,107.53c-6.413-0.004-9.103-2.264-9.112-7.655c-0.008-5.368,2.473-7.809,7.924-7.796\r\n\t\t\t\tc6.441,0.015,10.469,3.022,10.443,7.793C60.526,105.13,57.621,107.534,51.301,107.53z\"/>\r\n\t\t\t<path style=\"fill:#FFFFFF;\" d=\"M43.325,53.73c3.588-1.394,6.96-2.703,10.327-4.017C52.207,54.614,48.533,56.127,43.325,53.73z\"/>\r\n\t\t</g>\r\n\t</g>\r\n</g>\r\n<g id=\"Layer_1\">\r\n</g>\r\n</svg>\r\n"
-
-/***/ },
-/* 263 */
-/***/ function(module, exports, __webpack_require__) {
-
-	module.exports = "<?xml version=\"1.0\" encoding=\"iso-8859-1\"?>\r\n<!-- Generator: Adobe Illustrator 18.1.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->\r\n<svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" x=\"0px\" y=\"0px\"\r\n\t viewBox=\"0 0 139.972 142.273\" style=\"enable-background:new 0 0 139.972 142.273;\" xml:space=\"preserve\">\r\n<g id=\"pill_x5F_orange\">\r\n\t<g>\r\n\t\t<path d=\"M42.15,142.273c-11.655-0.338-22.257-2.527-30.657-11.105c-6.468-6.606-8.787-15.057-9.569-23.96\r\n\t\t\tC1.082,97.636,0.227,88.04,0.049,78.442C-0.14,68.205,0.24,57.941,0.789,47.712c0.345-6.429,0.676-13.035,2.381-19.178\r\n\t\t\tC7.275,13.736,17.214,3.932,32.957,1.979c9.332-1.158,18.768-1.945,28.16-1.979c7.369-0.026,14.857,0.813,20.729,6.563\r\n\t\t\tc0.852,0.834,3.526,0.756,4.782,0.056c13.293-7.403,30.727-5.166,42.025,4.796c7.065,6.229,9.721,13.991,10.237,22.837\r\n\t\t\tc0.569,9.765,0.999,19.55,1.074,29.33c0.069,9.084-0.304,18.176-0.688,27.256c-0.236,5.563-1.806,11.233-1.106,16.636\r\n\t\t\tc1.303,10.056-3.683,17.216-9.488,23.942c-5.435,6.296-12.822,9.87-21.163,10.077c-17.684,0.438-35.379,0.346-53.069,0.589\r\n\t\t\tC50.347,142.138,46.25,141.962,42.15,142.273z M108.8,17.228c-2.361,2.745-4.914,4.866-6.303,7.586\r\n\t\t\tc-1.185,2.32-0.906,5.359-1.497,8.03c-1.917,8.656-4.453,17.188-14.181,19.932c-5.883,1.659-12.145,3.094-18.172,2.871\r\n\t\t\tc-13.483-0.497-22.968-10.728-21.312-22.661C48.753,22.764,54.082,18,63.999,18.595c3.258,0.196,6.874,1.384,7.404,4.918\r\n\t\t\tc0.582,3.883-3.081,4.591-6.09,5.299c-0.874,0.206-1.766,0.511-2.532,0.97c-2.93,1.757-3.763,4.703-1.572,6.953\r\n\t\t\tc2.25,2.311,5.428,4.383,8.527,5.067c12.002,2.647,20.345-11.903,17.061-22.071C83.55,9.678,77.226,4.325,65.972,3.894\r\n\t\t\tc-11.048-0.423-22.21,0.668-33.247,1.819C20.423,6.996,8.302,18.165,6.802,29.715C5.336,41.006,4.896,52.429,3.881,63.783\r\n\t\t\tc-0.331,3.696,1.695,4.455,4.667,4.481c2.178,0.019,4.363,0.01,6.531,0.185c10.338,0.833,16.602,8.896,16.888,17.354\r\n\t\t\tc0.468,13.799,10.116,21.217,22.146,20.945c11.044-0.25,22.1,0.026,33.147-0.142c10.103-0.153,17.344-6.832,18.842-16.38\r\n\t\t\tc0.84-5.352,2.226-10.659,3.852-15.832c1.731-5.507,6.037-8.169,11.621-8.714c4.503-0.44,9.023-0.706,14.165-1.098\r\n\t\t\tc-0.294-4.99-0.87-9.863-0.806-14.728c0.113-8.577,0.475-16.973-2.92-25.299c-3.25-7.972-8.215-13.676-16.089-16.743\r\n\t\t\tc-9.888-3.852-19.555-2.576-29.322,1.96c0.39,1.366,0.431,3.075,1.266,4.174c4.159,5.47,3.607,11.364,2.022,17.454\r\n\t\t\tc-3.426,13.162-21.42,19.483-30.257,9.643c-2.649-2.95-3.999-6.243-2.702-9.414c0.967-2.365,4.054-3.958,6.394-5.612\r\n\t\t\tc1.439-1.017,3.25-1.501,5.648-2.556c-6.326-2.669-13.099-1.2-15.719,2.668c-4.441,6.555-2.455,17.587,4.176,22.058\r\n\t\t\tc8.883,5.988,18.273,4.944,27.838,1.791c5.939-1.958,8.959-6.564,10.858-11.928c1.808-5.105,2.735-10.518,4.332-15.708\r\n\t\t\tC101.65,18.464,104.051,15.975,108.8,17.228z M89.218,139.154c7.654-0.878,15.055-0.891,21.99-2.705\r\n\t\t\tc12.586-3.291,20.859-11.219,22.047-25.036c0.509-5.915,0.782-11.859,1.523-17.744c1.037-8.233,1.971-16.421,0.187-24.897\r\n\t\t\tc-3.026-0.08-5.779-0.164-8.532-0.223c-7.544-0.161-13.407,4.72-14.655,12.189c-0.36,2.157-0.805,4.304-1.059,6.474\r\n\t\t\tc-1.337,11.417-6.979,19.382-18.193,22.732c-2.219,0.663-4.645,0.621-7.221,0.935C86.608,120.297,87.842,129.216,89.218,139.154z\r\n\t\t\t M57.916,115.712c0.642-5.181,0.623-4.954-4.356-5.381c-14.562-1.249-23.518-5.775-25.468-22.568\r\n\t\t\tc-0.814-7.012-3.083-14.317-12.314-15.112c-2.486-0.214-4.966-0.506-7.455-0.689c-3.319-0.244-4.887,1.447-4.727,4.697\r\n\t\t\tc0.135,2.741,0.428,5.476,0.69,8.209c1.091,11.39,0.435,22.964,4.551,34.013c3.019,8.106,8.18,14.418,16.208,16.57\r\n\t\t\tc8.297,2.223,17.132,2.55,25.768,3.227c1.327,0.104,4.707,1.697,4.993-2.44C56.28,129.38,57.19,122.552,57.916,115.712z\r\n\t\t\t M59.269,138.047c7.576,0.2,15.379,0.493,23.179,0.456c0.676-0.003,2.025-2.268,1.902-3.348\r\n\t\t\tc-0.843-7.376-1.876-14.739-3.174-22.047c-0.204-1.149-2.029-2.794-3.166-2.845c-3.925-0.177-7.902,0.052-11.802,0.564\r\n\t\t\tc-1.228,0.161-3.089,1.56-3.277,2.635C61.536,121.475,60.489,129.547,59.269,138.047z\"/>\r\n\t\t<path style=\"fill:#F15A29;\" d=\"M108.8,17.228c-4.749-1.253-7.149,1.236-8.342,5.113c-1.596,5.19-2.524,10.603-4.332,15.708\r\n\t\t\tc-1.899,5.363-4.919,9.97-10.858,11.928c-9.565,3.153-18.955,4.198-27.838-1.791c-6.632-4.471-8.617-15.502-4.176-22.058\r\n\t\t\tc2.621-3.869,9.393-5.337,15.719-2.668c-2.398,1.055-4.209,1.539-5.648,2.556c-2.34,1.654-5.427,3.248-6.394,5.612\r\n\t\t\tc-1.297,3.171,0.053,6.464,2.702,9.414c8.838,9.84,26.831,3.52,30.257-9.643c1.585-6.09,2.137-11.984-2.022-17.454\r\n\t\t\tc-0.835-1.099-0.876-2.808-1.266-4.174c9.767-4.536,19.434-5.812,29.322-1.96c7.874,3.067,12.839,8.771,16.089,16.743\r\n\t\t\tc3.395,8.327,3.033,16.723,2.92,25.299c-0.064,4.865,0.511,9.738,0.806,14.728c-5.142,0.391-9.662,0.658-14.165,1.098\r\n\t\t\tc-5.584,0.545-9.89,3.207-11.621,8.714c-1.626,5.173-3.012,10.481-3.852,15.832c-1.498,9.548-8.739,16.227-18.842,16.38\r\n\t\t\tc-11.047,0.167-22.103-0.108-33.147,0.142c-12.03,0.272-21.678-7.146-22.146-20.945c-0.287-8.457-6.551-16.52-16.888-17.354\r\n\t\t\tc-2.168-0.175-4.353-0.167-6.531-0.185c-2.972-0.025-4.997-0.784-4.667-4.481c1.015-11.354,1.455-22.777,2.921-34.068\r\n\t\t\tc1.5-11.55,13.621-22.719,25.922-24.002c11.037-1.151,22.199-2.242,33.247-1.819C77.226,4.325,83.55,9.678,86.797,19.731\r\n\t\t\tc3.284,10.168-5.059,24.718-17.061,22.071c-3.098-0.683-6.276-2.756-8.527-5.067c-2.191-2.25-1.358-5.196,1.572-6.953\r\n\t\t\tc0.766-0.459,1.658-0.765,2.532-0.97c3.009-0.708,6.673-1.417,6.09-5.299c-0.53-3.534-4.147-4.722-7.404-4.918\r\n\t\t\tC54.082,18,48.753,22.764,47.334,32.987c-1.656,11.932,7.829,22.164,21.312,22.661c6.027,0.222,12.289-1.212,18.172-2.871\r\n\t\t\tc9.728-2.744,12.264-11.276,14.181-19.932c0.592-2.671,0.312-5.71,1.497-8.03C103.886,22.093,106.438,19.973,108.8,17.228z\"/>\r\n\t\t<path style=\"fill:#F7941E;\" d=\"M89.218,139.154c-1.375-9.938-2.61-18.858-3.913-28.276c2.576-0.313,5.002-0.272,7.221-0.935\r\n\t\t\tc11.214-3.35,16.856-11.315,18.193-22.732c0.254-2.17,0.699-4.317,1.059-6.474c1.248-7.468,7.111-12.349,14.655-12.189\r\n\t\t\tc2.753,0.059,5.506,0.143,8.532,0.223c1.784,8.476,0.85,16.665-0.187,24.897c-0.741,5.885-1.014,11.829-1.523,17.744\r\n\t\t\tc-1.188,13.817-9.461,21.744-22.047,25.036C104.273,138.263,96.872,138.276,89.218,139.154z\"/>\r\n\t\t<path style=\"fill:#F7941E;\" d=\"M57.916,115.712c-0.726,6.84-1.637,13.668-2.11,20.526c-0.286,4.137-3.666,2.544-4.993,2.44\r\n\t\t\tc-8.637-0.677-17.471-1.004-25.768-3.227c-8.028-2.151-13.189-8.463-16.208-16.57c-4.115-11.049-3.459-22.623-4.551-34.013\r\n\t\t\tc-0.262-2.734-0.555-5.468-0.69-8.209c-0.16-3.251,1.408-4.942,4.727-4.697c2.488,0.183,4.968,0.475,7.455,0.689\r\n\t\t\tc9.231,0.795,11.5,8.1,12.314,15.112c1.95,16.793,10.906,21.319,25.468,22.568C58.539,110.758,58.558,110.531,57.916,115.712z\"/>\r\n\t\t<path style=\"fill:#BE1E2D;\" d=\"M59.269,138.047c1.22-8.5,2.267-16.572,3.662-24.583c0.187-1.076,2.049-2.474,3.277-2.635\r\n\t\t\tc3.9-0.513,7.878-0.741,11.802-0.564c1.137,0.051,2.961,1.696,3.166,2.845c1.298,7.308,2.331,14.67,3.174,22.047\r\n\t\t\tc0.123,1.08-1.226,3.345-1.902,3.348C74.647,138.54,66.845,138.246,59.269,138.047z\"/>\r\n\t</g>\r\n</g>\r\n<g id=\"Layer_1\">\r\n</g>\r\n</svg>\r\n"
-
-/***/ },
 /* 264 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = "<?xml version=\"1.0\" encoding=\"iso-8859-1\"?>\r\n<!-- Generator: Adobe Illustrator 18.1.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->\r\n<svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" x=\"0px\" y=\"0px\"\r\n\t viewBox=\"0 0 141.146 141.135\" style=\"enable-background:new 0 0 141.146 141.135;\" xml:space=\"preserve\">\r\n<g id=\"pill_x5F_purple\">\r\n\t<g id=\"haLTqA.tif\">\r\n\t\t<g>\r\n\t\t\t<path d=\"M110.275,38.716c-1.355-9.934,3.963-15.986,10.76-21.48c1.12-0.906,0.624-3.344,1.561-4.653\r\n\t\t\t\tc1.212-1.692,2.905-3.402,4.833-4.166c0.651-0.258,3.059,2.142,3.957,3.676c2.58,4.41,2.439,9.037,0.512,13.649\r\n\t\t\t\tc-3.639,8.714-0.297,16.825,2.907,24.884c6.557,16.493,8.326,33.074,3.906,50.362c-2.682,10.489-7.783,19.476-15.844,26.735\r\n\t\t\t\tc-9.184,8.27-20.456,13.035-33.774,13.015c-12.444-0.018-24.885,0.335-37.33,0.394c-14.385,0.069-26.313-4.678-36.228-14.728\r\n\t\t\t\tc-7.66-7.764-12.615-16.534-14.556-26.578c-2.016-10.431-0.766-20.846,2.35-31.036c2.535-8.289,5.256-16.545,7.305-24.942\r\n\t\t\t\tc1.783-7.311,1.935-14.75-3.158-21.309c-2.149-2.768-2.719-5.378-0.027-7.815c3.095-2.802,6.129-1.327,9.322,0.432\r\n\t\t\t\tc10.048,5.534,12.115,14.641,13.3,24.204c0.114,0.918,0.054,1.853,0.101,2.779c0.006,0.11,0.178,0.214,0.63,0.722\r\n\t\t\t\tc2.494-2.524,4.746-5.215,7.442-7.451c6.137-5.09,13.013-9.51,18.589-15.059c4.237-4.217,6.793-9.844,10.38-14.663\r\n\t\t\t\tC68.796,3.563,71.08,1.883,73.045,0c1.761,1.783,4.416,3.31,5.128,5.392c3.037,8.875,7.803,16.502,16.04,22.122\r\n\t\t\t\tC99.23,30.937,104.172,34.454,110.275,38.716z M119.115,84.727c-0.062-6.626,0.464-13.309-0.327-19.865\r\n\t\t\t\tc-1.096-9.089-3.143-18.026-12.138-23.989c-4.964-3.291-9.585-7.026-14.362-10.559C84.423,24.498,78.529,17.51,76.281,8.211\r\n\t\t\t\tc-0.311-1.285-1.689-2.357-2.572-3.528c-1.21,1.116-2.688,2.074-3.578,3.377c-2.333,3.415-3.768,7.553-6.718,10.37\r\n\t\t\t\tc-6.53,6.235-13.822,11.786-20.707,17.71c-7.818,6.727-13.998,14.3-15.727,24.512c-1.692,9.992-3.044,19.861-2.595,30.123\r\n\t\t\t\tc0.734,16.792,12.434,28.965,30.164,30.993c2.771,0.317,4.892-0.735,5.141-3.501c0.276-3.078,1.033-6.417,0.109-9.241\r\n\t\t\t\tc-3.239-9.89-1.238-19.034,2.129-28.507c2.546-7.163,3.78-14.851,4.54-22.404c0.527-5.237-1.153-10.653-1.015-15.965\r\n\t\t\t\tc0.058-2.223,1.697-5.149,3.644-6.388c2.768-1.76,5.287,0.398,7.082,2.66c4.882,6.152,5.765,13.329,5.433,20.5\r\n\t\t\t\tc-0.275,5.927-2.116,11.771-2.594,17.702c-0.43,5.334-0.914,10.932,0.35,16.063c1.986,8.058,4.966,15.859,3.824,24.32\r\n\t\t\t\tc-0.116,0.86,1.592,2.792,2.432,2.788c9.334-0.049,17.908-2.213,24.085-9.143C116.368,103.178,119.234,94.406,119.115,84.727z\r\n\t\t\t\t M126.73,12.625c-2.286,3.344-3.584,7.075-6.36,8.958c-7.938,5.382-8.695,14.183-4.96,21.644\r\n\t\t\t\tc1.998,3.991,3.936,8.176,4.775,12.454c2.605,13.287,2.759,26.585,0.425,39.997c-2.419,13.902-14.109,25.028-28.491,27.3\r\n\t\t\t\tc-8.202,1.296-13.97-1.692-12.615-7.266c1.754-7.221-1.358-13.273-3.064-19.818c-1.233-4.732-1.868-9.782-1.561-14.617\r\n\t\t\t\tc0.592-9.331,2.593-18.589,2.926-27.918c0.204-5.703-2.408-11.144-7.877-16.221c-0.911,2.329-2.384,4.098-1.987,5.39\r\n\t\t\t\tc4.162,13.546,1.028,26.329-3.198,39.284c-1.996,6.116-2.326,12.821-2.542,19.29c-0.16,4.801,1.747,9.68,1.545,14.473\r\n\t\t\t\tc-0.324,7.684-3.705,10.792-10.562,9.284c-14.25-3.134-25.473-9.03-30.018-23.562c-2.064-6.598-2.285-13.347-1.174-20.212\r\n\t\t\t\tc1.427-8.813,1.417-17.901,3.601-26.52c2.414-9.527,2.328-18.761-1.535-27.58c-1.618-3.694-6.265-6.389-9.87-9.168\r\n\t\t\t\tc-0.995-0.767-3.193-0.199-4.839-0.244c0.306,1.568,0.148,3.397,0.992,4.662c7.194,10.784,4.813,21.923,1.112,32.703\r\n\t\t\t\tc-5.059,14.737-9.611,29.167-6.704,45.13c3.493,19.178,21.274,36.981,43.684,37.679c14.12,0.44,28.295-0.985,42.41-0.493\r\n\t\t\t\tc14.234,0.496,33.309-12.635,39.141-23.205c6.206-11.249,7.347-23.037,7.531-35.221c0.154-10.222-2.579-19.77-6.742-29.245\r\n\t\t\t\tc-3.173-7.222-4.658-14.934-2.397-22.847C129.726,22.004,130.922,17.117,126.73,12.625z\"/>\r\n\t\t\t<path style=\"fill:#662D91;\" d=\"M119.115,84.727c0.119,9.679-2.747,18.451-9.408,25.924c-6.177,6.931-14.751,9.095-24.085,9.143\r\n\t\t\t\tc-0.841,0.004-2.548-1.928-2.432-2.788c1.142-8.46-1.838-16.262-3.824-24.32c-1.265-5.131-0.78-10.729-0.35-16.063\r\n\t\t\t\tc0.478-5.931,2.319-11.775,2.594-17.702c0.332-7.171-0.551-14.348-5.433-20.5c-1.795-2.262-4.314-4.421-7.082-2.66\r\n\t\t\t\tc-1.947,1.238-3.586,4.165-3.644,6.388c-0.139,5.312,1.542,10.728,1.015,15.965c-0.76,7.553-1.994,15.241-4.54,22.404\r\n\t\t\t\tc-3.367,9.474-5.367,18.617-2.129,28.507c0.925,2.824,0.168,6.163-0.109,9.241c-0.248,2.766-2.37,3.818-5.141,3.501\r\n\t\t\t\tc-17.73-2.028-29.429-14.201-30.164-30.993c-0.449-10.262,0.903-20.131,2.595-30.123c1.729-10.212,7.909-17.785,15.727-24.512\r\n\t\t\t\tc6.885-5.924,14.177-11.475,20.707-17.71c2.95-2.817,4.385-6.954,6.718-10.37c0.89-1.303,2.368-2.262,3.578-3.377\r\n\t\t\t\tc0.884,1.171,2.262,2.243,2.572,3.528c2.248,9.299,8.142,16.287,16.007,22.103c4.778,3.533,9.398,7.268,14.362,10.559\r\n\t\t\t\tc8.995,5.963,11.041,14.9,12.138,23.989C119.579,71.418,119.053,78.101,119.115,84.727z\"/>\r\n\t\t\t<path style=\"fill:#7D54A2;\" d=\"M126.73,12.625c4.192,4.492,2.996,9.38,1.644,14.111c-2.261,7.912-0.776,15.624,2.397,22.847\r\n\t\t\t\tc4.163,9.475,6.896,19.023,6.742,29.245c-0.184,12.184-1.326,23.972-7.531,35.221c-5.831,10.57-24.906,23.701-39.141,23.205\r\n\t\t\t\tc-14.115-0.492-28.29,0.933-42.41,0.493c-22.41-0.698-40.191-18.501-43.684-37.679C1.84,84.105,6.391,69.674,11.45,54.938\r\n\t\t\t\tc3.701-10.78,6.081-21.919-1.112-32.703c-0.844-1.265-0.685-3.094-0.992-4.662c1.646,0.045,3.844-0.523,4.839,0.244\r\n\t\t\t\tc3.605,2.778,8.252,5.473,9.87,9.168c3.863,8.819,3.949,18.053,1.535,27.58c-2.184,8.619-2.174,17.707-3.601,26.52\r\n\t\t\t\tc-1.111,6.864-0.89,13.613,1.174,20.212c4.545,14.532,15.769,20.428,30.018,23.562c6.857,1.508,10.237-1.6,10.562-9.284\r\n\t\t\t\tc0.202-4.793-1.705-9.672-1.545-14.473c0.216-6.469,0.546-13.174,2.542-19.29c4.227-12.955,7.36-25.738,3.198-39.284\r\n\t\t\t\tc-0.397-1.292,1.077-3.061,1.987-5.39c5.469,5.078,8.081,10.518,7.877,16.221c-0.333,9.329-2.334,18.587-2.926,27.918\r\n\t\t\t\tc-0.307,4.835,0.328,9.885,1.561,14.617c1.706,6.545,4.818,12.597,3.064,19.818c-1.354,5.574,4.414,8.562,12.615,7.266\r\n\t\t\t\tc14.382-2.272,26.072-13.398,28.491-27.3c2.334-13.412,2.18-26.71-0.425-39.997c-0.839-4.278-2.777-8.463-4.775-12.454\r\n\t\t\t\tc-3.735-7.462-2.978-16.263,4.96-21.644C123.146,19.7,124.444,15.969,126.73,12.625z M15.554,20.878\r\n\t\t\t\tc-0.475,0.101-0.949,0.202-1.424,0.303c0.22,0.917,0.276,1.903,0.696,2.735c0.761,1.506,2.064,2.831,2.57,4.386\r\n\t\t\t\tc2.411,7.412,0.917,14.669-0.77,22.01c-2.155,9.378-4.143,18.82-5.462,28.327c-1.55,11.17,0.578,21.805,6.19,32.133\r\n\t\t\t\tc8.078,14.866,24.501,22.791,39.997,21.848c0.926-0.056,1.8-0.766,2.698-1.171c-0.997-0.516-1.953-1.365-3-1.484\r\n\t\t\t\tc-2.859-0.326-5.795-0.11-8.632-0.526c-11.043-1.618-19.503-6.92-26.016-15.357c-8.293-10.744-9.905-23.01-9.092-35.372\r\n\t\t\t\tc0.563-8.556,3.714-16.935,5.521-25.429C21.185,42.22,24.515,31.028,15.554,20.878z M82.395,130.21\r\n\t\t\t\tc1.772,0.611,2.601,1.156,3.397,1.124c2.803-0.112,5.608-0.333,8.387-0.674c10.6-1.3,19.365-5.433,25.809-13.582\r\n\t\t\t\tc5.779-7.308,8.274-15.476,9.976-24.331c2.426-12.627-0.229-24.662-2.961-36.792c-1.7-7.548-4.169-14.96-5.693-22.532\r\n\t\t\t\tc-0.517-2.569,0.804-5.44,1.48-9.278c-1.181,1.38-1.665,1.795-1.953,2.305c-4.065,7.181-1.298,14.147,1.124,21.055\r\n\t\t\t\tc6.242,17.806,8.894,35.713,3.361,54.085c-3.669,12.183-11.009,21.254-24.429,25.083\r\n\t\t\t\tC95.345,128.257,89.471,128.892,82.395,130.21z\"/>\r\n\t\t\t<path d=\"M15.554,20.878c8.96,10.151,5.63,21.342,3.277,32.403c-1.807,8.493-4.958,16.873-5.521,25.429\r\n\t\t\t\tc-0.813,12.362,0.798,24.628,9.092,35.372c6.513,8.438,14.973,13.74,26.016,15.357c2.837,0.416,5.773,0.2,8.632,0.526\r\n\t\t\t\tc1.047,0.119,2.003,0.968,3,1.484c-0.898,0.405-1.772,1.115-2.698,1.171c-15.496,0.943-31.919-6.982-39.997-21.848\r\n\t\t\t\tc-5.612-10.328-7.74-20.962-6.19-32.133c1.319-9.507,3.307-18.95,5.462-28.327c1.687-7.341,3.181-14.599,0.77-22.01\r\n\t\t\t\tc-0.506-1.555-1.81-2.88-2.57-4.386c-0.42-0.832-0.476-1.818-0.696-2.735C14.605,21.08,15.08,20.979,15.554,20.878z\"/>\r\n\t\t\t<path d=\"M82.395,130.21c7.077-1.318,12.95-1.953,18.499-3.536c13.419-3.828,20.76-12.899,24.429-25.083\r\n\t\t\t\tc5.533-18.373,2.881-36.279-3.361-54.085c-2.422-6.908-5.189-13.874-1.124-21.055c0.289-0.51,0.772-0.925,1.953-2.305\r\n\t\t\t\tc-0.676,3.837-1.997,6.709-1.48,9.278c1.524,7.572,3.993,14.984,5.693,22.532c2.732,12.129,5.387,24.164,2.961,36.792\r\n\t\t\t\tc-1.701,8.856-4.196,17.024-9.976,24.331c-6.444,8.149-15.209,12.282-25.809,13.582c-2.78,0.341-5.585,0.562-8.387,0.674\r\n\t\t\t\tC84.995,131.366,84.167,130.821,82.395,130.21z\"/>\r\n\t\t</g>\r\n\t</g>\r\n</g>\r\n<g id=\"Layer_1\">\r\n</g>\r\n</svg>\r\n"
+	module.exports = "<?xml version=\"1.0\" encoding=\"iso-8859-1\"?>\r\n<!-- Generator: Adobe Illustrator 18.1.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->\r\n<svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" x=\"0px\" y=\"0px\"\r\n\t viewBox=\"0 0 137.759 139.935\" style=\"enable-background:new 0 0 137.759 139.935;\" xml:space=\"preserve\">\r\n<g id=\"virus_x5F_orange\">\r\n\t<g>\r\n\t\t<path d=\"M14.777,123c-3.528,0.787-6.936,1.904-10.396,2.147c-1.43,0.1-3.431-1.348-4.279-2.73\r\n\t\t\tc-0.455-0.741,0.72-3.065,1.619-4.277c2.652-3.578,5.534-6.958,8.54-10.681c-8.881-6.414-7.416-13.516-2.145-20.385\r\n\t\t\tc-2.177-1.801-3.913-3.275-5.686-4.696c-2.328-1.865-2.224-4.07-1.267-6.775c1.932-5.459,3.717-10.986,5.346-16.559\r\n\t\t\tc2.129-7.287,6.624-12.067,12.88-15.295c1.016-0.524,2.063-1.918,2.298-3.095c0.718-3.591,1.047-7.273,1.703-12.253\r\n\t\t\tc-5.128,4.657-9.202,2.344-13.416,0.134c-2.943-1.544-3.743-3.843-3.621-7.171c0.115-3.155,2.277-3.484,4.122-4.757\r\n\t\t\tc2.188-1.51,4.454-3.512,5.683-5.901c3.827-7.436,9.37-11.631,17.207-10.533c3.455,0.484,6.603,3.245,9.994,4.689\r\n\t\t\tc1.401,0.597,3.33,1.103,4.583,0.534c8.047-3.659,16.165-5.34,24.942-3.54c4.736,0.971,9.686,0.679,14.531,1.081\r\n\t\t\tc4.813,0.399,9.024,2.61,13.166,5.143c0.942,0.576,3.12,0.554,3.646-0.143c2.13-2.824,4.812-2.738,7.656-2.526\r\n\t\t\tc5.943,0.442,11.975,0.558,16.84,5.099c1.03,0.961,2.299,1.899,2.835,3.156c3.611,8.484,6.189,17.243,5.121,26.785\r\n\t\t\tc-0.058,0.516-0.092,1.251-0.398,1.486c-3.929,3.003-2.25,6.466-1.091,10.213c2.965,9.586,3.159,19.417,1.63,29.353\r\n\t\t\tc-0.546,3.548-0.449,7.226-1.142,10.731c-1.434,7.256-2.518,14.724-5.001,21.574c-3.112,8.585-9.074,15.153-16.164,20.371\r\n\t\t\tc-6.542,4.814-14.003,5.836-21.636,5.751c-9.932-0.111-19.862-0.669-29.793-0.673c-9.557-0.004-19.114,0.663-28.669,0.601\r\n\t\t\tc-3.66-0.024-7.582-0.562-10.911-2.076C17.499,135.053,13.342,130.42,14.777,123z M21.723,70.597\r\n\t\t\tc1.207-0.852,1.796-1.626,2.39-1.63c3.903-0.03,5.651,3.373,7.037,6.311c0.821,1.741,0.54,4.901-0.431,6.661\r\n\t\t\tc-2.933,5.312-7.628,4.845-12.201,2.922c-3.692-1.552-6.281-0.055-7.486,3.362c-1.24,3.517-1.826,7.394-2.143,11.168\r\n\t\t\tc-0.254,3.032,1.924,4.213,4.784,3.842c2.486-0.323,5.405-0.75,7.523,0.301c10.701,5.308,22.154,5.291,33.489,6.285\r\n\t\t\tc1.842,0.161,3.809,0.24,5.446,1.021c1.164,0.555,2.466,2.148,2.61,3.422c0.136,1.199-1.164,2.587-1.832,3.893\r\n\t\t\tc-0.396,0.043-0.791,0.087-1.187,0.13c0.7-4.475-1.575-4.536-4.284-4.684c-9.304-0.51-18.601-1.206-27.89-1.979\r\n\t\t\tc-3.959-0.33-7.471,1.785-7.487,4.826c-0.013,2.463,0.192,4.991-0.245,7.374c-0.902,4.92,0.722,8.709,5.136,9.607\r\n\t\t\tc5.214,1.061,10.522,1.714,15.817,2.121c3.09,0.238,6.237-0.562,9.354-0.526c7.583,0.088,15.186,0.884,22.74,0.486\r\n\t\t\tc9.869-0.52,19.679,1.266,29.711-1.88c6.192-1.942,11.383-4.486,15.708-9.066c9.586-10.15,11.529-23.814,13.236-37.221\r\n\t\t\tc1.395-10.955,2.128-22.115-0.729-33.038c-0.685-2.618-1.396-5.475-4.769-5.697c-5.729-0.377-7.416,0.541-8.769,4.485\r\n\t\t\tc-3.673,10.7-3.437,21.979-4.394,33.089c-0.722,8.383-1.252,16.808-2.455,25.115c-1.318,9.101-4.989,16.809-13.57,20.456\r\n\t\t\tc-1.173,0.499-2.534,0.485-3.808,0.708c-0.209-0.464-0.418-0.928-0.626-1.392c5.599-2.941,9.755-7.253,11.762-12.752\r\n\t\t\tc-2.457-0.869-5.565-0.932-6.863-2.618c-4.208-5.466-4.349-18.706,1.044-23.033c-1.613-4.035-3.214-8.041-5.146-12.874\r\n\t\t\tc0.923,18.193-2.484,31.652-7.423,36.601c-0.348-1.182-1.136-2.418-0.836-3.059c4.049-8.629,4.233-17.995,4.36-27.282\r\n\t\t\tc0.11-8.038,0.436-15.935,4.125-24.168c-4.605,1.896-6.33,5.451-7.58,9.082c-3.143,9.13-8.327,15.37-17.53,17.782\r\n\t\t\tc-10.349,2.712-20.005,2.846-28.85-4.64c-0.482-0.408-2.727,0.387-3.025,1.142c-2.838,7.171-0.301,14.135,7.162,15.417\r\n\t\t\tc4.9,0.842,9.955,0.975,14.931,0.873c5.6-0.115,10.172,1.378,13.477,6.622c1.724,2.736,2.455,7.814,0.969,10.437\r\n\t\t\tc-1.773,3.131-6.474,5.216-10.53,4.149c1.598-1.111,2.723-2.004,3.939-2.717c3.116-1.827,3.777-4.847,3.404-8.256\r\n\t\t\tc-0.32-2.92-1.895-4.843-4.636-5.428c-1.812-0.387-3.637-0.78-5.473-0.937c-5.084-0.434-10.245-0.315-15.247-1.231\r\n\t\t\tc-4.655-0.852-8.974-2.724-11.377-8.019c-2.423-5.339-1.132-9.935,1.58-14.301c1.093-1.76,0.85-2.9,0.28-4.645\r\n\t\t\tc-1.22-3.734-2.311-7.555-3.031-11.432c-1.083-5.833,1.649-10.936,3.172-16.264c0.752-2.632,0.787-5.051-2.54-5.726\r\n\t\t\tc-2.037-0.413-4.042-1.006-5.662-1.417c-1.419,1.336-2.448,2.818-3.819,3.51c-7.197,3.634-11.574,9.597-13.606,17.832\r\n\t\t\tc-0.964,3.908-1.91,7.974-3.733,11.436c-1.524,2.895,0.215,4.473,1.224,6.011c0.613,0.935,3.149,1.353,4.274,0.771\r\n\t\t\tc3.59-1.859,6.977-1.037,10.407,0.049c2.79,0.883,4.805,0.454,6.088-2.721c1.302-3.221-0.261-5.104-2.341-6.783\r\n\t\t\tC24.487,71.783,23.381,71.438,21.723,70.597z M102.239,16.746c-0.376-0.679-0.918-1.972-1.714-3.045\r\n\t\t\tc-4.396-5.916-10.643-7.746-17.163-8.094C75.444,5.186,67.483,5.24,59.56,5.593c-6.319,0.282-11.571,3.437-15.387,8.981\r\n\t\t\tc-0.461,0.67-0.518,2.073-0.206,2.887c1.723,4.488,4.711,7.172,9.257,8.433c9.263,2.57,18.611,3.326,28.06,2.394\r\n\t\t\tc5.02-0.495,10.076-1.311,14.935-2.712C99.594,24.602,101.743,21.623,102.239,16.746z M83.822,53.649\r\n\t\t\tc0.005-0.538,0.01-1.077,0.016-1.615c-8.808-1.249-17.616-2.499-26.592-3.772c-0.401,10.684-1.228,21.404-15.643,20.73\r\n\t\t\tc2.948,5.626,6.193,9.878,11.969,10.456c3.365,0.337,6.832,0.538,10.157,0.044c4.624-0.687,8.725-3.198,10.25-8.156\r\n\t\t\tc1.771-5.758,2.686-11.824,3.958-17.687C79.784,53.649,81.803,53.649,83.822,53.649z M112.42,31.184\r\n\t\t\tc-2.352,1.893-3.892,3.537-5.732,4.547c-9.857,5.41-20.607,5.474-31.265,5.433c-5.682-0.022-11.401-0.762-17.032-1.689\r\n\t\t\tc-8.854-1.458-18.056-2.13-24.632-10.23c-0.878-1.081-3.195-2.346-3.708-1.922c-1.289,1.065-2.313,2.945-2.713,4.693\r\n\t\t\tc-0.389,1.699-0.056,3.689,0.334,5.454c0.175,0.794,1.281,1.902,1.93,1.875c0.749-0.031,1.828-1.019,2.091-1.842\r\n\t\t\tc0.313-0.979-0.089-2.224-0.181-3.349c2.466-0.573,3.458,0.291,3.689,3.036c0.292,3.468,1.594,6.489,5.506,6.657\r\n\t\t\tc2.006,0.087,4.018-0.004,6.027,0.007c4.81,0.026,9.837-0.898,14.388,0.29c10.944,2.858,21.962,3.584,33.03,2.569\r\n\t\t\tc5.7-0.522,11.399-1.812,16.279-6.079C113.69,37.787,112.893,35.059,112.42,31.184z M40.01,11.418\r\n\t\t\tc-2.103,1.333-4.151,1.999-5.279,3.481c-2.232,2.933-0.925,11.225,2.075,13.392c2.654,1.918,5.513,3.878,8.545,4.733\r\n\t\t\tc5.945,1.675,12.032,3.101,18.138,3.694c7.269,0.706,14.644,0.878,21.928,0.426c5.228-0.324,10.348-2.627,15.577-2.976\r\n\t\t\tc4.489-0.3,6.574-3.275,8.037-6.667c1.351-3.129,1.607-6.893-1.407-10.4c-1.173,1.857-2.04,3.412-3.075,4.824\r\n\t\t\tc-1.41,1.926-2.672,4.174-4.483,5.527c-5.559,4.152-12.085,5.427-18.644,5.568c-9.447,0.203-18.773-1.015-27.98-3.668\r\n\t\t\tC43.441,26.47,40.43,23.06,40.01,11.418z M124.237,12.349c1.494,4.264,3.166,8.469,4.375,12.825c0.377,1.36-0.498,3.126-0.8,4.706\r\n\t\t\tc-0.967-1.141-2.293-2.114-2.832-3.455c-1.562-3.884-2.341-8.209-4.287-11.821c-2.845-5.281-9.361-8.033-14.432-2.254\r\n\t\t\tc4.363,1.656,6.056,3.096,7.299,7.697c1.187,4.391,2.606,8.993,2.452,13.443c-0.156,4.493,0.8,9.416,4.142,10.185\r\n\t\t\tc5.629,1.294,11.362-0.731,12.001-5.784C133.372,28.27,130.909,19.445,124.237,12.349z M115.5,46.341\r\n\t\t\tc-0.738-0.094-1.712-0.547-2.085-0.215c-4.616,4.11-10.374,3.873-15.765,5.181c-5.384,1.306-11.489,1.874-14.746,7.549\r\n\t\t\tc-2.347,4.089-4.235,8.704-5.322,13.358c-1.314,5.628-5.055,8.394-9.261,10.018c-6.341,2.448-12.888,2.998-19.61,0.216\r\n\t\t\tc-6.884-2.849-13.009-14.019-10.961-21.439c1.099-3.981,2.212-7.958,3.318-11.937c-1.307-0.028-2.233,0.458-2.48,1.206\r\n\t\t\tc-0.986,2.986-1.943,6.011-2.575,9.101c-1.293,6.32-0.738,12.619,2.795,17.854c1.985,2.941,5.144,5.151,8.111,7.091\r\n\t\t\tc6.441,4.213,13.617,2.579,20.356,1.524c6.293-0.985,10.603-5.704,13.463-12.031c1.956-4.328,4.265-8.588,7.042-12.338\r\n\t\t\tc3.832-5.173,9.379-5.701,15.233-5.629C110.314,55.94,113.644,53.082,115.5,46.341z M110.602,71.637\r\n\t\t\tc-0.346-7.384-2.597-10.829-7.285-7.972c-2.108,1.284-3.881,4.233-4.633,6.823c-0.942,3.245-0.804,6.895-0.879,10.377\r\n\t\t\tc-0.034,1.556,0.088,3.607,0.958,4.58c1.327,1.484,3.316,2.897,5.119,3.053c1.238,0.107,3.435-1.715,3.822-3.118\r\n\t\t\tC109.109,80.28,109.931,74.995,110.602,71.637z M34.087,11.366c-0.321-0.276-0.641-0.552-0.962-0.827\r\n\t\t\tc-4.211,0.946-5.331,2.098-8.031,5.663c-2.093,2.763-4.643,5.219-7.308,7.349c-2.095,1.674-2.984,1.089-3.716-0.554\r\n\t\t\tc2.883-3.367,5.352-6.508,8.074-9.369c4.005-4.209,7.822-9.262,14.531-5.54c0.669,0.371,1.759-0.141,3.043-0.288\r\n\t\t\tc-6.372-5.515-14.569-3.823-18.996,3.09c-2.129,3.324-4.911,6.16-7.392,9.223c-0.858,1.059-2.537,2.362-2.354,3.151\r\n\t\t\tc0.296,1.274,1.654,2.741,2.864,3.194c3.378,1.267,7.038,1.344,9.653-1.611C27.256,20.592,30.577,15.882,34.087,11.366z\r\n\t\t\t M102.871,94.119c-0.595,0.31-1.609,0.577-2.292,1.24c-3.195,3.1-3.757,13.735,0.111,17.289c2.039,1.874,4.115,1.321,4.898-1.03\r\n\t\t\tc1.259-3.784,2.321-7.81,2.506-11.786C108.221,97.093,106.449,94.556,102.871,94.119z M22.17,108.573\r\n\t\t\tc-4.533-2.521-7.853-0.665-10.47,3.403c-1.69,2.626-4.103,4.7-6.082,7.126c-0.488,0.599-0.544,1.61-0.798,2.431\r\n\t\t\tc0.336,0.335,0.673,0.671,1.009,1.006c2.315-1.5,5.425-2.432,6.771-4.625C15.065,113.903,17.735,110.518,22.17,108.573z\r\n\t\t\t M50.185,47.405c-7.686,1.732-5.686,8.705-7.873,14.304c1.899-0.249,3.585,0.086,4.387-0.671\r\n\t\t\tC50.323,57.618,50.314,52.909,50.185,47.405z\"/>\r\n\t\t<path style=\"fill:#F15A29;\" d=\"M21.723,70.597c1.658,0.841,2.764,1.186,3.626,1.882c2.08,1.678,3.643,3.562,2.341,6.783\r\n\t\t\tc-1.283,3.175-3.298,3.604-6.088,2.721c-3.43-1.086-6.818-1.908-10.407-0.049c-1.124,0.582-3.66,0.165-4.274-0.771\r\n\t\t\tc-1.009-1.538-2.748-3.116-1.224-6.011c1.823-3.462,2.769-7.528,3.733-11.436c2.032-8.235,6.408-14.198,13.606-17.832\r\n\t\t\tc1.371-0.692,2.4-2.174,3.819-3.51c1.62,0.411,3.625,1.004,5.662,1.417c3.327,0.675,3.292,3.095,2.54,5.726\r\n\t\t\tc-1.523,5.328-4.255,10.431-3.172,16.264c0.72,3.877,1.811,7.698,3.031,11.432c0.57,1.745,0.814,2.884-0.28,4.645\r\n\t\t\tc-2.712,4.366-4.003,8.962-1.58,14.301c2.403,5.295,6.722,7.167,11.377,8.019c5.002,0.916,10.163,0.797,15.247,1.231\r\n\t\t\tc1.836,0.157,3.661,0.55,5.473,0.937c2.741,0.585,4.317,2.508,4.636,5.428c0.373,3.408-0.288,6.429-3.404,8.256\r\n\t\t\tc-1.216,0.713-2.341,1.606-3.939,2.717c4.056,1.068,8.757-1.018,10.53-4.149c1.485-2.623,0.755-7.701-0.969-10.437\r\n\t\t\tc-3.304-5.243-7.877-6.737-13.477-6.622c-4.976,0.102-10.031-0.031-14.931-0.873c-7.462-1.282-10-8.246-7.162-15.417\r\n\t\t\tc0.298-0.754,2.544-1.549,3.025-1.142c8.845,7.486,18.501,7.352,28.85,4.64c9.203-2.412,14.387-8.652,17.53-17.782\r\n\t\t\tc1.25-3.63,2.975-7.186,7.58-9.082c-3.689,8.233-4.015,16.13-4.125,24.168c-0.127,9.287-0.311,18.653-4.36,27.282\r\n\t\t\tc-0.301,0.641,0.488,1.877,0.836,3.059c4.939-4.95,8.346-18.408,7.423-36.601c1.931,4.832,3.533,8.839,5.146,12.874\r\n\t\t\tc-5.393,4.327-5.252,17.567-1.044,23.033c1.298,1.686,4.406,1.749,6.863,2.618c-2.008,5.5-6.164,9.811-11.762,12.752\r\n\t\t\tc0.209,0.464,0.418,0.928,0.626,1.392c1.274-0.223,2.635-0.209,3.808-0.708c8.581-3.647,12.253-11.355,13.57-20.456\r\n\t\t\tc1.203-8.307,1.734-16.732,2.455-25.115c0.956-11.11,0.721-22.389,4.394-33.089c1.354-3.944,3.041-4.862,8.769-4.485\r\n\t\t\tc3.373,0.222,4.084,3.079,4.769,5.697c2.857,10.923,2.124,22.083,0.729,33.038c-1.707,13.407-3.65,27.071-13.236,37.221\r\n\t\t\tc-4.325,4.579-9.516,7.124-15.708,9.066c-10.033,3.146-19.842,1.36-29.711,1.88c-7.554,0.398-15.157-0.398-22.74-0.486\r\n\t\t\tc-3.117-0.036-6.264,0.764-9.354,0.526c-5.295-0.407-10.604-1.06-15.817-2.121c-4.414-0.898-6.039-4.687-5.136-9.607\r\n\t\t\tc0.437-2.383,0.232-4.911,0.245-7.374c0.016-3.041,3.528-5.155,7.487-4.826c9.289,0.773,18.586,1.469,27.89,1.979\r\n\t\t\tc2.709,0.148,4.984,0.21,4.284,4.684c0.396-0.043,0.791-0.087,1.187-0.13c0.668-1.305,1.968-2.694,1.832-3.893\r\n\t\t\tc-0.144-1.274-1.446-2.866-2.61-3.422c-1.637-0.781-3.604-0.859-5.446-1.021c-11.335-0.994-22.788-0.977-33.489-6.285\r\n\t\t\tc-2.118-1.051-5.038-0.624-7.523-0.301c-2.86,0.372-5.038-0.81-4.784-3.842c0.316-3.774,0.903-7.652,2.143-11.168\r\n\t\t\tc1.205-3.417,3.794-4.914,7.486-3.362c4.573,1.923,9.268,2.39,12.201-2.922c0.971-1.759,1.253-4.92,0.431-6.661\r\n\t\t\tc-1.386-2.938-3.134-6.341-7.037-6.311C23.519,68.971,22.93,69.745,21.723,70.597z M108.919,124.96\r\n\t\t\tc4.505-2.007,5.417-6.468,6.452-10.259c2.097-7.684,3.418-15.624,4.846-23.504c0.429-2.366,0.322-4.9,0.086-7.314\r\n\t\t\tc-0.061-0.622-1.545-1.081-2.823-1.902C116.095,97.249,114.672,111.553,108.919,124.96z\"/>\r\n\t\t<path style=\"fill:#F15A29;\" d=\"M102.239,16.746c-0.496,4.876-2.645,7.856-6.02,8.829c-4.859,1.402-9.915,2.217-14.935,2.712\r\n\t\t\tc-9.449,0.932-18.798,0.177-28.06-2.394c-4.545-1.261-7.534-3.945-9.257-8.433c-0.313-0.814-0.256-2.217,0.206-2.887\r\n\t\t\tc3.816-5.544,9.068-8.699,15.387-8.981c7.923-0.353,15.884-0.407,23.801,0.015c6.52,0.347,12.767,2.178,17.163,8.094\r\n\t\t\tC101.321,14.774,101.863,16.067,102.239,16.746z\"/>\r\n\t\t<path style=\"fill:#FFFFFF;\" d=\"M83.822,53.649c-2.019,0-4.038,0-5.886,0c-1.272,5.864-2.187,11.929-3.958,17.687\r\n\t\t\tc-1.525,4.959-5.625,7.469-10.25,8.156c-3.325,0.494-6.792,0.292-10.157-0.044c-5.777-0.578-9.021-4.83-11.969-10.456\r\n\t\t\tc14.416,0.674,15.242-10.046,15.643-20.73c8.976,1.273,17.784,2.522,26.592,3.772C83.833,52.573,83.827,53.111,83.822,53.649z\"/>\r\n\t\t<path style=\"fill:#F7941E;\" d=\"M112.42,31.184c0.473,3.875,1.27,6.603-1.989,9.452c-4.881,4.267-10.58,5.556-16.279,6.079\r\n\t\t\tc-11.068,1.015-22.085,0.288-33.03-2.569c-4.551-1.188-9.578-0.264-14.388-0.29c-2.009-0.011-4.021,0.079-6.027-0.007\r\n\t\t\tc-3.912-0.169-5.214-3.19-5.506-6.657c-0.231-2.746-1.223-3.61-3.689-3.036c0.092,1.125,0.494,2.37,0.181,3.349\r\n\t\t\tc-0.263,0.823-1.342,1.81-2.091,1.842c-0.648,0.027-1.754-1.081-1.93-1.875c-0.39-1.766-0.723-3.755-0.334-5.454\r\n\t\t\tc0.4-1.748,1.425-3.627,2.713-4.693c0.513-0.424,2.83,0.841,3.708,1.922c6.576,8.1,15.777,8.772,24.632,10.23\r\n\t\t\tc5.63,0.927,11.35,1.667,17.032,1.689c10.659,0.042,21.408-0.023,31.265-5.433C108.528,34.721,110.068,33.077,112.42,31.184z\"/>\r\n\t\t<path style=\"fill:#F7941E;\" d=\"M40.01,11.418c0.42,11.642,3.431,15.052,13.433,17.934c9.207,2.653,18.533,3.871,27.98,3.668\r\n\t\t\tc6.559-0.141,13.085-1.416,18.644-5.568c1.811-1.353,3.072-3.601,4.483-5.527c1.034-1.412,1.902-2.967,3.075-4.824\r\n\t\t\tc3.014,3.506,2.758,7.271,1.407,10.4c-1.464,3.392-3.548,6.367-8.037,6.667c-5.229,0.349-10.349,2.652-15.577,2.976\r\n\t\t\tc-7.284,0.452-14.659,0.28-21.928-0.426c-6.106-0.593-12.192-2.019-18.138-3.694c-3.032-0.854-5.891-2.815-8.545-4.733\r\n\t\t\tc-2.999-2.167-4.306-10.459-2.075-13.392C35.859,13.417,37.908,12.751,40.01,11.418z\"/>\r\n\t\t<path style=\"fill:#F7941E;\" d=\"M124.237,12.349c6.672,7.096,9.135,15.922,7.919,25.541c-0.639,5.052-6.372,7.078-12.001,5.784\r\n\t\t\tc-3.343-0.769-4.299-5.692-4.142-10.185c0.155-4.45-1.265-9.052-2.452-13.443c-1.244-4.601-2.936-6.041-7.299-7.697\r\n\t\t\tc5.071-5.778,11.587-3.027,14.432,2.254c1.946,3.613,2.725,7.937,4.287,11.821c0.539,1.341,1.865,2.314,2.832,3.455\r\n\t\t\tc0.302-1.58,1.177-3.345,0.8-4.706C127.403,20.818,125.731,16.612,124.237,12.349z\"/>\r\n\t\t<path style=\"fill:#F7941E;\" d=\"M115.5,46.341c-1.857,6.741-5.186,9.599-12.486,9.508c-5.854-0.072-11.401,0.456-15.233,5.629\r\n\t\t\tc-2.778,3.75-5.086,8.01-7.042,12.338c-2.86,6.326-7.17,11.045-13.463,12.031c-6.739,1.055-13.915,2.689-20.356-1.524\r\n\t\t\tc-2.967-1.94-6.126-4.149-8.111-7.091c-3.533-5.236-4.087-11.534-2.795-17.854c0.632-3.09,1.589-6.114,2.575-9.101\r\n\t\t\tc0.247-0.748,1.173-1.234,2.48-1.206c-1.106,3.979-2.219,7.955-3.318,11.937c-2.048,7.42,4.076,18.59,10.961,21.439\r\n\t\t\tc6.723,2.782,13.27,2.232,19.61-0.216c4.205-1.623,7.947-4.389,9.261-10.018c1.087-4.654,2.975-9.269,5.322-13.358\r\n\t\t\tc3.257-5.675,9.362-6.243,14.746-7.549c5.391-1.308,11.149-1.07,15.765-5.181C113.789,45.794,114.763,46.248,115.5,46.341z\"/>\r\n\t\t<path style=\"fill:#BE1E2D;\" d=\"M110.602,71.637c-0.671,3.358-1.493,8.643-2.898,13.742c-0.386,1.403-2.584,3.224-3.822,3.118\r\n\t\t\tc-1.803-0.156-3.792-1.569-5.119-3.053c-0.87-0.973-0.992-3.024-0.958-4.58c0.075-3.482-0.063-7.131,0.879-10.377\r\n\t\t\tc0.752-2.59,2.526-5.538,4.633-6.823C108.005,60.808,110.256,64.253,110.602,71.637z\"/>\r\n\t\t<path style=\"fill:#F7941E;\" d=\"M34.087,11.366c-3.51,4.516-6.83,9.226-10.594,13.48c-2.615,2.955-6.275,2.878-9.653,1.611\r\n\t\t\tc-1.21-0.454-2.568-1.921-2.864-3.194c-0.183-0.789,1.496-2.092,2.354-3.151c2.48-3.063,5.263-5.899,7.392-9.223\r\n\t\t\tc4.427-6.913,12.624-8.604,18.996-3.09c-1.284,0.147-2.374,0.659-3.043,0.288c-6.709-3.722-10.526,1.33-14.531,5.54\r\n\t\t\tc-2.722,2.861-5.191,6.002-8.074,9.369c0.732,1.643,1.621,2.228,3.716,0.554c2.665-2.129,5.216-4.586,7.308-7.349\r\n\t\t\tc2.7-3.565,3.82-4.716,8.031-5.663C33.446,10.815,33.766,11.09,34.087,11.366z\"/>\r\n\t\t<path style=\"fill:#BE1E2D;\" d=\"M102.871,94.119c3.578,0.438,5.35,2.974,5.223,5.713c-0.185,3.976-1.247,8.002-2.506,11.786\r\n\t\t\tc-0.783,2.352-2.858,2.905-4.898,1.03c-3.868-3.554-3.306-14.189-0.111-17.289C101.262,94.695,102.276,94.429,102.871,94.119z\"/>\r\n\t\t<path style=\"fill:#BE1E2D;\" d=\"M22.17,108.573c-4.435,1.945-7.105,5.33-9.568,9.342c-1.346,2.193-4.456,3.124-6.771,4.625\r\n\t\t\tc-0.336-0.335-0.673-0.671-1.009-1.006c0.254-0.822,0.309-1.832,0.798-2.431c1.978-2.427,4.392-4.5,6.082-7.126\r\n\t\t\tC14.317,107.908,17.637,106.052,22.17,108.573z\"/>\r\n\t\t<path style=\"fill:#BE1E2D;\" d=\"M50.185,47.405c0.129,5.504,0.137,10.213-3.486,13.633c-0.802,0.757-2.488,0.422-4.387,0.671\r\n\t\t\tC44.499,56.11,42.499,49.137,50.185,47.405z\"/>\r\n\t\t<path d=\"M108.919,124.96c5.754-13.407,7.177-27.711,8.561-42.978c1.278,0.822,2.762,1.281,2.823,1.902\r\n\t\t\tc0.236,2.414,0.343,4.948-0.086,7.314c-1.428,7.879-2.749,15.82-4.846,23.504C114.336,118.493,113.424,122.953,108.919,124.96z\"/>\r\n\t</g>\r\n</g>\r\n<g id=\"Layer_1\">\r\n</g>\r\n</svg>\r\n"
 
 /***/ },
 /* 265 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = "<?xml version=\"1.0\" encoding=\"iso-8859-1\"?>\r\n<!-- Generator: Adobe Illustrator 18.1.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->\r\n<svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" x=\"0px\" y=\"0px\"\r\n\t viewBox=\"0 0 140.62 141.575\" style=\"enable-background:new 0 0 140.62 141.575;\" xml:space=\"preserve\">\r\n<g id=\"pill_x5F_green\">\r\n\t<g>\r\n\t\t<path d=\"M104.348,58.295c6.791-10.459,8.157-20.129,2.773-30.241c-3.899-7.324-10.66-11.333-18.709-13.826\r\n\t\t\tc-2.029-0.629-4.562-0.869-5.905-2.153c-1.862-1.78-3.765-4.361-3.827-6.631c-0.041-1.516,2.926-4.19,4.834-4.425\r\n\t\t\tc5.159-0.636,10.52-0.68,15.711-0.152c6.063,0.617,12.284,1.422,17.988,3.324c12.924,4.308,19.603,13.822,21.533,25.977\r\n\t\t\tc1.323,8.33,1.967,16.837,1.863,25.247c-0.19,15.416-0.79,30.846-1.927,46.22c-0.772,10.443-3.205,21.058-11.946,28.231\r\n\t\t\tc-7.459,6.121-15.697,11.743-26.988,11.534c-18.652-0.345-37.333,0.591-55.966-0.065c-8.049-0.283-17.087-1.534-23.743-5.308\r\n\t\t\tc-9.03-5.12-16.506-12.946-17.796-23.791c-0.833-6.998-1.688-14.021-1.902-21.046c-0.282-9.286-0.729-18.665,0.31-27.859\r\n\t\t\tC2.163,49.96,1.707,36.243,6.829,23.377c4.56-11.454,11.993-20.073,26.149-21.411c8.529-0.806,17.08-1.46,25.639-1.946\r\n\t\t\tc2.062-0.117,4.445,0.28,6.219,1.208c1.822,0.953,4.456,3.026,4.273,4.287c-0.301,2.074-2.225,4.332-4.144,5.68\r\n\t\t\tc-1.687,1.186-4.271,1.444-6.518,1.746c-17.8,2.397-27.7,16.717-24.988,33.22c0.807,4.911,3.546,8.112,6.239,11.069\r\n\t\t\tc1.926-4.598,3.242-9.47,5.87-13.619c4.193-6.618,10.594-10.459,19.347-10.311c2.087,0.035,4.177-0.883,6.284-1.279\r\n\t\t\tc0.75-0.141,1.623-0.222,2.325-0.004c6.571,2.04,13.385,3.624,19.595,6.388c6.415,2.855,9.018,8.698,10.134,15.038\r\n\t\t\tC103.486,54.775,103.845,56.087,104.348,58.295z M134.228,77.361c0.55-13.305,2.1-26.658,1.256-39.894\r\n\t\t\tc-0.466-7.299-4.008-14.873-7.872-21.465c-4.458-7.606-13.49-9.427-22.108-10.587c-5.269-0.709-10.642-0.957-15.965-0.958\r\n\t\t\tc-2.587,0-7.013,0.519-7.399,1.714c-1.087,3.368,2.952,3.797,5.376,4.463c7.241,1.991,13.888,4.278,19.218,9.983\r\n\t\t\tc5.003,5.354,7.909,11.282,8.243,17.897c0.795,15.747-11.146,29.707-27.924,33.008c-1.94,0.382-4.005,0.335-6.01,0.311\r\n\t\t\tc-13.287-0.159-26.243,0.658-38.573-7.166c-10.23-6.492-13.26-14.694-13.745-24.815C28.078,26.41,39.46,12.289,55.719,9.658\r\n\t\t\tc1.801-0.291,3.828-0.041,5.391-0.734c1.212-0.537,1.863-2.155,2.764-3.292c-1.304-0.72-2.622-2.071-3.91-2.054\r\n\t\t\tc-6.373,0.081-12.749,0.408-19.105,0.86c-16.83,1.197-26.102,8.399-30.955,22.119C6.958,34.888,6.226,44.08,5.711,52.952\r\n\t\t\tC4.847,67.834,4.718,82.769,4.767,97.683c0.018,5.506,0.493,11.301,2.37,16.466c4.022,11.066,13.525,17.627,24.823,21.534\r\n\t\t\tc4.661,1.612,10.121,1.22,15.222,1.695c5.705,0.531,11.412,1.358,17.124,1.432c7.89,0.102,15.823-0.028,23.666-0.714\r\n\t\t\tc7.297-0.638,14.744-1.415,21.697-3.401c14.064-4.017,21.118-14.285,23.086-27.088C134.282,97.667,133.811,87.451,134.228,77.361z\r\n\t\t\t M54.499,65.138c1.977-13.782,6.241-18.525,16.325-18.425c10.623,0.104,15.05,5.123,17.517,20.5\r\n\t\t\tc2.878-1.326,5.881-2.181,8.095-3.908c1.563-1.22,2.79-3.58,2.903-5.502c0.532-9.017-4.479-17.277-16.823-19.642\r\n\t\t\tc-2.862-0.548-5.861-0.476-8.709-1.066C61.334,34.509,47.475,40.48,45.015,53.4C43.517,61.267,45.613,64.195,54.499,65.138z\r\n\t\t\t M84.144,61.873c-0.057-0.238-0.196-1.671-0.742-2.958c-1.84-4.338-7.343-8.659-14.543-7.681\r\n\t\t\tc-6.67,0.905-10.125,4.364-11.066,10.648c-0.451,3.011,0.435,4.488,4.13,4.628c4.868,0.184,9.735,0.882,14.559,1.61\r\n\t\t\tC81.038,68.808,83.905,67.044,84.144,61.873z\"/>\r\n\t\t<path style=\"fill:#39B54A;\" d=\"M134.228,77.359c-0.417,10.092,0.054,20.308-1.474,30.248\r\n\t\t\tc-1.968,12.803-9.021,23.071-23.086,27.088c-6.953,1.986-14.4,2.763-21.697,3.401c-7.844,0.685-15.776,0.816-23.666,0.714\r\n\t\t\tc-5.711-0.074-11.419-0.9-17.124-1.432c-5.101-0.475-10.56-0.083-15.222-1.695c-11.298-3.907-20.801-10.468-24.823-21.534\r\n\t\t\tc-1.878-5.165-2.352-10.96-2.37-16.466c-0.049-14.914,0.08-29.849,0.944-44.731c0.515-8.873,1.247-18.064,4.193-26.395\r\n\t\t\tC14.757,12.836,24.029,5.635,40.859,4.438c6.356-0.452,12.732-0.779,19.105-0.86c1.289-0.016,2.606,1.334,3.91,2.054\r\n\t\t\tc-0.901,1.137-1.552,2.755-2.764,3.292c-1.564,0.693-3.59,0.443-5.391,0.734C39.46,12.289,28.078,26.41,28.723,39.851\r\n\t\t\tc0.486,10.121,3.515,18.324,13.745,24.815c12.33,7.824,25.286,7.008,38.573,7.166c2.006,0.024,4.071,0.071,6.01-0.311\r\n\t\t\tc16.778-3.3,28.719-17.26,27.924-33.008c-0.334-6.614-3.24-12.542-8.243-17.897c-5.33-5.704-11.977-7.992-19.218-9.983\r\n\t\t\tc-2.424-0.666-6.463-1.095-5.376-4.463c0.386-1.195,4.812-1.714,7.399-1.714c5.323,0,10.697,0.248,15.965,0.958\r\n\t\t\tc8.618,1.16,17.65,2.981,22.108,10.587c3.863,6.592,7.406,14.166,7.872,21.465C136.328,50.702,134.778,64.056,134.228,77.359z\"/>\r\n\t\t<path style=\"fill:#006838;\" d=\"M54.499,65.138c-8.886-0.943-10.982-3.871-9.484-11.738c2.46-12.92,16.318-18.891,28.792-16.305\r\n\t\t\tc2.848,0.591,5.847,0.518,8.709,1.066C94.86,40.526,99.87,48.786,99.339,57.803c-0.113,1.922-1.34,4.282-2.903,5.502\r\n\t\t\tc-2.214,1.727-5.217,2.582-8.095,3.908c-2.467-15.377-6.894-20.396-17.517-20.5C60.74,46.613,56.476,51.356,54.499,65.138z\"/>\r\n\t\t<path style=\"fill:#8DC63F;\" d=\"M84.144,61.873c-0.239,5.171-3.105,6.935-7.661,6.247c-4.825-0.729-9.691-1.426-14.559-1.61\r\n\t\t\tc-3.695-0.14-4.581-1.617-4.13-4.628c0.941-6.284,4.396-9.742,11.066-10.648c7.201-0.977,12.703,3.343,14.543,7.681\r\n\t\t\tC83.948,60.202,84.087,61.635,84.144,61.873z\"/>\r\n\t</g>\r\n</g>\r\n<g id=\"Layer_1\">\r\n</g>\r\n</svg>\r\n"
+	module.exports = "<?xml version=\"1.0\" encoding=\"iso-8859-1\"?>\r\n<!-- Generator: Adobe Illustrator 18.1.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->\r\n<svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" x=\"0px\" y=\"0px\"\r\n\t viewBox=\"0 0 137.633 140.182\" style=\"enable-background:new 0 0 137.633 140.182;\" xml:space=\"preserve\">\r\n<g id=\"virus_x5F_purple\">\r\n\t<g id=\"EngFRM.tif\">\r\n\t\t<g>\r\n\t\t\t<path d=\"M15.223,106.899c-2.729-1.527-5.192-3.084-7.81-4.322c-2.965-1.403-5.613-2.794-5.555-6.688\r\n\t\t\t\tc0.056-3.776,2.079-6.05,5.243-7.674C7.85,87.83,8.516,87.29,9.2,86.835c-0.256-0.431-0.345-0.814-0.542-0.88\r\n\t\t\t\tC0.348,83.2-2.01,75.947,1.713,66.264c3.533-9.187,8.566-17.399,14.549-25.184c4.412-5.74,8.295-11.876,12.528-17.755\r\n\t\t\t\tc5.475-7.604,13.018-12.79,21.536-16.303c10.986-4.531,22.676-5.911,34.542-6.647c8.464-0.526,16.691-0.702,25.128,0.865\r\n\t\t\t\tc8.634,1.604,14.938,5.678,19.293,13.006c5.262,8.854,7.412,18.594,7.677,28.71c0.37,14.154,1.12,28.36,0.293,42.463\r\n\t\t\t\tc-0.537,9.161-2.904,18.396-5.755,27.183c-2.011,6.197-7.214,11.039-13.266,13.797c-7.258,3.307-14.863,6.024-22.545,8.218\r\n\t\t\t\tc-7.276,2.079-14.783,3.774-22.302,4.51c-9.532,0.934-19.218,1.373-28.762,0.798c-6.82-0.411-13.493-2.84-18.197-8.568\r\n\t\t\t\tc-3.66-4.457-7.723-7.134-14.176-5.112c-1.856,0.582-6.422-1.802-6.876-3.555c-0.801-3.087-0.239-7.202,1.347-10.004\r\n\t\t\t\tC8.067,110.316,11.663,109.194,15.223,106.899z M133.34,71.973c-3.193,2.71-5.801,5.318-8.789,7.391\r\n\t\t\t\tc-13.396,9.295-31.439,0.53-35.714-14.068c-3.155-10.771-1.78-21.017,2.355-30.876c6.044-14.41,17.623-24.511,34.522-18.105\r\n\t\t\t\tc-3.068-6.164-7.788-9.729-12.884-10.775c-2.48,1.687-4.13,2.809-5.78,3.931c-0.417-1.638-0.833-3.275-1.383-5.436\r\n\t\t\t\tc-1.643-0.196-4.358-0.981-6.984-0.753C86.549,4.331,74.255,4.761,62.37,7.135C49.526,9.7,38.354,16.24,30.463,27.096\r\n\t\t\t\tc-6.553,9.015-13.38,17.905-19.061,27.447c-3.552,5.965-6.34,12.863-7.404,19.659c-1.158,7.396,1.276,8.925,8.693,6.281\r\n\t\t\t\tc2.889-1.03,6.238-1.044,9.38-1.061c3.541-0.019,6.24-2.293,6.402-5.991c0.168-3.841-1.542-5.896-5.571-5.854\r\n\t\t\t\tc-1.134,0.012-2.27-0.168-3.405-0.26c-0.131-0.387-0.261-0.774-0.392-1.161c1.411-0.718,2.78-1.942,4.24-2.06\r\n\t\t\t\tc4.457-0.359,7.519,3.779,7.964,10.294c0.276,4.046-2.653,7.403-6.824,7.687c-1.824,0.124-3.665,0.061-5.497,0.02\r\n\t\t\t\tc-3.667-0.082-5.723,2.149-6.254,5.24c-0.269,1.564,0.882,3.654,1.953,5.098c2.559,3.452,5.452,6.661,8.21,9.969\r\n\t\t\t\tc-0.244,0.318-0.488,0.636-0.732,0.954c-1.309-0.875-2.861-1.536-3.874-2.67c-1.98-2.216-3.487-4.856-5.53-7.004\r\n\t\t\t\tc-1.102-1.158-2.884-2.188-4.406-2.258c-0.889-0.04-2.623,1.921-2.633,2.994c-0.013,1.542,0.769,3.838,1.962,4.514\r\n\t\t\t\tc5.385,3.048,11.039,5.633,16.588,8.399c1.128,0.562,2.224,1.186,3.335,1.781c-0.129,0.368-0.258,0.736-0.388,1.104\r\n\t\t\t\tc-3.313,0-6.629-0.086-9.939,0.021c-4.311,0.14-9.299,3.646-9.743,7.235c-0.174,1.411,1.092,2.996,1.703,4.502\r\n\t\t\t\tc1.234-0.915,2.912-1.579,3.616-2.794c1.992-3.438,4.009-6.488,8.522-6.06c-2.217,2.571-4.38,5.08-6.211,7.203\r\n\t\t\t\tc4.341,2.462,8.46,3.638,10.773,6.331c6.612,7.702,15.111,10.033,24.604,9.809c6.784-0.16,13.539-1.279,20.325-1.684\r\n\t\t\t\tc10.691-0.638,21.153-2.384,31.067-6.425c6.17-2.515,12.835-4.704,17.953-8.7c10.776-8.412,11.482-21.269,12.999-33.204\r\n\t\t\t\tc-1.987-0.257-3.726-0.483-5.466-0.708c-0.035-0.616-0.07-1.232-0.105-1.848c1.722-0.567,3.444-1.134,5.547-1.826\r\n\t\t\t\tC132.995,79.31,133.157,75.86,133.34,71.973z M102.692,53.843c-0.413,0.156-0.825,0.313-1.238,0.469\r\n\t\t\t\tc1.535,3.922,2.088,8.78,4.808,11.573c5.823,5.98,14.779,3.935,20.647-3.684c7.337-9.528,6.151-20.214,3.653-30.936\r\n\t\t\t\tc-0.233-0.999-1.273-1.974-2.181-2.632c-6.045-4.383-15.127-2.8-19.217,3.537C104.927,38.737,102.241,45.857,102.692,53.843z\r\n\t\t\t\t M132.626,60.845c-3.379,3.103-6.088,6.031-9.239,8.378c-4.491,3.345-9.913,4.699-15.036,2.33\r\n\t\t\t\tc-5.628-2.602-9.109-7.286-9.338-13.929c-0.255-7.388,0.155-14.642,3.748-21.285c4.022-7.437,10.696-14.374,19.611-13.131\r\n\t\t\t\tc2.263,0.316,4.495,0.854,8.174,1.568c-1.778-2.078-2.476-3.492-3.617-4.134c-10.84-6.101-21.403-3.404-28.273,6.928\r\n\t\t\t\tc-4.456,6.702-6.373,14.007-7.281,22.056c-0.712,6.32-0.327,12.152,1.7,17.896c3.189,9.039,16.345,14.424,26.119,11.046\r\n\t\t\t\tC126.543,76.028,132.874,68.041,132.626,60.845z\"/>\r\n\t\t\t<path style=\"fill:#754B9E;\" d=\"M133.34,71.973c-0.183,3.887-0.345,7.337-0.475,10.096c-2.104,0.693-3.825,1.259-5.547,1.826\r\n\t\t\t\tc0.035,0.616,0.07,1.232,0.105,1.848c1.739,0.225,3.479,0.451,5.466,0.708c-1.517,11.935-2.223,24.792-12.999,33.204\r\n\t\t\t\tc-5.118,3.996-11.784,6.185-17.953,8.7c-9.914,4.041-20.376,5.788-31.067,6.425c-6.785,0.405-13.541,1.523-20.325,1.684\r\n\t\t\t\tc-9.493,0.224-17.992-2.107-24.604-9.809c-2.312-2.694-6.432-3.869-10.773-6.331c1.83-2.123,3.994-4.632,6.211-7.203\r\n\t\t\t\tc-4.513-0.427-6.529,2.623-8.522,6.06c-0.705,1.216-2.383,1.879-3.616,2.794c-0.611-1.506-1.877-3.091-1.703-4.502\r\n\t\t\t\tc0.443-3.589,5.432-7.095,9.743-7.235c3.31-0.107,6.626-0.021,9.939-0.021c0.129-0.368,0.258-0.736,0.388-1.104\r\n\t\t\t\tc-1.111-0.595-2.207-1.219-3.335-1.781c-5.549-2.766-11.203-5.351-16.588-8.399c-1.194-0.676-1.975-2.972-1.962-4.514\r\n\t\t\t\tc0.009-1.072,1.744-3.034,2.633-2.994c1.522,0.069,3.304,1.099,4.406,2.258c2.043,2.147,3.55,4.787,5.53,7.004\r\n\t\t\t\tc1.013,1.134,2.565,1.795,3.874,2.67c0.244-0.318,0.488-0.636,0.732-0.954c-2.758-3.307-5.65-6.517-8.21-9.969\r\n\t\t\t\tc-1.071-1.444-2.222-3.534-1.953-5.098c0.531-3.091,2.588-5.322,6.254-5.24c1.832,0.041,3.672,0.104,5.497-0.02\r\n\t\t\t\tc4.171-0.284,7.1-3.64,6.824-7.687c-0.444-6.515-3.506-10.654-7.964-10.294c-1.46,0.118-2.829,1.342-4.24,2.06\r\n\t\t\t\tc0.131,0.387,0.261,0.774,0.392,1.161c1.135,0.092,2.271,0.272,3.405,0.26c4.029-0.042,5.739,2.013,5.571,5.854\r\n\t\t\t\tc-0.162,3.698-2.861,5.973-6.402,5.991c-3.142,0.016-6.491,0.031-9.38,1.061c-7.417,2.644-9.851,1.115-8.693-6.281\r\n\t\t\t\tc1.064-6.796,3.853-13.694,7.404-19.659c5.682-9.542,12.508-18.432,19.061-27.447C38.354,16.24,49.526,9.7,62.37,7.135\r\n\t\t\t\tc11.885-2.374,24.179-2.804,36.314-3.853c2.626-0.227,5.341,0.558,6.984,0.753c0.55,2.161,0.966,3.798,1.383,5.436\r\n\t\t\t\tc1.65-1.122,3.3-2.244,5.78-3.931c5.096,1.046,9.815,4.611,12.884,10.775C108.814,9.909,97.235,20.01,91.191,34.42\r\n\t\t\t\tc-4.135,9.859-5.509,20.105-2.355,30.876c4.275,14.598,22.319,23.364,35.714,14.068C127.538,77.291,130.147,74.683,133.34,71.973\r\n\t\t\t\tz M64.189,100.551c0.861-6.241-7.04-11.782-13.65-12.02c-7.085-0.255-12.392,5.029-12.772,12.324\r\n\t\t\t\tc-0.254,4.876,7.273,10.338,14.144,10.264C57.863,111.054,64.127,105.662,64.189,100.551z M64.111,43.748\r\n\t\t\t\tc-2.675-2.429-5.267-1.214-7.698,0.239c-6.128,3.664-12.293,6.742-19.873,4.734c-1.003-0.266-2.512,1.338-3.889,2.136\r\n\t\t\t\tc2.666,1.374,4.688,1.841,5.807,3.096c4.222,4.735,11.13,5.312,15.656,0.771C57.51,51.316,60.607,47.618,64.111,43.748z\r\n\t\t\t\t M54.247,124.018c2.42-2.9,3.866-4.632,5.313-6.365c-1.751-1.256-3.359-3.21-5.289-3.598c-2.637-0.53-4.832,1.456-4.482,4.126\r\n\t\t\t\tC50.003,119.82,52.019,121.227,54.247,124.018z M67.595,95.746c2.187-2.727,4.426-4.274,4.593-6.017\r\n\t\t\t\tc0.253-2.626-2.223-4.512-4.786-3.77c-1.64,0.475-3.507,2.641-3.821,4.315C63.358,91.466,65.549,93.103,67.595,95.746z\r\n\t\t\t\t M64.108,107.897c2.786,1.946,4.491,4.05,5.875,3.861c1.574-0.216,3.923-2.434,3.987-3.867c0.069-1.547-2.28-4.605-3.28-4.49\r\n\t\t\t\tC68.826,103.614,67.174,105.648,64.108,107.897z M88.353,20.997c-2.097-1.469-3.46-3.164-4.562-3.011\r\n\t\t\t\tc-1.428,0.198-2.648,1.867-3.958,2.903c1.105,1.046,2.199,2.914,3.319,2.93C84.574,23.839,86.018,22.356,88.353,20.997z\r\n\t\t\t\t M86.088,84.742c-2.19-1.769-3.475-3.489-4.273-3.29c-1.155,0.287-2.493,1.863-2.724,3.08c-0.157,0.83,1.371,2.721,2.275,2.808\r\n\t\t\t\tC82.463,87.445,83.696,86.148,86.088,84.742z M116.596,96.467c-1.445-1.538-2.653-3.409-3.149-3.24\r\n\t\t\t\tc-1.485,0.507-2.691,1.812-4.006,2.806c1.197,1.086,2.251,2.509,3.661,3.091C113.662,99.355,115.008,97.725,116.596,96.467z\r\n\t\t\t\t M105.892,98.452c-2.154-1.711-3.452-3.502-4.487-3.364c-1.178,0.157-2.477,1.898-3.004,3.23\r\n\t\t\t\tc-0.229,0.579,1.459,2.724,2.061,2.641C101.998,100.745,103.414,99.679,105.892,98.452z M92.74,14.591\r\n\t\t\t\tc0.677,0.321,1.355,0.642,2.032,0.962c1.141-1.596,2.282-3.193,3.423-4.789c-1.439-0.602-2.879-1.204-4.318-1.805\r\n\t\t\t\tC93.498,10.836,93.119,12.714,92.74,14.591z M80.528,73.291c-1.574-1.213-2.841-2.886-3.727-2.707\r\n\t\t\t\tc-1.274,0.257-2.773,1.702-3.181,2.956c-0.215,0.66,1.819,2.924,2.601,2.814C77.559,76.165,78.71,74.681,80.528,73.291z\r\n\t\t\t\t M78.391,44.693c-1.934-1.615-3.443-3.303-3.796-3.092c-1.225,0.73-2.479,2.003-2.84,3.308c-0.175,0.631,1.622,2.537,2.512,2.528\r\n\t\t\t\tC75.387,47.426,76.491,46.044,78.391,44.693z M77.434,36.03c1.332-1.844,2.913-3.099,2.729-4.003\r\n\t\t\t\tc-0.253-1.24-1.843-2.214-2.86-3.302c-0.986,0.971-2.79,1.97-2.757,2.906C74.589,32.879,76.061,34.078,77.434,36.03z\r\n\t\t\t\t M89.751,88.494c-1.117,1.949-2.263,3.189-2.44,4.551c-0.1,0.771,1.393,1.743,2.168,2.625c1.037-1.246,2.374-2.373,2.954-3.801\r\n\t\t\t\tC92.649,91.341,91.082,90.104,89.751,88.494z M70.793,61.866c0.704,0.633,1.408,1.265,2.112,1.898\r\n\t\t\t\tc1.36-1.315,2.72-2.63,4.08-3.944c-1.056-0.906-2.113-1.813-3.169-2.719C72.809,58.688,71.801,60.277,70.793,61.866z\r\n\t\t\t\t M126.87,92.749c-2.029-1.44-3.084-2.712-4.254-2.826c-0.722-0.07-2.147,1.565-2.258,2.545c-0.076,0.675,1.486,2.038,2.451,2.177\r\n\t\t\t\tC123.751,94.78,124.863,93.751,126.87,92.749z\"/>\r\n\t\t\t<path style=\"fill:#754B9E;\" d=\"M102.692,53.843c-0.452-7.986,2.235-15.106,6.472-21.672c4.09-6.338,13.172-7.92,19.217-3.537\r\n\t\t\t\tc0.908,0.658,1.948,1.633,2.181,2.632c2.498,10.722,3.685,21.408-3.653,30.936c-5.867,7.619-14.823,9.663-20.647,3.684\r\n\t\t\t\tc-2.72-2.793-3.273-7.651-4.808-11.573C101.867,54.156,102.28,53.999,102.692,53.843z\"/>\r\n\t\t\t<path style=\"fill:#5151A3;\" d=\"M132.626,60.845c0.248,7.196-6.083,15.183-13.432,17.723c-9.775,3.378-22.93-2.007-26.119-11.046\r\n\t\t\t\tc-2.027-5.744-2.412-11.576-1.7-17.896c0.907-8.049,2.824-15.354,7.281-22.056c6.87-10.333,17.433-13.029,28.273-6.928\r\n\t\t\t\tc1.141,0.642,1.839,2.056,3.617,4.134c-3.679-0.714-5.91-1.253-8.174-1.568c-8.915-1.243-15.589,5.694-19.611,13.131\r\n\t\t\t\tc-3.593,6.644-4.003,13.897-3.748,21.285c0.229,6.643,3.71,11.327,9.338,13.929c5.123,2.368,10.545,1.015,15.036-2.33\r\n\t\t\t\tC126.538,66.877,129.247,63.948,132.626,60.845z\"/>\r\n\t\t\t<path d=\"M64.189,100.551c-0.062,5.111-6.327,10.503-12.278,10.568c-6.871,0.075-14.398-5.388-14.144-10.264\r\n\t\t\t\tc0.38-7.295,5.687-12.579,12.772-12.324C57.149,88.769,65.05,94.31,64.189,100.551z M51.301,107.53\r\n\t\t\t\tc6.32,0.004,9.225-2.4,9.255-7.658c0.027-4.771-4.002-7.777-10.443-7.793c-5.451-0.013-7.932,2.428-7.924,7.796\r\n\t\t\t\tC42.198,105.265,44.888,107.526,51.301,107.53z\"/>\r\n\t\t\t<path d=\"M64.111,43.748c-3.503,3.87-6.601,7.569-9.996,10.976c-4.526,4.541-11.433,3.963-15.656-0.771\r\n\t\t\t\tc-1.119-1.255-3.141-1.721-5.807-3.096c1.377-0.797,2.886-2.401,3.889-2.136c7.58,2.009,13.745-1.07,19.873-4.734\r\n\t\t\t\tC58.843,42.533,61.435,41.319,64.111,43.748z M43.325,53.73c5.207,2.397,8.881,0.884,10.331-4.012\r\n\t\t\t\tC50.285,51.027,46.913,52.337,43.325,53.73z\"/>\r\n\t\t\t<path d=\"M54.247,124.018c-2.228-2.79-4.243-4.198-4.458-5.837c-0.35-2.67,1.845-4.656,4.482-4.126\r\n\t\t\t\tc1.93,0.388,3.538,2.342,5.289,3.598C58.113,119.385,56.667,121.118,54.247,124.018z\"/>\r\n\t\t\t<path d=\"M67.595,95.746c-2.046-2.643-4.238-4.279-4.014-5.472c0.314-1.674,2.18-3.84,3.821-4.315\r\n\t\t\t\tc2.563-0.742,5.039,1.144,4.786,3.77C72.021,91.471,69.783,93.019,67.595,95.746z\"/>\r\n\t\t\t<path d=\"M64.108,107.897c3.066-2.249,4.717-4.283,6.581-4.496c1.001-0.114,3.349,2.943,3.28,4.49\r\n\t\t\t\tc-0.064,1.433-2.412,3.651-3.987,3.867C68.599,111.948,66.895,109.843,64.108,107.897z\"/>\r\n\t\t\t<path d=\"M88.353,20.997c-2.335,1.359-3.779,2.843-5.201,2.822c-1.12-0.016-2.214-1.884-3.319-2.93\r\n\t\t\t\tc1.31-1.036,2.53-2.705,3.958-2.903C84.893,17.833,86.256,19.528,88.353,20.997z\"/>\r\n\t\t\t<path d=\"M86.088,84.742c-2.391,1.406-3.625,2.703-4.721,2.598c-0.905-0.086-2.433-1.978-2.275-2.808\r\n\t\t\t\tc0.231-1.217,1.569-2.793,2.724-3.08C82.612,81.253,83.898,82.973,86.088,84.742z\"/>\r\n\t\t\t<path d=\"M116.596,96.467c-1.588,1.258-2.934,2.888-3.494,2.657c-1.409-0.582-2.464-2.005-3.661-3.091\r\n\t\t\t\tc1.315-0.994,2.521-2.299,4.006-2.806C113.943,93.057,115.151,94.929,116.596,96.467z\"/>\r\n\t\t\t<path d=\"M105.892,98.452c-2.478,1.227-3.894,2.294-5.431,2.506c-0.602,0.083-2.29-2.062-2.061-2.641\r\n\t\t\t\tc0.528-1.331,1.826-3.073,3.004-3.23C102.441,94.95,103.738,96.741,105.892,98.452z\"/>\r\n\t\t\t<path d=\"M92.74,14.591c0.379-1.878,0.758-3.755,1.137-5.633c1.439,0.602,2.879,1.204,4.318,1.805\r\n\t\t\t\tc-1.141,1.596-2.282,3.193-3.423,4.789C94.095,15.233,93.417,14.912,92.74,14.591z\"/>\r\n\t\t\t<path d=\"M80.528,73.291c-1.819,1.391-2.97,2.875-4.307,3.063c-0.781,0.11-2.815-2.154-2.601-2.814\r\n\t\t\t\tc0.408-1.254,1.907-2.699,3.181-2.956C77.687,70.404,78.955,72.077,80.528,73.291z\"/>\r\n\t\t\t<path d=\"M78.391,44.693c-1.9,1.351-3.005,2.733-4.124,2.744c-0.89,0.009-2.687-1.897-2.512-2.528\r\n\t\t\t\tc0.361-1.305,1.615-2.578,2.84-3.308C74.948,41.39,76.457,43.078,78.391,44.693z\"/>\r\n\t\t\t<path d=\"M77.434,36.03c-1.373-1.951-2.845-3.15-2.889-4.399c-0.033-0.936,1.771-1.935,2.757-2.906\r\n\t\t\t\tc1.017,1.088,2.608,2.061,2.86,3.302C80.347,32.93,78.766,34.186,77.434,36.03z\"/>\r\n\t\t\t<path d=\"M89.751,88.494c1.33,1.611,2.897,2.847,2.683,3.375c-0.58,1.428-1.917,2.555-2.954,3.801\r\n\t\t\t\tc-0.775-0.882-2.268-1.854-2.168-2.625C87.488,91.682,88.634,90.443,89.751,88.494z\"/>\r\n\t\t\t<path d=\"M70.793,61.866c1.008-1.589,2.015-3.177,3.023-4.766c1.056,0.906,2.113,1.813,3.169,2.719\r\n\t\t\t\tc-1.36,1.315-2.72,2.63-4.08,3.944C72.201,63.131,71.497,62.498,70.793,61.866z\"/>\r\n\t\t\t<path d=\"M126.87,92.749c-2.007,1.002-3.119,2.031-4.061,1.895c-0.965-0.139-2.527-1.501-2.451-2.177\r\n\t\t\t\tc0.11-0.98,1.535-2.616,2.258-2.545C123.786,90.036,124.841,91.309,126.87,92.749z\"/>\r\n\t\t\t<path style=\"fill:#5151A3;\" d=\"M51.301,107.53c-6.413-0.004-9.103-2.264-9.112-7.655c-0.008-5.368,2.473-7.809,7.924-7.796\r\n\t\t\t\tc6.441,0.015,10.469,3.022,10.443,7.793C60.526,105.13,57.621,107.534,51.301,107.53z\"/>\r\n\t\t\t<path style=\"fill:#FFFFFF;\" d=\"M43.325,53.73c3.588-1.394,6.96-2.703,10.327-4.017C52.207,54.614,48.533,56.127,43.325,53.73z\"/>\r\n\t\t</g>\r\n\t</g>\r\n</g>\r\n<g id=\"Layer_1\">\r\n</g>\r\n</svg>\r\n"
 
 /***/ },
 /* 266 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = "<?xml version=\"1.0\" encoding=\"iso-8859-1\"?>\r\n<!-- Generator: Adobe Illustrator 18.1.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->\r\n<svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" x=\"0px\" y=\"0px\"\r\n\t viewBox=\"0 0 139.972 142.273\" style=\"enable-background:new 0 0 139.972 142.273;\" xml:space=\"preserve\">\r\n<g id=\"pill_x5F_orange\">\r\n\t<g>\r\n\t\t<path d=\"M42.15,142.273c-11.655-0.338-22.257-2.527-30.657-11.105c-6.468-6.606-8.787-15.057-9.569-23.96\r\n\t\t\tC1.082,97.636,0.227,88.04,0.049,78.442C-0.14,68.205,0.24,57.941,0.789,47.712c0.345-6.429,0.676-13.035,2.381-19.178\r\n\t\t\tC7.275,13.736,17.214,3.932,32.957,1.979c9.332-1.158,18.768-1.945,28.16-1.979c7.369-0.026,14.857,0.813,20.729,6.563\r\n\t\t\tc0.852,0.834,3.526,0.756,4.782,0.056c13.293-7.403,30.727-5.166,42.025,4.796c7.065,6.229,9.721,13.991,10.237,22.837\r\n\t\t\tc0.569,9.765,0.999,19.55,1.074,29.33c0.069,9.084-0.304,18.176-0.688,27.256c-0.236,5.563-1.806,11.233-1.106,16.636\r\n\t\t\tc1.303,10.056-3.683,17.216-9.488,23.942c-5.435,6.296-12.822,9.87-21.163,10.077c-17.684,0.438-35.379,0.346-53.069,0.589\r\n\t\t\tC50.347,142.138,46.25,141.962,42.15,142.273z M108.8,17.228c-2.361,2.745-4.914,4.866-6.303,7.586\r\n\t\t\tc-1.185,2.32-0.906,5.359-1.497,8.03c-1.917,8.656-4.453,17.188-14.181,19.932c-5.883,1.659-12.145,3.094-18.172,2.871\r\n\t\t\tc-13.483-0.497-22.968-10.728-21.312-22.661C48.753,22.764,54.082,18,63.999,18.595c3.258,0.196,6.874,1.384,7.404,4.918\r\n\t\t\tc0.582,3.883-3.081,4.591-6.09,5.299c-0.874,0.206-1.766,0.511-2.532,0.97c-2.93,1.757-3.763,4.703-1.572,6.953\r\n\t\t\tc2.25,2.311,5.428,4.383,8.527,5.067c12.002,2.647,20.345-11.903,17.061-22.071C83.55,9.678,77.226,4.325,65.972,3.894\r\n\t\t\tc-11.048-0.423-22.21,0.668-33.247,1.819C20.423,6.996,8.302,18.165,6.802,29.715C5.336,41.006,4.896,52.429,3.881,63.783\r\n\t\t\tc-0.331,3.696,1.695,4.455,4.667,4.481c2.178,0.019,4.363,0.01,6.531,0.185c10.338,0.833,16.602,8.896,16.888,17.354\r\n\t\t\tc0.468,13.799,10.116,21.217,22.146,20.945c11.044-0.25,22.1,0.026,33.147-0.142c10.103-0.153,17.344-6.832,18.842-16.38\r\n\t\t\tc0.84-5.352,2.226-10.659,3.852-15.832c1.731-5.507,6.037-8.169,11.621-8.714c4.503-0.44,9.023-0.706,14.165-1.098\r\n\t\t\tc-0.294-4.99-0.87-9.863-0.806-14.728c0.113-8.577,0.475-16.973-2.92-25.299c-3.25-7.972-8.215-13.676-16.089-16.743\r\n\t\t\tc-9.888-3.852-19.555-2.576-29.322,1.96c0.39,1.366,0.431,3.075,1.266,4.174c4.159,5.47,3.607,11.364,2.022,17.454\r\n\t\t\tc-3.426,13.162-21.42,19.483-30.257,9.643c-2.649-2.95-3.999-6.243-2.702-9.414c0.967-2.365,4.054-3.958,6.394-5.612\r\n\t\t\tc1.439-1.017,3.25-1.501,5.648-2.556c-6.326-2.669-13.099-1.2-15.719,2.668c-4.441,6.555-2.455,17.587,4.176,22.058\r\n\t\t\tc8.883,5.988,18.273,4.944,27.838,1.791c5.939-1.958,8.959-6.564,10.858-11.928c1.808-5.105,2.735-10.518,4.332-15.708\r\n\t\t\tC101.65,18.464,104.051,15.975,108.8,17.228z M89.218,139.154c7.654-0.878,15.055-0.891,21.99-2.705\r\n\t\t\tc12.586-3.291,20.859-11.219,22.047-25.036c0.509-5.915,0.782-11.859,1.523-17.744c1.037-8.233,1.971-16.421,0.187-24.897\r\n\t\t\tc-3.026-0.08-5.779-0.164-8.532-0.223c-7.544-0.161-13.407,4.72-14.655,12.189c-0.36,2.157-0.805,4.304-1.059,6.474\r\n\t\t\tc-1.337,11.417-6.979,19.382-18.193,22.732c-2.219,0.663-4.645,0.621-7.221,0.935C86.608,120.297,87.842,129.216,89.218,139.154z\r\n\t\t\t M57.916,115.712c0.642-5.181,0.623-4.954-4.356-5.381c-14.562-1.249-23.518-5.775-25.468-22.568\r\n\t\t\tc-0.814-7.012-3.083-14.317-12.314-15.112c-2.486-0.214-4.966-0.506-7.455-0.689c-3.319-0.244-4.887,1.447-4.727,4.697\r\n\t\t\tc0.135,2.741,0.428,5.476,0.69,8.209c1.091,11.39,0.435,22.964,4.551,34.013c3.019,8.106,8.18,14.418,16.208,16.57\r\n\t\t\tc8.297,2.223,17.132,2.55,25.768,3.227c1.327,0.104,4.707,1.697,4.993-2.44C56.28,129.38,57.19,122.552,57.916,115.712z\r\n\t\t\t M59.269,138.047c7.576,0.2,15.379,0.493,23.179,0.456c0.676-0.003,2.025-2.268,1.902-3.348\r\n\t\t\tc-0.843-7.376-1.876-14.739-3.174-22.047c-0.204-1.149-2.029-2.794-3.166-2.845c-3.925-0.177-7.902,0.052-11.802,0.564\r\n\t\t\tc-1.228,0.161-3.089,1.56-3.277,2.635C61.536,121.475,60.489,129.547,59.269,138.047z\"/>\r\n\t\t<path style=\"fill:#F15A29;\" d=\"M108.8,17.228c-4.749-1.253-7.149,1.236-8.342,5.113c-1.596,5.19-2.524,10.603-4.332,15.708\r\n\t\t\tc-1.899,5.363-4.919,9.97-10.858,11.928c-9.565,3.153-18.955,4.198-27.838-1.791c-6.632-4.471-8.617-15.502-4.176-22.058\r\n\t\t\tc2.621-3.869,9.393-5.337,15.719-2.668c-2.398,1.055-4.209,1.539-5.648,2.556c-2.34,1.654-5.427,3.248-6.394,5.612\r\n\t\t\tc-1.297,3.171,0.053,6.464,2.702,9.414c8.838,9.84,26.831,3.52,30.257-9.643c1.585-6.09,2.137-11.984-2.022-17.454\r\n\t\t\tc-0.835-1.099-0.876-2.808-1.266-4.174c9.767-4.536,19.434-5.812,29.322-1.96c7.874,3.067,12.839,8.771,16.089,16.743\r\n\t\t\tc3.395,8.327,3.033,16.723,2.92,25.299c-0.064,4.865,0.511,9.738,0.806,14.728c-5.142,0.391-9.662,0.658-14.165,1.098\r\n\t\t\tc-5.584,0.545-9.89,3.207-11.621,8.714c-1.626,5.173-3.012,10.481-3.852,15.832c-1.498,9.548-8.739,16.227-18.842,16.38\r\n\t\t\tc-11.047,0.167-22.103-0.108-33.147,0.142c-12.03,0.272-21.678-7.146-22.146-20.945c-0.287-8.457-6.551-16.52-16.888-17.354\r\n\t\t\tc-2.168-0.175-4.353-0.167-6.531-0.185c-2.972-0.025-4.997-0.784-4.667-4.481c1.015-11.354,1.455-22.777,2.921-34.068\r\n\t\t\tc1.5-11.55,13.621-22.719,25.922-24.002c11.037-1.151,22.199-2.242,33.247-1.819C77.226,4.325,83.55,9.678,86.797,19.731\r\n\t\t\tc3.284,10.168-5.059,24.718-17.061,22.071c-3.098-0.683-6.276-2.756-8.527-5.067c-2.191-2.25-1.358-5.196,1.572-6.953\r\n\t\t\tc0.766-0.459,1.658-0.765,2.532-0.97c3.009-0.708,6.673-1.417,6.09-5.299c-0.53-3.534-4.147-4.722-7.404-4.918\r\n\t\t\tC54.082,18,48.753,22.764,47.334,32.987c-1.656,11.932,7.829,22.164,21.312,22.661c6.027,0.222,12.289-1.212,18.172-2.871\r\n\t\t\tc9.728-2.744,12.264-11.276,14.181-19.932c0.592-2.671,0.312-5.71,1.497-8.03C103.886,22.093,106.438,19.973,108.8,17.228z\"/>\r\n\t\t<path style=\"fill:#F7941E;\" d=\"M89.218,139.154c-1.375-9.938-2.61-18.858-3.913-28.276c2.576-0.313,5.002-0.272,7.221-0.935\r\n\t\t\tc11.214-3.35,16.856-11.315,18.193-22.732c0.254-2.17,0.699-4.317,1.059-6.474c1.248-7.468,7.111-12.349,14.655-12.189\r\n\t\t\tc2.753,0.059,5.506,0.143,8.532,0.223c1.784,8.476,0.85,16.665-0.187,24.897c-0.741,5.885-1.014,11.829-1.523,17.744\r\n\t\t\tc-1.188,13.817-9.461,21.744-22.047,25.036C104.273,138.263,96.872,138.276,89.218,139.154z\"/>\r\n\t\t<path style=\"fill:#F7941E;\" d=\"M57.916,115.712c-0.726,6.84-1.637,13.668-2.11,20.526c-0.286,4.137-3.666,2.544-4.993,2.44\r\n\t\t\tc-8.637-0.677-17.471-1.004-25.768-3.227c-8.028-2.151-13.189-8.463-16.208-16.57c-4.115-11.049-3.459-22.623-4.551-34.013\r\n\t\t\tc-0.262-2.734-0.555-5.468-0.69-8.209c-0.16-3.251,1.408-4.942,4.727-4.697c2.488,0.183,4.968,0.475,7.455,0.689\r\n\t\t\tc9.231,0.795,11.5,8.1,12.314,15.112c1.95,16.793,10.906,21.319,25.468,22.568C58.539,110.758,58.558,110.531,57.916,115.712z\"/>\r\n\t\t<path style=\"fill:#BE1E2D;\" d=\"M59.269,138.047c1.22-8.5,2.267-16.572,3.662-24.583c0.187-1.076,2.049-2.474,3.277-2.635\r\n\t\t\tc3.9-0.513,7.878-0.741,11.802-0.564c1.137,0.051,2.961,1.696,3.166,2.845c1.298,7.308,2.331,14.67,3.174,22.047\r\n\t\t\tc0.123,1.08-1.226,3.345-1.902,3.348C74.647,138.54,66.845,138.246,59.269,138.047z\"/>\r\n\t</g>\r\n</g>\r\n<g id=\"Layer_1\">\r\n</g>\r\n</svg>\r\n"
+
+/***/ },
+/* 267 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = "<?xml version=\"1.0\" encoding=\"iso-8859-1\"?>\r\n<!-- Generator: Adobe Illustrator 18.1.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->\r\n<svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" x=\"0px\" y=\"0px\"\r\n\t viewBox=\"0 0 141.146 141.135\" style=\"enable-background:new 0 0 141.146 141.135;\" xml:space=\"preserve\">\r\n<g id=\"pill_x5F_purple\">\r\n\t<g id=\"haLTqA.tif\">\r\n\t\t<g>\r\n\t\t\t<path d=\"M110.275,38.716c-1.355-9.934,3.963-15.986,10.76-21.48c1.12-0.906,0.624-3.344,1.561-4.653\r\n\t\t\t\tc1.212-1.692,2.905-3.402,4.833-4.166c0.651-0.258,3.059,2.142,3.957,3.676c2.58,4.41,2.439,9.037,0.512,13.649\r\n\t\t\t\tc-3.639,8.714-0.297,16.825,2.907,24.884c6.557,16.493,8.326,33.074,3.906,50.362c-2.682,10.489-7.783,19.476-15.844,26.735\r\n\t\t\t\tc-9.184,8.27-20.456,13.035-33.774,13.015c-12.444-0.018-24.885,0.335-37.33,0.394c-14.385,0.069-26.313-4.678-36.228-14.728\r\n\t\t\t\tc-7.66-7.764-12.615-16.534-14.556-26.578c-2.016-10.431-0.766-20.846,2.35-31.036c2.535-8.289,5.256-16.545,7.305-24.942\r\n\t\t\t\tc1.783-7.311,1.935-14.75-3.158-21.309c-2.149-2.768-2.719-5.378-0.027-7.815c3.095-2.802,6.129-1.327,9.322,0.432\r\n\t\t\t\tc10.048,5.534,12.115,14.641,13.3,24.204c0.114,0.918,0.054,1.853,0.101,2.779c0.006,0.11,0.178,0.214,0.63,0.722\r\n\t\t\t\tc2.494-2.524,4.746-5.215,7.442-7.451c6.137-5.09,13.013-9.51,18.589-15.059c4.237-4.217,6.793-9.844,10.38-14.663\r\n\t\t\t\tC68.796,3.563,71.08,1.883,73.045,0c1.761,1.783,4.416,3.31,5.128,5.392c3.037,8.875,7.803,16.502,16.04,22.122\r\n\t\t\t\tC99.23,30.937,104.172,34.454,110.275,38.716z M119.115,84.727c-0.062-6.626,0.464-13.309-0.327-19.865\r\n\t\t\t\tc-1.096-9.089-3.143-18.026-12.138-23.989c-4.964-3.291-9.585-7.026-14.362-10.559C84.423,24.498,78.529,17.51,76.281,8.211\r\n\t\t\t\tc-0.311-1.285-1.689-2.357-2.572-3.528c-1.21,1.116-2.688,2.074-3.578,3.377c-2.333,3.415-3.768,7.553-6.718,10.37\r\n\t\t\t\tc-6.53,6.235-13.822,11.786-20.707,17.71c-7.818,6.727-13.998,14.3-15.727,24.512c-1.692,9.992-3.044,19.861-2.595,30.123\r\n\t\t\t\tc0.734,16.792,12.434,28.965,30.164,30.993c2.771,0.317,4.892-0.735,5.141-3.501c0.276-3.078,1.033-6.417,0.109-9.241\r\n\t\t\t\tc-3.239-9.89-1.238-19.034,2.129-28.507c2.546-7.163,3.78-14.851,4.54-22.404c0.527-5.237-1.153-10.653-1.015-15.965\r\n\t\t\t\tc0.058-2.223,1.697-5.149,3.644-6.388c2.768-1.76,5.287,0.398,7.082,2.66c4.882,6.152,5.765,13.329,5.433,20.5\r\n\t\t\t\tc-0.275,5.927-2.116,11.771-2.594,17.702c-0.43,5.334-0.914,10.932,0.35,16.063c1.986,8.058,4.966,15.859,3.824,24.32\r\n\t\t\t\tc-0.116,0.86,1.592,2.792,2.432,2.788c9.334-0.049,17.908-2.213,24.085-9.143C116.368,103.178,119.234,94.406,119.115,84.727z\r\n\t\t\t\t M126.73,12.625c-2.286,3.344-3.584,7.075-6.36,8.958c-7.938,5.382-8.695,14.183-4.96,21.644\r\n\t\t\t\tc1.998,3.991,3.936,8.176,4.775,12.454c2.605,13.287,2.759,26.585,0.425,39.997c-2.419,13.902-14.109,25.028-28.491,27.3\r\n\t\t\t\tc-8.202,1.296-13.97-1.692-12.615-7.266c1.754-7.221-1.358-13.273-3.064-19.818c-1.233-4.732-1.868-9.782-1.561-14.617\r\n\t\t\t\tc0.592-9.331,2.593-18.589,2.926-27.918c0.204-5.703-2.408-11.144-7.877-16.221c-0.911,2.329-2.384,4.098-1.987,5.39\r\n\t\t\t\tc4.162,13.546,1.028,26.329-3.198,39.284c-1.996,6.116-2.326,12.821-2.542,19.29c-0.16,4.801,1.747,9.68,1.545,14.473\r\n\t\t\t\tc-0.324,7.684-3.705,10.792-10.562,9.284c-14.25-3.134-25.473-9.03-30.018-23.562c-2.064-6.598-2.285-13.347-1.174-20.212\r\n\t\t\t\tc1.427-8.813,1.417-17.901,3.601-26.52c2.414-9.527,2.328-18.761-1.535-27.58c-1.618-3.694-6.265-6.389-9.87-9.168\r\n\t\t\t\tc-0.995-0.767-3.193-0.199-4.839-0.244c0.306,1.568,0.148,3.397,0.992,4.662c7.194,10.784,4.813,21.923,1.112,32.703\r\n\t\t\t\tc-5.059,14.737-9.611,29.167-6.704,45.13c3.493,19.178,21.274,36.981,43.684,37.679c14.12,0.44,28.295-0.985,42.41-0.493\r\n\t\t\t\tc14.234,0.496,33.309-12.635,39.141-23.205c6.206-11.249,7.347-23.037,7.531-35.221c0.154-10.222-2.579-19.77-6.742-29.245\r\n\t\t\t\tc-3.173-7.222-4.658-14.934-2.397-22.847C129.726,22.004,130.922,17.117,126.73,12.625z\"/>\r\n\t\t\t<path style=\"fill:#662D91;\" d=\"M119.115,84.727c0.119,9.679-2.747,18.451-9.408,25.924c-6.177,6.931-14.751,9.095-24.085,9.143\r\n\t\t\t\tc-0.841,0.004-2.548-1.928-2.432-2.788c1.142-8.46-1.838-16.262-3.824-24.32c-1.265-5.131-0.78-10.729-0.35-16.063\r\n\t\t\t\tc0.478-5.931,2.319-11.775,2.594-17.702c0.332-7.171-0.551-14.348-5.433-20.5c-1.795-2.262-4.314-4.421-7.082-2.66\r\n\t\t\t\tc-1.947,1.238-3.586,4.165-3.644,6.388c-0.139,5.312,1.542,10.728,1.015,15.965c-0.76,7.553-1.994,15.241-4.54,22.404\r\n\t\t\t\tc-3.367,9.474-5.367,18.617-2.129,28.507c0.925,2.824,0.168,6.163-0.109,9.241c-0.248,2.766-2.37,3.818-5.141,3.501\r\n\t\t\t\tc-17.73-2.028-29.429-14.201-30.164-30.993c-0.449-10.262,0.903-20.131,2.595-30.123c1.729-10.212,7.909-17.785,15.727-24.512\r\n\t\t\t\tc6.885-5.924,14.177-11.475,20.707-17.71c2.95-2.817,4.385-6.954,6.718-10.37c0.89-1.303,2.368-2.262,3.578-3.377\r\n\t\t\t\tc0.884,1.171,2.262,2.243,2.572,3.528c2.248,9.299,8.142,16.287,16.007,22.103c4.778,3.533,9.398,7.268,14.362,10.559\r\n\t\t\t\tc8.995,5.963,11.041,14.9,12.138,23.989C119.579,71.418,119.053,78.101,119.115,84.727z\"/>\r\n\t\t\t<path style=\"fill:#7D54A2;\" d=\"M126.73,12.625c4.192,4.492,2.996,9.38,1.644,14.111c-2.261,7.912-0.776,15.624,2.397,22.847\r\n\t\t\t\tc4.163,9.475,6.896,19.023,6.742,29.245c-0.184,12.184-1.326,23.972-7.531,35.221c-5.831,10.57-24.906,23.701-39.141,23.205\r\n\t\t\t\tc-14.115-0.492-28.29,0.933-42.41,0.493c-22.41-0.698-40.191-18.501-43.684-37.679C1.84,84.105,6.391,69.674,11.45,54.938\r\n\t\t\t\tc3.701-10.78,6.081-21.919-1.112-32.703c-0.844-1.265-0.685-3.094-0.992-4.662c1.646,0.045,3.844-0.523,4.839,0.244\r\n\t\t\t\tc3.605,2.778,8.252,5.473,9.87,9.168c3.863,8.819,3.949,18.053,1.535,27.58c-2.184,8.619-2.174,17.707-3.601,26.52\r\n\t\t\t\tc-1.111,6.864-0.89,13.613,1.174,20.212c4.545,14.532,15.769,20.428,30.018,23.562c6.857,1.508,10.237-1.6,10.562-9.284\r\n\t\t\t\tc0.202-4.793-1.705-9.672-1.545-14.473c0.216-6.469,0.546-13.174,2.542-19.29c4.227-12.955,7.36-25.738,3.198-39.284\r\n\t\t\t\tc-0.397-1.292,1.077-3.061,1.987-5.39c5.469,5.078,8.081,10.518,7.877,16.221c-0.333,9.329-2.334,18.587-2.926,27.918\r\n\t\t\t\tc-0.307,4.835,0.328,9.885,1.561,14.617c1.706,6.545,4.818,12.597,3.064,19.818c-1.354,5.574,4.414,8.562,12.615,7.266\r\n\t\t\t\tc14.382-2.272,26.072-13.398,28.491-27.3c2.334-13.412,2.18-26.71-0.425-39.997c-0.839-4.278-2.777-8.463-4.775-12.454\r\n\t\t\t\tc-3.735-7.462-2.978-16.263,4.96-21.644C123.146,19.7,124.444,15.969,126.73,12.625z M15.554,20.878\r\n\t\t\t\tc-0.475,0.101-0.949,0.202-1.424,0.303c0.22,0.917,0.276,1.903,0.696,2.735c0.761,1.506,2.064,2.831,2.57,4.386\r\n\t\t\t\tc2.411,7.412,0.917,14.669-0.77,22.01c-2.155,9.378-4.143,18.82-5.462,28.327c-1.55,11.17,0.578,21.805,6.19,32.133\r\n\t\t\t\tc8.078,14.866,24.501,22.791,39.997,21.848c0.926-0.056,1.8-0.766,2.698-1.171c-0.997-0.516-1.953-1.365-3-1.484\r\n\t\t\t\tc-2.859-0.326-5.795-0.11-8.632-0.526c-11.043-1.618-19.503-6.92-26.016-15.357c-8.293-10.744-9.905-23.01-9.092-35.372\r\n\t\t\t\tc0.563-8.556,3.714-16.935,5.521-25.429C21.185,42.22,24.515,31.028,15.554,20.878z M82.395,130.21\r\n\t\t\t\tc1.772,0.611,2.601,1.156,3.397,1.124c2.803-0.112,5.608-0.333,8.387-0.674c10.6-1.3,19.365-5.433,25.809-13.582\r\n\t\t\t\tc5.779-7.308,8.274-15.476,9.976-24.331c2.426-12.627-0.229-24.662-2.961-36.792c-1.7-7.548-4.169-14.96-5.693-22.532\r\n\t\t\t\tc-0.517-2.569,0.804-5.44,1.48-9.278c-1.181,1.38-1.665,1.795-1.953,2.305c-4.065,7.181-1.298,14.147,1.124,21.055\r\n\t\t\t\tc6.242,17.806,8.894,35.713,3.361,54.085c-3.669,12.183-11.009,21.254-24.429,25.083\r\n\t\t\t\tC95.345,128.257,89.471,128.892,82.395,130.21z\"/>\r\n\t\t\t<path d=\"M15.554,20.878c8.96,10.151,5.63,21.342,3.277,32.403c-1.807,8.493-4.958,16.873-5.521,25.429\r\n\t\t\t\tc-0.813,12.362,0.798,24.628,9.092,35.372c6.513,8.438,14.973,13.74,26.016,15.357c2.837,0.416,5.773,0.2,8.632,0.526\r\n\t\t\t\tc1.047,0.119,2.003,0.968,3,1.484c-0.898,0.405-1.772,1.115-2.698,1.171c-15.496,0.943-31.919-6.982-39.997-21.848\r\n\t\t\t\tc-5.612-10.328-7.74-20.962-6.19-32.133c1.319-9.507,3.307-18.95,5.462-28.327c1.687-7.341,3.181-14.599,0.77-22.01\r\n\t\t\t\tc-0.506-1.555-1.81-2.88-2.57-4.386c-0.42-0.832-0.476-1.818-0.696-2.735C14.605,21.08,15.08,20.979,15.554,20.878z\"/>\r\n\t\t\t<path d=\"M82.395,130.21c7.077-1.318,12.95-1.953,18.499-3.536c13.419-3.828,20.76-12.899,24.429-25.083\r\n\t\t\t\tc5.533-18.373,2.881-36.279-3.361-54.085c-2.422-6.908-5.189-13.874-1.124-21.055c0.289-0.51,0.772-0.925,1.953-2.305\r\n\t\t\t\tc-0.676,3.837-1.997,6.709-1.48,9.278c1.524,7.572,3.993,14.984,5.693,22.532c2.732,12.129,5.387,24.164,2.961,36.792\r\n\t\t\t\tc-1.701,8.856-4.196,17.024-9.976,24.331c-6.444,8.149-15.209,12.282-25.809,13.582c-2.78,0.341-5.585,0.562-8.387,0.674\r\n\t\t\t\tC84.995,131.366,84.167,130.821,82.395,130.21z\"/>\r\n\t\t</g>\r\n\t</g>\r\n</g>\r\n<g id=\"Layer_1\">\r\n</g>\r\n</svg>\r\n"
+
+/***/ },
+/* 268 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = "<?xml version=\"1.0\" encoding=\"iso-8859-1\"?>\r\n<!-- Generator: Adobe Illustrator 18.1.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->\r\n<svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" x=\"0px\" y=\"0px\"\r\n\t viewBox=\"0 0 140.62 141.575\" style=\"enable-background:new 0 0 140.62 141.575;\" xml:space=\"preserve\">\r\n<g id=\"pill_x5F_green\">\r\n\t<g>\r\n\t\t<path d=\"M104.348,58.295c6.791-10.459,8.157-20.129,2.773-30.241c-3.899-7.324-10.66-11.333-18.709-13.826\r\n\t\t\tc-2.029-0.629-4.562-0.869-5.905-2.153c-1.862-1.78-3.765-4.361-3.827-6.631c-0.041-1.516,2.926-4.19,4.834-4.425\r\n\t\t\tc5.159-0.636,10.52-0.68,15.711-0.152c6.063,0.617,12.284,1.422,17.988,3.324c12.924,4.308,19.603,13.822,21.533,25.977\r\n\t\t\tc1.323,8.33,1.967,16.837,1.863,25.247c-0.19,15.416-0.79,30.846-1.927,46.22c-0.772,10.443-3.205,21.058-11.946,28.231\r\n\t\t\tc-7.459,6.121-15.697,11.743-26.988,11.534c-18.652-0.345-37.333,0.591-55.966-0.065c-8.049-0.283-17.087-1.534-23.743-5.308\r\n\t\t\tc-9.03-5.12-16.506-12.946-17.796-23.791c-0.833-6.998-1.688-14.021-1.902-21.046c-0.282-9.286-0.729-18.665,0.31-27.859\r\n\t\t\tC2.163,49.96,1.707,36.243,6.829,23.377c4.56-11.454,11.993-20.073,26.149-21.411c8.529-0.806,17.08-1.46,25.639-1.946\r\n\t\t\tc2.062-0.117,4.445,0.28,6.219,1.208c1.822,0.953,4.456,3.026,4.273,4.287c-0.301,2.074-2.225,4.332-4.144,5.68\r\n\t\t\tc-1.687,1.186-4.271,1.444-6.518,1.746c-17.8,2.397-27.7,16.717-24.988,33.22c0.807,4.911,3.546,8.112,6.239,11.069\r\n\t\t\tc1.926-4.598,3.242-9.47,5.87-13.619c4.193-6.618,10.594-10.459,19.347-10.311c2.087,0.035,4.177-0.883,6.284-1.279\r\n\t\t\tc0.75-0.141,1.623-0.222,2.325-0.004c6.571,2.04,13.385,3.624,19.595,6.388c6.415,2.855,9.018,8.698,10.134,15.038\r\n\t\t\tC103.486,54.775,103.845,56.087,104.348,58.295z M134.228,77.361c0.55-13.305,2.1-26.658,1.256-39.894\r\n\t\t\tc-0.466-7.299-4.008-14.873-7.872-21.465c-4.458-7.606-13.49-9.427-22.108-10.587c-5.269-0.709-10.642-0.957-15.965-0.958\r\n\t\t\tc-2.587,0-7.013,0.519-7.399,1.714c-1.087,3.368,2.952,3.797,5.376,4.463c7.241,1.991,13.888,4.278,19.218,9.983\r\n\t\t\tc5.003,5.354,7.909,11.282,8.243,17.897c0.795,15.747-11.146,29.707-27.924,33.008c-1.94,0.382-4.005,0.335-6.01,0.311\r\n\t\t\tc-13.287-0.159-26.243,0.658-38.573-7.166c-10.23-6.492-13.26-14.694-13.745-24.815C28.078,26.41,39.46,12.289,55.719,9.658\r\n\t\t\tc1.801-0.291,3.828-0.041,5.391-0.734c1.212-0.537,1.863-2.155,2.764-3.292c-1.304-0.72-2.622-2.071-3.91-2.054\r\n\t\t\tc-6.373,0.081-12.749,0.408-19.105,0.86c-16.83,1.197-26.102,8.399-30.955,22.119C6.958,34.888,6.226,44.08,5.711,52.952\r\n\t\t\tC4.847,67.834,4.718,82.769,4.767,97.683c0.018,5.506,0.493,11.301,2.37,16.466c4.022,11.066,13.525,17.627,24.823,21.534\r\n\t\t\tc4.661,1.612,10.121,1.22,15.222,1.695c5.705,0.531,11.412,1.358,17.124,1.432c7.89,0.102,15.823-0.028,23.666-0.714\r\n\t\t\tc7.297-0.638,14.744-1.415,21.697-3.401c14.064-4.017,21.118-14.285,23.086-27.088C134.282,97.667,133.811,87.451,134.228,77.361z\r\n\t\t\t M54.499,65.138c1.977-13.782,6.241-18.525,16.325-18.425c10.623,0.104,15.05,5.123,17.517,20.5\r\n\t\t\tc2.878-1.326,5.881-2.181,8.095-3.908c1.563-1.22,2.79-3.58,2.903-5.502c0.532-9.017-4.479-17.277-16.823-19.642\r\n\t\t\tc-2.862-0.548-5.861-0.476-8.709-1.066C61.334,34.509,47.475,40.48,45.015,53.4C43.517,61.267,45.613,64.195,54.499,65.138z\r\n\t\t\t M84.144,61.873c-0.057-0.238-0.196-1.671-0.742-2.958c-1.84-4.338-7.343-8.659-14.543-7.681\r\n\t\t\tc-6.67,0.905-10.125,4.364-11.066,10.648c-0.451,3.011,0.435,4.488,4.13,4.628c4.868,0.184,9.735,0.882,14.559,1.61\r\n\t\t\tC81.038,68.808,83.905,67.044,84.144,61.873z\"/>\r\n\t\t<path style=\"fill:#39B54A;\" d=\"M134.228,77.359c-0.417,10.092,0.054,20.308-1.474,30.248\r\n\t\t\tc-1.968,12.803-9.021,23.071-23.086,27.088c-6.953,1.986-14.4,2.763-21.697,3.401c-7.844,0.685-15.776,0.816-23.666,0.714\r\n\t\t\tc-5.711-0.074-11.419-0.9-17.124-1.432c-5.101-0.475-10.56-0.083-15.222-1.695c-11.298-3.907-20.801-10.468-24.823-21.534\r\n\t\t\tc-1.878-5.165-2.352-10.96-2.37-16.466c-0.049-14.914,0.08-29.849,0.944-44.731c0.515-8.873,1.247-18.064,4.193-26.395\r\n\t\t\tC14.757,12.836,24.029,5.635,40.859,4.438c6.356-0.452,12.732-0.779,19.105-0.86c1.289-0.016,2.606,1.334,3.91,2.054\r\n\t\t\tc-0.901,1.137-1.552,2.755-2.764,3.292c-1.564,0.693-3.59,0.443-5.391,0.734C39.46,12.289,28.078,26.41,28.723,39.851\r\n\t\t\tc0.486,10.121,3.515,18.324,13.745,24.815c12.33,7.824,25.286,7.008,38.573,7.166c2.006,0.024,4.071,0.071,6.01-0.311\r\n\t\t\tc16.778-3.3,28.719-17.26,27.924-33.008c-0.334-6.614-3.24-12.542-8.243-17.897c-5.33-5.704-11.977-7.992-19.218-9.983\r\n\t\t\tc-2.424-0.666-6.463-1.095-5.376-4.463c0.386-1.195,4.812-1.714,7.399-1.714c5.323,0,10.697,0.248,15.965,0.958\r\n\t\t\tc8.618,1.16,17.65,2.981,22.108,10.587c3.863,6.592,7.406,14.166,7.872,21.465C136.328,50.702,134.778,64.056,134.228,77.359z\"/>\r\n\t\t<path style=\"fill:#006838;\" d=\"M54.499,65.138c-8.886-0.943-10.982-3.871-9.484-11.738c2.46-12.92,16.318-18.891,28.792-16.305\r\n\t\t\tc2.848,0.591,5.847,0.518,8.709,1.066C94.86,40.526,99.87,48.786,99.339,57.803c-0.113,1.922-1.34,4.282-2.903,5.502\r\n\t\t\tc-2.214,1.727-5.217,2.582-8.095,3.908c-2.467-15.377-6.894-20.396-17.517-20.5C60.74,46.613,56.476,51.356,54.499,65.138z\"/>\r\n\t\t<path style=\"fill:#8DC63F;\" d=\"M84.144,61.873c-0.239,5.171-3.105,6.935-7.661,6.247c-4.825-0.729-9.691-1.426-14.559-1.61\r\n\t\t\tc-3.695-0.14-4.581-1.617-4.13-4.628c0.941-6.284,4.396-9.742,11.066-10.648c7.201-0.977,12.703,3.343,14.543,7.681\r\n\t\t\tC83.948,60.202,84.087,61.635,84.144,61.873z\"/>\r\n\t</g>\r\n</g>\r\n<g id=\"Layer_1\">\r\n</g>\r\n</svg>\r\n"
+
+/***/ },
+/* 269 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports = "<?xml version=\"1.0\" encoding=\"iso-8859-1\"?>\r\n<!-- Generator: Adobe Illustrator 18.1.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->\r\n<svg version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" x=\"0px\" y=\"0px\"\r\n\t viewBox=\"0 0 140.604 142.389\" style=\"enable-background:new 0 0 140.604 142.389;\" xml:space=\"preserve\">\r\n<g id=\"destroyed\">\r\n\t<g id=\"qQjBR4.tif\">\r\n\t\t<g>\r\n\t\t\t<path d=\"M140.334,64.09c-0.556,8.072,0.469,14.114,0.235,21.686c-0.235,7.572,0.391,19.23-2.405,28.422\r\n\t\t\t\tc-1.525,5.011-5.049,9.645-8.352,14c-6.149,8.109-15.19,11.036-25.549,11.58c-12.263,0.645-24.486,2.199-36.75,2.488\r\n\t\t\t\tc-12.559,0.295-25.207,0.098-37.691-1.055c-4.607-0.426-9.139-3.822-13.218-6.507c-10.742-7.071-13.744-17.687-14.599-29.206\r\n\t\t\t\tc-0.438-5.894-1.659-11.758-1.77-17.648C-0.041,73.257-0.107,58.652,0.22,44.061c0.122-5.466,1.039-11.033,2.51-16.333\r\n\t\t\t\tC6.583,13.837,17.09,6.061,31.501,2.761c5.659-1.296,11.636-1.635,17.493-1.875c12.389-0.508,24.805-1.075,37.191-0.825\r\n\t\t\t\tc8.674,0.175,17.688,0.51,25.894,2.811c15.255,4.279,26.186,14.598,27.291,30.284C140.144,44.149,139.587,54.572,140.334,64.09z\r\n\t\t\t\t M40.66,4.951c-9.495,2.097-17.96,3.578-24.583,9.351C8.581,20.835,5.578,29.457,5.082,38.488\r\n\t\t\t\tC4.38,51.276,4.897,64.124,4.907,76.946c0.005,5.586-0.188,11.183,0.135,16.754c0.327,5.642,0.783,11.327,1.893,16.87\r\n\t\t\t\tc1.788,8.928,5.369,16.927,14.078,22.335c6.852,4.255,14.045,5.481,22.124,5.191c12.301-0.441,24.64,0.087,36.95-0.222\r\n\t\t\t\tc9.114-0.228,18.269-0.713,27.293-1.861c8.097-1.03,15.199-4.732,20.274-10.812c6.397-7.665,7.747-16.856,7.882-26.285\r\n\t\t\t\tc0.094-6.534,0.607-13.07,0.465-19.597c-0.34-15.691-0.03-31.465-1.762-47.034c-1.31-11.773-7.794-21.86-21.26-25.085\r\n\t\t\t\tc-8.698-2.084-17.836-3.395-26.8-3.51C70.667,3.49,55.138,4.489,40.66,4.951z\"/>\r\n\t\t\t<path d=\"M69.416,54.951c9.375-1.193,19.32,7.339,20.557,16.398c0.541,3.958-5.804,12.397-10.431,14.209\r\n\t\t\t\tc-7.61,2.981-15.423,3.273-22.978,0.568c-8.509-3.047-15.127-15.263-5.703-24.912C54.71,57.274,59.207,54.924,69.416,54.951z\r\n\t\t\t\t M85.221,72.113c0.003-8.759-8.911-16.067-17.569-14.421c-1.69,0.321-3.387,0.681-5.1,0.815\r\n\t\t\t\tc-6.202,0.485-11.957,5.727-13.118,12.055c-0.918,5.009,2.366,10.713,8.356,12.352c4.795,1.312,10.166,2.072,15.065,1.491\r\n\t\t\t\tC81.208,83.415,85.219,78.76,85.221,72.113z\"/>\r\n\t\t\t<path d=\"M101.724,113.556c-4.436,0.01-7.708-2.95-7.795-7.055c-0.123-5.766,4.379-10.032,10.488-9.935\r\n\t\t\t\tc2.798,0.044,7.988,6.065,7.839,9.095C112.071,109.415,106.562,113.545,101.724,113.556z M107.536,105.728\r\n\t\t\t\tc0.39-3.568-2.212-5.337-5.021-5.405c-2.828-0.069-4.996,1.793-4.821,5.171c0.144,2.767,0.374,5.214,4.08,5.355\r\n\t\t\t\tC105.534,110.992,107.005,108.746,107.536,105.728z\"/>\r\n\t\t\t<path d=\"M36.563,28.79c4.459,0.06,8.884,3.827,8.932,7.604c0.051,4.012-5.188,9.23-9.268,9.23c-4.473,0-9.1-4.18-8.924-8.064\r\n\t\t\t\tC27.511,32.913,31.932,28.727,36.563,28.79z M40.604,36.866c0.856-3.349-1.081-4.566-4.385-4.479\r\n\t\t\t\tc-3.186,0.084-5.377,1.693-5.418,4.631c-0.034,2.442,0.45,5.555,4.249,5.189C38.078,41.915,41.834,41.499,40.604,36.866z\"/>\r\n\t\t\t<path d=\"M44.561,108.407c-0.038,3.572-4.45,8.439-7.693,8.241c-6.997-0.428-10.25-4.009-9.757-8.945\r\n\t\t\t\tc0.45-4.504,3.972-8.42,8.204-8.306C39.947,99.521,44.608,104.063,44.561,108.407z M40.841,106.928\r\n\t\t\t\tc-1.227-0.911-3.784-3.924-5.055-3.509c-2.309,0.753-4.798,3.298-5.476,5.55c-0.817,2.711,1.701,4.812,4.859,4.509\r\n\t\t\t\tC38.074,113.2,40.693,111.915,40.841,106.928z\"/>\r\n\t\t\t<path d=\"M103.248,26.985c3.526,0.035,8.782,4.741,8.916,7.983c0.151,3.656-6.002,8.354-10.766,8.219\r\n\t\t\t\tc-3.905-0.11-7.478-3.997-7.469-8.124C93.938,30.489,98.039,26.934,103.248,26.985z M107.569,35.059\r\n\t\t\t\tc-0.354-2.883-1.798-5.665-5.068-5.124c-1.842,0.305-4.372,3.258-4.405,5.053c-0.033,1.81,2.482,5.014,4.165,5.186\r\n\t\t\t\tC104.913,40.446,107.755,38.649,107.569,35.059z\"/>\r\n\t\t\t<path style=\"fill:#F15A29;\" d=\"M85.221,72.113c-0.002,6.647-4.013,11.302-12.365,12.292c-4.899,0.581-10.27-0.18-15.065-1.491\r\n\t\t\t\tc-5.99-1.639-9.274-7.343-8.356-12.352c1.16-6.327,6.916-11.57,13.118-12.055c1.713-0.134,3.41-0.494,5.1-0.815\r\n\t\t\t\tC76.31,56.046,85.224,63.354,85.221,72.113z M67.756,81.518c0.033-0.149,0.067-0.299,0.1-0.448c1.287,0,2.586,0.107,3.858-0.019\r\n\t\t\t\tc4.916-0.486,9.381-3.676,10.363-7.795c0.923-3.871-0.918-7.033-4.205-9.271c-7.168-4.88-16.492-3.151-21.508,1.927\r\n\t\t\t\tc-4.067,4.117-5.002,10.137,1.815,13.617C60.934,80.935,64.538,80.898,67.756,81.518z\"/>\r\n\t\t\t<path style=\"fill:#39B54A;\" d=\"M107.536,105.728c-0.531,3.018-2.002,5.264-5.761,5.121c-3.706-0.141-3.936-2.589-4.08-5.355\r\n\t\t\t\tc-0.176-3.378,1.992-5.24,4.821-5.171C105.324,100.391,107.926,102.16,107.536,105.728z\"/>\r\n\t\t\t<path style=\"fill:#39B54A;\" d=\"M40.604,36.866c1.23,4.634-2.526,5.05-5.553,5.341c-3.799,0.366-4.283-2.747-4.249-5.189\r\n\t\t\t\tc0.041-2.938,2.232-4.547,5.418-4.631C39.523,32.299,41.46,33.516,40.604,36.866z\"/>\r\n\t\t\t<path style=\"fill:#754B9E;\" d=\"M40.841,106.928c-0.148,4.987-2.767,6.271-5.672,6.55c-3.158,0.302-5.676-1.798-4.859-4.509\r\n\t\t\t\tc0.678-2.252,3.166-4.796,5.476-5.55C37.057,103.004,39.613,106.017,40.841,106.928z\"/>\r\n\t\t\t<path style=\"fill:#754B9E;\" d=\"M107.569,35.059c0.186,3.59-2.656,5.386-5.307,5.116c-1.683-0.172-4.198-3.376-4.165-5.186\r\n\t\t\t\tc0.032-1.795,2.563-4.748,4.405-5.053C105.772,29.394,107.215,32.176,107.569,35.059z\"/>\r\n\t\t\t<path d=\"M67.756,81.518c-3.218-0.62-6.821-0.583-9.578-1.99c-6.818-3.48-5.883-9.5-1.815-13.617\r\n\t\t\t\tc5.016-5.078,14.34-6.807,21.508-1.927c3.288,2.238,5.128,5.4,4.205,9.271c-0.982,4.12-5.446,7.31-10.363,7.795\r\n\t\t\t\tc-1.272,0.126-2.571,0.019-3.858,0.019C67.823,81.22,67.789,81.369,67.756,81.518z M66.632,78.373\r\n\t\t\t\tc0.024,0.118,0.048,0.236,0.072,0.353c1.986-0.391,4.239-0.362,5.893-1.276c2.194-1.212,4.827-2.841,5.648-4.863\r\n\t\t\t\tc1.395-3.437-1.343-5.507-4.486-7.299c-4.573-2.608-8.719-0.957-12.49,0.952c-2.165,1.097-4.734,3.8-4.741,5.787\r\n\t\t\t\tc-0.011,3.318,3.07,5.543,6.74,6.312C64.338,78.563,65.508,78.373,66.632,78.373z\"/>\r\n\t\t</g>\r\n\t</g>\r\n</g>\r\n<g id=\"Layer_1\">\r\n</g>\r\n</svg>\r\n"
