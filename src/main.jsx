@@ -4,6 +4,8 @@ var _ = require('lodash');
 
 require('app/styles/main.less');
 
+React.initializeTouchEvents(true);
+
 const App = require('app/App.jsx');
 
 var app = new App(document.getElementById('container'));

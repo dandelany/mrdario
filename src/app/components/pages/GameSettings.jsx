@@ -5,18 +5,10 @@ import RadioGroup from 'react-radio-group';
 import Slider from 'react-slider';
 
 const GameSettings = React.createClass({
-    propTypes: {
-        speedLevels: React.PropTypes.object
-    },
-    getDefaultProps() {
-        return {
-            speedLevels: {Slow: 10, Medium: 20, Fast: 30}
-        }
-    },
     getInitialState() {
         return {
             level: 0,
-            speed: null,
+            speed: 15,
             speedLevels: []
         }
     },
@@ -24,41 +16,53 @@ const GameSettings = React.createClass({
     onChangeLevel(level) {
         this.setState({level});
     },
+    onChangeSpeed(speed) {
+        this.setState({speed});
+    },
 
     render() {
-        return <div>
-            <h2>Mr. Dario</h2>
+        return <div className="page-settings">
 
-            <h3>Level {this.state.level}</h3>
-            <div>
-                <Slider
-                    value={this.state.level}
-                    onChange={this.onChangeLevel}
-                    min={0} max={20}
-                    className='horizontal-slider'
-                />
+            <div className="settings-head">
+                <h2>Mr. Dario</h2>
             </div>
 
-            <h3>Speed</h3>
-            <div>
-                <RadioGroup name="speed" value={this.state.speed}>
-                    {_.map(this.props.speedLevels, speed => {
-                        return <label for={speed}>
-                            <input type="radio" value={speed} />
-                            {speed}
-                        </label>
-                    })}
-                </RadioGroup>
+            <div className="settings-content">
+                <div>
+                    <h3>Level {this.state.level}</h3>
+                    <div>
+                        <Slider
+                            value={this.state.level}
+                            onChange={this.onChangeLevel}
+                            min={0} max={20}
+                            className='horizontal-slider'
+                            />
+                    </div>
+
+                    <h3>Speed {this.state.speed}</h3>
+                    <div>
+                        <Slider
+                            value={this.state.speed}
+                            onChange={this.onChangeSpeed}
+                            min={10} max={30}
+                            className='horizontal-slider'
+                            />
+                    </div>
+
+                    <h4>Keyboard controls:</h4>
+                    <div>
+                        <p>Arrow keys to move</p>
+                        <p><strong>A</strong> and <strong>S</strong> to rotate</p>
+                    </div>
+                </div>
             </div>
 
-            <h4>Keyboard controls:</h4>
-            <div>
-                <p>Arrow keys to move</p>
-                <p><strong>A</strong> and <strong>S</strong> to rotate</p>
-            </div>
-
-            <div>
-                <Link to="single" params={{level: this.state.level, speed: 10}}>Play</Link>
+            <div className="settings-play">
+                <Link to="single" params={{level: this.state.level, speed: 10}}>
+                    <span>
+                        Play
+                    </span>
+                </Link>
             </div>
         </div>
     }
