@@ -6,7 +6,7 @@ import aztecCalendar from 'app/img/aztec_small.svg';
 const oranges = ["#BE1E2D", "#F05A28", "#F6921E"];
 const greens = ["#009345", "#006838", "#8BC53F", "#37B34A"];
 const purples = ["#5251A1", "#A376CD",  "#744B9D", "#7A6ED4"];
-const colorGroups = [oranges, greens, purples];
+const colorGroups = [null, oranges, greens, purples];
 
 const AztecCalendar = React.createClass({
     getDefaultProps() {
@@ -56,36 +56,41 @@ const AztecCalendar = React.createClass({
             }
         });
         console.log(_.uniq(bgColors));
+        console.log(bgPaths.length, 'paths');
         //borderPaths.forEach(path => path.setAttribute('fill', 'transparent'));
 
         _.assign(this, {bgPaths, bgColors, borderPaths});
 
         this.colorGroupIndex = 0;
-        if(this.props.shouldAnimate) this.changeTimer = setInterval(this.changeAnimation, 4000);
+        if(this.props.shouldAnimate) this.changeTimer = setInterval(this.changeAnimation, 2000);
     },
+
     changeAnimation() {
         this.animIndex = 0;
         this.colorGroupIndex = (this.colorGroupIndex + 1) % colorGroups.length;
         this.colorGroup = colorGroups[this.colorGroupIndex];
 
         let {bgPaths, bgColors, colorGroup} = this;
-        let pathChunkIndices = _.chunk(_.shuffle(_.range(bgPaths.length)), 3);
+        let pathIndexChunks = _.chunk(_.shuffle(_.range(bgPaths.length)), 3);
 
         this.animation = setInterval(() => {
             let {animIndex} = this;
-            if(animIndex >= pathChunkIndices.length * 2) {
+            if(animIndex >= pathIndexChunks.length) {
                 clearInterval(this.animation);
-            } else if(animIndex >= pathChunkIndices.length) {
-                const pathIndices = pathChunkIndices[animIndex - pathChunkIndices.length];
-                pathIndices.forEach(i => bgPaths[i].setAttribute('fill', bgColors[i]));
             } else {
-                const pathIndices = pathChunkIndices[animIndex];
-                pathIndices.forEach(i => {
-                    let fill = bgPaths[i].getAttribute('fill');
-                    if(_.includes(colorGroup.concat(['#FFF', '#FFFFFF']), fill)) return;
-                    //console.log(bgPaths[i].getAttribute('fill'));
-                    bgPaths[i].setAttribute('fill', _.sample(colorGroup))
-                });
+                if(!colorGroup) {
+                    // animate to original colors
+                    const pathIndices = pathIndexChunks[animIndex];
+                    pathIndices.forEach(i => bgPaths[i].setAttribute('fill', bgColors[i]));
+                } else {
+                    const pathIndices = pathIndexChunks[animIndex];
+                    pathIndices.forEach(i => {
+                        const trueColor = bgColors[i];
+                        const useTrueColor = _.includes(colorGroup.concat(['#FFF', '#FFFFFF']), trueColor);
+                        const newColor = useTrueColor ? trueColor : _.sample(colorGroup);
+                        bgPaths[i].setAttribute('fill', newColor);
+                    });
+                }
             }
             this.animIndex += 1;
         }, 1);
