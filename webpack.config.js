@@ -4,7 +4,7 @@ var config = require('./webpack.config.base');
 
 config = _.merge(config, {
     plugins: config.plugins.concat([
-        //new webpack.optimize.UglifyJsPlugin()
+        new webpack.optimize.UglifyJsPlugin()
     ])
 });
 

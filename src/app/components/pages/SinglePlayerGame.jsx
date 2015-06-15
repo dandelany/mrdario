@@ -15,8 +15,12 @@ const SinglePlayerGame = React.createClass({
     },
 
     componentDidMount() {
+        const params = this.getParams();
+        const level = parseInt(params.level) || 0;
+        const speed = parseInt(params.speed) || 15;
         this.game = new SinglePlayerGameController({
-            render: this.updateGameState
+            render: this.updateGameState,
+            level, speed
         });
         this.game.play();
     },

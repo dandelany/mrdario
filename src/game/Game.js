@@ -19,6 +19,7 @@ const MODES = keyMirror({
 export default class Game extends EventEmitter {
     constructor({
             width = 8, height = 16, baseSpeed = 15, cascadeSpeed = 15,
+            level = 0,
             destroyTicks = 20,
             onChange = _.noop, onWin = _.noop, onLose = _.noop,
             pillSequence = generatePillSequence(COLORS)
@@ -47,6 +48,8 @@ export default class Game extends EventEmitter {
             onChange, onWin, onLose,
             // width and height of grid
             width, height,
+            // current virus level
+            level,
             // increments every 10 capsules to speed up over time
             speedCounter: 0,
             // value representing pill fall speed, increases over time
@@ -100,7 +103,7 @@ export default class Game extends EventEmitter {
         // the main game loop, called once per game tick
         switch (this.modeMachine.current) {
             case MODES.LOADING:
-                this.playfield.generateViruses();
+                this.playfield.generateViruses(this.level);
                 this.modeMachine.loaded();
                 break;
 

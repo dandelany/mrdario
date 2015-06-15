@@ -20,6 +20,7 @@ window.Immutable = Immutable;
 export default class SinglePlayerGameController {
     constructor({
         render = _.noop, fps = 60, slow = 1,
+        level = 0, speed = 15,
         keyBindings = DEFAULT_KEYS,
         width = PLAYFIELD_WIDTH, height = PLAYFIELD_HEIGHT
     } = {}) {
@@ -34,6 +35,8 @@ export default class SinglePlayerGameController {
             step: 1 / fps,
             // slow motion factor, to simulate faster/slower gameplay for debugging
             slowStep: slow * (1 / fps),
+
+            level, speed,
 
             // a finite state machine representing game mode, & transitions between modes
             modeMachine: StateMachine.create({
@@ -58,9 +61,11 @@ export default class SinglePlayerGameController {
         this.render(this.getState());
     }
     initGame() {
-        const {width, height} = this;
+        const {width, height, level, speed} = this;
         this.game = new Game({
             width, height,
+            level,
+            baseSpeed: speed,
             onWin: () => this.modeMachine.win(),
             onLose: () => this.modeMachine.lose()
         });

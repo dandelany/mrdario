@@ -13,7 +13,8 @@ const AztecCalendar = React.createClass({
         return {
             width: 600,
             height: 600,
-            shouldAnimate: true
+            shouldAnimate: true,
+            cycleTime: 2000
         }
     },
     componentDidMount() {
@@ -31,13 +32,13 @@ const AztecCalendar = React.createClass({
     },
     componentWillReceiveProps(newProps) {
         if(newProps.shouldAnimate === false && this.changeTimer) {
-            clearInterval(this.changeTimer);
+            clearTimeout(this.changeTimer);
             delete this.changeTimer;
-        } else if(newProps.shouldAnimate === true && !this.changeTimer)
-            this.changeTimer = setInterval(this.changeAnimation, 4000);
+        } else if(newProps.shouldAnimate === true && !this.animation && !this.changeTimer)
+            this.changeTimer = setTimeout(this.changeAnimation, this.props.cycleTime);
     },
     componentWillUnmount() {
-        if(this.changeTimer) clearInterval(this.changeTimer);
+        if(this.changeTimer) clearTimeout(this.changeTimer);
         if(this.animation) clearInterval(this.animation);
     },
 
@@ -55,14 +56,14 @@ const AztecCalendar = React.createClass({
                 bgColors.push(fill);
             }
         });
-        console.log(_.uniq(bgColors));
-        console.log(bgPaths.length, 'paths');
+        //console.log(_.uniq(bgColors));
+        //console.log(bgPaths.length, 'paths');
         //borderPaths.forEach(path => path.setAttribute('fill', 'transparent'));
 
         _.assign(this, {bgPaths, bgColors, borderPaths});
 
         this.colorGroupIndex = 0;
-        if(this.props.shouldAnimate) this.changeTimer = setInterval(this.changeAnimation, 2000);
+        if(this.props.shouldAnimate) this.changeTimer = setTimeout(this.changeAnimation, this.props.cycleTime / 2);
     },
 
     changeAnimation() {
@@ -77,6 +78,8 @@ const AztecCalendar = React.createClass({
             let {animIndex} = this;
             if(animIndex >= pathIndexChunks.length) {
                 clearInterval(this.animation);
+                delete this.animation;
+                if(this.props.shouldAnimate) this.changeTimer = setTimeout(this.changeAnimation, this.props.cycleTime);
             } else {
                 if(!colorGroup) {
                     // animate to original colors

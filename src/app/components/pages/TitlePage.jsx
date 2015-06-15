@@ -21,16 +21,24 @@ const TitlePage = React.createClass({
 
     render() {
         return <div className="page-title">
-            <h1>Mr. Dario</h1>
+            <div className="title-head">
+                <h1>Mr. Dario</h1>
+            </div>
 
             <div className="title-game-options">
-                <Link to="settings">
-                    One Player
-                </Link>
-                <div>
-                    Multiplayer coming soon
+                <div className="title-game-option">
+                    <Link to="settings">
+                        <span>
+                            One Player
+                        </span>
+                    </Link>
                 </div>
 
+                <div className="title-game-option disabled">
+                    <span>
+                        Multiplayer soon
+                    </span>
+                </div>
             </div>
         </div>;
     }

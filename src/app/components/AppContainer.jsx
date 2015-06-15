@@ -16,12 +16,13 @@ const AppContainer = React.createClass({
     render() {
         const {width, height} = this.state;
         const shouldAnimate = (this.getPathname() === '/');
+
         return <div id="mrdario" style={{width: '100%', height: '100%'}}>
             <AztecCalendar {...{width, height, shouldAnimate}}/>
+
             <div className="mrdario-page">
                 <RouteHandler windowSize={{width, height}} />
             </div>
-
         </div>;
     }
 });

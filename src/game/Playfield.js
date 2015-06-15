@@ -10,8 +10,8 @@ export class Playfield {
     constructor({width = 8, height = 12}) {
         this.grid = emptyGrid(width, height);
     }
-    generateViruses() {
-        this.grid = generateViruses(this.grid, 3, COLORS);
+    generateViruses(level = 0) {
+        this.grid = generateViruses(this.grid, level, COLORS);
     }
     givePill(pillColors) {
         const {grid, pill, didGive} = givePill(this.grid, pillColors);
