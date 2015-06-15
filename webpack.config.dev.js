@@ -1,3 +1,4 @@
+var webpack = require('webpack');
 var _ = require('lodash');
 var config = require('./webpack.config.base');
 

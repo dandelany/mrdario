@@ -1,12 +1,27 @@
+import _ from 'lodash';
 import React from 'react';
 import { Link } from 'react-router';
 
-import virusRaw from 'raw!app/svg/virus_orange.svg'
+import aztecCalendar from 'app/img/aztec_small.svg';
+
+const oranges = ["#BE1E2D", "#F05A28", "#F6921E"];
+const greens = ["#009345", "#006838", "#8BC53F", "#37B34A"];
+const purples = ["#5251A1", "#A376CD",  "#744B9D", "#7A6ED4"];
+const colorGroups = [oranges, greens, purples];
 
 const TitlePage = React.createClass({
+    getDefaultProps() {
+        return {
+            windowSize: {
+                width: 800,
+                height: 600
+            }
+        }
+    },
+
     render() {
         return <div className="page-title">
-            <h3>Welcome to Mr. Dario!</h3>
+            <h1>Mr. Dario</h1>
 
             <div className="title-game-options">
                 <Link to="settings">
@@ -15,11 +30,8 @@ const TitlePage = React.createClass({
                 <div>
                     Multiplayer coming soon
                 </div>
+
             </div>
-
-            <h4>Press spacebar to play</h4>
-
-            <div dangerouslySetInnerHTML={createMarkup(virusRaw)}></div>
         </div>;
     }
 });

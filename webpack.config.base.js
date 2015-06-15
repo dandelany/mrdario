@@ -26,13 +26,20 @@ module.exports = {
                 test: /\.jsx?$/,
                 loaders: ['babel-loader'],
                 exclude: /node_modules/
-            }
-        ],
-        postLoaders: [
+            },
             {
-                test: /\.svg$/,
-                loaders: ['img?minimize']
+                test: /.*img\/.*\.svg$/,
+                loaders: [
+                    'file-loader',
+                    'svgo-loader'
+                ]
             }
         ]
+        //postLoaders: [
+        //    {
+        //        test: /\.svg$/,
+        //        loaders: ['img?minimize']
+        //    }
+        //]
     }
 };

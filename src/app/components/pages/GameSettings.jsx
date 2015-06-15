@@ -2,6 +2,7 @@ import _ from 'lodash';
 import React from 'react';
 import { Link } from 'react-router';
 import RadioGroup from 'react-radio-group';
+import Slider from 'react-slider';
 
 const GameSettings = React.createClass({
     propTypes: {
@@ -19,13 +20,26 @@ const GameSettings = React.createClass({
             speedLevels: []
         }
     },
+
+    onChangeLevel(level) {
+        this.setState({level});
+    },
+
     render() {
         return <div>
+            <h2>Mr. Dario</h2>
+
+            <h3>Level {this.state.level}</h3>
             <div>
-                Virus level
-                <input type="text" value={this.state.level}/>
+                <Slider
+                    value={this.state.level}
+                    onChange={this.onChangeLevel}
+                    min={0} max={20}
+                    className='horizontal-slider'
+                />
             </div>
 
+            <h3>Speed</h3>
             <div>
                 <RadioGroup name="speed" value={this.state.speed}>
                     {_.map(this.props.speedLevels, speed => {
@@ -44,7 +58,7 @@ const GameSettings = React.createClass({
             </div>
 
             <div>
-                <Link to="single" params={{level: 3, speed: 10}}>Play</Link>
+                <Link to="single" params={{level: this.state.level, speed: 10}}>Play</Link>
             </div>
         </div>
     }

@@ -9,8 +9,8 @@ import SinglePlayerGame from './components/pages/SinglePlayerGame.jsx';
 
 export default (
     <Route name="app" path="/" handler={AppContainer}>
-        <Route name="settings" handler={GameSettings} />
-        <Route name="single" path="single/:level/:speed" handler={SinglePlayerGame} />
-        <DefaultRoute handler={TitlePage} />
+        <Route name="settings" path="" handler={GameSettings} />
+        <Route name="single" path="game/level/:level/speed/:speed" handler={SinglePlayerGame} />
+        <DefaultRoute name="title" handler={TitlePage} />
     </Route>
 );
