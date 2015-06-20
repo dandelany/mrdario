@@ -1,6 +1,6 @@
 var React = require('react/addons');
 var _ = require('lodash');
-//require("babel/polyfill");
+require("babel/polyfill");
 
 require('app/styles/main.less');
 

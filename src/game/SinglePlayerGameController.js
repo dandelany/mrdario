@@ -38,6 +38,10 @@ export default class SinglePlayerGameController {
 
             level, speed,
 
+            // the player controls which feed key events into the Game
+            playerInput: new PlayerControls(keyBindings),
+            moveInputQueue: [],
+
             // a finite state machine representing game mode, & transitions between modes
             modeMachine: StateMachine.create({
                 initial: MODES.READY,
@@ -50,9 +54,7 @@ export default class SinglePlayerGameController {
                     {name: 'reset',  from: ['*'], to: MODES.READY},
                     {name: 'end',    from: ['*'], to: MODES.ENDED}
                 ]
-            }),
-            playerInput: new PlayerControls(keyBindings),
-            moveInputQueue: []
+            })
         });
 
         this.initGame();
@@ -90,10 +92,10 @@ export default class SinglePlayerGameController {
 
         this.playerInput.setMode(MODES.READY);
     }
-    enqueueMoveInput(input, event) {
+    enqueueMoveInput(input, eventType, event) {
         // queue a user move, to be sent to the game on the next tick
         if (this.modeMachine.current !== MODES.PLAYING) return;
-        this.moveInputQueue.push(input);
+        this.moveInputQueue.push({input, eventType});
         event.preventDefault();
     }
 

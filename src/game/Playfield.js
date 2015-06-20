@@ -329,7 +329,7 @@ export function findLines(grid, lineLength = 4, excludeFlag = 'isFalling') {
         return findLinesIn(col, lineLength, excludeFlag).map(line => line.map(rowI => [rowI, colI]));
     }).toJS());
 
-    console.log('lines:', horizontalLines, verticalLines);
+    //console.log('lines:', horizontalLines, verticalLines);
     return horizontalLines.concat(verticalLines);
 }
 

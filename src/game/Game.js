@@ -18,9 +18,9 @@ const MODES = keyMirror({
 
 export default class Game extends EventEmitter {
     constructor({
-            width = 8, height = 16, baseSpeed = 15, cascadeSpeed = 15,
+            width = 8, height = 16, baseSpeed = 15, cascadeSpeed = 20,
             level = 0,
-            destroyTicks = 20,
+            destroyTicks = 20, moveRepeatTicks = 8,
             onChange = _.noop, onWin = _.noop, onLose = _.noop,
             pillSequence = generatePillSequence(COLORS)
         } = {}) {
@@ -72,6 +72,20 @@ export default class Game extends EventEmitter {
                 pillCount: 0
             },
 
+            // the directions we are currently moving, while a move key is held down
+            movingDirections: new Set(),
+            // these counters count up while a move key is held down (for normalizing key-repeat)
+            // ie. represents the # of frames during which we have been moving in a particular direction
+            movingCounters: {
+                [INPUTS.DOWN]: 0,
+                [INPUTS.LEFT]: 0,
+                [INPUTS.RIGHT]: 0,
+                [INPUTS.ROTATE_CCW]: 0,
+                [INPUTS.ROTATE_CW]: 0
+            },
+            // the number of frames to wait before repeating a move while holding down a key
+            moveRepeatTicks,
+
             // the grid, single source of truth for game state
             playfield: new Playfield({width, height})
         });
@@ -87,21 +101,53 @@ export default class Game extends EventEmitter {
         this.modeMachine.onlose = () => this.onLose();
     }
 
-    handleInput(input) {
-        if(_.includes([INPUTS.LEFT, INPUTS.RIGHT, INPUTS.DOWN], input)) {
-            let direction = (input === INPUTS.DOWN) ? 'down' :
-                (input === INPUTS.LEFT) ? 'left' : 'right';
-            this.playfield.movePill(direction);
+    handleInput({input, eventType}) {
+        // update set of moving directions based on the keys that are currently held down
+        if(eventType === "keydown") this.movingDirections.add(input);
+        else if(eventType === "keyup") this.movingDirections.delete(input);
+        if(eventType === "keyup") return;
+    }
 
-        } else if(_.includes([INPUTS.ROTATE_CCW, INPUTS.ROTATE_CW], input)) {
-            let direction = (input === INPUTS.ROTATE_CCW) ? 'ccw' : 'cw';
-            this.playfield.rotatePill(direction);
-        }
+    doMoves() {
+        let shouldReconcile = false;
+        this.movingDirections.forEach((input) => {
+            // only move if the key has just been pressed,
+            // or has been held down long enough to repeat
+            const movingCount = this.movingCounters[input];
+            if(_.isUndefined(movingCount) || !(movingCount % this.moveRepeatTicks === 0)) return;
+            console.log(input, movingCount);
+
+            // move/rotate the pill based on the move input
+            let didMove;
+            if(_.includes([INPUTS.LEFT, INPUTS.RIGHT, INPUTS.DOWN], input)) {
+                const direction = (input === INPUTS.DOWN) ? 'down' :
+                    (input === INPUTS.LEFT) ? 'left' : 'right';
+                didMove = this.playfield.movePill(direction);
+            } else if(_.includes([INPUTS.ROTATE_CCW, INPUTS.ROTATE_CW], input)) {
+                const direction = (input === INPUTS.ROTATE_CCW) ? 'ccw' : 'cw';
+                didMove = this.playfield.rotatePill(direction);
+            }
+            // trying to move down, but couldn't; we are ready to reconcile
+            if(input === INPUTS.DOWN && !didMove) shouldReconcile = true;
+        });
+        return shouldReconcile;
+    }
+
+    updateMoveCounters() {
+        _.each(this.movingCounters, (count, inputType) => {
+            this.movingDirections.has(inputType) ?
+                this.movingCounters[inputType]++ :
+                this.movingCounters[inputType] = 0;
+        })
     }
 
     tick(inputQueue) {
+        // always handle move inputs, key can be released in any mode
+        while(inputQueue.length) this.handleInput(inputQueue.shift());
+
         // the main game loop, called once per game tick
         switch (this.modeMachine.current) {
+
             case MODES.LOADING:
                 this.playfield.generateViruses(this.level);
                 this.modeMachine.loaded();
@@ -120,26 +166,34 @@ export default class Game extends EventEmitter {
                 // todo handle holding down buttons better?
                 this.counters.playTicks++;
 
-                while(inputQueue.length) {
-                    this.handleInput(inputQueue.shift());
-                }
+                // do the moves based on movingDirections and moveCounters
+                let shouldReconcile = this.doMoves();
+                this.updateMoveCounters();
 
-                if(this.counters.playTicks > this.playGravity) {
+                // gravity pulling pill down
+                if(this.counters.playTicks > this.playGravity
+                    && !this.movingDirections.has(INPUTS.DOWN)) { // deactivate gravity while moving down
                     this.counters.playTicks = 0;
                     const didMove = this.playfield.movePill('down');
-                    if(!didMove) this.modeMachine.reconcile();
+                    if(!didMove) shouldReconcile = true;
                 }
 
+                // pill can't move any further, reconcile the board
+                if(shouldReconcile) this.modeMachine.reconcile();
                 break;
 
             case MODES.RECONCILE:
                 // playfield is locked, check for same-color lines
+                // setting them to destroyed if they are found
                 const hadLines = this.playfield.destroyLines();
                 const hasViruses = this.playfield.hasViruses();
 
-                if(!hasViruses) this.modeMachine.win(); // killed all viruses, you win
-                else if(hadLines) this.modeMachine.destroy(); // destroy the marked lines
-                else this.modeMachine.cascade(); // no lines, cascade falling debris
+                // killed all viruses, you win
+                if(!hasViruses) this.modeMachine.win();
+                // lines are being destroyed, go to destroy mode
+                else if(hadLines) this.modeMachine.destroy();
+                // no lines, cascade falling debris
+                else this.modeMachine.cascade();
                 break;
 
             case MODES.DESTRUCTION:
@@ -153,7 +207,6 @@ export default class Game extends EventEmitter {
                 break;
 
             case MODES.CASCADE:
-
                 if(this.counters.cascadeTicks === 0) {
                     // check if there is any debris to drop
                     let {fallingCells} = this.playfield.flagFallingCells();
