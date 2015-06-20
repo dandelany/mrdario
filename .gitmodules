@@ -1,0 +1,3 @@
+[submodule "mrdario-ansible"]
+	path = mrdario-ansible
+	url = git@github.com:dandelany/mrdario-ansible.git
