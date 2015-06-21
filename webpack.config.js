@@ -1,10 +1,12 @@
 var webpack = require('webpack');
+var CleanPlugin = require('clean-webpack-plugin');
 var _ = require('lodash');
 var config = require('./webpack.config.base');
 
 config = _.merge(config, {
     plugins: config.plugins.concat([
-        //new webpack.optimize.UglifyJsPlugin()
+        new CleanPlugin(['build']),
+        new webpack.optimize.UglifyJsPlugin()
     ])
 });
 

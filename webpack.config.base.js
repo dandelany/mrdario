@@ -1,7 +1,6 @@
 var path = require('path');
 var webpack = require('webpack');
 var HtmlPlugin = require('html-webpack-plugin');
-var CleanPlugin = require('clean-webpack-plugin');
 
 module.exports = {
     context: __dirname,
@@ -16,7 +15,6 @@ module.exports = {
     devtool: 'source-map',
 
     plugins: [
-        new CleanPlugin(['build']),
         new HtmlPlugin({
             template: 'src/app/index.html'
             //favicon: 'src/images/favicon.png'
