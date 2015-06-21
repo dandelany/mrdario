@@ -120,15 +120,18 @@ export default class SinglePlayerGameController {
         this.dt = dt + Math.min(1, (now - last) / 1000);
         while(this.dt > slowStep) {
             this.dt = this.dt - slowStep;
-            // tick the game, sending current queue of moves
-            this.game.tick(this.moveInputQueue);
-            this.moveInputQueue = [];
+            this.tickGame();
         }
 
         // render with the current game state
         this.render(this.getState(), this.dt/slow);
         this.last = now;
         requestAnimationFrame(this.tick.bind(this));
+    }
+    tickGame() {
+        // tick the game, sending current queue of moves
+        this.game.tick(this.moveInputQueue);
+        this.moveInputQueue = [];
     }
 
     getState() {

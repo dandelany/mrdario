@@ -5,6 +5,7 @@ import Router from 'react-router';
 
 import gameStore from 'app/stores/GameStore';
 import SinglePlayerGameController from 'game/SinglePlayerGameController';
+//import SinglePlayerGameController from 'game/SinglePlayerNetworkGameController';
 import Playfield from 'app/components/Playfield';
 
 const SinglePlayerGame = React.createClass({

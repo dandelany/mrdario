@@ -8,6 +8,8 @@ app.get('/', function(req, res){
 
 io.on('connection', function(socket){
     console.log('a user connected');
+    var x = 1;
+
     socket.on('chat message', function(msg) {
         console.log('message ', msg);
     });
@@ -15,6 +17,12 @@ io.on('connection', function(socket){
     socket.on('disconnect', function(){
         console.log('user disconnected');
     });
+
+    socket.on('moves', function(moveInputQueue) {
+        x++;
+        console.log('move ', x, moveInputQueue);
+    });
+
 });
 
 http.listen(3000, function(){

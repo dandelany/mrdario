@@ -6,7 +6,7 @@ module.exports = {
     context: __dirname,
     //entry: ['./src/main.jsx'],
     entry: {
-        app: './src/main.jsx',
+        app: ['./src/main.jsx'],
         vendor: [
             "babel/polyfill",
             "classnames",
