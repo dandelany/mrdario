@@ -37,7 +37,6 @@ const SinglePlayerGame = React.createClass({
         const hasGame = this.game && this.state.game;
         const hasGrid = hasGame && this.state.game.grid;
         return <div>
-            {this.getParams().level}
             {hasGrid ?
                 <Playfield grid={this.state.game.grid} />
             : ''}
