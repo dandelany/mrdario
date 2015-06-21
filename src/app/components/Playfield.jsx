@@ -5,20 +5,27 @@ import { GRID_OBJECTS } from 'constants';
 import virusOrange from 'raw!app/svg/virus_orange.svg';
 import virusPurple from 'raw!app/svg/virus_purple.svg';
 import virusGreen from 'raw!app/svg/virus_green.svg';
-import pillOrange from 'raw!app/svg/pill_orange.svg';
-import pillPurple from 'raw!app/svg/pill_purple.svg';
-import pillGreen from 'raw!app/svg/pill_green.svg';
+//import pillOrange from 'raw!app/svg/pill_orange.svg';
+//import pillPurple from 'raw!app/svg/pill_purple.svg';
+//import pillGreen from 'raw!app/svg/pill_green.svg';
 import destroyed from 'raw!app/svg/destroyed.svg';
 
-const viruses = [virusOrange, virusPurple, virusGreen];
-const pillSegments = [pillOrange, pillPurple, pillGreen];
+import pillHalfOrange from 'raw!app/svg/pill_half_orange.svg';
+import pillHalfPurple from 'raw!app/svg/pill_half_purple.svg';
+import pillHalfGreen from 'raw!app/svg/pill_half_green.svg';
+import pillSegmentOrange from 'raw!app/svg/pill_segment_orange.svg';
+import pillSegmentPurple from 'raw!app/svg/pill_segment_purple.svg';
+import pillSegmentGreen from 'raw!app/svg/pill_segment_green.svg';
 
-const pillTypes = [
-    GRID_OBJECTS.PILL_SEGMENT,
+
+const viruses = [virusOrange, virusPurple, virusGreen];
+const pillHalves = [pillHalfOrange, pillHalfPurple, pillHalfGreen];
+const pillSegments = [pillSegmentOrange, pillSegmentPurple, pillSegmentGreen];
+
+const pillHalfTypes = [
     GRID_OBJECTS.PILL_TOP, GRID_OBJECTS.PILL_BOTTOM, GRID_OBJECTS.PILL_LEFT, GRID_OBJECTS.PILL_RIGHT
 ];
-const pillRotations = {
-    [GRID_OBJECTS.PILL_SEGMENT]: 0,
+const pillHalfRotations = {
     [GRID_OBJECTS.PILL_TOP]: 0,
     [GRID_OBJECTS.PILL_RIGHT]: 90,
     [GRID_OBJECTS.PILL_BOTTOM]: 180,
@@ -53,9 +60,11 @@ const Playfield = React.createClass({
                             svgString = viruses[cell.color % viruses.length];
                         } else if(cell.type === GRID_OBJECTS.DESTROYED) {
                             svgString = destroyed;
-                        } else if(_.includes(pillTypes, cell.type)) {
+                        } else if(cell.type === GRID_OBJECTS.PILL_SEGMENT) {
                             svgString = pillSegments[cell.color % pillSegments.length];
-                            transform += `rotate(${pillRotations[cell.type]} ${cellSize/2} ${cellSize/2})`;
+                        } else if(_.includes(pillHalfTypes, cell.type)) {
+                            svgString = pillHalves[cell.color % pillSegments.length];
+                            transform += `rotate(${pillHalfRotations[cell.type]} ${cellSize/2} ${cellSize/2})`;
                         }
 
                         return svgString ? makeSvg(svgString,
