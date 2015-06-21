@@ -1,10 +1,10 @@
 var path = require('path');
 var webpack = require('webpack');
 var HtmlPlugin = require('html-webpack-plugin');
-var packageJson = require('./package.json');
 
 module.exports = {
     context: __dirname,
+    //entry: ['./src/main.jsx'],
     entry: {
         app: './src/main.jsx',
         vendor: [
@@ -33,9 +33,10 @@ module.exports = {
             template: 'src/app/index.html'
             //favicon: 'src/images/favicon.png'
         }),
-        new webpack.optimize.CommonsChunkPlugin(
-            'vendor', 'scripts/vendor.[chunkhash:7].js'
-        ),
+        new webpack.optimize.CommonsChunkPlugin({
+            name: 'vendor',
+            filename: 'scripts/vendor.[chunkhash:7].js'
+        }),
         new webpack.NoErrorsPlugin()
     ],
     resolve: {
@@ -61,11 +62,5 @@ module.exports = {
                 ]
             }
         ]
-        //postLoaders: [
-        //    {
-        //        test: /\.svg$/,
-        //        loaders: ['img?minimize']
-        //    }
-        //]
     }
 };
