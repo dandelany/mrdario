@@ -1,5 +1,7 @@
 var path = require('path');
 var webpack = require('webpack');
+var HtmlPlugin = require('html-webpack-plugin');
+var CleanPlugin = require('clean-webpack-plugin');
 
 module.exports = {
     context: __dirname,
@@ -7,13 +9,18 @@ module.exports = {
         './src/main.jsx'
     ],
     output: {
-        path: path.join(__dirname, 'build/assets'),
-        filename: 'bundle.js',
-        publicPath: '/assets/'
+        path: path.join(__dirname, 'build'),
+        filename: 'scripts/bundle.[hash:7].js',
+        //publicPath: '/'
     },
     devtool: 'source-map',
 
     plugins: [
+        new CleanPlugin(['build']),
+        new HtmlPlugin({
+            template: 'src/app/index.html'
+            //favicon: 'src/images/favicon.png'
+        }),
         new webpack.NoErrorsPlugin()
     ],
     resolve: {
@@ -34,7 +41,7 @@ module.exports = {
             {
                 test: /.*img\/.*\.svg$/,
                 loaders: [
-                    'file-loader',
+                    "file?name=svg/[name].[hash:7].[ext]",
                     'svgo-loader'
                 ]
             }
