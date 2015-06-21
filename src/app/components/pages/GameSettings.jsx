@@ -1,7 +1,6 @@
 import _ from 'lodash';
 import React from 'react';
 import { Link } from 'react-router';
-import RadioGroup from 'react-radio-group';
 import Slider from 'react-slider';
 
 const GameSettings = React.createClass({

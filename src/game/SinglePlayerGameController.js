@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import React from 'react/addons';
+import React from 'react';
 import StateMachine from 'javascript-state-machine';
 
 import Game from 'game/Game';

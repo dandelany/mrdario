@@ -6,6 +6,7 @@ var config = require('./webpack.config.base');
 config = _.merge(config, {
     plugins: config.plugins.concat([
         new CleanPlugin(['build']),
+        new webpack.optimize.DedupePlugin(),
         new webpack.optimize.UglifyJsPlugin()
     ])
 });

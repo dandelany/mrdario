@@ -1,6 +1,5 @@
 import { MODES, SPEED_LEVELS } from '../constants';
 import React from 'react';
-import RadioGroup from 'react-radio-group';
 import cx from 'classnames';
 import Router from 'react-router';
 
