@@ -8,12 +8,20 @@ config = _.merge(config, {
         contentBase: "./build",
         hot: true
     },
-    entry: [
-        'webpack-dev-server/client?http://localhost:6767',
-        'webpack/hot/only-dev-server'
-    ].concat(config.entry.app),
+    entry: _.assign({}, config.entry, {
+        app: [
+            'webpack-dev-server/client?http://localhost:6767',
+            'webpack/hot/only-dev-server'
+        ].concat(config.entry.app)
+    }),
     plugins: config.plugins.concat([
-        new webpack.HotModuleReplacementPlugin()
+        new webpack.HotModuleReplacementPlugin(),
+        new webpack.optimize.CommonsChunkPlugin({
+            name: 'vendor',
+            // cant use chunkhash with HMR
+            filename: 'scripts/vendor.[hash:7].js',
+            minChunks: Infinity
+        })
     ]),
     module: {
         loaders: [
@@ -21,5 +29,6 @@ config = _.merge(config, {
         ]
     }
 });
+
 
 module.exports = config;

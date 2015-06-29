@@ -4,7 +4,6 @@ var HtmlPlugin = require('html-webpack-plugin');
 
 module.exports = {
     context: __dirname,
-    //entry: ['./src/main.jsx'],
     entry: {
         app: ['./src/main.jsx'],
         vendor: [
@@ -24,18 +23,14 @@ module.exports = {
     },
     output: {
         path: path.join(__dirname, 'build'),
-        filename: 'scripts/main.[chunkhash:7].js'
+        filename: 'scripts/[name].[chunkhash:7].js'
     },
+    recordsPath: path.join(__dirname, "webpack.records.json"),
     devtool: 'source-map',
 
     plugins: [
         new HtmlPlugin({
             template: 'src/app/index.html'
-            //favicon: 'src/images/favicon.png'
-        }),
-        new webpack.optimize.CommonsChunkPlugin({
-            name: 'vendor',
-            filename: 'scripts/vendor.[chunkhash:7].js'
         }),
         new webpack.NoErrorsPlugin()
     ],
