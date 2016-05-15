@@ -4,18 +4,18 @@ import Router from 'react-router';
 import routes from './routes';
 
 class App {
-    constructor(el) {
-        this.el = el;
-        this.game = null;
-    }
+  constructor(el) {
+    this.el = el;
+    this.game = null;
+  }
 
-    onStartGame() {
+  onStartGame() {
 
-    }
+  }
 
-    render(gameState, dt) {
-        const {mode, grid} = gameState;
-        React.render(<MrDario {...gameState} />, this.el);
-    }
+  render(gameState, dt) {
+    const {mode, grid} = gameState;
+    React.render(<MrDario {...gameState} />, this.el);
+  }
 }
 
