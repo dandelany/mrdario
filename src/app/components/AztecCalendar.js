@@ -8,41 +8,48 @@ const greens = ["#009345", "#006838", "#8BC53F", "#37B34A"];
 const purples = ["#5251A1", "#A376CD",  "#744B9D", "#7A6ED4"];
 const colorGroups = [null, oranges, greens, purples];
 
-const AztecCalendar = React.createClass({
-  getDefaultProps() {
-    return {
-      width: 600,
-      height: 600,
-      shouldAnimate: true,
-      cycleTime: 2000
-    }
-  },
+export default class AztecCalendar extends React.Component {
+  static defaultProps = {
+    width: 600,
+    height: 600,
+    shouldAnimate: true,
+    cycleTime: 2000
+  };
+
   componentDidMount() {
     let svgEl = this.refs.svg;
+
     svgEl.addEventListener('load', () => {
       let svg = svgEl.contentDocument;
       let paths = svg ? svg.getElementsByTagName('path') : [];
+
       if(paths.length) {
         let circles = svg.getElementsByTagName('circle') || [];
         paths = Array.prototype.slice.call(paths);
         circles = Array.prototype.slice.call(circles);
-        this.onLoadedSvg(paths.concat(circles));
+        const shapes = paths.concat(circles);
+        _.each(shapes, shape => shape.style.transition = 'fill 0.3s ease-in');
+        this.onLoadedSvg(shapes);
       }
     });
-  },
+  }
+
   componentWillReceiveProps(newProps) {
     if(newProps.shouldAnimate === false && this.changeTimer) {
       clearTimeout(this.changeTimer);
       delete this.changeTimer;
-    } else if(newProps.shouldAnimate === true && !this.animation && !this.changeTimer)
+
+    } else if(newProps.shouldAnimate === true && !this.animation && !this.changeTimer) {
       this.changeTimer = setTimeout(this.changeAnimation, this.props.cycleTime);
-  },
+    }
+  }
+
   componentWillUnmount() {
     if(this.changeTimer) clearTimeout(this.changeTimer);
     if(this.animation) clearInterval(this.animation);
-  },
+  }
 
-  onLoadedSvg(paths) {
+  onLoadedSvg = (paths) => {
     this.paths = paths;
 
     let bgPaths = [];
@@ -56,17 +63,15 @@ const AztecCalendar = React.createClass({
         bgColors.push(fill);
       }
     });
-    //console.log(_.uniq(bgColors));
-    //console.log(bgPaths.length, 'paths');
-    //borderPaths.forEach(path => path.setAttribute('fill', 'transparent'));
 
     _.assign(this, {bgPaths, bgColors, borderPaths});
 
     this.colorGroupIndex = 0;
-    if(this.props.shouldAnimate) this.changeTimer = setTimeout(this.changeAnimation, this.props.cycleTime / 2);
-  },
+    if(this.props.shouldAnimate)
+      this.changeTimer = setTimeout(this.changeAnimation, this.props.cycleTime / 2);
+  };
 
-  changeAnimation() {
+  changeAnimation = () => {
     this.animIndex = 0;
     this.colorGroupIndex = (this.colorGroupIndex + 1) % colorGroups.length;
     this.colorGroup = colorGroups[this.colorGroupIndex];
@@ -97,19 +102,17 @@ const AztecCalendar = React.createClass({
       }
       this.animIndex += 1;
     }, 1);
-  },
-
+  };
 
   render() {
     return <div className="aztec-calendar">
-      <object type="image/svg+xml"
-              ref="svg"
-              width={this.props.width}
-              height={this.props.height}
-              data={aztecCalendar}>
-      </object>
+      <object
+        type="image/svg+xml"
+        ref="svg"
+        width={this.props.width}
+        height={this.props.height}
+        data={aztecCalendar}
+      />
     </div>;
   }
-});
-
-export default AztecCalendar;
+}
