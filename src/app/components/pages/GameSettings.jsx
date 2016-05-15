@@ -57,7 +57,8 @@ const GameSettings = React.createClass({
             </div>
 
             <div className="settings-play">
-                <Link to="single" params={{level: this.state.level, speed: 10}}>
+                
+                <Link to={`/game/level/${this.state.level}/speed/${this.state.speed}`}>
                     <span>
                         Play
                     </span>

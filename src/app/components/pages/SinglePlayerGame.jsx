@@ -10,13 +10,14 @@ import Playfield from 'app/components/Playfield';
 
 const SinglePlayerGame = React.createClass({
     //mixins: [Reflux.connect(gameStore)], // bind gameStore.state directly to this.state
-    mixins: [Router.State],
+    // mixins: [Router.State],
     getInitialState() {
         return { game: null }
     },
 
     componentDidMount() {
-        const params = this.getParams();
+        // const params = this.getParams();
+        const params = this.props.params;
         const level = parseInt(params.level) || 0;
         const speed = parseInt(params.speed) || 15;
         this.game = new SinglePlayerGameController({

@@ -2,9 +2,6 @@ var xml2js = require('xml2js');
 var fs = require('fs');
 var _ = require('lodash');
 
-var SimpleConvertXML = require('simpleconvert-xml'),
-    DOMParser = require('xmldom').DOMParser;
-
 var spritesPath = './assets/sprite';
 
 var filenames = fs.readdirSync(spritesPath);
@@ -24,5 +21,4 @@ filenames.forEach(function(filename) {
             fs.writeFile('./src/app/svg/' + filename.replace('mrdario_',''), xmlStr);
         })
     });
-
 });

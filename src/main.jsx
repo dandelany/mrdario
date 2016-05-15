@@ -1,11 +1,24 @@
-var React = require('react');
+require("babel-polyfill");
+
 var _ = require('lodash');
-require("babel/polyfill");
+var React = require('react');
+// var ReactDOM = require('react-dom');
+import {render} from 'react-dom';
+import {Router, hashHistory} from 'react-router';
+
 
 require('app/styles/main.less');
 
-React.initializeTouchEvents(true);
+const App = require('./app/App.jsx');
+import routes from './app/routes';
 
-const App = require('app/App.jsx');
+render(
+  <Router history={hashHistory}>
+    {routes}
+  </Router>,
+  document.getElementById('container')
+);
 
-var app = new App(document.getElementById('container'));
+// var app = new App(document.getElementById('container'));
+
+

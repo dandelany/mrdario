@@ -145,13 +145,13 @@ function isValidVirusLocation(grid, [rowI, colI], colors, nearby) {
     if(!isEmpty(grid.getIn([rowI, colI]))) return false;
     if(!nearby) nearby = _.values(getCellNeighbors(grid, [rowI, colI], 2));
     // location is valid if not all colors are present in the 4 nearby cells
-    return !_.every(colors, color => _.any(nearby, obj => isColor(obj, color)));
+    return !_.every(colors, color => _.some(nearby, obj => isColor(obj, color)));
 }
 function isValidVirusColor(grid, [rowI, colI], color, nearby) {
     if(_.isUndefined(color) || _.isNull(color)) return false;
     if(!nearby) nearby = _.values(getCellNeighbors(grid, [rowI, colI], 2));
     // virus color is valid here if none of the nearby neighbors are the same color
-    return !_.any(nearby, obj => isColor(obj, color));
+    return !_.some(nearby, obj => isColor(obj, color));
 }
 
 

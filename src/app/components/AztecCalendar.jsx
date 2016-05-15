@@ -18,7 +18,7 @@ const AztecCalendar = React.createClass({
         }
     },
     componentDidMount() {
-        let svgEl = React.findDOMNode(this.refs.svg);
+        let svgEl = this.refs.svg;
         svgEl.addEventListener('load', () => {
             let svg = svgEl.contentDocument;
             let paths = svg ? svg.getElementsByTagName('path') : [];

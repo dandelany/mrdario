@@ -5,7 +5,7 @@ import AztecCalendar from 'app/components/AztecCalendar';
 
 const AppContainer = React.createClass({
     // top level react component
-    mixins: [State],
+    // mixins: [State],
     componentWillMount() {
         this.onResize();
     },
@@ -15,13 +15,16 @@ const AppContainer = React.createClass({
 
     render() {
         const {width, height} = this.state;
-        const shouldAnimate = (this.getPathname() === '/');
+        // const shouldAnimate = (this.getPathname() === '/');
+        const shouldAnimate = (this.props.location.pathname === '/');
 
         return <div id="mrdario" style={{width: '100%', height: '100%'}}>
             <AztecCalendar {...{width, height, shouldAnimate}}/>
 
             <div className="mrdario-page">
-                <RouteHandler windowSize={{width, height}} />
+                {React.Children.only(this.props.children, child => {
+                    return React.cloneElement(child, {width, height});
+                })}
             </div>
         </div>;
     }

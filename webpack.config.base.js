@@ -7,7 +7,6 @@ module.exports = {
     entry: {
         app: ['./src/main.jsx'],
         vendor: [
-            "babel/polyfill",
             "classnames",
             "events",
             "immutable",
@@ -30,7 +29,7 @@ module.exports = {
 
     plugins: [
         new HtmlPlugin({
-            template: 'src/app/index.html'
+            template: 'src/app/index.ejs'
         }),
         new webpack.NoErrorsPlugin()
     ],
