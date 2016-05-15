@@ -3,19 +3,16 @@ import { RouteHandler, State } from 'react-router';
 
 import AztecCalendar from 'app/components/AztecCalendar';
 
-const AppContainer = React.createClass({
-  // top level react component
-  // mixins: [State],
+export default class AppContainer extends React.Component {
   componentWillMount() {
-    this.onResize();
-  },
-  onResize() {
+    this._onResize();
+  }
+  _onResize = () => {
     this.setState({width: window.innerWidth, height: window.innerHeight});
-  },
+  };
 
   render() {
     const {width, height} = this.state;
-    // const shouldAnimate = (this.getPathname() === '/');
     const shouldAnimate = (this.props.location.pathname === '/');
 
     return <div id="mrdario" style={{width: '100%', height: '100%'}}>
@@ -28,6 +25,4 @@ const AppContainer = React.createClass({
       </div>
     </div>;
   }
-});
-
-export default AppContainer;
+}

@@ -1,4 +1,3 @@
-import _ from 'lodash';
 import React from 'react';
 
 import SinglePlayerGameController from 'game/SinglePlayerGameController';
@@ -9,7 +8,7 @@ export default class SinglePlayerGame extends React.Component {
   state = { game: null };
 
   componentDidMount() {
-    const params = _.defaults();
+    const params = this.props.params;
     const level = parseInt(params.level) || 0;
     const speed = parseInt(params.speed) || 15;
 
