@@ -1,15 +1,10 @@
 require("babel-polyfill");
+require('app/styles/main.less');
 
-var _ = require('lodash');
-var React = require('react');
-// var ReactDOM = require('react-dom');
+import React from 'react';
 import {render} from 'react-dom';
 import {Router, hashHistory} from 'react-router';
 
-
-require('app/styles/main.less');
-
-const App = require('./app/App');
 import routes from './app/routes';
 
 render(
@@ -18,7 +13,3 @@ render(
   </Router>,
   document.getElementById('container')
 );
-
-// var app = new App(document.getElementById('container'));
-
-

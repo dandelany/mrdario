@@ -1,23 +1,20 @@
-import _ from 'lodash';
 import React from 'react';
-import { Link } from 'react-router';
+import {Link} from 'react-router';
 import Slider from 'react-slider';
 
-const GameSettings = React.createClass({
-  getInitialState() {
-    return {
-      level: 0,
-      speed: 15,
-      speedLevels: []
-    }
-  },
+export default class GameSettings extends React.Component {
+  state = {
+    level: 0,
+    speed: 15,
+    speedLevels: []
+  };
 
-  onChangeLevel(level) {
+  onChangeLevel = (level) => {
     this.setState({level});
-  },
-  onChangeSpeed(speed) {
+  };
+  onChangeSpeed = (speed) => {
     this.setState({speed});
-  },
+  };
 
   render() {
     return <div className="page-settings">
@@ -57,15 +54,12 @@ const GameSettings = React.createClass({
       </div>
 
       <div className="settings-play">
-
         <Link to={`/game/level/${this.state.level}/speed/${this.state.speed}`}>
-                    <span>
-                        Play
-                    </span>
+          <span>
+              Play
+          </span>
         </Link>
       </div>
     </div>
   }
-});
-
-export default GameSettings;
+}

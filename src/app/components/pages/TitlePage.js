@@ -44,6 +44,4 @@ const TitlePage = React.createClass({
   }
 });
 
-function createMarkup(html) { return {__html: html}; }
-
 export default TitlePage;
