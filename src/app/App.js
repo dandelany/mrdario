@@ -3,9 +3,9 @@ import React from 'react';
 import cx from 'classnames';
 import Router from 'react-router';
 
-import routes from './routes.jsx';
-import Playfield from './components/Playfield.jsx';
-import TitlePage from './components/pages/TitlePage.jsx';
+import routes from './routes';
+import Playfield from './components/Playfield';
+import TitlePage from './components/pages/TitlePage';
 
 const MrDario = React.createClass({
     render() {

@@ -1,11 +1,10 @@
 import React from 'react';
-
 import {Route, IndexRoute} from 'react-router';
 
-import AppContainer from './components/AppContainer.jsx';
-import TitlePage from './components/pages/TitlePage.jsx';
-import GameSettings from './components/pages/GameSettings.jsx';
-import SinglePlayerGame from './components/pages/SinglePlayerGame.jsx';
+import AppContainer from './components/AppContainer';
+import TitlePage from './components/pages/TitlePage';
+import GameSettings from './components/pages/GameSettings';
+import SinglePlayerGame from './components/pages/SinglePlayerGame';
 
 export default (
     <Route name="app" path="/" component={AppContainer}>

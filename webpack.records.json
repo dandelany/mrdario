@@ -1,5 +1,5 @@
 {
-  "nextFreeModuleId": 808,
+  "nextFreeModuleId": 817,
   "modules": {
     "byIdentifier": {
       "multi app": 0,
@@ -810,7 +810,16 @@
       "node_modules/fbjs/lib/performanceNow.js": 804,
       "node_modules/fbjs/lib/performance.js": 805,
       "node_modules/react/lib/getNativeComponentFromComposite.js": 806,
-      "node_modules/react/lib/renderSubtreeIntoContainer.js": 807
+      "node_modules/react/lib/renderSubtreeIntoContainer.js": 807,
+      "node_modules/babel-loader/index.js!src/main.js": 808,
+      "node_modules/babel-loader/index.js!src/app/routes.js": 809,
+      "node_modules/babel-loader/index.js!src/app/components/AppContainer.js": 810,
+      "node_modules/babel-loader/index.js!src/app/components/AztecCalendar.js": 811,
+      "node_modules/babel-loader/index.js!src/app/components/pages/TitlePage.js": 812,
+      "node_modules/babel-loader/index.js!src/app/components/pages/GameSettings.js": 813,
+      "node_modules/babel-loader/index.js!src/app/components/pages/SinglePlayerGame.js": 814,
+      "node_modules/babel-loader/index.js!src/app/components/Playfield.js": 815,
+      "node_modules/babel-loader/index.js!src/app/App.js": 816
     }
   },
   "nextFreeChunkId": 2,
@@ -857,6 +866,21 @@
       "modules": {
         "byIdentifier": {
           "node_modules/html-webpack-plugin/lib/loader.js!src/app/index.html": 0,
+          "node_modules/lodash/lodash.js": 1,
+          "node_modules/webpack/buildin/module.js": 2
+        }
+      },
+      "nextFreeChunkId": 1,
+      "chunks": {
+        "byName": {},
+        "byBlocks": {}
+      }
+    },
+    {
+      "nextFreeModuleId": 3,
+      "modules": {
+        "byIdentifier": {
+          "node_modules/html-webpack-plugin/lib/loader.js!src/app/index.ejs": 0,
           "node_modules/lodash/lodash.js": 1,
           "node_modules/webpack/buildin/module.js": 2
         }

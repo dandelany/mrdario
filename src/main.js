@@ -9,7 +9,7 @@ import {Router, hashHistory} from 'react-router';
 
 require('app/styles/main.less');
 
-const App = require('./app/App.jsx');
+const App = require('./app/App');
 import routes from './app/routes';
 
 render(

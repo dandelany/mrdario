@@ -1,7 +1,7 @@
 import React from 'react';
 import Router from 'react-router';
 
-import routes from './routes.jsx';
+import routes from './routes';
 
 class App {
     constructor(el) {

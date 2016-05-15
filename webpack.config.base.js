@@ -5,7 +5,7 @@ var HtmlPlugin = require('html-webpack-plugin');
 module.exports = {
     context: __dirname,
     entry: {
-        app: ['./src/main.jsx'],
+        app: ['./src/main.js'],
         vendor: [
             "classnames",
             "events",
