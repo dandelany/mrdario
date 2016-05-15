@@ -8,7 +8,7 @@
   "scripts": {
     "dev": "webpack-dev-server --config webpack.config.dev.js",
     "build": "webpack",
-    "testbuild": "python -m SimpleHTTPServer 8080"
+    "serve": "python -m SimpleHTTPServer 8080"
   },
   "dependencies": {
     "classnames": "2.2.5",

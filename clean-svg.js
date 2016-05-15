@@ -1,24 +1,32 @@
-var xml2js = require('xml2js');
 var fs = require('fs');
 var _ = require('lodash');
+var SVGO = require('svgo');
 
-var spritesPath = './assets/sprite';
+var svgo  = new SVGO({
+  plugins: [
+    // remove width and height so svg can be responsive using viewBox
+    {removeDimensions: true}
+  ]
+});
 
-var filenames = fs.readdirSync(spritesPath);
-console.log('cleaning', filenames);
+var spritesDir = './assets/sprite';
+var outDir = './src/app/svg';
+var filenames = fs.readdirSync(spritesDir);
 
-filenames.forEach(function(filename) {
-  fs.readFile(spritesPath + '/' + filename, 'utf8', function (err, data) {
-    if (err) return console.log(err);
+filenames.forEach((filename) => {
+  fs.readFile(`${spritesDir}/${filename}`, 'utf8', (err, data) => {
+    if(err) throw err;
 
-    xml2js.parseString(data, function(err, result) {
-      delete result.svg.$.width;
-      delete result.svg.$.height;
+    // optimize svg file in sprite directory...
+    const outPath = `${outDir}/${filename.replace('mrdario_','')}`;
+    svgo.optimize(data, (optimized) => {
+      console.log(`optimized ${filename}`);
 
-      var builder = new xml2js.Builder();
-      var xmlStr = builder.buildObject(result);
-
-      fs.writeFile('./src/app/svg/' + filename.replace('mrdario_',''), xmlStr);
-    })
+      // ...and save to output directory
+      fs.writeFile(outPath, optimized.data, (err) => {
+        if(err) throw err;
+        console.log(`saved ${outPath}`);
+      });
+    });
   });
 });
