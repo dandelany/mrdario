@@ -4,9 +4,10 @@ import Imm from 'immutable';
 import {GRID_OBJECTS, COLORS, VIRUS_COUNT_TABLE, MIN_VIRUS_ROW_TABLE} from 'constants';
 import {emptyObject, emptyGrid, generateViruses} from './utils/generators';
 import {
-  findLines, findWidows, givePill, movePill, rotatePill, dropDebris, hasViruses, isDestroyed
+  findLines, findWidows, hasViruses, isDestroyed
 } from './utils/grid';
 
+import {givePill, movePill, rotatePill, dropDebris} from './utils/moves';
 
 export class Playfield {
   constructor({width = 8, height = 12}) {
