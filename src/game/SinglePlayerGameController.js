@@ -152,7 +152,3 @@ export default class SinglePlayerGameController {
 function timestamp() {
   return window.performance && window.performance.now ? window.performance.now() : new Date().getTime();
 }
-
-function generatePillSequence(colors, count=128) {
-  return _.times(count, () => [{color: _.sample(colors)}, {color: _.sample(colors)}]);
-}

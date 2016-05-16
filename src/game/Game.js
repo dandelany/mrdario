@@ -4,7 +4,8 @@ import keyMirror from 'keymirror';
 import StateMachine  from 'javascript-state-machine';
 
 import { GRID_OBJECTS, INPUTS, COLORS, GRAVITY_TABLE } from './../constants';
-import {Playfield, generatePillSequence} from './Playfield';
+import {Playfield} from './Playfield';
+import {generatePillSequence} from './utils/generators';
 
 const MODES = keyMirror({
   LOADING: null, // use this time to populate viruses slowly like in real game?
