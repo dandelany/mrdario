@@ -1,5 +1,5 @@
 {
-  "nextFreeModuleId": 817,
+  "nextFreeModuleId": 876,
   "modules": {
     "byIdentifier": {
       "multi app": 0,
@@ -819,7 +819,66 @@
       "node_modules/babel-loader/index.js!src/app/components/pages/GameSettings.js": 813,
       "node_modules/babel-loader/index.js!src/app/components/pages/SinglePlayerGame.js": 814,
       "node_modules/babel-loader/index.js!src/app/components/Playfield.js": 815,
-      "node_modules/babel-loader/index.js!src/app/App.js": 816
+      "node_modules/babel-loader/index.js!src/app/App.js": 816,
+      "node_modules/babel-loader/index.js!src/game/utils/generators.js": 817,
+      "node_modules/babel-loader/index.js!src/game/utils/grid.js": 818,
+      "node_modules/babel-loader/index.js!src/game/utils/moves.js": 819,
+      "node_modules/lodash/get.js": 820,
+      "node_modules/lodash/_baseGet.js": 821,
+      "node_modules/lodash/_castPath.js": 822,
+      "node_modules/lodash/isArray.js": 823,
+      "node_modules/lodash/_stringToPath.js": 824,
+      "node_modules/lodash/memoize.js": 825,
+      "node_modules/lodash/_MapCache.js": 826,
+      "node_modules/lodash/_mapCacheClear.js": 827,
+      "node_modules/lodash/_Hash.js": 828,
+      "node_modules/lodash/_hashClear.js": 829,
+      "node_modules/lodash/_nativeCreate.js": 830,
+      "node_modules/lodash/_getNative.js": 831,
+      "node_modules/lodash/isNative.js": 832,
+      "node_modules/lodash/isFunction.js": 833,
+      "node_modules/lodash/isObject.js": 834,
+      "node_modules/lodash/_isHostObject.js": 835,
+      "node_modules/lodash/_toSource.js": 836,
+      "node_modules/lodash/_hashDelete.js": 837,
+      "node_modules/lodash/_hashGet.js": 838,
+      "node_modules/lodash/_hashHas.js": 839,
+      "node_modules/lodash/_hashSet.js": 840,
+      "node_modules/lodash/_ListCache.js": 841,
+      "node_modules/lodash/_listCacheClear.js": 842,
+      "node_modules/lodash/_listCacheDelete.js": 843,
+      "node_modules/lodash/_assocIndexOf.js": 844,
+      "node_modules/lodash/eq.js": 845,
+      "node_modules/lodash/_listCacheGet.js": 846,
+      "node_modules/lodash/_listCacheHas.js": 847,
+      "node_modules/lodash/_listCacheSet.js": 848,
+      "node_modules/lodash/_Map.js": 849,
+      "node_modules/lodash/_root.js": 850,
+      "node_modules/lodash/_checkGlobal.js": 851,
+      "node_modules/lodash/_mapCacheDelete.js": 852,
+      "node_modules/lodash/_getMapData.js": 853,
+      "node_modules/lodash/_isKeyable.js": 854,
+      "node_modules/lodash/_mapCacheGet.js": 855,
+      "node_modules/lodash/_mapCacheHas.js": 856,
+      "node_modules/lodash/_mapCacheSet.js": 857,
+      "node_modules/lodash/toString.js": 858,
+      "node_modules/lodash/_baseToString.js": 859,
+      "node_modules/lodash/_Symbol.js": 860,
+      "node_modules/lodash/isSymbol.js": 861,
+      "node_modules/lodash/isObjectLike.js": 862,
+      "node_modules/lodash/_isKey.js": 863,
+      "node_modules/lodash/_toKey.js": 864,
+      "node_modules/lodash/isUndefined.js": 865,
+      "node_modules/lodash/flatten.js": 866,
+      "node_modules/lodash/_baseFlatten.js": 867,
+      "node_modules/lodash/_arrayPush.js": 868,
+      "node_modules/lodash/_isFlattenable.js": 869,
+      "node_modules/lodash/isArguments.js": 870,
+      "node_modules/lodash/isArrayLikeObject.js": 871,
+      "node_modules/lodash/isArrayLike.js": 872,
+      "node_modules/lodash/_getLength.js": 873,
+      "node_modules/lodash/_baseProperty.js": 874,
+      "node_modules/lodash/isLength.js": 875
     }
   },
   "nextFreeChunkId": 2,
@@ -866,6 +925,21 @@
       "modules": {
         "byIdentifier": {
           "node_modules/html-webpack-plugin/lib/loader.js!src/app/index.html": 0,
+          "node_modules/lodash/lodash.js": 1,
+          "node_modules/webpack/buildin/module.js": 2
+        }
+      },
+      "nextFreeChunkId": 1,
+      "chunks": {
+        "byName": {},
+        "byBlocks": {}
+      }
+    },
+    {
+      "nextFreeModuleId": 3,
+      "modules": {
+        "byIdentifier": {
+          "node_modules/html-webpack-plugin/lib/loader.js!src/app/index.ejs": 0,
           "node_modules/lodash/lodash.js": 1,
           "node_modules/webpack/buildin/module.js": 2
         }
