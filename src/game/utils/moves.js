@@ -198,6 +198,6 @@ export function flagFallingCells(grid) {
   // findLines should be able to detect which cells are falling so no need for this?
   const dropped = dropDebris(grid); // check if there is debris to drop
   grid = grid.map(row => row.map(cell => cell.set('isFalling', false)));
-  dropped.fallingCells.forEach(cell => this.grid = this.grid.setIn(cell.concat(['isFalling']), true));
+  dropped.fallingCells.forEach(cell => grid = grid.setIn(cell.concat(['isFalling']), true));
   return {grid, fallingCells: dropped.fallingCells};
 }

@@ -125,7 +125,7 @@ export default class Game extends EventEmitter {
       // or has been held down long enough to repeat
       const movingCount = this.movingCounters[input];
       if(_.isUndefined(movingCount) || !(movingCount % this.moveRepeatTicks === 0)) return;
-      console.log(input, movingCount);
+      // console.log(input, movingCount);
 
       // move/rotate the pill based on the move input
       let didMove;
