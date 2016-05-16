@@ -3,21 +3,40 @@ import {EventEmitter} from 'events';
 import keyMirror from 'keymirror';
 import StateMachine  from 'javascript-state-machine';
 
-import { GRID_OBJECTS, INPUTS, COLORS, GRAVITY_TABLE } from './../constants';
+import {INPUTS, COLORS, GRAVITY_TABLE} from './../constants';
 import {Playfield} from './Playfield';
 import {generatePillSequence} from './utils/generators';
 
-const MODES = keyMirror({
-  LOADING: null, // use this time to populate viruses slowly like in real game?
-  READY: null, // ready for a new pill
-  PLAYING: null, // pill is in play and falling
-  RECONCILE: null, // pill is locked in place, checking for lines to destroy
-  CASCADE: null, // cascading line destruction & debris falling
-  DESTRUCTION: null, // lines are being destroyed
-  ENDED: null // game has ended
-});
+function gravityFrames(speed) {
+  return GRAVITY_TABLE[Math.min(speed, GRAVITY_TABLE.length - 1)];
+}
 
 export default class Game extends EventEmitter {
+
+  // game modes, used by the state machine
+  static MODES = keyMirror({
+    LOADING: null, // use this time to populate viruses slowly like in real game?
+    READY: null, // ready for a new pill
+    PLAYING: null, // pill is in play and falling
+    RECONCILE: null, // pill is locked in place, checking for lines to destroy
+    CASCADE: null, // cascading line destruction & debris falling
+    DESTRUCTION: null, // lines are being destroyed
+    ENDED: null // game has ended
+  });
+
+  // transitions between modes (state machine states)
+  static MODE_TRANSITIONS = [
+    {name: 'loaded', from: Game.MODES.LOADING, to: Game.MODES.READY},
+    {name: 'play', from: Game.MODES.READY, to: Game.MODES.PLAYING},
+    {name: 'reconcile', from: [Game.MODES.PLAYING, Game.MODES.CASCADE], to: Game.MODES.RECONCILE},
+    {name: 'destroy', from: Game.MODES.RECONCILE, to: Game.MODES.DESTRUCTION},
+    {name: 'cascade', from: [Game.MODES.RECONCILE, Game.MODES.DESTRUCTION], to: Game.MODES.CASCADE},
+    {name: 'ready', from: Game.MODES.CASCADE, to: Game.MODES.READY},
+    {name: 'win', from: Game.MODES.RECONCILE, to: Game.MODES.ENDED},
+    {name: 'lose', from: Game.MODES.READY, to: Game.MODES.ENDED},
+    {name: 'reset', from: '*', to: Game.MODES.LOADING}
+  ];
+
   constructor({
     width = 8, height = 16, baseSpeed = 15, cascadeSpeed = 20,
     level = 0,
@@ -30,18 +49,8 @@ export default class Game extends EventEmitter {
     _.assign(this, {
       // finite state machine representing game mode
       modeMachine: StateMachine.create({
-        initial: MODES.LOADING,
-        events: [ // transitions between states
-          {name: 'loaded', from: MODES.LOADING, to: MODES.READY},
-          {name: 'play', from: MODES.READY, to: MODES.PLAYING},
-          {name: 'reconcile', from: [MODES.PLAYING, MODES.CASCADE], to: MODES.RECONCILE},
-          {name: 'destroy', from: MODES.RECONCILE, to: MODES.DESTRUCTION},
-          {name: 'cascade', from: [MODES.RECONCILE, MODES.DESTRUCTION], to: MODES.CASCADE},
-          {name: 'ready', from: MODES.CASCADE, to: MODES.READY},
-          {name: 'win', from: MODES.RECONCILE, to: MODES.ENDED},
-          {name: 'lose', from: MODES.READY, to: MODES.ENDED},
-          {name: 'reset', from: '*', to: MODES.LOADING}
-        ]
+        initial: Game.MODES.LOADING,
+        events: Game.MODE_TRANSITIONS
       }),
       // sequence of pill colors to use
       pillSequence,
@@ -149,19 +158,19 @@ export default class Game extends EventEmitter {
     // the main game loop, called once per game tick
     switch (this.modeMachine.current) {
 
-      case MODES.LOADING:
+      case Game.MODES.LOADING:
         this.playfield.generateViruses(this.level);
         this.modeMachine.loaded();
         break;
 
-      case MODES.READY:
+      case Game.MODES.READY:
         // try to add a pill to the playfield
         if(this.givePill()) this.modeMachine.play();
         // if it didn't work, pill entrance is blocked and we lose
         else this.modeMachine.lose();
         break;
 
-      case MODES.PLAYING:
+      case Game.MODES.PLAYING:
         // game is playing, pill is falling & under user control
         // todo speedup
         // todo handle holding down buttons better?
@@ -183,7 +192,7 @@ export default class Game extends EventEmitter {
         if(shouldReconcile) this.modeMachine.reconcile();
         break;
 
-      case MODES.RECONCILE:
+      case Game.MODES.RECONCILE:
         // playfield is locked, check for same-color lines
         // setting them to destroyed if they are found
         const hadLines = this.playfield.destroyLines();
@@ -197,7 +206,7 @@ export default class Game extends EventEmitter {
         else this.modeMachine.cascade();
         break;
 
-      case MODES.DESTRUCTION:
+      case Game.MODES.DESTRUCTION:
         // stay in destruction state a few ticks to animate destruction
         if(this.counters.destroyTicks >= this.destroyTicks) {
           // empty the destroyed cells
@@ -207,7 +216,7 @@ export default class Game extends EventEmitter {
         this.counters.destroyTicks++;
         break;
 
-      case MODES.CASCADE:
+      case Game.MODES.CASCADE:
         if(this.counters.cascadeTicks === 0) {
           // check if there is any debris to drop
           let {fallingCells} = this.playfield.flagFallingCells();
@@ -231,7 +240,7 @@ export default class Game extends EventEmitter {
         this.counters.cascadeTicks++;
         break;
 
-      case MODES.ENDED:
+      case Game.MODES.ENDED:
         console.log('ended!');
         break;
     }
@@ -250,5 +259,3 @@ export default class Game extends EventEmitter {
     return didGive;
   }
 }
-
-function gravityFrames(speed) { return GRAVITY_TABLE[Math.min(speed, GRAVITY_TABLE.length - 1)]; }

@@ -1,12 +1,13 @@
-import _ from 'lodash';
 import get from 'lodash/get';
-import Imm from 'immutable';
+import isUndefined from 'lodash/isUndefined';
+import flatten from 'lodash/flatten';
 
-import {GRID_OBJECTS /*, COLORS, VIRUS_COUNT_TABLE, MIN_VIRUS_ROW_TABLE */} from 'constants';
+import {GRID_OBJECTS} from 'constants';
 import {
-  isEmpty, isPillLeft, isPillTop, isPillSegment, isPillVertical, getCellNeighbors, canMoveCell, deltaRowCol
+  isEmpty, isDestroyed, isPillLeft, isPillTop, isPillSegment, isPillVertical,
+  getCellNeighbors, canMoveCell, deltaRowCol, findLines, findWidows
 } from './grid';
-import {makePillLeft, makePillRight, emptyObject} from './generators';
+import {makePillLeft, makePillRight, makeDestroyed, emptyObject} from './generators';
 
 // Pure functions which perform updates on the
 // Immutable game grid/cell objects, returning the updated objects.
@@ -18,7 +19,7 @@ export function givePill(grid, pillColors) {
   const pillCol = Math.floor(row.size / 2) - 1;
   const pill = [[0, pillCol], [0, pillCol+1]];
 
-  if(!_.every(pill, cell => isEmpty(grid.getIn(cell))))
+  if(!pill.every(cell => isEmpty(grid.getIn(cell))))
     return {grid, pill, didGive: false};
 
   const pillLeft = makePillLeft(get(pillColors, '0.color'));
@@ -78,7 +79,7 @@ export function rotatePill(grid, pill, direction) {
   const [pillRow, pillCol] = pill[0];
   const noMove = {grid, pill, didMove: false};
 
-  const pillParts = _.map(pill, ([segRow, segCol]) => grid.getIn([segRow, segCol]));
+  const pillParts = pill.map(([segRow, segCol]) => grid.getIn([segRow, segCol]));
   const newPartTypes = isVertical ?
     [GRID_OBJECTS.PILL_LEFT, GRID_OBJECTS.PILL_RIGHT] : [GRID_OBJECTS.PILL_TOP, GRID_OBJECTS.PILL_BOTTOM];
 
@@ -115,6 +116,53 @@ export function rotatePill(grid, pill, direction) {
   return {grid, pill, didMove: true};
 }
 
+export function updateCellsWith(grid, cells, func) {
+  cells.forEach(cell => grid = func(grid, cell));
+  return grid;
+}
+
+export function destroyCell(grid, [rowI, colI]) {
+  // set grid cell to destroyed
+  return grid.setIn([rowI, colI], makeDestroyed());
+}
+export const destroyCells = (grid, cells) => updateCellsWith(grid, cells, destroyCell);
+
+
+export function removeCell(grid, [rowI, colI]) {
+  // set grid cell to empty
+  return grid.setIn([rowI, colI], emptyObject());
+}
+export const removeCells = (grid, cells) => updateCellsWith(grid, cells, removeCell);
+
+export function setPillSegment(grid, [rowI, colI]) {
+  // set grid cell to be a rounded pill segment (rather than half pill)
+  grid = grid.mergeIn([rowI, colI], {type: GRID_OBJECTS.PILL_SEGMENT});
+  return grid;
+}
+export const setPillSegments = (grid, cells) => updateCellsWith(grid, cells, setPillSegment);
+
+export function destroyLines(grid, lines) {
+  // find all valid lines of same color grid objects and set them to destroyed
+  if(isUndefined(lines)) lines = findLines(grid);
+  const hasLines = !!(lines && lines.length);
+  if(hasLines) {
+    // set cells in lines to destroyed
+    grid = destroyCells(grid, flatten(lines));
+    // turn widowed pill halves into rounded 1-square pill segments
+    grid = setPillSegments(grid, findWidows(grid));
+  }
+  return {grid, hasLines};
+}
+
+export function removeDestroyed(grid) {
+  // find all "destroyed" objects in grid and set them to empty
+  let destroyedCells = [];
+  grid.forEach((row, rowI) => row.forEach((cell, colI) => {
+    if(isDestroyed(grid.getIn([rowI, colI]))) destroyedCells.push([rowI, colI]);
+  }));
+  return removeCells(grid, destroyedCells);
+}
+
 // find pieces in the grid which are unsupported and should fall in cascade
 export function dropDebris(grid) {
   // start at the bottom of the grid and move up,
@@ -142,4 +190,14 @@ export function dropDebris(grid) {
     }
   }
   return {grid, fallingCells};
+}
+
+export function flagFallingCells(grid) {
+  // find cells in the grid which are falling and set 'isFalling' flag on them, without actually dropping them
+  // todo refactor, do we really need to do this
+  // findLines should be able to detect which cells are falling so no need for this?
+  const dropped = dropDebris(grid); // check if there is debris to drop
+  grid = grid.map(row => row.map(cell => cell.set('isFalling', false)));
+  dropped.fallingCells.forEach(cell => this.grid = this.grid.setIn(cell.concat(['isFalling']), true));
+  return {grid, fallingCells: dropped.fallingCells};
 }

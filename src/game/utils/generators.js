@@ -5,10 +5,11 @@ import {GRID_OBJECTS, COLORS, VIRUS_COUNT_TABLE, MIN_VIRUS_ROW_TABLE} from 'cons
 import {isEmpty, isColor, getCellNeighbors} from './grid';
 
 export const emptyObject = () => Imm.Map({type: GRID_OBJECTS.EMPTY});
-
+export const makeDestroyed = () => Imm.Map({type: GRID_OBJECTS.DESTROYED});
 export const virusObject = (color) => Imm.Map({type: GRID_OBJECTS.VIRUS, color});
 export const makePillLeft = (color) => Imm.Map({type: GRID_OBJECTS.PILL_LEFT, color});
 export const makePillRight = (color) => Imm.Map({type: GRID_OBJECTS.PILL_RIGHT, color});
+
 
 export const emptyGrid = (width, height) =>
   Imm.List(_.times(height, () => Imm.List(_.times(width, emptyObject))));
