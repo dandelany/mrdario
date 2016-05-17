@@ -13,102 +13,117 @@ function gravityFrames(speed) {
 
 export default class Game extends EventEmitter {
 
+  // options that can be passed to control game parameters
+  static defaultOptions = {
+    // current virus level (generally 1-20)
+    level: 0,
+    // value representing pill fall speed, increases over time
+    baseSpeed: 15,
+    // sequence of pill colors to use, will be generated if not passed
+    pillSequence: undefined,
+    // width and height of grid (# of grid squares)
+    width: 8,
+    height: 16,
+    // debris fall speed, constant
+    cascadeSpeed: 20,
+    // time delay (in # of ticks) pills being destroyed stay in "destroyed" state before cascading
+    destroyTicks: 20,
+    // the number of frames to wait while holding down a key before repeating a move
+    moveRepeatTicks: 8,
+    // callbacks called when grid changes, game is won, or game is lost
+    onChange: _.noop,
+    onWin: _.noop,
+    onLose: _.noop
+  };
+
   // game modes, used by the state machine
-  static MODES = keyMirror({
-    LOADING: null, // use this time to populate viruses slowly like in real game?
-    READY: null, // ready for a new pill
-    PLAYING: null, // pill is in play and falling
-    RECONCILE: null, // pill is locked in place, checking for lines to destroy
-    CASCADE: null, // cascading line destruction & debris falling
-    DESTRUCTION: null, // lines are being destroyed
-    ENDED: null // game has ended
+  static modes = keyMirror({
+    // pre-ready state, todo: use this to populate viruses slowly?
+    LOADING: null,
+    // ready for a new pill (first or otherwise)
+    READY: null,
+    // pill is in play and falling
+    PLAYING: null,
+    // pill is locked in place, checking for lines to destroy
+    RECONCILE: null,
+    // cascading line destruction & debris falling
+    CASCADE: null,
+    // lines are being destroyed
+    DESTRUCTION: null,
+    // game has ended
+    ENDED: null
   });
 
   // transitions between modes (state machine states)
-  static MODE_TRANSITIONS = [
-    {name: 'loaded', from: Game.MODES.LOADING, to: Game.MODES.READY},
-    {name: 'play', from: Game.MODES.READY, to: Game.MODES.PLAYING},
-    {name: 'reconcile', from: [Game.MODES.PLAYING, Game.MODES.CASCADE], to: Game.MODES.RECONCILE},
-    {name: 'destroy', from: Game.MODES.RECONCILE, to: Game.MODES.DESTRUCTION},
-    {name: 'cascade', from: [Game.MODES.RECONCILE, Game.MODES.DESTRUCTION], to: Game.MODES.CASCADE},
-    {name: 'ready', from: Game.MODES.CASCADE, to: Game.MODES.READY},
-    {name: 'win', from: Game.MODES.RECONCILE, to: Game.MODES.ENDED},
-    {name: 'lose', from: Game.MODES.READY, to: Game.MODES.ENDED},
-    {name: 'reset', from: '*', to: Game.MODES.LOADING}
+  static modeTransitions = [
+    {name: 'loaded', from: Game.modes.LOADING, to: Game.modes.READY},
+    {name: 'play', from: Game.modes.READY, to: Game.modes.PLAYING},
+    {name: 'reconcile', from: [Game.modes.PLAYING, Game.modes.CASCADE], to: Game.modes.RECONCILE},
+    {name: 'destroy', from: Game.modes.RECONCILE, to: Game.modes.DESTRUCTION},
+    {name: 'cascade', from: [Game.modes.RECONCILE, Game.modes.DESTRUCTION], to: Game.modes.CASCADE},
+    {name: 'ready', from: Game.modes.CASCADE, to: Game.modes.READY},
+    {name: 'win', from: Game.modes.RECONCILE, to: Game.modes.ENDED},
+    {name: 'lose', from: Game.modes.READY, to: Game.modes.ENDED},
+    {name: 'reset', from: '*', to: Game.modes.LOADING}
   ];
 
-  constructor({
-    width = 8, height = 16, baseSpeed = 15, cascadeSpeed = 20,
-    level = 0,
-    destroyTicks = 20, moveRepeatTicks = 8,
-    onChange = _.noop, onWin = _.noop, onLose = _.noop,
-    pillSequence = generatePillSequence(COLORS)
-  } = {}) {
+  constructor(options = {}) {
+    options = _.defaults({}, options, Game.defaultOptions);
+    super(options);
 
-    super();
-    _.assign(this, {
-      // finite state machine representing game mode
-      modeMachine: StateMachine.create({
-        initial: Game.MODES.LOADING,
-        events: Game.MODE_TRANSITIONS
-      }),
-      // sequence of pill colors to use
-      pillSequence,
-      // callbacks called when grid changes, game is won, or game is lost
-      onChange, onWin, onLose,
-      // width and height of grid
-      width, height,
-      // current virus level
-      level,
-      // increments every 10 capsules to speed up over time
-      speedCounter: 0,
-      // value representing pill fall speed, increases over time
-      playSpeed: baseSpeed,
-      // lookup speed in gravityTable to get # of frames it takes to fall 1 row
-      playGravity: gravityFrames(baseSpeed),
-      // debris fall speed, constant
-      cascadeSpeed,
-      // # of frames it takes debris to fall 1 row during cascade
-      cascadeGravity: gravityFrames(cascadeSpeed),
-      // # of frames pills being destroyed are in the "destroyed" state before cascading
-      destroyTicks,
+    // assign all options to instance variables
+    Object.assign(this, options);
 
-      // counters, mostly used to count # of frames we've been in a particular state
-      counters: {
-        playTicks: 0,
-        cascadeTicks: 0,
-        destroyTicks: 0,
-        pillSequenceIndex: 0,
-        pillCount: 0
-      },
-
-      // the directions we are currently moving, while a move key is held down
-      movingDirections: new Set(),
-      // these counters count up while a move key is held down (for normalizing key-repeat)
-      // ie. represents the # of frames during which we have been moving in a particular direction
-      movingCounters: {
-        [INPUTS.DOWN]: 0,
-        [INPUTS.LEFT]: 0,
-        [INPUTS.RIGHT]: 0,
-        [INPUTS.ROTATE_CCW]: 0,
-        [INPUTS.ROTATE_CW]: 0
-      },
-      // the number of frames to wait before repeating a move while holding down a key
-      moveRepeatTicks,
-
-      // the grid, single source of truth for game state
-      playfield: new Playfield({width, height})
+    // finite state machine representing game mode
+    this.modeMachine = StateMachine.create({
+      initial: Game.modes.LOADING,
+      events: Game.modeTransitions
     });
+    // the grid, single source of truth for game playfield state
+    this.playfield = new Playfield({width: options.width, height: options.height});
+    // sequence of pill colors to use in the game, will be generated if not passed
+    this.pillSequence = options.pillSequence || generatePillSequence(COLORS);
 
-    //this.modeMachine.onenterstate = (event, lastMode, newMode) => {
-    //    console.log('playfield mode transition:', event, lastMode, newMode);
-    //};
-    //this.modeMachine.onreset = (event, lastMode, newMode) => {};
+    // value representing pill fall speed, increases over time
+    this.playSpeed = options.baseSpeed;
+    // increments every 10 capsules to speed up over time
+    this.speedCounter = 0;
+    // lookup speed in gravityTable to get # of frames it takes to fall 1 row
+    this.playGravity = gravityFrames(options.baseSpeed);
+    // # of frames it takes debris to fall 1 row during cascade
+    this.cascadeGravity = gravityFrames(options.cascadeSpeed);
+
+    // counters, mostly used to count # of frames we've been in a particular state
+    this.counters = {
+      playTicks: 0,
+      cascadeTicks: 0,
+      destroyTicks: 0,
+      pillSequenceIndex: 0,
+      pillCount: 0
+    };
+
+    // the directions we are currently moving, while a move key is held down
+    this.movingDirections = new Set();
+    // these counters count up while a move key is held down (for normalizing key-repeat)
+    // ie. represents the # of frames during which we have been moving in a particular direction
+    this.movingCounters = {
+      [INPUTS.DOWN]: 0,
+      [INPUTS.LEFT]: 0,
+      [INPUTS.RIGHT]: 0,
+      [INPUTS.ROTATE_CCW]: 0,
+      [INPUTS.ROTATE_CW]: 0
+    };
+
+    // attach event callbacks to be called when the mode machine transitions between states
     this.modeMachine.onplay = () => this.counters.playTicks = 0;
     this.modeMachine.ondestroy = () => this.counters.destroyTicks = 0;
     this.modeMachine.oncascade = () => this.counters.cascadeTicks = 0;
     this.modeMachine.onwin = () => this.onWin();
     this.modeMachine.onlose = () => this.onLose();
+    //this.modeMachine.onenterstate = (event, lastMode, newMode) => {
+    //    console.log('playfield mode transition:', event, lastMode, newMode);
+    //};
+    //this.modeMachine.onreset = (event, lastMode, newMode) => {};
   }
 
   handleInput({input, eventType}) {
@@ -133,6 +148,7 @@ export default class Game extends EventEmitter {
         const direction = (input === INPUTS.DOWN) ? 'down' :
           (input === INPUTS.LEFT) ? 'left' : 'right';
         didMove = this.playfield.movePill(direction);
+
       } else if(_.includes([INPUTS.ROTATE_CCW, INPUTS.ROTATE_CW], input)) {
         const direction = (input === INPUTS.ROTATE_CCW) ? 'ccw' : 'cw';
         didMove = this.playfield.rotatePill(direction);
@@ -158,19 +174,19 @@ export default class Game extends EventEmitter {
     // the main game loop, called once per game tick
     switch (this.modeMachine.current) {
 
-      case Game.MODES.LOADING:
+      case Game.modes.LOADING:
         this.playfield.generateViruses(this.level);
         this.modeMachine.loaded();
         break;
 
-      case Game.MODES.READY:
+      case Game.modes.READY:
         // try to add a pill to the playfield
         if(this.givePill()) this.modeMachine.play();
         // if it didn't work, pill entrance is blocked and we lose
         else this.modeMachine.lose();
         break;
 
-      case Game.MODES.PLAYING:
+      case Game.modes.PLAYING:
         // game is playing, pill is falling & under user control
         // todo speedup
         // todo handle holding down buttons better?
@@ -192,7 +208,7 @@ export default class Game extends EventEmitter {
         if(shouldReconcile) this.modeMachine.reconcile();
         break;
 
-      case Game.MODES.RECONCILE:
+      case Game.modes.RECONCILE:
         // playfield is locked, check for same-color lines
         // setting them to destroyed if they are found
         const hadLines = this.playfield.destroyLines();
@@ -206,7 +222,7 @@ export default class Game extends EventEmitter {
         else this.modeMachine.cascade();
         break;
 
-      case Game.MODES.DESTRUCTION:
+      case Game.modes.DESTRUCTION:
         // stay in destruction state a few ticks to animate destruction
         if(this.counters.destroyTicks >= this.destroyTicks) {
           // empty the destroyed cells
@@ -216,7 +232,7 @@ export default class Game extends EventEmitter {
         this.counters.destroyTicks++;
         break;
 
-      case Game.MODES.CASCADE:
+      case Game.modes.CASCADE:
         if(this.counters.cascadeTicks === 0) {
           // check if there is any debris to drop
           let {fallingCells} = this.playfield.flagFallingCells();
@@ -240,7 +256,7 @@ export default class Game extends EventEmitter {
         this.counters.cascadeTicks++;
         break;
 
-      case Game.MODES.ENDED:
+      case Game.modes.ENDED:
         console.log('ended!');
         break;
     }
