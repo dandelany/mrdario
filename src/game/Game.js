@@ -12,7 +12,6 @@ function gravityFrames(speed) {
 }
 
 export default class Game extends EventEmitter {
-
   // options that can be passed to control game parameters
   static defaultOptions = {
     // current virus level (generally 1-20)
