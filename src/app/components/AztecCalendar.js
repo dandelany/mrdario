@@ -35,12 +35,13 @@ export default class AztecCalendar extends React.Component {
   }
 
   componentWillReceiveProps(newProps) {
+    console.log('got props', newProps);
     if(newProps.shouldAnimate === false && this.changeTimer) {
       clearTimeout(this.changeTimer);
       delete this.changeTimer;
 
     } else if(newProps.shouldAnimate === true && !this.animation && !this.changeTimer) {
-      this.changeTimer = setTimeout(this.changeAnimation, this.props.cycleTime);
+      this.changeTimer = setTimeout(this.changeAnimation, newProps.cycleTime);
     }
   }
 
@@ -50,6 +51,7 @@ export default class AztecCalendar extends React.Component {
   }
 
   onLoadedSvg = (paths) => {
+    console.log('loaded')
     this.paths = paths;
 
     let bgPaths = [];
@@ -72,6 +74,7 @@ export default class AztecCalendar extends React.Component {
   };
 
   changeAnimation = () => {
+    console.log('change');
     this.animIndex = 0;
     this.colorGroupIndex = (this.colorGroupIndex + 1) % colorGroups.length;
     this.colorGroup = colorGroups[this.colorGroupIndex];
@@ -79,12 +82,13 @@ export default class AztecCalendar extends React.Component {
     let {bgPaths, bgColors, colorGroup} = this;
     let pathIndexChunks = _.chunk(_.shuffle(_.range(bgPaths.length)), 3);
 
+    this.stopAnimation();
     this.animation = setInterval(() => {
       let {animIndex} = this;
       if(animIndex >= pathIndexChunks.length) {
-        clearInterval(this.animation);
-        delete this.animation;
-        if(this.props.shouldAnimate) this.changeTimer = setTimeout(this.changeAnimation, this.props.cycleTime);
+        this.stopAnimation();
+        if(this.props.shouldAnimate)
+          this.changeTimer = setTimeout(this.changeAnimation, this.props.cycleTime);
       } else {
         if(!colorGroup) {
           // animate to original colors
@@ -103,6 +107,13 @@ export default class AztecCalendar extends React.Component {
       this.animIndex += 1;
     }, 1);
   };
+
+  stopAnimation = () => {
+    if(this.animation) {
+      clearInterval(this.animation);
+      delete this.animation;
+    }
+  }
 
   render() {
     return <div className="aztec-calendar">
