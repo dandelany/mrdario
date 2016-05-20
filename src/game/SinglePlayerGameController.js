@@ -19,7 +19,9 @@ window.Immutable = Immutable;
 
 export default class SinglePlayerGameController {
   constructor({
-    render = _.noop, fps = 60, slow = 1,
+    render = _.noop,
+    onChangeMode = _.noop,
+    fps = 60, slow = 1,
     level = 0, speed = 15,
     keyBindings = DEFAULT_KEYS,
     width = PLAYFIELD_WIDTH, height = PLAYFIELD_HEIGHT
@@ -30,6 +32,8 @@ export default class SinglePlayerGameController {
       // render function which is called when game state changes
       // this is the only connection between game logic and presentation
       render,
+      // callback called when state machine mode changes
+      onChangeMode,
       // frames (this.tick/render calls) per second
       fps,
       step: 1 / fps,
@@ -75,6 +79,7 @@ export default class SinglePlayerGameController {
 
   attachModeEvents() {
     this.modeMachine.onenterstate = (event, lastMode, newMode) => {
+      this.onChangeMode(event, lastMode, newMode);
       this.render(this.getState()); // re-render on any mode change
       this.playerInput.setMode(newMode); // switch key binding mode
     };
