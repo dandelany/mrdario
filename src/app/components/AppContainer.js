@@ -1,36 +1,45 @@
 import React from 'react';
-import { RouteHandler, State } from 'react-router';
+import throttle from 'lodash/throttle';
 
 import AztecCalendar from 'app/components/AztecCalendar';
 
 import MayaNumeral from './MayaNumeral';
 
+function getWindowSize() {
+  return {windowWidth: window.innerWidth, windowHeight: window.innerHeight};
+}
+
 export default class AppContainer extends React.Component {
   state = {
-    value: 0
+    ...getWindowSize()
   };
-  
+
   componentDidMount() {
-    this._onResize();
-    // setInterval(() => this.setState({value: this.state.value + 1}), 1000);
+    // this._throttledResizeHandler = throttle(this._onResize, 40);
+    this._throttledResizeHandler = this._onResize;
+    window.addEventListener('resize', this._throttledResizeHandler);
   }
+  componentWillUnmount() {
+    window.removeEventListener('resize', this._throttledResizeHandler);
+  }
+
   _onResize = () => {
-    this.setState({width: window.innerWidth, height: window.innerHeight});
+    this.setState(getWindowSize());
   };
 
   render() {
-    const {width, height} = this.state;
+    const {windowWidth, windowHeight} = this.state;
+
     const shouldAnimate = (this.props.location.pathname === '/');
+    const child = React.Children.only(this.props.children);
+    const gridCols = 8;
+    const gridRows = 16;
 
     return <div id="mrdario" style={{width: '100%', height: '100%'}}>
-
-
-      <AztecCalendar {...{width, height, shouldAnimate}}/>
+      <AztecCalendar {...{width: windowWidth, height: windowHeight, shouldAnimate}}/>
 
       <div className="mrdario-page">
-        {React.Children.only(this.props.children, child => {
-          return React.cloneElement(child, {width, height});
-        })}
+        {React.cloneElement(child, {windowWidth, windowHeight, gridCols, gridRows})}
       </div>
     </div>;
   }

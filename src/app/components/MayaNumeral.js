@@ -91,6 +91,7 @@ export default class MayaNumeral extends React.Component {
 
     return <div style={styles.container}>
       {base20String.split('').map((base20Digit, i) => {
+        // render each base 20 digit
         const digit = parseInt(base20Digit, 20);
         return <MayaNumeralDigit {...this.props} {...{value: digit, i, styles}} />;
       })}

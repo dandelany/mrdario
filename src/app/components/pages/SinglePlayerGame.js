@@ -3,11 +3,12 @@ import _ from 'lodash';
 import {Link, withRouter} from 'react-router';
 import DeepDiff from 'deep-diff';
 const deepDiff = DeepDiff.diff;
+import shallowEqual from '../../utils/shallowEqual';
 
 import SinglePlayerGameController from 'game/SinglePlayerGameController';
 //import SinglePlayerGameController from 'game/SinglePlayerNetworkGameController';
 import Playfield from 'app/components/Playfield';
-
+import responsiveGame from 'app/components/responsiveGame';
 
 const WonOverlay = (props) => {
   const {style, params} = props;
@@ -38,7 +39,9 @@ const LostOverlay = (props) => {
 
 class SinglePlayerGame extends React.Component {
   static defaultProps = {
-    cellSize: 36
+    cellSize: 32,
+    heightPercent: .85,
+    padding: 15
   };
 
   state = {
@@ -47,22 +50,19 @@ class SinglePlayerGame extends React.Component {
   };
 
   componentDidMount() {
-    this._initGame(this.props);
+    // mode means won or lost, no mode = playing
+    if(!this.props.params.mode) this._initGame(this.props);
   }
   componentWillUnmount() {
-    this.game.cleanup();
+    if(this.game && this.game.cleanup) this.game.cleanup();
   }
 
   componentWillReceiveProps(newProps) {
-    const {props} = this;
     const {params} = this.props;
     const hasChanged = (key) => _.get(this.props, key) !== _.get(newProps, key);
 
     const shouldInitGame = hasChanged('params.level') || hasChanged('params.speed') ||
       (hasChanged('params.mode') && !newProps.params.mode);
-
-    console.log(hasChanged('params.level'), hasChanged('params.speed'), (hasChanged('params.mode') && !newProps.params.mode))
-    console.log('shouldInit', shouldInitGame);
 
     if(shouldInitGame) this._initGame(newProps);
 
@@ -71,6 +71,14 @@ class SinglePlayerGame extends React.Component {
     // console.log('level', hasChanged('params.level'));
     // console.log('speed', hasChanged('params.speed'));
     // console.log('mode', hasChanged('params.mode'));
+  }
+
+  shouldComponentUpdate(newProps, newState) {
+    // console.log(newState);
+    // if(shallowEqual(this.props, newProps) && shallowEqual(this.state, newState)) console.log('YO');
+    // console.log('props', shallowEqual(this.props, newProps), 'state', shallowEqual(this.state, newState));
+    // console.log(deepDiff(this.state, newState));
+    return true;
   }
 
 
@@ -101,18 +109,20 @@ class SinglePlayerGame extends React.Component {
     const {gameState} = this.state;
     const hasGame = this.game && gameState;
     const hasGrid = hasGame && gameState.grid;
-    if(!hasGrid) return <div>loading</div>;
+    // if(!hasGrid) return <div>loading</div>;
 
-    const numRows = _.get(gameState, 'grid.length', 12);
+    const {cellSize, params} = this.props;
+    // pass fractional padding to set padding to a fraction of cell size
+    const padding = (padding < 1) ? this.props.padding * cellSize : this.props.padding;
+    const numRows = _.get(gameState, 'grid.length', 16);
     const numCols = _.get(gameState, 'grid.0.length', 8);
-    const cellSize = this.props.cellSize;
-    const width = numCols * cellSize;
-    const height = numRows * cellSize;
+    const width = (numCols * cellSize) + (padding * 2);
+    const height = (numRows * cellSize) + (padding * 2);
 
-    const style = {position: 'relative', width, height};
-    const overlayStyle = {position: 'absolute', width, height, top: -height};
+    const style = {position: 'relative', width, height, padding};
+    const overlayStyle = {position: 'absolute', width, height, padding, left: 0};
 
-    const {params} = this.props;
+
     const lostOverlayStyle = {...overlayStyle, top: (params.mode === "lost") ? 0 : height};
     const wonOverlayStyle = {...overlayStyle, top: (params.mode === "won") ? 0 : height};
 
@@ -126,4 +136,4 @@ class SinglePlayerGame extends React.Component {
   }
 }
 
-export default withRouter(SinglePlayerGame);
+export default withRouter(responsiveGame(SinglePlayerGame));
