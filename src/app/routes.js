@@ -9,7 +9,7 @@ import SinglePlayerGame from './components/pages/SinglePlayerGame';
 export default (
   <Route name="app" path="/" component={AppContainer}>
     <Route path="settings" component={GameSettings} />
-    <Route name="single" path="game/level/:level/speed/:speed" component={SinglePlayerGame} />
+    <Route name="single" path="game/level/:level/speed/:speed(/:mode)" component={SinglePlayerGame} />
     <IndexRoute name="title" component={TitlePage} />
   </Route>
 );

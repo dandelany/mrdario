@@ -46,39 +46,40 @@ export default class Playfield extends React.Component {
     const numRows = this.props.grid.length;
     const numCols = this.props.grid[0].length;
     const cellSize = this.props.cellSize;
-    const style = {position: 'relative', width: numCols * cellSize, height: numRows * cellSize};
+    const width = numCols * cellSize;
+    const height = numRows * cellSize;
 
-    return <div {...{style, className: 'game-playfield'}}>
-      <svg style={{width: numCols * cellSize, height: numRows * cellSize}}>
+    const style = {position: 'relative', width, height};
+    const overlayStyle = {position: 'absolute', width, height, top: -height, background: 'red'};
 
-        {this.props.grid.map((row, rowI) => {
-          return _.compact(row.map((cell, colI) => {
-            // make individual SVGs for each non-empty grid element
-            if(cell.type === GRID_OBJECTS.EMPTY) return null;
+    return <svg style={{width: numCols * cellSize, height: numRows * cellSize}}>
+      {this.props.grid.map((row, rowI) => {
+        return _.compact(row.map((cell, colI) => {
+          // make individual SVGs for each non-empty grid element
+          if(cell.type === GRID_OBJECTS.EMPTY) return null;
 
-            let svgString;
-            let transform = `translate(${colI * cellSize}, ${rowI * cellSize})`;
+          let svgString;
+          let transform = `translate(${colI * cellSize}, ${rowI * cellSize})`;
 
-            if(cell.type === GRID_OBJECTS.VIRUS) {
-              svgString = viruses[cell.color % viruses.length];
+          if(cell.type === GRID_OBJECTS.VIRUS) {
+            svgString = viruses[cell.color % viruses.length];
 
-            } else if(cell.type === GRID_OBJECTS.DESTROYED) {
-              svgString = destroyed;
+          } else if(cell.type === GRID_OBJECTS.DESTROYED) {
+            svgString = destroyed;
 
-            } else if(cell.type === GRID_OBJECTS.PILL_SEGMENT) {
-              svgString = pillSegments[cell.color % pillSegments.length];
+          } else if(cell.type === GRID_OBJECTS.PILL_SEGMENT) {
+            svgString = pillSegments[cell.color % pillSegments.length];
 
-            } else if(_.includes(pillHalfTypes, cell.type)) {
-              svgString = pillHalves[cell.color % pillSegments.length];
-              transform += `rotate(${pillHalfRotations[cell.type]} ${cellSize/2} ${cellSize/2})`;
-            }
+          } else if(_.includes(pillHalfTypes, cell.type)) {
+            svgString = pillHalves[cell.color % pillSegments.length];
+            transform += `rotate(${pillHalfRotations[cell.type]} ${cellSize/2} ${cellSize/2})`;
+          }
 
-            return svgString ?
-              makeSvg(svgString, {transform}, {width: cellSize, height: cellSize})
-              : null;
-          }))
-        })}
-      </svg>
-    </div>;
+          return svgString ?
+            makeSvg(svgString, {transform}, {width: cellSize, height: cellSize})
+            : null;
+        }))
+      })}
+    </svg>;
   }
 }
