@@ -38,6 +38,7 @@
     "babel-preset-react": "^6.5.0",
     "clean-webpack-plugin": "0.1.9",
     "css-loader": "0.23.1",
+    "deep-diff": "^0.3.4",
     "file-loader": "^0.8.5",
     "html-webpack-plugin": "^2.17.0",
     "img-loader": "1.2.2",
