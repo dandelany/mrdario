@@ -1,5 +1,5 @@
 {
-  "nextFreeModuleId": 876,
+  "nextFreeModuleId": 884,
   "modules": {
     "byIdentifier": {
       "multi app": 0,
@@ -878,7 +878,15 @@
       "node_modules/lodash/isArrayLike.js": 872,
       "node_modules/lodash/_getLength.js": 873,
       "node_modules/lodash/_baseProperty.js": 874,
-      "node_modules/lodash/isLength.js": 875
+      "node_modules/lodash/isLength.js": 875,
+      "node_modules/lodash/throttle.js": 876,
+      "node_modules/lodash/debounce.js": 877,
+      "node_modules/lodash/now.js": 878,
+      "node_modules/lodash/toNumber.js": 879,
+      "node_modules/babel-loader/index.js!src/app/components/MayaNumeral.js": 880,
+      "node_modules/deep-diff/index.js": 881,
+      "node_modules/babel-loader/index.js!src/app/utils/shallowEqual.js": 882,
+      "node_modules/babel-loader/index.js!src/app/components/responsiveGame.js": 883
     }
   },
   "nextFreeChunkId": 2,
@@ -925,6 +933,21 @@
       "modules": {
         "byIdentifier": {
           "node_modules/html-webpack-plugin/lib/loader.js!src/app/index.html": 0,
+          "node_modules/lodash/lodash.js": 1,
+          "node_modules/webpack/buildin/module.js": 2
+        }
+      },
+      "nextFreeChunkId": 1,
+      "chunks": {
+        "byName": {},
+        "byBlocks": {}
+      }
+    },
+    {
+      "nextFreeModuleId": 3,
+      "modules": {
+        "byIdentifier": {
+          "node_modules/html-webpack-plugin/lib/loader.js!src/app/index.ejs": 0,
           "node_modules/lodash/lodash.js": 1,
           "node_modules/webpack/buildin/module.js": 2
         }
