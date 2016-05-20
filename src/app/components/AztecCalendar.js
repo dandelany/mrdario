@@ -35,7 +35,6 @@ export default class AztecCalendar extends React.Component {
   }
 
   componentWillReceiveProps(newProps) {
-    console.log('got props', newProps);
     if(newProps.shouldAnimate === false && this.changeTimer) {
       clearTimeout(this.changeTimer);
       delete this.changeTimer;
@@ -51,7 +50,6 @@ export default class AztecCalendar extends React.Component {
   }
 
   onLoadedSvg = (paths) => {
-    console.log('loaded')
     this.paths = paths;
 
     let bgPaths = [];
@@ -74,7 +72,6 @@ export default class AztecCalendar extends React.Component {
   };
 
   changeAnimation = () => {
-    console.log('change');
     this.animIndex = 0;
     this.colorGroupIndex = (this.colorGroupIndex + 1) % colorGroups.length;
     this.colorGroup = colorGroups[this.colorGroupIndex];
