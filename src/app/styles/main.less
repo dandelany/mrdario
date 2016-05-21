@@ -24,6 +24,32 @@ body {
   box-sizing: border-box;
 }
 
+span.btn-white {
+  color: #101010;
+  background-color: rgba(255, 255, 255, 0.85);
+  display: inline-block;
+  padding: 8px 12px;
+  border-radius: 12px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+  border: 4px solid black;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.95);
+  }
+  &.disabled {
+    border: 4px solid #777;
+    color: #777;
+    cursor: default;
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.85);
+    }
+  }
+}
+
+
 .aztec-calendar {
   position: absolute;
   z-index: 0;
@@ -50,7 +76,7 @@ body {
   }
 
   .title-head {
-    top: 10%;
+    top: 12%;
     h1 {
       margin: 0;
       display: inline-block;
@@ -58,33 +84,13 @@ body {
       padding: 20px;
       background-color: rgba(255, 255, 255, 0.85);
       border-radius: 20px;
+      border: 10px solid black;
     }
   }
 
   .title-game-options {
     top: 73%;
-
-    .title-game-option {
-      font-size: 14pt;
-      font-weight: bold;
-      a {
-        color: black;
-      }
-      span {
-        display: inline-block;
-        padding: 12px;
-        background-color: rgba(255, 255, 255, 0.85);
-        border-radius: 12px;
-        margin-bottom: 10px;
-        cursor: pointer;
-        &:hover {
-          background-color: rgba(255, 255, 255, 0.95);
-        }
-      }
-      &.disabled {
-        color: #888;
-      }
-    }
+    font-size: 16pt;
   }
 }
 
@@ -93,7 +99,7 @@ body {
     .center-absolute;
   }
   .settings-head {
-    top: 5%;
+    top: 6%;
     h2 {
       margin: 0;
       display: inline-block;
@@ -101,36 +107,22 @@ body {
       padding: 20px;
       background-color: rgba(255, 255, 255, 0.85);
       border-radius: 20px;
+      border: 6px solid black;
     }
   }
   .settings-content {
-    top: 22%;
+    top: 24%;
     > div {
       width: 400px;
       margin: 0 auto;
       padding: 10px 20px;
-      background-color: rgba(255, 255, 255, 0.85);
+      background: rgba(210, 207, 202, 0.96);
       border-radius: 20px;
     }
   }
   .settings-play {
     top: 83%;
     font-size: 18pt;
-    font-weight: bold;
-    a {
-      color: black;
-    }
-    span {
-      display: inline-block;
-      padding: 12px;
-      background-color: rgba(255, 255, 255, 0.85);
-      border-radius: 12px;
-      margin-bottom: 10px;
-      cursor: pointer;
-      &:hover {
-        background-color: rgba(255, 255, 255, 0.95);
-      }
-    }
   }
 }
 
@@ -144,7 +136,7 @@ body {
 
 .game-overlay {
   position: absolute;
-  background-color: #222;
+  //background-color: #222;
   color: #f0f0f0;
   -webkit-transition: top 0.5s ease-in;
   -moz-transition: top 0.5s ease-in;
@@ -159,7 +151,10 @@ body {
   width: 100%;
   max-width: 500px;
   height: 50px;
-  border: 1px solid grey;
+  //border: 1px solid grey;
+  border-radius: 12px;
+  background-color: #ccc;
+  box-shadow: inset 0 0 4px rgba(0,0,0,0.6);
 }
 .handle {
   font-size: 0.9em;
@@ -167,6 +162,7 @@ body {
   background-color: black;
   color: white;
   cursor: pointer;
+  border-radius: 12px;
 }
 .handle.active {
   background-color: grey;
@@ -184,4 +180,22 @@ body {
 }
 #horizontal-2 .bar.bar-2 {
   background: #ddd;
+}
+
+.win-lose-symbol {
+  margin: 14% 20%;
+  padding: 10% 10px;
+  border-radius: 15%;
+  color: #202020;
+  border: 10px solid black;
+
+  h1, h2, h3, h4 {
+    margin-bottom: 0;
+  }
+}
+.lose-symbol {
+  background: #BE1E2D;
+}
+.win-symbol {
+  background: #009345;
 }
