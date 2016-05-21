@@ -55,7 +55,7 @@ export default class GameSettings extends React.Component {
 
       <div className="settings-play">
         <Link to={`/game/level/${this.state.level}/speed/${this.state.speed}`}>
-          <span>
+          <span className="btn-white">
               Play
           </span>
         </Link>

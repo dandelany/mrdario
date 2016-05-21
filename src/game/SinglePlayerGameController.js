@@ -143,7 +143,8 @@ export default class SinglePlayerGameController {
     // minimal description of game state to render
     return {
       mode: this.modeMachine.current,
-      grid: this.game.playfield.toJS()
+      // grid: this.game.playfield.toJS()
+      grid: this.game.playfield.grid
     };
   }
 

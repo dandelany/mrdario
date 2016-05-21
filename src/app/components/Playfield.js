@@ -1,5 +1,7 @@
 import _ from 'lodash';
 import React from 'react';
+import shallowEqual from 'app/utils/shallowEqual';
+
 import { GRID_OBJECTS } from 'constants';
 
 import virusOrange from 'raw!app/svg/virus_orange.svg';
@@ -42,9 +44,14 @@ export default class Playfield extends React.Component {
     cellSize: 36
   };
 
+  shouldComponentUpdate(newProps) {
+    return !shallowEqual(newProps, this.props);
+  }
+
   render() {
-    const numRows = this.props.grid.length;
-    const numCols = this.props.grid[0].length;
+    const grid = this.props.grid.toJS();
+    const numRows = grid.length;
+    const numCols = grid[0].length;
     const cellSize = this.props.cellSize;
     const width = numCols * cellSize;
     const height = numRows * cellSize;
@@ -53,14 +60,16 @@ export default class Playfield extends React.Component {
     const overlayStyle = {position: 'absolute', width, height, top: -height, background: 'red'};
 
     return <svg style={{width: numCols * cellSize, height: numRows * cellSize}}>
-      {this.props.grid.map((row, rowI) => {
+      {grid.map((row, rowI) => {
         return _.compact(row.map((cell, colI) => {
           // make individual SVGs for each non-empty grid element
+          // if(cell.type === GRID_OBJECTS.EMPTY) return null;
           if(cell.type === GRID_OBJECTS.EMPTY) return null;
 
           let svgString;
           let transform = `translate(${colI * cellSize}, ${rowI * cellSize})`;
 
+          // if(cell.type === GRID_OBJECTS.VIRUS) {
           if(cell.type === GRID_OBJECTS.VIRUS) {
             svgString = viruses[cell.color % viruses.length];
 
@@ -82,4 +91,4 @@ export default class Playfield extends React.Component {
       })}
     </svg>;
   }
-}
+};

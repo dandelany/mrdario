@@ -11,14 +11,14 @@ export default class TitlePage extends React.Component {
       <div className="title-game-options">
         <div className="title-game-option">
           <Link to="settings">
-            <span>
-                One Player
+            <span className="btn-white">
+                Single Player
             </span>
           </Link>
         </div>
 
-        <div className="title-game-option disabled">
-          <span>
+        <div className="title-game-option">
+          <span className="btn-white disabled">
               Multiplayer soon
           </span>
         </div>
