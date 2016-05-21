@@ -25,7 +25,8 @@ module.exports = {
     filename: 'scripts/[name].[chunkhash:7].js'
   },
   recordsPath: path.join(__dirname, "webpack.records.json"),
-  devtool: 'source-map',
+  devtool: 'eval',
+  // devtool: 'source-map',
 
   plugins: [
     new HtmlPlugin({
