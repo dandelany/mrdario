@@ -1,17 +1,13 @@
 import _ from 'lodash';
 import React from 'react';
 
-
 import SVGShimmerCycler from 'app/components/SVGShimmerCycler'
-
 import aztecCalendar from 'app/img/aztec_small.svg';
 
 const oranges = ["#BE1E2D", "#F05A28", "#F6921E"];
 const greens = ["#009345", "#006838", "#8BC53F", "#37B34A"];
 const purples = ["#5251A1", "#A376CD",  "#744B9D", "#7A6ED4"];
 const colorGroups = [undefined, oranges, greens, purples];
-
-
 
 
 export default class AztecCalendar extends React.Component {
