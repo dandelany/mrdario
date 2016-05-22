@@ -39,7 +39,8 @@ export default class AztecCalendar extends React.Component {
       repeat: false
     },
     lost: {
-      colorSets: [['#000000']]
+      colorSets: [['#000000']],
+      shapesPerFrame: 8
     }
   };
 
