@@ -10,7 +10,6 @@ const responsiveGame = (GameComponent) => {
     render() {
       const {heightPercent, padding, gridRows, windowHeight} = this.props;
       const cellSize = Math.round(((windowHeight - (padding * 2)) * heightPercent) / gridRows);
-      console.log('cellsize', cellSize);
       return <GameComponent {...{cellSize, ...this.props}}/>;
     }
   };

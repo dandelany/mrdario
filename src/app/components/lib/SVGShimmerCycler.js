@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import React from 'react';
 
-import SVGShimmerFills from 'app/components/SVGShimmerFills';
+import SVGShimmerFills from 'app/components/lib/SVGShimmerFills';
 
 export default class SVGShimmerCycler extends React.Component {
   static propTypes = {

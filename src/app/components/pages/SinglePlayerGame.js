@@ -5,12 +5,12 @@ import DeepDiff from 'deep-diff';
 const deepDiff = DeepDiff.diff;
 import shallowEqual from '../../utils/shallowEqual';
 
-import {MODES} from 'constants';
+import {MODES, DEFAULT_KEYS} from 'constants';
 
+// import KeyManager from 'game'
 import SingleGameController from 'game/SingleGameController.js';
 //import SinglePlayerGameController from 'game/SinglePlayerNetworkGameController';
 import Playfield from 'app/components/Playfield';
-import MayaNumeral from 'app/components/MayaNumeral';
 import responsiveGame from 'app/components/responsiveGame';
 
 import WonOverlay from 'app/components/overlays/WonOverlay';

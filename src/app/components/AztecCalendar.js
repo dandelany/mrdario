@@ -1,7 +1,8 @@
 import _ from 'lodash';
 import React from 'react';
 
-import SVGShimmerCycler from 'app/components/SVGShimmerCycler'
+import SVGShimmerCycler from 'app/components/lib/SVGShimmerCycler'
+
 import aztecCalendar from 'app/img/aztec_small.svg';
 
 const oranges = ["#BE1E2D", "#F05A28", "#F6921E"];

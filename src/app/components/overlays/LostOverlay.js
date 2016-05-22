@@ -1,7 +1,7 @@
 import React from 'react';
 import {Link} from 'react-router';
 
-import MayaNumeral from 'app/components/MayaNumeral';
+import MayaNumeral from 'app/components/lib/MayaNumeral';
 
 const LostOverlay = (props) => {
   const {style, params} = props;
