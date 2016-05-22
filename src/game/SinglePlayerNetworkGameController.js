@@ -3,7 +3,6 @@ import StateMachine from 'javascript-state-machine';
 import io from 'socket.io-client';
 
 import Game from 'game/Game';
-import PlayerControls from 'game/PlayerControls';
 import SinglePlayerGameController from 'SingleGameController.js'
 
 import {

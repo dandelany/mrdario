@@ -7,14 +7,16 @@ import shallowEqual from '../../utils/shallowEqual';
 
 import {MODES, DEFAULT_KEYS} from 'constants';
 
-// import KeyManager from 'game'
+import KeyManager from 'app/inputs/KeyManager';
+import SwipeManager from 'app/inputs/SwipeManager';
 import SingleGameController from 'game/SingleGameController.js';
 //import SinglePlayerGameController from 'game/SinglePlayerNetworkGameController';
-import Playfield from 'app/components/Playfield';
-import responsiveGame from 'app/components/responsiveGame';
 
+import Playfield from 'app/components/Playfield';
 import WonOverlay from 'app/components/overlays/WonOverlay';
 import LostOverlay from 'app/components/overlays/LostOverlay';
+import responsiveGame from 'app/components/responsiveGame';
+
 
 class SinglePlayerGame extends React.Component {
   static defaultProps = {
@@ -24,8 +26,7 @@ class SinglePlayerGame extends React.Component {
   };
 
   state = {
-    gameState: null,
-    mode: null
+    gameState: null
   };
 
   componentDidMount() {
@@ -62,13 +63,18 @@ class SinglePlayerGame extends React.Component {
     const level = parseInt(params.level) || 0;
     const speed = parseInt(params.speed) || 15;
 
+    // input managers controlling keyboard and touch events
+    this.keyManager = new KeyManager(DEFAULT_KEYS);
+    this.touchManager = new SwipeManager();
+
     // create new game controller that will run the game
     // and update component state whenever game state changes to re-render
     this.game = new SingleGameController({
       level, speed,
+      inputManagers: [this.keyManager, this.touchManager],
       render: (gameState) => this.setState({gameState}),
       onChangeMode: (event, lastMode, newMode) => {
-        // this.setState({mode: newMode});
+        console.log('onchangemode', event, lastMode, newMode);
         if(_.includes([MODES.LOST, MODES.WON], newMode)) {
           router.push(`/game/level/${level}/speed/${speed}/${newMode.toLowerCase()}`);
         }

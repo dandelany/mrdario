@@ -2,7 +2,7 @@ import {EventEmitter} from 'events';
 import _ from 'lodash';
 import Mousetrap from 'mousetrap';
 
-export default class PlayerControls extends EventEmitter {
+export default class KeyManager extends EventEmitter {
   constructor(keyBindings) {
     super();
     this.registerKeys(keyBindings);
@@ -30,6 +30,7 @@ export default class PlayerControls extends EventEmitter {
   }
 
   setMode(mode) {
+    console.log('set mode', mode);
     if(this.mode) this.unbindModeKeys(this.mode);
     this.bindModeKeys(mode);
     this.mode = mode;

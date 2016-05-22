@@ -3,7 +3,7 @@ import Hammer from 'hammerjs';
 
 import {INPUTS} from 'constants';
 
-export default class SwipeControls extends EventEmitter {
+export default class SwipeManager extends EventEmitter {
   constructor() {
     super();
     this.mc = new Hammer.Manager(document.body);
@@ -13,8 +13,6 @@ export default class SwipeControls extends EventEmitter {
   registerControls() {
     this.mc.add([
       new Hammer.Swipe({direction: Hammer.DIRECTION_ALL}),
-      // new Hammer.Pan({event: 'panend', })
-      // new Hammer.Tap({ event: 'doubletap', taps: 2 }),
       new Hammer.Tap({ event: 'singletap' })
 
     ]);
@@ -23,12 +21,9 @@ export default class SwipeControls extends EventEmitter {
     this.mc.on('swiperight', this.triggerKeyInputs.bind(this, INPUTS.RIGHT));
     this.mc.on('swipedown', this.triggerKeyInputs.bind(this, INPUTS.DOWN));
     this.mc.on('singletap', this.triggerKeyInputs.bind(this, INPUTS.ROTATE_CW));
-    // this.mc.on('doubletap', this.triggerKeyInputs.bind(this, INPUTS.ROTATE_CCW));
   }
 
   triggerKeyInputs(inputType, event) {
-    // console.log(inputType, event);
-    // alert('hey');
     this.handleInput(inputType, 'keydown', event);
     setTimeout(() => this.handleInput(inputType, 'keyup', event), 10);
   }

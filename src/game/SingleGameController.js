@@ -3,16 +3,10 @@ import React from 'react';
 import StateMachine from 'javascript-state-machine';
 
 import Game from 'game/Game';
-// import PlayerControls from 'game/PlayerControls';
-import PlayerControls from 'game/SwipeControls';
 
 import {
-  PLAYFIELD_WIDTH, PLAYFIELD_HEIGHT,
-  MODES, INPUTS, GRID_OBJECTS, COLORS, DEFAULT_KEYS
+  MODES, INPUTS, PLAYFIELD_WIDTH, PLAYFIELD_HEIGHT,
 } from 'constants';
-
-import Immutable from 'immutable';
-window.Immutable = Immutable;
 
 // a game controller class for the basic 1-player game, played entirely on the client (in browser)
 // controls the frame timing and must tick the Game object once per frame
@@ -23,6 +17,10 @@ export default class SingleGameController {
 
   // options that can be passed to control game parameters
   static defaultOptions = {
+    // list of input managers, eg. of keyboard, touch events
+    // these are event emitters that fire on every user game input (move)
+    // moves are queued and fed into the game to control it
+    inputManagers: [],
     // render function which is called when game state changes
     // this should be the main connection between game logic and presentation
     render: _.noop,
@@ -32,9 +30,6 @@ export default class SingleGameController {
     level: 0,
     // pill fall speed
     speed: 15,
-    // key bindings
-    // todo - factor out
-    keyBindings: DEFAULT_KEYS,
     // width and height of the playfield grid, in grid units
     height: PLAYFIELD_HEIGHT,
     width: PLAYFIELD_WIDTH,
@@ -69,8 +64,6 @@ export default class SingleGameController {
       }),
       // queued up move inputs which will processed on the next tick
       moveInputQueue: [],
-      // the player controls which feed key events into the Game
-      playerInput: new PlayerControls(options.keyBindings),
 
       // time per tick step
       step: 1 / options.fps,
@@ -81,7 +74,7 @@ export default class SingleGameController {
     this.initGame();
     this.attachModeEvents();
     this.attachInputEvents();
-    this.render(this.getState());
+    this._onChangeMode(null, null, MODES.READY);
   }
   
   initGame() {
@@ -95,28 +88,32 @@ export default class SingleGameController {
     });
   }
 
+  _onChangeMode = (event, lastMode, newMode) => {
+    // update mode of all input managers
+    this.inputManagers.forEach(inputManager => inputManager.setMode(newMode));
+    // call handler
+    this.onChangeMode(event, lastMode, newMode);
+    // re-render on any mode change
+    this.render(this.getState());
+  };
+
   attachModeEvents() {
-    this.modeMachine.onenterstate = (event, lastMode, newMode) => {
-      this.onChangeMode(event, lastMode, newMode);
-      this.render(this.getState()); // re-render on any mode change
-      this.playerInput.setMode(newMode); // switch key binding mode
-    };
+    this.modeMachine.onenterstate = this._onChangeMode;
     this.modeMachine.onplay = () => this.run();
     this.modeMachine.onreset = () => this.initGame();
   }
   attachInputEvents() {
-    this.playerInput.on(INPUTS.PLAY, () => this.modeMachine.play());
-    this.playerInput.on(INPUTS.PAUSE, () => this.modeMachine.pause());
-    this.playerInput.on(INPUTS.RESUME, () => this.modeMachine.resume());
-    this.playerInput.on(INPUTS.RESET, () => this.modeMachine.reset());
+    this.inputManagers.forEach(inputManager => {
+      inputManager.on(INPUTS.PLAY, () => this.modeMachine.play());
+      inputManager.on(INPUTS.PAUSE, () => this.modeMachine.pause());
+      inputManager.on(INPUTS.RESUME, () => this.modeMachine.resume());
+      inputManager.on(INPUTS.RESET, () => this.modeMachine.reset());
 
-    const moveInputs = [INPUTS.LEFT, INPUTS.RIGHT, INPUTS.DOWN, INPUTS.ROTATE_CCW, INPUTS.ROTATE_CW];
-    moveInputs.forEach(input => this.playerInput.on(input, this.enqueueMoveInput.bind(this, input)));
-
-    this.playerInput.setMode(MODES.READY);
+      const moveInputs = [INPUTS.LEFT, INPUTS.RIGHT, INPUTS.DOWN, INPUTS.ROTATE_CCW, INPUTS.ROTATE_CW];
+      moveInputs.forEach(input => inputManager.on(input, this.enqueueMoveInput.bind(this, input)));
+    });
   }
   enqueueMoveInput(input, eventType, event) {
-    // console.log('enqueue', input, eventType, event);
     // queue a user move, to be sent to the game on the next tick
     if (this.modeMachine.current !== MODES.PLAYING) return;
     this.moveInputQueue.push({input, eventType});
@@ -169,7 +166,8 @@ export default class SingleGameController {
   cleanup() {
     // cleanup the game when we're done
     this.modeMachine.end();
-    this.playerInput.removeAllListeners();
+    this.inputManagers.forEach(manager => manager.removeAllListeners());
+    // this.playerInput.removeAllListeners();
   }
 }
 
