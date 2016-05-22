@@ -6,7 +6,7 @@ import {INPUTS} from 'constants';
 export default class SwipeControls extends EventEmitter {
   constructor() {
     super();
-    this.mc = new Hammer.Manager(document.body);
+    this.mc = new Hammer.Manager(document.getElementById('container'));
     this.registerControls();
   }
 
