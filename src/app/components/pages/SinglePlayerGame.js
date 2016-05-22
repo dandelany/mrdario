@@ -5,6 +5,8 @@ import DeepDiff from 'deep-diff';
 const deepDiff = DeepDiff.diff;
 import shallowEqual from '../../utils/shallowEqual';
 
+import {MODES} from 'constants';
+
 import SinglePlayerGameController from 'game/SinglePlayerGameController';
 //import SinglePlayerGameController from 'game/SinglePlayerNetworkGameController';
 import Playfield from 'app/components/Playfield';
@@ -80,7 +82,7 @@ class SinglePlayerGame extends React.Component {
 
   state = {
     gameState: null,
-    mode: null,
+    mode: null
   };
 
   componentDidMount() {
@@ -135,10 +137,10 @@ class SinglePlayerGame extends React.Component {
       render: (gameState) => this.setState({gameState}),
       onChangeMode: (event, lastMode, newMode) => {
         // this.setState({mode: newMode});
-        if(newMode === "LOST")
-          router.push(`/game/level/${level}/speed/${speed}/lost`);
-        else if(newMode === "WON")
-          router.push(`/game/level/${level}/speed/${speed}/won`);
+        if(_.includes([MODES.LOST, MODES.WON], newMode)) {
+          router.push(`/game/level/${level}/speed/${speed}/${newMode.toLowerCase()}`);
+        }
+        if(this.props.onChangeMode) this.props.onChangeMode(newMode);
       }
     });
     this.game.play();
