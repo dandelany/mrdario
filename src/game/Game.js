@@ -69,7 +69,6 @@ export default class Game extends EventEmitter {
   constructor(options = {}) {
     options = _.defaults({}, options, Game.defaultOptions);
     super(options);
-
     // assign all options to instance variables
     Object.assign(this, options);
 

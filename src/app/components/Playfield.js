@@ -63,13 +63,11 @@ export default class Playfield extends React.Component {
       {grid.map((row, rowI) => {
         return _.compact(row.map((cell, colI) => {
           // make individual SVGs for each non-empty grid element
-          // if(cell.type === GRID_OBJECTS.EMPTY) return null;
           if(cell.type === GRID_OBJECTS.EMPTY) return null;
 
           let svgString;
           let transform = `translate(${colI * cellSize}, ${rowI * cellSize})`;
 
-          // if(cell.type === GRID_OBJECTS.VIRUS) {
           if(cell.type === GRID_OBJECTS.VIRUS) {
             svgString = viruses[cell.color % viruses.length];
 
