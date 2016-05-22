@@ -1,5 +1,5 @@
 {
-  "nextFreeModuleId": 884,
+  "nextFreeModuleId": 886,
   "modules": {
     "byIdentifier": {
       "multi app": 0,
@@ -886,7 +886,9 @@
       "node_modules/babel-loader/index.js!src/app/components/MayaNumeral.js": 880,
       "node_modules/deep-diff/index.js": 881,
       "node_modules/babel-loader/index.js!src/app/utils/shallowEqual.js": 882,
-      "node_modules/babel-loader/index.js!src/app/components/responsiveGame.js": 883
+      "node_modules/babel-loader/index.js!src/app/components/responsiveGame.js": 883,
+      "node_modules/babel-loader/index.js!src/app/components/SVGShimmerCycler.js": 884,
+      "node_modules/babel-loader/index.js!src/app/components/SVGShimmerFills.js": 885
     }
   },
   "nextFreeChunkId": 2,
@@ -933,6 +935,21 @@
       "modules": {
         "byIdentifier": {
           "node_modules/html-webpack-plugin/lib/loader.js!src/app/index.html": 0,
+          "node_modules/lodash/lodash.js": 1,
+          "node_modules/webpack/buildin/module.js": 2
+        }
+      },
+      "nextFreeChunkId": 1,
+      "chunks": {
+        "byName": {},
+        "byBlocks": {}
+      }
+    },
+    {
+      "nextFreeModuleId": 3,
+      "modules": {
+        "byIdentifier": {
+          "node_modules/html-webpack-plugin/lib/loader.js!src/app/index.ejs": 0,
           "node_modules/lodash/lodash.js": 1,
           "node_modules/webpack/buildin/module.js": 2
         }
