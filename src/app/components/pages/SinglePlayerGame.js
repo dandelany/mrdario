@@ -17,6 +17,31 @@ import WonOverlay from 'app/components/overlays/WonOverlay';
 import LostOverlay from 'app/components/overlays/LostOverlay';
 import responsiveGame from 'app/components/responsiveGame';
 
+// import socketCluster from 'socketcluster-client';
+//
+// var socket = socketCluster.connect({port: 8000});
+//
+// socket.on('error', function (err) {
+//   throw 'Socket error - ' + err;
+// });
+//
+// socket.on('connect', function () {
+//   console.log('CONNECTED');
+// });
+//
+// socket.on('rand', function (data) {
+//   console.log('RANDOM STREAM: ' + data.rand);
+// });
+//
+// var sampleChannel = socket.subscribe('sample');
+//
+// sampleChannel.on('subscribeFail', function (err) {
+//   console.log('Failed to subscribe to the sample channel due to error: ' + err);
+// });
+//
+// sampleChannel.watch(function (num) {
+//   console.log('Sample channel message:', num);
+// });
 
 class SinglePlayerGame extends React.Component {
   static defaultProps = {
