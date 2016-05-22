@@ -16,50 +16,66 @@ window.Immutable = Immutable;
 
 // a game controller class for the basic 1-player game, played entirely on the client (in browser)
 // controls the frame timing and must tick the Game object once per frame
+// handles inputs and passes them into the Game
 // controls the high-level game state and must call render() when game state changes
 
-export default class SinglePlayerGameController {
-  constructor({
-    render = _.noop,
-    onChangeMode = _.noop,
-    fps = 60, slow = 1,
-    level = 0, speed = 15,
-    keyBindings = DEFAULT_KEYS,
-    width = PLAYFIELD_WIDTH, height = PLAYFIELD_HEIGHT
-  } = {}) {
+export default class SingleGameController {
+
+  // options that can be passed to control game parameters
+  static defaultOptions = {
+    // render function which is called when game state changes
+    // this should be the main connection between game logic and presentation
+    render: _.noop,
+    // callback called when state machine mode changes
+    onChangeMode: _.noop,
+    // current virus level (generally 1-20)
+    level: 0,
+    // pill fall speed
+    speed: 15,
+    // key bindings
+    // todo - factor out
+    keyBindings: DEFAULT_KEYS,
+    // width and height of the playfield grid, in grid units
+    height: PLAYFIELD_HEIGHT,
+    width: PLAYFIELD_WIDTH,
+    // frames (this.tick/render calls) per second
+    fps: 60,
+    // slow motion factor, to simulate faster/slower gameplay for debugging
+    slow: 1
+  };
+
+  // transitions between modes (state machine states)
+  static modeTransitions = [
+    {name: 'play',   from: MODES.READY,   to: MODES.PLAYING},
+    {name: 'pause',  from: MODES.PLAYING, to: MODES.PAUSED},
+    {name: 'resume', from: MODES.PAUSED,  to: MODES.PLAYING},
+    {name: 'win',    from: MODES.PLAYING, to: MODES.WON},
+    {name: 'lose',   from: MODES.PLAYING, to: MODES.LOST},
+    {name: 'reset',  from: ['*'], to: MODES.READY},
+    {name: 'end',    from: ['*'], to: MODES.ENDED}
+  ];
+
+  constructor(options = {}) {
+    options = _.defaults({}, options, SingleGameController.defaultOptions);
+    // super(options);
+    // assign all options to instance variables
+    Object.assign(this, options);
+
     _.assign(this, {
-      // width and height of the playfield grid, in grid units
-      width, height,
-      // render function which is called when game state changes
-      // this is the only connection between game logic and presentation
-      render,
-      // callback called when state machine mode changes
-      onChangeMode,
-      // frames (this.tick/render calls) per second
-      fps,
-      step: 1 / fps,
-      // slow motion factor, to simulate faster/slower gameplay for debugging
-      slowStep: slow * (1 / fps),
-
-      level, speed,
-
-      // the player controls which feed key events into the Game
-      playerInput: new PlayerControls(keyBindings),
-      moveInputQueue: [],
-
       // a finite state machine representing game mode, & transitions between modes
       modeMachine: StateMachine.create({
         initial: MODES.READY,
-        events: [
-          {name: 'play',   from: MODES.READY,   to: MODES.PLAYING},
-          {name: 'pause',  from: MODES.PLAYING, to: MODES.PAUSED},
-          {name: 'resume', from: MODES.PAUSED,  to: MODES.PLAYING},
-          {name: 'win',    from: MODES.PLAYING, to: MODES.WON},
-          {name: 'lose',   from: MODES.PLAYING, to: MODES.LOST},
-          {name: 'reset',  from: ['*'], to: MODES.READY},
-          {name: 'end',    from: ['*'], to: MODES.ENDED}
-        ]
-      })
+        events: SingleGameController.modeTransitions
+      }),
+      // queued up move inputs which will processed on the next tick
+      moveInputQueue: [],
+      // the player controls which feed key events into the Game
+      playerInput: new PlayerControls(options.keyBindings),
+
+      // time per tick step
+      step: 1 / options.fps,
+      // slow motion factor adjusted step time
+      slowStep: options.slow * (1 / options.fps)
     });
 
     this.initGame();
@@ -67,6 +83,7 @@ export default class SinglePlayerGameController {
     this.attachInputEvents();
     this.render(this.getState());
   }
+  
   initGame() {
     const {width, height, level, speed} = this;
     this.game = new Game({
@@ -145,7 +162,6 @@ export default class SinglePlayerGameController {
     // minimal description of game state to render
     return {
       mode: this.modeMachine.current,
-      // grid: this.game.playfield.toJS()
       grid: this.game.playfield.grid
     };
   }

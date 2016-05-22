@@ -7,7 +7,7 @@ import shallowEqual from '../../utils/shallowEqual';
 
 import {MODES} from 'constants';
 
-import SinglePlayerGameController from 'game/SinglePlayerGameController';
+import SingleGameController from 'game/SingleGameController.js';
 //import SinglePlayerGameController from 'game/SinglePlayerNetworkGameController';
 import Playfield from 'app/components/Playfield';
 import MayaNumeral from 'app/components/MayaNumeral';
@@ -64,7 +64,7 @@ class SinglePlayerGame extends React.Component {
 
     // create new game controller that will run the game
     // and update component state whenever game state changes to re-render
-    this.game = new SinglePlayerGameController({
+    this.game = new SingleGameController({
       level, speed,
       render: (gameState) => this.setState({gameState}),
       onChangeMode: (event, lastMode, newMode) => {
