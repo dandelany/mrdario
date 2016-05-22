@@ -6,7 +6,7 @@ import {INPUTS} from 'constants';
 export default class SwipeControls extends EventEmitter {
   constructor() {
     super();
-    this.mc = new Hammer.Manager(document.getElementsByClassName('mrdario-page')[0]);
+    this.mc = new Hammer.Manager(document.body);
     this.registerControls();
   }
 
@@ -25,8 +25,9 @@ export default class SwipeControls extends EventEmitter {
   }
 
   triggerKeyInputs(inputType, event) {
+    // alert('hey');
     this.handleInput(inputType, 'keydown', event);
-    setTimeout(() => this.handleInput(inputType, 'keyup', 2));
+    setTimeout(() => this.handleInput(inputType, 'keyup', 100));
   }
   handleInput(inputType, keyType, event) {
     super.emit(inputType, keyType, event);
