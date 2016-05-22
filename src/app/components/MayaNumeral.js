@@ -59,8 +59,8 @@ const MayaNumeralDigit = (props) => {
   const children = (value === 0) ?
     <MayaNumeralZero {...{symbol: zeroSymbol, size, color}} /> :
     [
-      <MayaNumeralDots {...{count: dots, symbol: dotSymbol, size, color, style: styles.dots}} />,
-      _.times(bars, () => <MayaNumeralBar {...{size, color, style: styles.bar}} />)
+      <MayaNumeralDots {...{count: dots, symbol: dotSymbol, size, color, style: styles.dots, key: 'dots'}} />,
+      _.times(bars, (i) => <MayaNumeralBar {...{size, color, style: styles.bar, key: `bar-${i}`}} />)
     ];
 
   return <div className="mayan-numeral-digit" style={style}>{children}</div>;
@@ -93,7 +93,10 @@ export default class MayaNumeral extends React.Component {
       {base20String.split('').map((base20Digit, i) => {
         // render each base 20 digit
         const digit = parseInt(base20Digit, 20);
-        return <MayaNumeralDigit {...this.props} {...{value: digit, i, styles}} />;
+        return <MayaNumeralDigit
+          {...this.props}
+          {...{value: digit, i, styles, key: `digit-${i}`}}
+        />;
       })}
     </div>;
   }

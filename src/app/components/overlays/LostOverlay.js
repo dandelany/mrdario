@@ -11,7 +11,7 @@ const LostOverlay = (props) => {
 
   return <div className="game-overlay" style={style}>
     <div className="win-lose-symbol lose-symbol">
-      <MayaNumeral value={params.level} size={40}/>
+      <MayaNumeral value={level} size={40}/>
       <h2>GAME OVER</h2>
     </div>
 
