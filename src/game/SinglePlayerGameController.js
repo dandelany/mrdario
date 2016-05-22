@@ -99,6 +99,7 @@ export default class SinglePlayerGameController {
     this.playerInput.setMode(MODES.READY);
   }
   enqueueMoveInput(input, eventType, event) {
+    // console.log('enqueue', input, eventType, event);
     // queue a user move, to be sent to the game on the next tick
     if (this.modeMachine.current !== MODES.PLAYING) return;
     this.moveInputQueue.push({input, eventType});

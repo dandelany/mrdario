@@ -13,21 +13,24 @@ export default class SwipeControls extends EventEmitter {
   registerControls() {
     this.mc.add([
       new Hammer.Swipe({direction: Hammer.DIRECTION_ALL}),
-      new Hammer.Tap({ event: 'singletap' }),
-      new Hammer.Tap({ event: 'doubletap', taps: 2 })
+      // new Hammer.Pan({event: 'panend', })
+      // new Hammer.Tap({ event: 'doubletap', taps: 2 }),
+      new Hammer.Tap({ event: 'singletap' })
+
     ]);
 
     this.mc.on('swipeleft', this.triggerKeyInputs.bind(this, INPUTS.LEFT));
     this.mc.on('swiperight', this.triggerKeyInputs.bind(this, INPUTS.RIGHT));
     this.mc.on('swipedown', this.triggerKeyInputs.bind(this, INPUTS.DOWN));
     this.mc.on('singletap', this.triggerKeyInputs.bind(this, INPUTS.ROTATE_CW));
-    this.mc.on('doubletap', this.triggerKeyInputs.bind(this, INPUTS.ROTATE_CCW));
+    // this.mc.on('doubletap', this.triggerKeyInputs.bind(this, INPUTS.ROTATE_CCW));
   }
 
   triggerKeyInputs(inputType, event) {
+    // console.log(inputType, event);
     // alert('hey');
     this.handleInput(inputType, 'keydown', event);
-    setTimeout(() => this.handleInput(inputType, 'keyup', 100));
+    setTimeout(() => this.handleInput(inputType, 'keyup', event), 10);
   }
   handleInput(inputType, keyType, event) {
     super.emit(inputType, keyType, event);
