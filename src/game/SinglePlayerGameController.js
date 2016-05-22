@@ -3,7 +3,8 @@ import React from 'react';
 import StateMachine from 'javascript-state-machine';
 
 import Game from 'game/Game';
-import PlayerControls from 'game/PlayerControls';
+// import PlayerControls from 'game/PlayerControls';
+import PlayerControls from 'game/SwipeControls';
 
 import {
   PLAYFIELD_WIDTH, PLAYFIELD_HEIGHT,
@@ -101,7 +102,7 @@ export default class SinglePlayerGameController {
     // queue a user move, to be sent to the game on the next tick
     if (this.modeMachine.current !== MODES.PLAYING) return;
     this.moveInputQueue.push({input, eventType});
-    event.preventDefault();
+    if(event.preventDefault) event.preventDefault();
   }
 
   play() {
