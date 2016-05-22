@@ -1,5 +1,5 @@
 {
-  "nextFreeModuleId": 886,
+  "nextFreeModuleId": 890,
   "modules": {
     "byIdentifier": {
       "multi app": 0,
@@ -888,7 +888,11 @@
       "node_modules/babel-loader/index.js!src/app/utils/shallowEqual.js": 882,
       "node_modules/babel-loader/index.js!src/app/components/responsiveGame.js": 883,
       "node_modules/babel-loader/index.js!src/app/components/SVGShimmerCycler.js": 884,
-      "node_modules/babel-loader/index.js!src/app/components/SVGShimmerFills.js": 885
+      "node_modules/babel-loader/index.js!src/app/components/SVGShimmerFills.js": 885,
+      "node_modules/babel-loader/index.js!src/game/SwipeControls.js": 886,
+      "node_modules/hammerjs/hammer.js": 887,
+      "node_modules/babel-loader/index.js!src/app/components/overlays/WonOverlay.js": 888,
+      "node_modules/babel-loader/index.js!src/app/components/overlays/LostOverlay.js": 889
     }
   },
   "nextFreeChunkId": 2,
@@ -935,6 +939,21 @@
       "modules": {
         "byIdentifier": {
           "node_modules/html-webpack-plugin/lib/loader.js!src/app/index.html": 0,
+          "node_modules/lodash/lodash.js": 1,
+          "node_modules/webpack/buildin/module.js": 2
+        }
+      },
+      "nextFreeChunkId": 1,
+      "chunks": {
+        "byName": {},
+        "byBlocks": {}
+      }
+    },
+    {
+      "nextFreeModuleId": 3,
+      "modules": {
+        "byIdentifier": {
+          "node_modules/html-webpack-plugin/lib/loader.js!src/app/index.ejs": 0,
           "node_modules/lodash/lodash.js": 1,
           "node_modules/webpack/buildin/module.js": 2
         }
