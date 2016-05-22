@@ -25,6 +25,7 @@ export default class SwipeControls extends EventEmitter {
   }
 
   triggerKeyInputs(inputType, event) {
+    alert('hey');
     this.handleInput(inputType, 'keydown', event);
     setTimeout(() => this.handleInput(inputType, 'keyup', 2));
   }
