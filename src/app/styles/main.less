@@ -95,7 +95,7 @@ span.btn-white {
 }
 
 .page-settings {
-  .settings-head, .settings-content, .settings-play {
+  .settings-head, .settings-play {
     .center-absolute;
   }
   .settings-head {
@@ -111,7 +111,11 @@ span.btn-white {
     }
   }
   .settings-content {
-    top: 24%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
     > div {
       width: 400px;
       max-width: 85vw;
