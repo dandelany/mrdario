@@ -46,10 +46,31 @@ export default class GameSettings extends React.Component {
           </div>
 
           <h4>Keyboard controls:</h4>
+
           <div>
-            <p>Arrow keys to move</p>
-            <p><strong>A</strong> and <strong>S</strong> to rotate</p>
+            <span className="key-controls-group">
+              <span className="key-rect">
+                <span className="key-title">←</span>
+              </span>
+              <span className="key-rect">
+                <span className="key-title">↓</span>
+              </span>
+              <span className="key-rect">
+                <span className="key-title">→</span>
+              </span>
+            </span>
+            <span className="key-controls-group">
+              <span className="key-rect">
+                <span className="key-title title-large">↻</span>
+                <span className="key-title title-small">A</span>
+              </span>
+              <span className="key-rect">
+                <span className="key-title title-large">↺</span>
+                <span className="key-title title-small">S</span>
+              </span>
+            </span>
           </div>
+          
         </div>
       </div>
 

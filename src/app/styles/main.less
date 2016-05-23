@@ -95,34 +95,73 @@ span.btn-white {
 }
 
 .page-settings {
-  .settings-head, .settings-content, .settings-play {
+  h2, h3, h4, h5 {
+    margin-bottom: 0.2em;
+  }
+
+  .settings-head, .settings-play {
     .center-absolute;
   }
   .settings-head {
     top: 6%;
+
     h2 {
       margin: 0;
       display: inline-block;
-      font-size: 30pt;
-      padding: 20px;
+      font-size: 8vh;
+      padding: 2vh 4vh;
       background-color: rgba(255, 255, 255, 0.85);
-      border-radius: 20px;
+      border-radius: 20vh;
       border: 6px solid black;
     }
   }
   .settings-content {
-    top: 24%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
     > div {
       width: 400px;
-      margin: 0 auto;
+      max-width: 85vw;
+      display: inline-block;
       padding: 10px 20px;
       background: rgba(210, 207, 202, 0.96);
       border-radius: 20px;
     }
   }
+
+  .key-rect {
+    vertical-align: middle;
+    display: inline-block;
+    position: relative;
+    width: 6vh;
+    height: 6vh;
+    border: 1px solid #202020;
+    border-radius: 1vh;
+    font-size: 3vh;
+
+    .key-title {
+      position: absolute;
+      top: 53%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+
+      &.title-small {
+        font-size: 2.5vh;
+      }
+      &.title-large {
+        font-size: 5.5vh;
+      }
+    }
+  }
+  .key-controls-group {
+    margin: 1vh 1vh 2vh 1vh;
+  }
+
   .settings-play {
-    top: 83%;
-    font-size: 18pt;
+    top: 79%;
+    font-size: 6vh;
   }
 }
 
@@ -147,10 +186,12 @@ span.btn-white {
 
 
 /* slider */
+@sliderSize: 4.5vh;
+
 .horizontal-slider {
   width: 100%;
   max-width: 500px;
-  height: 50px;
+  height: @sliderSize;
   //border: 1px solid grey;
   border-radius: 12px;
   background-color: #ccc;
@@ -169,9 +210,9 @@ span.btn-white {
 }
 .horizontal-slider .handle {
   top: 1px;
-  width: 50px;
-  height: 48px;
-  line-height: 48px;
+  width: @sliderSize;
+  height: @sliderSize;
+  line-height: @sliderSize;
 }
 #horizontal-0,
 #horizontal-1, #horizontal-2, #horizontal-3,
