@@ -95,18 +95,23 @@ span.btn-white {
 }
 
 .page-settings {
+  h2, h3, h4, h5 {
+    margin-bottom: 0.2em;
+  }
+
   .settings-head, .settings-play {
     .center-absolute;
   }
   .settings-head {
     top: 6%;
+
     h2 {
       margin: 0;
       display: inline-block;
-      font-size: 30pt;
-      padding: 20px;
+      font-size: 8vh;
+      padding: 2vh 4vh;
       background-color: rgba(255, 255, 255, 0.85);
-      border-radius: 20px;
+      border-radius: 20vh;
       border: 6px solid black;
     }
   }
@@ -120,15 +125,10 @@ span.btn-white {
       width: 400px;
       max-width: 85vw;
       display: inline-block;
-      margin: 0 auto;
       padding: 10px 20px;
       background: rgba(210, 207, 202, 0.96);
       border-radius: 20px;
     }
-  }
-  .settings-play {
-    top: 83%;
-    font-size: 18pt;
   }
 
   .key-rect {
@@ -155,6 +155,11 @@ span.btn-white {
       }
     }
   }
+
+  .settings-play {
+    top: 79%;
+    font-size: 6vh;
+  }
 }
 
 .game-playfield {
@@ -178,7 +183,7 @@ span.btn-white {
 
 
 /* slider */
-@sliderSize: 4vmin;
+@sliderSize: 4.5vh;
 
 .horizontal-slider {
   width: 100%;
