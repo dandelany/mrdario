@@ -1,4 +1,15 @@
 var express = require('express');
+var uuid = require('uuid');
+
+function makeGameToken() {
+  return Math.round(Math.random() * 1000000).toString(36);
+}
+
+function initSingleGame() {
+  const id = uuid.v4();
+  const token = makeGameToken();
+  return {id, token};
+}
 
 module.exports.run = function (worker) {
   console.log('   >> Worker PID:', process.pid);
@@ -25,6 +36,17 @@ module.exports.run = function (worker) {
       console.log('Handled sampleClientEvent', data);
       scServer.exchange.publish('sample', count);
     });
+
+    socket.on('moves', function (data) {
+      console.log('got moves', data);
+    });
+
+    socket.on('initSingleGame', () => {
+      console.log('newSingleGame');
+      const {id, token} = initSingleGame();
+      socket.emit('newSingleGame', {id, token});
+    });
+
 
     var interval = setInterval(function () {
       socket.emit('rand', {

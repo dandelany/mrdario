@@ -1,5 +1,6 @@
 import React from 'react';
 import throttle from 'lodash/throttle';
+import socketCluster from 'socketcluster-client';
 
 import {MODES} from 'constants';
 import AztecCalendar from 'app/components/AztecCalendar';
@@ -8,11 +9,30 @@ function getWindowSize() {
   return {windowWidth: window.innerWidth, windowHeight: window.innerHeight};
 }
 
+function initSocketClient() {
+  var socket = socketCluster.connect({port: 8000});
+
+  socket.on('error', (err) => {
+    console.error('Socket error - ' + err);
+  });
+
+  socket.on('connect', function() {
+    console.log('Socket connected');
+  });
+
+  return socket;
+}
+
 export default class AppContainer extends React.Component {
   state = {
     ...getWindowSize(),
     mode: null
   };
+
+  constructor(props) {
+    super(props);
+    this.socket = initSocketClient();
+  }
 
   componentDidMount() {
     this._throttledResizeHandler = this._onResize;
@@ -35,7 +55,8 @@ export default class AppContainer extends React.Component {
     const child = React.Children.only(this.props.children);
     const gridCols = 8;
     const gridRows = 16;
-    const childProps = {windowWidth, windowHeight, gridCols, gridRows, onChangeMode: this._onChangeMode};
+    const childProps =
+      {socket: this.socket, windowWidth, windowHeight, gridCols, gridRows, onChangeMode: this._onChangeMode};
 
     const calendarMode =
       (this.props.location.pathname == '/') ? 'title' :

@@ -9,16 +9,15 @@ import {MODES, DEFAULT_KEYS} from 'constants';
 
 import KeyManager from 'app/inputs/KeyManager';
 import SwipeManager from 'app/inputs/SwipeManager';
-import SingleGameController from 'game/SingleGameController.js';
-//import SinglePlayerGameController from 'game/SinglePlayerNetworkGameController';
+// import SingleGameController from 'game/SingleGameController.js';
+import MasterClientGameController from 'game/MasterClientGameController';
 
 import Playfield from 'app/components/Playfield';
 import WonOverlay from 'app/components/overlays/WonOverlay';
 import LostOverlay from 'app/components/overlays/LostOverlay';
 import responsiveGame from 'app/components/responsiveGame';
 
-
-class SinglePlayerGame extends React.Component {
+class MirrorGame extends React.Component {
   static defaultProps = {
     cellSize: 32,
     heightPercent: .85,
@@ -30,6 +29,11 @@ class SinglePlayerGame extends React.Component {
   };
 
   componentDidMount() {
+    this.props.socket.on('newSingleGame', ({id, token}) => {
+      console.log('got new game', {id, token});
+    });
+    this.props.socket.emit('initSingleGame', 'OK');
+    
     // mode means won or lost, no mode = playing
     if(!this.props.params.mode) this._initGame(this.props);
   }
@@ -69,14 +73,15 @@ class SinglePlayerGame extends React.Component {
 
     // create new game controller that will run the game
     // and update component state whenever game state changes to re-render
-    this.game = new SingleGameController({
+    this.game = new MasterClientGameController({
+      socket: this.props.socket,
       level, speed,
       inputManagers: [this.keyManager, this.touchManager],
       render: (gameState) => this.setState({gameState}),
       onChangeMode: (event, lastMode, newMode) => {
         console.log('onchangemode', event, lastMode, newMode);
         if(_.includes([MODES.LOST, MODES.WON], newMode)) {
-          router.push(`/game/level/${level}/speed/${speed}/${newMode.toLowerCase()}`);
+          router.push(`/mirror/level/${level}/speed/${speed}/${newMode.toLowerCase()}`);
         }
         if(this.props.onChangeMode) this.props.onChangeMode(newMode);
       }
@@ -114,4 +119,4 @@ class SinglePlayerGame extends React.Component {
   }
 }
 
-export default withRouter(responsiveGame(SinglePlayerGame));
+export default withRouter(responsiveGame(MirrorGame));

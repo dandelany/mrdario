@@ -29,7 +29,8 @@
     "reflux": "0.4.1",
     "socket.io": "1.4.6",
     "socketcluster": "^4.6.1",
-    "socketcluster-client": "^4.3.17"
+    "socketcluster-client": "^4.3.17",
+    "uuid": "^2.0.2"
   },
   "devDependencies": {
     "babel": "6.5.2",
