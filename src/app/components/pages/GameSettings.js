@@ -69,13 +69,8 @@ export default class GameSettings extends React.Component {
                 <span className="key-title title-small">S</span>
               </span>
             </span>
-
           </div>
-
-          <div>
-            <p>Arrow keys to move</p>
-            <p><strong>A</strong> and <strong>S</strong> to rotate</p>
-          </div>
+          
         </div>
       </div>
 
