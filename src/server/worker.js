@@ -1,12 +1,15 @@
+var _ = require('lodash');
 var express = require('express');
 var uuid = require('uuid');
+var randomWord = require('random-word-by-length');
 
 function makeGameToken() {
   return Math.round(Math.random() * 1000000).toString(36);
 }
 
 function initSingleGame() {
-  const id = uuid.v4();
+  // const id = uuid.v4();
+  const id = _.times(3, () => _.capitalize(randomWord(8))).join('');
   const token = makeGameToken();
   return {id, token};
 }
@@ -42,11 +45,10 @@ module.exports.run = function (worker) {
     });
 
     socket.on('initSingleGame', () => {
-      console.log('newSingleGame');
       const {id, token} = initSingleGame();
+      console.log('newSingleGame', id, token);
       socket.emit('newSingleGame', {id, token});
     });
-
 
     var interval = setInterval(function () {
       socket.emit('rand', {
