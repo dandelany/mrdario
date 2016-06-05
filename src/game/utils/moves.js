@@ -73,7 +73,7 @@ export function movePill(grid, pill, direction) {
 }
 
 export function slamPill(grid, pill) {
-  // from SNES+, pressing "up" on the D-pad will "slam" the pill down
+  // pressing "up" will "slam" the pill down
   // (ie. move it instantly to the lowest legal position directly below it)
   let moving = true;
   let didMove = false;
@@ -81,8 +81,8 @@ export function slamPill(grid, pill) {
     const moved = moveCells(grid, pill, 'down');
     grid = moved.grid;
     pill = moved.cells;
-    if(moved.didMove) didMove = true;
-    moving = didMove;
+    moving = moved.didMove;
+    if(moving) didMove = true;
   }
   return {grid, pill, didMove};
 }

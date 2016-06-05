@@ -167,7 +167,6 @@ export default class SingleGameController {
     // cleanup the game when we're done
     this.modeMachine.end();
     this.inputManagers.forEach(manager => manager.removeAllListeners());
-    // this.playerInput.removeAllListeners();
   }
 }
 

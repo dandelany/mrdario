@@ -99,6 +99,8 @@ export default class Game extends EventEmitter {
       pillCount: 0
     };
 
+    // input repeater, takes raw inputs and repeats them if they are held down
+    // returns the real sequence of moves used by the game
     this.inputRepeater = new InputRepeater();
 
     // attach event callbacks to be called when the mode machine transitions between states
@@ -121,19 +123,22 @@ export default class Game extends EventEmitter {
       let didMove;
 
       if(input === INPUTS.UP) {
-        // didMove = this.playfield.slamPill();
+        didMove = this.playfield.slamPill();
+        // reconcile immediately after slam
+        shouldReconcile = true;
 
       } else if(_.includes([INPUTS.LEFT, INPUTS.RIGHT, INPUTS.DOWN], input)) {
         const direction = (input === INPUTS.DOWN) ? 'down' :
           (input === INPUTS.LEFT) ? 'left' : 'right';
         didMove = this.playfield.movePill(direction);
+        
+        // trying to move down, but couldn't; we are ready to reconcile
+        if(input === INPUTS.DOWN && !didMove) shouldReconcile = true;
 
       } else if(_.includes([INPUTS.ROTATE_CCW, INPUTS.ROTATE_CW], input)) {
         const direction = (input === INPUTS.ROTATE_CCW) ? 'ccw' : 'cw';
         didMove = this.playfield.rotatePill(direction);
       }
-      // trying to move down, but couldn't; we are ready to reconcile
-      if(input === INPUTS.DOWN && !didMove) shouldReconcile = true;
     }
 
     return shouldReconcile;

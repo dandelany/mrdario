@@ -2,7 +2,7 @@ import {INPUTS} from './../constants';
 
 export default class InputRepeater {
   static repeatIntervals = {
-    [INPUTS.UP]: 12,
+    [INPUTS.UP]: 20,
     [INPUTS.DOWN]: 4,
     [INPUTS.LEFT]: 8,
     [INPUTS.RIGHT]: 8,
@@ -33,7 +33,7 @@ export default class InputRepeater {
       if(eventType === 'keydown' && !this.movingDirections.has(input)) {
         moveQueue.push(input);
         this.movingDirections.add(input);
-        
+
       } else if(eventType === "keyup") {
         this.movingDirections.delete(input);
       }
@@ -47,7 +47,7 @@ export default class InputRepeater {
     }
     
     this._updateMoveCounters();
-    
+
     return moveQueue;
   }
 
