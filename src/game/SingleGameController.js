@@ -109,7 +109,7 @@ export default class SingleGameController {
       inputManager.on(INPUTS.RESUME, () => this.modeMachine.resume());
       inputManager.on(INPUTS.RESET, () => this.modeMachine.reset());
 
-      const moveInputs = [INPUTS.LEFT, INPUTS.RIGHT, INPUTS.DOWN, INPUTS.ROTATE_CCW, INPUTS.ROTATE_CW];
+      const moveInputs = [INPUTS.LEFT, INPUTS.RIGHT, INPUTS.DOWN, INPUTS.UP, INPUTS.ROTATE_CCW, INPUTS.ROTATE_CW];
       moveInputs.forEach(input => inputManager.on(input, this.enqueueMoveInput.bind(this, input)));
     });
   }

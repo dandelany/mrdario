@@ -5,6 +5,7 @@ import StateMachine  from 'javascript-state-machine';
 
 import {INPUTS, COLORS, GRAVITY_TABLE} from './../constants';
 import {Playfield} from './Playfield';
+import InputRepeater from './InputRepeater';
 import {generatePillSequence} from './utils/generators';
 
 function gravityFrames(speed) {
@@ -27,8 +28,6 @@ export default class Game extends EventEmitter {
     cascadeSpeed: 20,
     // time delay (in # of ticks) pills being destroyed stay in "destroyed" state before cascading
     destroyTicks: 20,
-    // the number of frames to wait while holding down a key before repeating a move
-    moveRepeatTicks: 8,
     // callbacks called when grid changes, game is won, or game is lost
     onChange: _.noop,
     onWin: _.noop,
@@ -100,17 +99,7 @@ export default class Game extends EventEmitter {
       pillCount: 0
     };
 
-    // the directions we are currently moving, while a move key is held down
-    this.movingDirections = new Set();
-    // these counters count up while a move key is held down (for normalizing key-repeat)
-    // ie. represents the # of frames during which we have been moving in a particular direction
-    this.movingCounters = {
-      [INPUTS.DOWN]: 0,
-      [INPUTS.LEFT]: 0,
-      [INPUTS.RIGHT]: 0,
-      [INPUTS.ROTATE_CCW]: 0,
-      [INPUTS.ROTATE_CW]: 0
-    };
+    this.inputRepeater = new InputRepeater();
 
     // attach event callbacks to be called when the mode machine transitions between states
     this.modeMachine.onplay = () => this.counters.playTicks = 0;
@@ -124,25 +113,17 @@ export default class Game extends EventEmitter {
     //this.modeMachine.onreset = (event, lastMode, newMode) => {};
   }
 
-  handleInput({input, eventType}) {
-    // update set of moving directions based on the keys that are currently held down
-    if(eventType === "keydown") this.movingDirections.add(input);
-    else if(eventType === "keyup") this.movingDirections.delete(input);
-    if(eventType === "keyup") return;
-  }
-
-  doMoves() {
+  doMoves(moveQueue) {
     let shouldReconcile = false;
-    this.movingDirections.forEach((input) => {
-      // only move if the key has just been pressed,
-      // or has been held down long enough to repeat
-      const movingCount = this.movingCounters[input];
-      if(_.isUndefined(movingCount) || !(movingCount % this.moveRepeatTicks === 0)) return;
-      // console.log(input, movingCount);
 
+    for(const input of moveQueue) {
       // move/rotate the pill based on the move input
       let didMove;
-      if(_.includes([INPUTS.LEFT, INPUTS.RIGHT, INPUTS.DOWN], input)) {
+
+      if(input === INPUTS.UP) {
+        // didMove = this.playfield.slamPill();
+
+      } else if(_.includes([INPUTS.LEFT, INPUTS.RIGHT, INPUTS.DOWN], input)) {
         const direction = (input === INPUTS.DOWN) ? 'down' :
           (input === INPUTS.LEFT) ? 'left' : 'right';
         didMove = this.playfield.movePill(direction);
@@ -153,21 +134,14 @@ export default class Game extends EventEmitter {
       }
       // trying to move down, but couldn't; we are ready to reconcile
       if(input === INPUTS.DOWN && !didMove) shouldReconcile = true;
-    });
-    return shouldReconcile;
-  }
+    }
 
-  updateMoveCounters() {
-    _.each(this.movingCounters, (count, inputType) => {
-      this.movingDirections.has(inputType) ?
-        this.movingCounters[inputType]++ :
-        this.movingCounters[inputType] = 0;
-    })
+    return shouldReconcile;
   }
 
   tick(inputQueue) {
     // always handle move inputs, key can be released in any mode
-    while(inputQueue.length) this.handleInput(inputQueue.shift());
+    const moveQueue = this.inputRepeater.tick(inputQueue);
 
     // the main game loop, called once per game tick
     switch (this.modeMachine.current) {
@@ -187,16 +161,14 @@ export default class Game extends EventEmitter {
       case Game.modes.PLAYING:
         // game is playing, pill is falling & under user control
         // todo speedup
-        // todo handle holding down buttons better?
         this.counters.playTicks++;
 
-        // do the moves based on movingDirections and moveCounters
-        let shouldReconcile = this.doMoves();
-        this.updateMoveCounters();
+        // do the moves created by the inputRepeater
+        let shouldReconcile = this.doMoves(moveQueue);
 
         // gravity pulling pill down
         if(this.counters.playTicks > this.playGravity
-          && !this.movingDirections.has(INPUTS.DOWN)) { // deactivate gravity while moving down
+          && !this.inputRepeater.movingDirections.has(INPUTS.DOWN)) { // deactivate gravity while moving down
           this.counters.playTicks = 0;
           const didMove = this.playfield.movePill('down');
           if(!didMove) shouldReconcile = true;

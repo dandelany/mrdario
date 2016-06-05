@@ -72,6 +72,21 @@ export function movePill(grid, pill, direction) {
   return {grid: moved.grid, pill: moved.cells, didMove: moved.didMove};
 }
 
+export function slamPill(grid, pill) {
+  // from SNES+, pressing "up" on the D-pad will "slam" the pill down
+  // (ie. move it instantly to the lowest legal position directly below it)
+  let moving = true;
+  let didMove = false;
+  while(moving) {
+    const moved = moveCells(grid, pill, 'down');
+    grid = moved.grid;
+    pill = moved.cells;
+    if(moved.didMove) didMove = true;
+    moving = didMove;
+  }
+  return {grid, pill, didMove};
+}
+
 export function rotatePill(grid, pill, direction) {
   // http://tetrisconcept.net/wiki/Dr._Mario#Rotation_system
   const pillNeighbors = [getCellNeighbors(grid, pill[0]), getCellNeighbors(grid, pill[1])];
