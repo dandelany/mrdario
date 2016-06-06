@@ -26,13 +26,16 @@ export function generateViruses(grid, level, colors) {
   // generate random viruses in a (empty) grid
   // inspired by http://tetrisconcept.net/wiki/Dr._Mario#Virus_Generation
   let virusCount = getLevelVirusCount(level);
+  const origVirusCount = virusCount;
+  
   while(virusCount) {
     let {cell, virus} = generateVirus(grid, level, colors, virusCount);
     if(!virus) continue; // bad virus, try again
     grid = grid.setIn(cell, virus); // good virus, put it in the cell
     virusCount--;
   }
-  return grid;
+
+  return {grid, virusCount: origVirusCount};
 }
 
 export function generateVirus(grid, level, colors, remaining) {

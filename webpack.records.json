@@ -1,5 +1,5 @@
 {
-  "nextFreeModuleId": 896,
+  "nextFreeModuleId": 897,
   "modules": {
     "byIdentifier": {
       "multi app": 0,
@@ -898,7 +898,8 @@
       "node_modules/babel-loader/index.js!src/app/inputs/KeyManager.js": 892,
       "node_modules/babel-loader/index.js!src/app/inputs/SwipeManager.js": 893,
       "node_modules/babel-loader/index.js!src/game/SingleGameController.js": 894,
-      "node_modules/babel-loader/index.js!src/app/components/lib/MayaNumeral.js": 895
+      "node_modules/babel-loader/index.js!src/app/components/lib/MayaNumeral.js": 895,
+      "node_modules/babel-loader/index.js!src/game/InputRepeater.js": 896
     }
   },
   "nextFreeChunkId": 2,
@@ -945,6 +946,81 @@
       "modules": {
         "byIdentifier": {
           "node_modules/html-webpack-plugin/lib/loader.js!src/app/index.html": 0,
+          "node_modules/lodash/lodash.js": 1,
+          "node_modules/webpack/buildin/module.js": 2
+        }
+      },
+      "nextFreeChunkId": 1,
+      "chunks": {
+        "byName": {},
+        "byBlocks": {}
+      }
+    },
+    {
+      "nextFreeModuleId": 3,
+      "modules": {
+        "byIdentifier": {
+          "node_modules/html-webpack-plugin/lib/loader.js!src/app/index.ejs": 0,
+          "node_modules/lodash/lodash.js": 1,
+          "node_modules/webpack/buildin/module.js": 2
+        }
+      },
+      "nextFreeChunkId": 1,
+      "chunks": {
+        "byName": {},
+        "byBlocks": {}
+      }
+    },
+    {
+      "nextFreeModuleId": 3,
+      "modules": {
+        "byIdentifier": {
+          "node_modules/html-webpack-plugin/lib/loader.js!src/app/index.ejs": 0,
+          "node_modules/lodash/lodash.js": 1,
+          "node_modules/webpack/buildin/module.js": 2
+        }
+      },
+      "nextFreeChunkId": 1,
+      "chunks": {
+        "byName": {},
+        "byBlocks": {}
+      }
+    },
+    {
+      "nextFreeModuleId": 3,
+      "modules": {
+        "byIdentifier": {
+          "node_modules/html-webpack-plugin/lib/loader.js!src/app/index.ejs": 0,
+          "node_modules/lodash/lodash.js": 1,
+          "node_modules/webpack/buildin/module.js": 2
+        }
+      },
+      "nextFreeChunkId": 1,
+      "chunks": {
+        "byName": {},
+        "byBlocks": {}
+      }
+    },
+    {
+      "nextFreeModuleId": 3,
+      "modules": {
+        "byIdentifier": {
+          "node_modules/html-webpack-plugin/lib/loader.js!src/app/index.ejs": 0,
+          "node_modules/lodash/lodash.js": 1,
+          "node_modules/webpack/buildin/module.js": 2
+        }
+      },
+      "nextFreeChunkId": 1,
+      "chunks": {
+        "byName": {},
+        "byBlocks": {}
+      }
+    },
+    {
+      "nextFreeModuleId": 3,
+      "modules": {
+        "byIdentifier": {
+          "node_modules/html-webpack-plugin/lib/loader.js!src/app/index.ejs": 0,
           "node_modules/lodash/lodash.js": 1,
           "node_modules/webpack/buildin/module.js": 2
         }

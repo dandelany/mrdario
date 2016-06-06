@@ -3,7 +3,7 @@ import {emptyGrid, generateViruses} from './utils/generators';
 import {hasViruses} from './utils/grid';
 
 import {
-  givePill, movePill, rotatePill, dropDebris, flagFallingCells, destroyLines, removeDestroyed,
+  givePill, movePill, slamPill, rotatePill, dropDebris, flagFallingCells, destroyLines, removeDestroyed,
 } from './utils/moves';
 
 // todo - may not need Playfield anymore now that all functions are pure
@@ -17,7 +17,9 @@ export class Playfield {
   }
 
   generateViruses(level = 0) {
-    this.grid = generateViruses(this.grid, level, COLORS);
+    const {grid, virusCount} = generateViruses(this.grid, level, COLORS);
+    this.grid = grid;
+    return {grid, virusCount};
   }
 
   givePill(pillColors) {
@@ -28,6 +30,12 @@ export class Playfield {
 
   movePill(direction) {
     const {grid, pill, didMove} = movePill(this.grid, this.pill, direction);
+    Object.assign(this, {grid, pill});
+    return didMove;
+  }
+
+  slamPill() {
+    const {grid, pill, didMove} = slamPill(this.grid, this.pill);
     Object.assign(this, {grid, pill});
     return didMove;
   }
@@ -51,10 +59,10 @@ export class Playfield {
     return {grid, fallingCells};
   }
 
-  destroyLines(lines) {
-    const {grid, hasLines} = destroyLines(this.grid, lines);
+  destroyLines(knownLines) {
+    const {grid, lines, hasLines, destroyedCount, virusCount} = destroyLines(this.grid, knownLines);
     Object.assign(this, {grid});
-    return hasLines;
+    return {grid, lines, hasLines, destroyedCount, virusCount};
   }
 
   removeDestroyed() {

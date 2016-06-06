@@ -109,7 +109,7 @@ export default class SingleGameController {
       inputManager.on(INPUTS.RESUME, () => this.modeMachine.resume());
       inputManager.on(INPUTS.RESET, () => this.modeMachine.reset());
 
-      const moveInputs = [INPUTS.LEFT, INPUTS.RIGHT, INPUTS.DOWN, INPUTS.ROTATE_CCW, INPUTS.ROTATE_CW];
+      const moveInputs = [INPUTS.LEFT, INPUTS.RIGHT, INPUTS.DOWN, INPUTS.UP, INPUTS.ROTATE_CCW, INPUTS.ROTATE_CW];
       moveInputs.forEach(input => inputManager.on(input, this.enqueueMoveInput.bind(this, input)));
     });
   }
@@ -159,7 +159,9 @@ export default class SingleGameController {
     // minimal description of game state to render
     return {
       mode: this.modeMachine.current,
-      grid: this.game.playfield.grid
+      grid: this.game.playfield.grid,
+      score: this.game.score,
+      timeBonus: this.game.timeBonus
     };
   }
 
@@ -167,7 +169,6 @@ export default class SingleGameController {
     // cleanup the game when we're done
     this.modeMachine.end();
     this.inputManagers.forEach(manager => manager.removeAllListeners());
-    // this.playerInput.removeAllListeners();
   }
 }
 
