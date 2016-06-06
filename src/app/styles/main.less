@@ -169,7 +169,7 @@ span.btn-white {
   margin: 0 auto;
   background: rgba(210, 207, 202, 0.96);
   top: 6.75%;
-  overflow: hidden;
+  //overflow: hidden;
   border-radius: 35px;
 }
 
@@ -183,7 +183,27 @@ span.btn-white {
   -o-transition: top 0.5s ease-in;
   transition: top 0.5s ease-in;
 }
+.won-overlay-score {
+  color: black;
+  background: white;
+  display: inline-block;
+  padding: 12px 20px;
+  border-radius: 12px;
+  margin-bottom: 4vh;
+}
 
+.score-panel {
+  position: absolute;
+  display: inline-block;
+  top: 50%;
+  right: -10px;
+  transform: translate(100%,-50%);
+  padding: 12px 18px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 16px;
+  font-weight: bold;
+  font-size: 18px;
+}
 
 /* slider */
 @sliderSize: 4.5vh;

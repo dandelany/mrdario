@@ -4,7 +4,7 @@ import flatten from 'lodash/flatten';
 
 import {GRID_OBJECTS} from 'constants';
 import {
-  isEmpty, isDestroyed, isPillLeft, isPillTop, isPillSegment, isPillVertical,
+  isEmpty, isDestroyed, isPillLeft, isPillTop, isPillSegment, isVirus, isPillVertical,
   getCellNeighbors, canMoveCell, deltaRowCol, findLines, findWidows
 } from './grid';
 import {makePillLeft, makePillRight, makeDestroyed, emptyObject} from './generators';
@@ -160,13 +160,26 @@ export function destroyLines(grid, lines) {
   // find all valid lines of same color grid objects and set them to destroyed
   if(isUndefined(lines)) lines = findLines(grid);
   const hasLines = !!(lines && lines.length);
+  let destroyedCount = 0;
+  let virusCount = 0;
+
   if(hasLines) {
+    // count the number of destroyed viruses/cells (for score)
+    for(const line of lines) {
+      destroyedCount += line.length;
+      for(const cell of line) {
+        if(isVirus(grid.getIn(cell))) virusCount++;
+      }
+    }
+
     // set cells in lines to destroyed
     grid = destroyCells(grid, flatten(lines));
     // turn widowed pill halves into rounded 1-square pill segments
     grid = setPillSegments(grid, findWidows(grid));
   }
-  return {grid, hasLines};
+
+  console.log({destroyedCount, virusCount});
+  return {grid, lines, hasLines, destroyedCount, virusCount};
 }
 
 export function removeDestroyed(grid) {

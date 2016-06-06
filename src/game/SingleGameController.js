@@ -159,7 +159,9 @@ export default class SingleGameController {
     // minimal description of game state to render
     return {
       mode: this.modeMachine.current,
-      grid: this.game.playfield.grid
+      grid: this.game.playfield.grid,
+      score: this.game.score,
+      timeBonus: this.game.timeBonus
     };
   }
 

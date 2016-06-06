@@ -4,7 +4,7 @@ import {Link} from 'react-router';
 import MayaNumeral from 'app/components/lib/MayaNumeral';
 
 const WonOverlay = (props) => {
-  const {style, params} = props;
+  const {style, params, gameState} = props;
   const level = parseInt(params.level || 0);
   const speed = parseInt(params.speed || 0);
   const nextLevelPath = `/game/level/${level + 1}/speed/${speed}`;
@@ -16,6 +16,19 @@ const WonOverlay = (props) => {
     </div>
 
     <div>
+      {gameState ?
+        <div className="won-overlay-score">
+          <div>
+            <strong>Time Bonus: </strong>
+            {gameState.timeBonus || 0}
+          </div>
+          <div>
+            <strong>Score: </strong>
+            {gameState.score}
+          </div>
+        </div>
+        : ''
+      }
       <Link to={nextLevelPath}>
         <span className="btn-white">
           <div className="btn-maya-numeral" style={{marginBottom: 10}}>

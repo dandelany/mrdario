@@ -78,6 +78,8 @@ export default class Game extends EventEmitter {
     });
     // the grid, single source of truth for game playfield state
     this.playfield = new Playfield({width: options.width, height: options.height});
+    // current score
+    this.score = 0;
     // sequence of pill colors to use in the game, will be generated if not passed
     this.pillSequence = options.pillSequence || generatePillSequence(COLORS);
 
@@ -92,6 +94,7 @@ export default class Game extends EventEmitter {
 
     // counters, mostly used to count # of frames we've been in a particular state
     this.counters = {
+      gameTicks: 0,
       playTicks: 0,
       cascadeTicks: 0,
       destroyTicks: 0,
@@ -131,7 +134,7 @@ export default class Game extends EventEmitter {
         const direction = (input === INPUTS.DOWN) ? 'down' :
           (input === INPUTS.LEFT) ? 'left' : 'right';
         didMove = this.playfield.movePill(direction);
-        
+
         // trying to move down, but couldn't; we are ready to reconcile
         if(input === INPUTS.DOWN && !didMove) shouldReconcile = true;
 
@@ -152,11 +155,14 @@ export default class Game extends EventEmitter {
     switch (this.modeMachine.current) {
 
       case Game.modes.LOADING:
-        this.playfield.generateViruses(this.level);
+        const generated = this.playfield.generateViruses(this.level);
+        console.log('generated', generated);
+        this.origVirusCount = generated.virusCount;
         this.modeMachine.loaded();
         break;
 
       case Game.modes.READY:
+        this.cascadeLineCount = 0;
         // try to add a pill to the playfield
         if(this.givePill()) this.modeMachine.play();
         // if it didn't work, pill entrance is blocked and we lose
@@ -167,6 +173,7 @@ export default class Game extends EventEmitter {
         // game is playing, pill is falling & under user control
         // todo speedup
         this.counters.playTicks++;
+        this.counters.gameTicks++;
 
         // do the moves created by the inputRepeater
         let shouldReconcile = this.doMoves(moveQueue);
@@ -186,13 +193,27 @@ export default class Game extends EventEmitter {
       case Game.modes.RECONCILE:
         // playfield is locked, check for same-color lines
         // setting them to destroyed if they are found
-        const hadLines = this.playfield.destroyLines();
+        const {hasLines, lines, destroyedCount, virusCount} = this.playfield.destroyLines();
+
+        if(hasLines)  {
+          this.cascadeLineCount += lines.length;
+          this.score +=
+            (Math.pow(destroyedCount, this.cascadeLineCount) * 5) +
+            (virusCount * this.cascadeLineCount * 3 * 5);
+        }
+
+        // const hadLines = this.playfield.destroyLines();
         const hasViruses = this.playfield.hasViruses();
 
         // killed all viruses, you win
-        if(!hasViruses) this.modeMachine.win();
+        if(!hasViruses) {
+          const expectedTicks = this.origVirusCount * 400;
+          this.timeBonus = Math.max(0, expectedTicks - this.counters.gameTicks);
+          this.score += this.timeBonus;
+          this.modeMachine.win();
+        }
         // lines are being destroyed, go to destroy mode
-        else if(hadLines) this.modeMachine.destroy();
+        else if(hasLines) this.modeMachine.destroy();
         // no lines, cascade falling debris
         else this.modeMachine.cascade();
         break;

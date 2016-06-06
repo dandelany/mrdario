@@ -17,7 +17,9 @@ export class Playfield {
   }
 
   generateViruses(level = 0) {
-    this.grid = generateViruses(this.grid, level, COLORS);
+    const {grid, virusCount} = generateViruses(this.grid, level, COLORS);
+    this.grid = grid;
+    return {grid, virusCount};
   }
 
   givePill(pillColors) {
@@ -57,10 +59,10 @@ export class Playfield {
     return {grid, fallingCells};
   }
 
-  destroyLines(lines) {
-    const {grid, hasLines} = destroyLines(this.grid, lines);
+  destroyLines(knownLines) {
+    const {grid, lines, hasLines, destroyedCount, virusCount} = destroyLines(this.grid, knownLines);
     Object.assign(this, {grid});
-    return hasLines;
+    return {grid, lines, hasLines, destroyedCount, virusCount};
   }
 
   removeDestroyed() {

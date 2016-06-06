@@ -105,11 +105,18 @@ class SinglePlayerGame extends React.Component {
     const wonOverlayStyle = {...overlayStyle, top: (params.mode === "won") ? 0 : height};
 
     return <div {...{style, className: 'game-playfield'}}>
-      <WonOverlay {...{params, style: wonOverlayStyle}} />
-      <LostOverlay {...{params, style: lostOverlayStyle}} />
+      <WonOverlay {...{gameState, params, style: wonOverlayStyle}} />
+      <LostOverlay {...{gameState, params, style: lostOverlayStyle}} />
       {hasGrid ?
         <Playfield grid={gameState.grid} cellSize={cellSize} />
         : ''}
+
+      {gameState ?
+        <div className="score-panel">
+          {gameState.score}
+        </div>
+        : ''
+      }
     </div>
   }
 }

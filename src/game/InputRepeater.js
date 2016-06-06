@@ -2,7 +2,7 @@ import {INPUTS} from './../constants';
 
 export default class InputRepeater {
   static repeatIntervals = {
-    [INPUTS.UP]: 20,
+    [INPUTS.UP]: 24,
     [INPUTS.DOWN]: 4,
     [INPUTS.LEFT]: 8,
     [INPUTS.RIGHT]: 8,
