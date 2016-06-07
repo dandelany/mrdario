@@ -1,5 +1,6 @@
 var _ = require('lodash');
 var express = require('express');
+var redis = require('redis');
 var uuid = require('uuid');
 var randomWord = require('random-word-by-length');
 
@@ -14,6 +15,42 @@ function initSingleGame() {
   return {id, token};
 }
 
+function handleSingleScore(rClient, callback, data) {
+  console.log('singleGameScore');
+  console.log(data);
+  if(!_.isArray(data) || data.length != 3) return;
+  var level = data[0];
+  var name = data[1];
+  var score = data[2];
+  if(!_.isFinite(level) || level >= 50 || level < 0) return;
+  if(!_.isFinite(score) || score < 0) return;
+
+  addSingleScore(rClient, level, name, score, callback);
+}
+
+function addSingleScore(rClient, level, name, score, callback) {
+  const setKey = 'hiscore_' + level;
+  const nameKey = (name + '').replace(/__&&__/g, '__&__').substr(0, 100) + '__&&__' + Number(new Date());
+
+  rClient.zadd(setKey, score, nameKey,
+    function(err, addReply) {
+      console.log("addReply",addReply);
+
+      rClient.zrange(setKey, -10, -1, 'withscores', function(err, topScoreReplies) {
+        console.log("topScoreReplies", parseTopScores(topScoreReplies));
+        callback(err, parseTopScores(topScoreReplies));
+      })
+    }
+  );
+}
+
+function parseTopScores(rawScores) {
+  return _.chunk(rawScores, 2).map(([name, score]) => (
+    [name.split('__&&__')[0], parseInt(score)]
+  ));
+}
+
+
 module.exports.run = function (worker) {
   console.log('   >> Worker PID:', process.pid);
 
@@ -25,6 +62,13 @@ module.exports.run = function (worker) {
   httpServer.on('request', app);
 
   var count = 0;
+
+
+  var rClient = redis.createClient();
+
+  rClient.on("error", function (err) {
+    console.log("Error " + err);
+  });
 
   /*
     In here we handle our incoming realtime connections and listen for events.
@@ -50,14 +94,14 @@ module.exports.run = function (worker) {
       socket.emit('newSingleGame', {id, token});
     });
 
-    var interval = setInterval(function () {
-      socket.emit('rand', {
-        rand: Math.floor(Math.random() * 5)
-      });
-    }, 1000);
+
+
+    socket.on('singleGameScore', handleSingleScore.bind(this, rClient, function(err, topScores) {
+      if(!err) socket.emit('singleHighScores', topScores);
+    }));
 
     socket.on('disconnect', function () {
-      clearInterval(interval);
+      // clearInterval(interval);
     });
   });
 };

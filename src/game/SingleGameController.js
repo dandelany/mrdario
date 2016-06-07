@@ -91,10 +91,10 @@ export default class SingleGameController {
   _onChangeMode = (event, lastMode, newMode) => {
     // update mode of all input managers
     this.inputManagers.forEach(inputManager => inputManager.setMode(newMode));
-    // call handler
-    this.onChangeMode(event, lastMode, newMode);
     // re-render on any mode change
     this.render(this.getState());
+    // call handler
+    this.onChangeMode(event, lastMode, newMode);
   };
 
   attachModeEvents() {

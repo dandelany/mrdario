@@ -32,8 +32,14 @@ class SinglePlayerGame extends React.Component {
   componentDidMount() {
     // mode means won or lost, no mode = playing
     if(!this.props.params.mode) this._initGame(this.props);
+
+    this._highScoreHandler = this.props.socket.on('singleHighScores', (data, res) => {
+      console.log('high scores received!');
+      console.log(data);
+    })
   }
   componentWillUnmount() {
+    this.props.socket.off('singleHighScores', this._highScoreHandler);
     if(this.game && this.game.cleanup) this.game.cleanup();
   }
 
@@ -77,11 +83,27 @@ class SinglePlayerGame extends React.Component {
         console.log('onchangemode', event, lastMode, newMode);
         if(_.includes([MODES.LOST, MODES.WON], newMode)) {
           router.push(`/game/level/${level}/speed/${speed}/${newMode.toLowerCase()}`);
+          if(newMode === MODES.WON) this._handleWin();
         }
         if(this.props.onChangeMode) this.props.onChangeMode(newMode);
       }
     });
     this.game.play();
+  }
+
+  _handleWin() {
+    console.log(this.props);
+    console.log(this.state.gameState);
+    const score = _.get(this, 'state.gameState.score');
+    const level = parseInt(_.get(this, 'props.params.level'));
+    const name = window.localStorage ?
+      (window.localStorage.getItem('mrdario-name') || 'Anonymous') : 'Anonymous';
+
+    if(_.isFinite(level) && _.isFinite(score) && _.get(this, 'props.socket.state') === 'open') {
+      console.log('socket is open, sending score');
+      // this.props.socket.emit('singleGameScore', `${level}_${name}_${score}`);
+      this.props.socket.emit('singleGameScore', [level, name, score]);
+    }
   }
 
   render() {

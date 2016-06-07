@@ -6,9 +6,18 @@ export default class GameSettings extends React.Component {
   state = {
     level: 0,
     speed: 15,
-    speedLevels: []
+    speedLevels: [],
+    name: window.localStorage ?
+      (window.localStorage.getItem('mrdario-name') || '') : ''
   };
 
+  onChangeName = (e) => {
+    const name = e.target.value;
+    this.setState({name});
+    if(window.localStorage) {
+      window.localStorage.setItem('mrdario-name', name);
+    }
+  };
   onChangeLevel = (level) => {
     this.setState({level});
   };
@@ -25,6 +34,11 @@ export default class GameSettings extends React.Component {
 
       <div className="settings-content">
         <div>
+          <h3>Name (for high scores)</h3>
+          <div>
+            <input type="text" value={this.state.name} onChange={this.onChangeName} placeholder="Anonymous"/>
+          </div>
+
           <h3>Level {this.state.level}</h3>
           <div>
             <Slider
