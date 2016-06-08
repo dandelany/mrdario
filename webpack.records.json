@@ -1,5 +1,5 @@
 {
-  "nextFreeModuleId": 969,
+  "nextFreeModuleId": 972,
   "modules": {
     "byIdentifier": {
       "multi app": 0,
@@ -971,7 +971,10 @@
       "node_modules/socket.io-client/lib/on.js": 965,
       "node_modules/component-bind/index.js": 966,
       "node_modules/has-binary/index.js": 967,
-      "node_modules/backo2/index.js": 968
+      "node_modules/backo2/index.js": 968,
+      "node_modules/lodash/inRange.js": 969,
+      "node_modules/lodash/_baseInRange.js": 970,
+      "node_modules/gamepad-plus/dist/gamepads.js": 971
     }
   },
   "nextFreeChunkId": 2,
@@ -1018,6 +1021,21 @@
       "modules": {
         "byIdentifier": {
           "node_modules/html-webpack-plugin/lib/loader.js!src/app/index.html": 0,
+          "node_modules/lodash/lodash.js": 1,
+          "node_modules/webpack/buildin/module.js": 2
+        }
+      },
+      "nextFreeChunkId": 1,
+      "chunks": {
+        "byName": {},
+        "byBlocks": {}
+      }
+    },
+    {
+      "nextFreeModuleId": 3,
+      "modules": {
+        "byIdentifier": {
+          "node_modules/html-webpack-plugin/lib/loader.js!src/app/index.ejs": 0,
           "node_modules/lodash/lodash.js": 1,
           "node_modules/webpack/buildin/module.js": 2
         }

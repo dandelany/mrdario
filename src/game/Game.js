@@ -156,7 +156,6 @@ export default class Game extends EventEmitter {
 
       case Game.modes.LOADING:
         const generated = this.playfield.generateViruses(this.level);
-        console.log('generated', generated);
         this.origVirusCount = generated.virusCount;
         this.modeMachine.loaded();
         break;

@@ -177,8 +177,7 @@ export function destroyLines(grid, lines) {
     // turn widowed pill halves into rounded 1-square pill segments
     grid = setPillSegments(grid, findWidows(grid));
   }
-
-  console.log({destroyedCount, virusCount});
+  
   return {grid, lines, hasLines, destroyedCount, virusCount};
 }
 
