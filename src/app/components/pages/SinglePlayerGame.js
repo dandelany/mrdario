@@ -9,6 +9,7 @@ import {MODES, DEFAULT_KEYS} from 'constants';
 
 import KeyManager from 'app/inputs/KeyManager';
 import SwipeManager from 'app/inputs/SwipeManager';
+import GamepadManager from 'app/inputs/GamepadManager';
 import SingleGameController from 'game/SingleGameController.js';
 //import SinglePlayerGameController from 'game/SinglePlayerNetworkGameController';
 
@@ -72,12 +73,13 @@ class SinglePlayerGame extends React.Component {
     // input managers controlling keyboard and touch events
     this.keyManager = new KeyManager(DEFAULT_KEYS);
     this.touchManager = new SwipeManager();
+    this.gamepadManager = new GamepadManager();
 
     // create new game controller that will run the game
     // and update component state whenever game state changes to re-render
     this.game = new SingleGameController({
       level, speed,
-      inputManagers: [this.keyManager, this.touchManager],
+      inputManagers: [this.keyManager, this.touchManager, this.gamepadManager],
       render: (gameState) => this.setState({gameState}),
       onChangeMode: (event, lastMode, newMode) => {
         console.log('onchangemode', event, lastMode, newMode);
