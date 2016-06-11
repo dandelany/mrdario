@@ -198,7 +198,7 @@ export default class Game extends EventEmitter {
           this.cascadeLineCount += lines.length;
           this.score +=
             (Math.pow(destroyedCount, this.cascadeLineCount) * 5) +
-            (virusCount * this.cascadeLineCount * 3 * 5);
+            (Math.pow(virusCount, this.cascadeLineCount) * 3 * 5);
         }
 
         // const hadLines = this.playfield.destroyLines();
@@ -206,7 +206,7 @@ export default class Game extends EventEmitter {
 
         // killed all viruses, you win
         if(!hasViruses) {
-          const expectedTicks = this.origVirusCount * 400;
+          const expectedTicks = this.origVirusCount * 320;
           this.timeBonus = Math.max(0, expectedTicks - this.counters.gameTicks);
           this.score += this.timeBonus;
           this.modeMachine.win();
