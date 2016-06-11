@@ -45,9 +45,11 @@ function addSingleScore(rClient, level, name, score, callback) {
 }
 
 function parseTopScores(rawScores) {
-  return _.chunk(rawScores, 2).map(([name, score]) => (
-    [name.split('__&&__')[0], parseInt(score)]
-  ));
+  return _.chunk(rawScores, 2).map((scoreArr) => {
+    const name = scoreArr[0] || "Anonymous";
+    const score = scoreArr[1] || 0;
+    return [name.split('__&&__')[0], parseInt(score)];
+  }).reverse();
 }
 
 
@@ -62,7 +64,6 @@ module.exports.run = function (worker) {
   httpServer.on('request', app);
 
   var count = 0;
-
 
   var rClient = redis.createClient();
 
@@ -89,9 +90,9 @@ module.exports.run = function (worker) {
     });
 
     socket.on('initSingleGame', () => {
-      const {id, token} = initSingleGame();
-      console.log('newSingleGame', id, token);
-      socket.emit('newSingleGame', {id, token});
+      // const {id, token} = initSingleGame();
+      // console.log('newSingleGame', id, token);
+      // socket.emit('newSingleGame', {id, token});
     });
 
 
