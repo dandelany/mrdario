@@ -10,7 +10,7 @@ function getWindowSize() {
 }
 
 function initSocketClient() {
-  var socket = socketCluster.connect({path: '/wsapi'});
+  var socket = socketCluster.connect({path: '/wsapi/socketcluster'});
 
   socket.on('error', (err) => {
     console.error('Socket error - ' + err);
