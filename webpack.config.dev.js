@@ -6,7 +6,19 @@ config = _.merge(config, {
   devServer: {
     port: 6767,
     contentBase: "./build",
-    hot: true
+    hot: true,
+    proxy: {
+      '/wsapi': {
+        target: 'ws://localhost:8000',
+        ws: true,
+        secure: false,
+      },
+      // '/wsapi/*': {
+      //   target: 'ws://localhost:8000',
+      //   ws: true,
+      //   secure: false,
+      // }
+    }
   },
   entry: _.assign({}, config.entry, {
     app: [

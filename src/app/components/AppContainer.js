@@ -10,7 +10,7 @@ function getWindowSize() {
 }
 
 function initSocketClient() {
-  var socket = socketCluster.connect({port: 8000});
+  var socket = socketCluster.connect({path: '/wsapp'});
 
   socket.on('error', (err) => {
     console.error('Socket error - ' + err);
