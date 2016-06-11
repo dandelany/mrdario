@@ -43,7 +43,10 @@ module.exports = {
       {
         test: /\.jsx?$/,
         loaders: ['babel-loader'],
-        exclude: /node_modules/
+        // exclude: /node_modules/,
+        include: [
+          path.join(__dirname, 'src')
+        ]
       },
       {
         test: /\.less?$/,
