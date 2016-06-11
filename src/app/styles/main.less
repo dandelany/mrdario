@@ -24,6 +24,20 @@ body {
   box-sizing: border-box;
 }
 
+::-webkit-scrollbar {
+  -webkit-appearance: none;
+  width: 10px;
+  height: 18px;
+}
+::-webkit-scrollbar-thumb {
+  background-clip: padding-box;
+  height: 6px;
+  border-radius: 10px;
+  border: 2px solid rgba(0, 0, 0, 0);
+  background-color: rgba(0,0,0,.5);
+  -webkit-box-shadow: 0 0 1px rgba(255,255,255,.5);
+}
+
 span.btn-white {
   color: #101010;
   background-color: rgba(255, 255, 255, 0.85);
@@ -190,6 +204,12 @@ span.btn-white {
   padding: 12px 20px;
   border-radius: 12px;
   margin-bottom: 4vh;
+
+  max-height: 24vh;
+  overflow-y: scroll;
+}
+.won-overlay-high-scores {
+
 }
 
 .score-panel {
@@ -244,9 +264,9 @@ span.btn-white {
 }
 
 .win-lose-symbol {
-  margin: 14% 20%;
-  padding: 10% 10px;
-  border-radius: 15%;
+  margin: 7% 20%;
+  padding: 2vh 0px;
+  border-radius: 4vh;
   color: #202020;
   border: 10px solid black;
 

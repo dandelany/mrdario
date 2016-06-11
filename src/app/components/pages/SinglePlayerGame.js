@@ -27,7 +27,8 @@ class SinglePlayerGame extends React.Component {
   };
 
   state = {
-    gameState: null
+    gameState: null,
+    highScores: null
   };
 
   componentDidMount() {
@@ -37,6 +38,7 @@ class SinglePlayerGame extends React.Component {
     this._highScoreHandler = this.props.socket.on('singleHighScores', (data, res) => {
       console.log('high scores received!');
       console.log(data);
+      this.setState({highScores: data});
     })
   }
   componentWillUnmount() {
@@ -109,7 +111,7 @@ class SinglePlayerGame extends React.Component {
   }
 
   render() {
-    const {gameState} = this.state;
+    const {gameState, highScores} = this.state;
     const hasGame = this.game && gameState;
     const hasGrid = hasGame && gameState.grid;
     // if(!hasGrid) return <div>loading</div>;
@@ -129,7 +131,7 @@ class SinglePlayerGame extends React.Component {
     const wonOverlayStyle = {...overlayStyle, top: (params.mode === "won") ? 0 : height};
 
     return <div {...{style, className: 'game-playfield'}}>
-      <WonOverlay {...{gameState, params, style: wonOverlayStyle}} />
+      <WonOverlay {...{gameState, highScores, params, style: wonOverlayStyle}} />
       <LostOverlay {...{gameState, params, style: lostOverlayStyle}} />
       {hasGrid ?
         <Playfield grid={gameState.grid} cellSize={cellSize} />
