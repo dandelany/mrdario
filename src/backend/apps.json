@@ -1,5 +1,6 @@
 {
   "apps" : [{
+    "name": "gameserver",
     "script": "./server/server.js",
     "watch": true,
     "env": {
