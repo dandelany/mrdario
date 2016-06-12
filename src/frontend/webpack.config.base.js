@@ -20,12 +20,11 @@ module.exports = {
       "mousetrap",
       "react",
       "react-router",
-      "react-slider",
-      "reflux"
+      "react-slider"
     ]
   },
   output: {
-    path: path.join(__dirname, 'build'),
+    path: path.join(__dirname, '../../build/frontend'),
     filename: 'scripts/[name].[chunkhash:7].js'
   },
   recordsPath: path.join(__dirname, "webpack.records.json"),

@@ -4,4 +4,4 @@ node_modules
 .DS_Store
 Thumbs.db
 
-src/app/node_modules
+src/frontend/node_modules

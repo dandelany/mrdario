@@ -16,8 +16,7 @@ module.exports = {
       "mousetrap",
       "react",
       "react-router",
-      "react-slider",
-      "reflux"
+      "react-slider"
     ]
   },
   output: {
