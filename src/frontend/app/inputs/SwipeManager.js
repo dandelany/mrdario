@@ -17,6 +17,7 @@ export default class SwipeManager extends EventEmitter {
 
     ]);
 
+    this.mc.on('swipeup', this.triggerKeyInputs.bind(this, INPUTS.UP));
     this.mc.on('swipeleft', this.triggerKeyInputs.bind(this, INPUTS.LEFT));
     this.mc.on('swiperight', this.triggerKeyInputs.bind(this, INPUTS.RIGHT));
     this.mc.on('swipedown', this.triggerKeyInputs.bind(this, INPUTS.DOWN));
