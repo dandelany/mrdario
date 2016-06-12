@@ -157,6 +157,7 @@ export default class Game extends EventEmitter {
       case Game.modes.LOADING:
         const generated = this.playfield.generateViruses(this.level);
         this.origVirusCount = generated.virusCount;
+        console.log('virus count', generated.virusCount);
         this.modeMachine.loaded();
         break;
 
@@ -201,12 +202,14 @@ export default class Game extends EventEmitter {
             (Math.pow(virusCount, this.cascadeLineCount) * 3 * 5);
         }
 
-        // const hadLines = this.playfield.destroyLines();
         const hasViruses = this.playfield.hasViruses();
 
         // killed all viruses, you win
         if(!hasViruses) {
-          const expectedTicks = this.origVirusCount * 320;
+          // lower levels get a bit more expected time (higher time bonus)
+          // because viruses are far apart, bonus is harder to get
+          const expectedTicksPerVirus = 320 + (Math.max(0, 40 - this.origVirusCount) * 3);
+          const expectedTicks = this.origVirusCount * expectedTicksPerVirus;
           this.timeBonus = Math.max(0, expectedTicks - this.counters.gameTicks);
           this.score += this.timeBonus;
           this.modeMachine.win();
