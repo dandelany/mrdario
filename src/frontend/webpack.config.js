@@ -1,3 +1,4 @@
+var path = require('path');
 var webpack = require('webpack');
 var CleanPlugin = require('clean-webpack-plugin');
 var _ = require('lodash');
@@ -8,7 +9,7 @@ config = _.merge(config, {
     new webpack.DefinePlugin({
       'process.env.NODE_ENV': '"production"'
     }),
-    new CleanPlugin(['build']),
+    new CleanPlugin(['build/frontend'], { root: path.resolve(__dirname , '../..'), verbose: true }),
     new webpack.optimize.DedupePlugin(),
     new webpack.optimize.UglifyJsPlugin(),
     new webpack.optimize.CommonsChunkPlugin({
