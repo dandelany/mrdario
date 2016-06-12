@@ -4,6 +4,8 @@ var redis = require('redis');
 var uuid = require('uuid');
 var randomWord = require('random-word-by-length');
 
+var scoreUtils = require('./scores/utils');
+
 function makeGameToken() {
   return Math.round(Math.random() * 1000000).toString(36);
 }
@@ -13,43 +15,6 @@ function initSingleGame() {
   const id = _.times(3, () => _.capitalize(randomWord(8))).join('');
   const token = makeGameToken();
   return {id, token};
-}
-
-function handleSingleScore(rClient, callback, data) {
-  console.log('singleGameScore');
-  console.log(data);
-  if(!_.isArray(data) || data.length != 3) return;
-  var level = data[0];
-  var name = data[1];
-  var score = data[2];
-  if(!_.isFinite(level) || level >= 50 || level < 0) return;
-  if(!_.isFinite(score) || score < 0) return;
-
-  addSingleScore(rClient, level, name, score, callback);
-}
-
-function addSingleScore(rClient, level, name, score, callback) {
-  const setKey = 'hiscore_' + level;
-  const nameKey = (name + '').replace(/__&&__/g, '__&__').substr(0, 100) + '__&&__' + Number(new Date());
-
-  rClient.zadd(setKey, score, nameKey,
-    function(err, addReply) {
-      console.log("addReply",addReply);
-
-      rClient.zrange(setKey, -10, -1, 'withscores', function(err, topScoreReplies) {
-        console.log("topScoreReplies", parseTopScores(topScoreReplies));
-        callback(err, parseTopScores(topScoreReplies));
-      })
-    }
-  );
-}
-
-function parseTopScores(rawScores) {
-  return _.chunk(rawScores, 2).map((scoreArr) => {
-    const name = scoreArr[0] || "Anonymous";
-    const score = scoreArr[1] || 0;
-    return [name.split('__&&__')[0], parseInt(score)];
-  }).reverse();
 }
 
 
@@ -95,11 +60,20 @@ module.exports.run = function (worker) {
       // socket.emit('newSingleGame', {id, token});
     });
 
-
-
-    socket.on('singleGameScore', handleSingleScore.bind(this, rClient, function(err, topScores) {
-      if(!err) socket.emit('singleHighScores', topScores);
-    }));
+    socket.on('singleGameScore', (data, res) => {
+      scoreUtils.handleSingleScore(rClient, data, function(err, rank, scoreInfo) {
+        if(err) { res(err); return; }
+        scoreUtils.getSingleHighScores(rClient, scoreInfo.level, 15, (err, scores) => {
+          res(err, {rank: rank, scores: scores});
+        });
+      });
+    });
+    
+    socket.on('getSingleHighScores', function(level) {
+      scoreUtils.getSingleHighScores(rClient, level, 20, function(err, highScores) {
+        if(!err) socket.emit('singleHighScores', highScores);
+      })
+    });
 
     socket.on('disconnect', function () {
       // clearInterval(interval);

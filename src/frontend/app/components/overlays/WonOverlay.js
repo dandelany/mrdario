@@ -1,10 +1,11 @@
+import isFinite from 'lodash/isFinite'; 
 import React from 'react';
 import {Link} from 'react-router';
 
 import MayaNumeral from 'app/components/lib/MayaNumeral';
 
 const Scores = (props) => {
-  const {gameState, highScores} = props;
+  const {gameState, highScores, rank} = props;
   // const gameState = {timeBonus: 1000, score: 2000};
   // const highScores = [["dan", 100], ["dan", 100], ["dan", 100], ["dan", 100], ["dan", 100], ["dan", 100]];
 
@@ -18,13 +19,22 @@ const Scores = (props) => {
         <strong>Score: </strong>
         {gameState.score}
       </div>
+      
+      {isFinite(rank) ?
+        <div>
+          High score <strong className="score-active">#{rank + 1}</strong>
+        </div> 
+        : null
+      }
 
       {highScores ?
         <div className="won-overlay-high-scores">
           <hr/>
           High Scores
-          {highScores.map(([name, score]) => (
-            <div><strong>{name}</strong> — {score}</div>
+          {highScores.map(([name, score], i) => (
+            <div className={(i === rank) ? "score score-active" : "score"}>
+              <strong>{name}</strong> — {score}
+            </div>
           ))}
         </div>
         : null
@@ -34,7 +44,7 @@ const Scores = (props) => {
 };
 
 const WonOverlay = (props) => {
-  const {style, params, gameState, highScores} = props;
+  const {style, params, gameState, highScores, rank} = props;
   const level = parseInt(params.level || 0);
   const speed = parseInt(params.speed || 0);
   const nextLevelPath = `/game/level/${level + 1}/speed/${speed}`;
@@ -46,7 +56,7 @@ const WonOverlay = (props) => {
     </div>
 
     <div>
-      <Scores {...{gameState, highScores}} />
+      <Scores {...{gameState, highScores, rank}} />
 
       <Link to={nextLevelPath}>
         <span className="btn-white">

@@ -28,18 +28,13 @@ class SinglePlayerGame extends React.Component {
 
   state = {
     gameState: null,
-    highScores: null
+    highScores: null,
+    rank: null
   };
 
   componentDidMount() {
     // mode means won or lost, no mode = playing
     if(!this.props.params.mode) this._initGame(this.props);
-
-    this._highScoreHandler = this.props.socket.on('singleHighScores', (data, res) => {
-      console.log('high scores received!');
-      console.log(data);
-      this.setState({highScores: data});
-    })
   }
   componentWillUnmount() {
     this.props.socket.off('singleHighScores', this._highScoreHandler);
@@ -96,8 +91,6 @@ class SinglePlayerGame extends React.Component {
   }
 
   _handleWin() {
-    console.log(this.props);
-    console.log(this.state.gameState);
     const score = _.get(this, 'state.gameState.score');
     const level = parseInt(_.get(this, 'props.params.level'));
     const name = window.localStorage ?
@@ -105,13 +98,17 @@ class SinglePlayerGame extends React.Component {
 
     if(_.isFinite(level) && _.isFinite(score) && _.get(this, 'props.socket.state') === 'open') {
       console.log('socket is open, sending score');
-      // this.props.socket.emit('singleGameScore', `${level}_${name}_${score}`);
-      this.props.socket.emit('singleGameScore', [level, name, score]);
+      this.props.socket.emit('singleGameScore', [level, name, score], (err, data) => {
+        if(err) throw new Error(err);
+        const {scores, rank} = data;
+        console.log('high scores received!', scores, rank);
+        this.setState({highScores: scores, rank: rank});
+      });
     }
   }
 
   render() {
-    const {gameState, highScores} = this.state;
+    const {gameState, highScores, rank} = this.state;
     const hasGame = this.game && gameState;
     const hasGrid = hasGame && gameState.grid;
     // if(!hasGrid) return <div>loading</div>;
@@ -131,7 +128,7 @@ class SinglePlayerGame extends React.Component {
     const wonOverlayStyle = {...overlayStyle, top: (params.mode === "won") ? 0 : height};
 
     return <div {...{style, className: 'game-playfield'}}>
-      <WonOverlay {...{gameState, highScores, params, style: wonOverlayStyle}} />
+      <WonOverlay {...{gameState, highScores, rank, params, style: wonOverlayStyle}} />
       <LostOverlay {...{gameState, params, style: lostOverlayStyle}} />
       {hasGrid ?
         <Playfield grid={gameState.grid} cellSize={cellSize} />
