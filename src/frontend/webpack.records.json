@@ -89,9 +89,24 @@
         "byName": {},
         "byBlocks": {}
       }
+    },
+    {
+      "nextFreeModuleId": 3,
+      "modules": {
+        "byIdentifier": {
+          "node_modules/html-webpack-plugin/lib/loader.js!app/index.ejs": 0,
+          "node_modules/lodash/lodash.js": 1,
+          "node_modules/webpack/buildin/module.js": 2
+        }
+      },
+      "nextFreeChunkId": 1,
+      "chunks": {
+        "byName": {},
+        "byBlocks": {}
+      }
     }
   ],
-  "nextFreeModuleId": 709,
+  "nextFreeModuleId": 710,
   "modules": {
     "byIdentifier": {
       "multi app": 0,
@@ -803,7 +818,8 @@
       "node_modules/css-loader/lib/css-base.js": 706,
       "node_modules/style-loader/addStyles.js": 707,
       "multi vendor": 0,
-      "node_modules/classnames/index.js": 708
+      "node_modules/classnames/index.js": 708,
+      "node_modules/lodash/isFinite.js": 709
     }
   },
   "nextFreeChunkId": 2,
