@@ -3,3 +3,5 @@ node_modules
 *.sublime-*
 .DS_Store
 Thumbs.db
+
+src/app/node_modules
