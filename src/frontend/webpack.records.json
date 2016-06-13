@@ -104,9 +104,24 @@
         "byName": {},
         "byBlocks": {}
       }
+    },
+    {
+      "nextFreeModuleId": 3,
+      "modules": {
+        "byIdentifier": {
+          "node_modules/html-webpack-plugin/lib/loader.js!app/index.ejs": 0,
+          "node_modules/lodash/lodash.js": 1,
+          "node_modules/webpack/buildin/module.js": 2
+        }
+      },
+      "nextFreeChunkId": 1,
+      "chunks": {
+        "byName": {},
+        "byBlocks": {}
+      }
     }
   ],
-  "nextFreeModuleId": 710,
+  "nextFreeModuleId": 767,
   "modules": {
     "byIdentifier": {
       "multi app": 0,
@@ -819,7 +834,64 @@
       "node_modules/style-loader/addStyles.js": 707,
       "multi vendor": 0,
       "node_modules/classnames/index.js": 708,
-      "node_modules/lodash/isFinite.js": 709
+      "node_modules/lodash/isFinite.js": 709,
+      "node_modules/less-loader/stringify.loader.js!app/styles/rc-slider.less": 710,
+      "node_modules/babel-loader/index.js!app/components/pages/HighScores.js": 711,
+      "node_modules/rc-slider/lib/index.js": 712,
+      "node_modules/rc-slider/lib/Slider.js": 713,
+      "node_modules/rc-util/lib/index.js": 714,
+      "node_modules/rc-util/lib/guid.js": 715,
+      "node_modules/rc-util/lib/classSet.js": 716,
+      "node_modules/util-deprecate/browser.js": 717,
+      "node_modules/rc-util/lib/joinClasses.js": 718,
+      "node_modules/rc-util/lib/KeyCode.js": 719,
+      "node_modules/rc-util/lib/PureRenderMixin.js": 720,
+      "node_modules/shallowequal/modules/index.js": 721,
+      "node_modules/shallowequal/node_modules/lodash.keys/index.js": 722,
+      "node_modules/lodash._getnative/index.js": 723,
+      "node_modules/lodash.isarguments/index.js": 724,
+      "node_modules/lodash.isarray/index.js": 725,
+      "node_modules/rc-util/lib/createChainedFunction.js": 726,
+      "node_modules/rc-util/lib/Dom/addEventListener.js": 727,
+      "node_modules/add-dom-event-listener/lib/index.js": 728,
+      "node_modules/add-dom-event-listener/lib/EventObject.js": 729,
+      "node_modules/add-dom-event-listener/lib/EventBaseObject.js": 730,
+      "node_modules/rc-util/lib/Dom/contains.js": 731,
+      "node_modules/rc-util/lib/Children/toArray.js": 732,
+      "node_modules/rc-util/lib/Children/mapSelf.js": 733,
+      "node_modules/rc-slider/lib/Track.js": 734,
+      "node_modules/rc-slider/lib/Handle.js": 735,
+      "node_modules/rc-tooltip/lib/index.js": 736,
+      "node_modules/rc-tooltip/lib/Tooltip.js": 737,
+      "node_modules/rc-tooltip/lib/placements.js": 738,
+      "node_modules/rc-trigger/lib/index.js": 739,
+      "node_modules/rc-trigger/lib/Trigger.js": 740,
+      "node_modules/rc-trigger/lib/Popup.js": 741,
+      "node_modules/rc-align/lib/index.js": 742,
+      "node_modules/rc-align/lib/Align.js": 743,
+      "node_modules/dom-align/lib/index.js": 744,
+      "node_modules/dom-align/lib/utils.js": 745,
+      "node_modules/dom-align/lib/getOffsetParent.js": 746,
+      "node_modules/dom-align/lib/getVisibleRectForElement.js": 747,
+      "node_modules/dom-align/lib/adjustForViewport.js": 748,
+      "node_modules/dom-align/lib/getRegion.js": 749,
+      "node_modules/dom-align/lib/getElFuturePos.js": 750,
+      "node_modules/dom-align/lib/getAlignOffset.js": 751,
+      "node_modules/rc-align/lib/isWindow.js": 752,
+      "node_modules/rc-animate/lib/index.js": 753,
+      "node_modules/rc-animate/lib/Animate.js": 754,
+      "node_modules/rc-animate/lib/ChildrenUtils.js": 755,
+      "node_modules/rc-animate/lib/AnimateChild.js": 756,
+      "node_modules/css-animation/lib/index.js": 757,
+      "node_modules/css-animation/lib/Event.js": 758,
+      "node_modules/component-classes/index.js": 759,
+      "node_modules/component-indexof/index.js": 760,
+      "node_modules/rc-animate/lib/util.js": 761,
+      "node_modules/rc-trigger/lib/PopupInner.js": 762,
+      "node_modules/rc-trigger/lib/LazyRenderBox.js": 763,
+      "node_modules/rc-trigger/lib/utils.js": 764,
+      "node_modules/rc-slider/lib/Steps.js": 765,
+      "node_modules/rc-slider/lib/Marks.js": 766
     }
   },
   "nextFreeChunkId": 2,
