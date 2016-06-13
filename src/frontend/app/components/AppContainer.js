@@ -10,22 +10,22 @@ function getWindowSize() {
 }
 
 function initSocketClient() {
-  var socket = socketCluster.connect({port: 3000});
-  // var socket = socketCluster.connect({port: 8000});
+  // var socket = socketCluster.connect({port: 3000});
+  var socket = socketCluster.connect({port: 8000});
 
   socket.on('error', (err) => {
     console.error('Socket error - ' + err);
   });
 
 
-  socket.on('singleHighScores', (data, res) => {
-    console.log('got some high scores', data);
-  });
+  // socket.on('singleHighScores', (data, res) => {
+  //   console.log('got some high scores', data);
+  // });
 
   socket.on('connect', function() {
     console.log('Socket connected - OK');
 
-    socket.emit('getSingleHighScores', 0);
+    // socket.emit('getSingleHighScores', 0);
   });
 
 

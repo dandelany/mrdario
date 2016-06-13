@@ -53,7 +53,6 @@ export default class SVGShimmerCycler extends React.Component {
   };
 
   _cycleColors = () => {
-    console.log('cycling');
     const {colorSets} = this.props;
     const newColorSetIndex = (this.state.colorSetIndex + 1) % colorSets.length;
     this.isTransitioning = true;

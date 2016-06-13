@@ -69,9 +69,10 @@ module.exports.run = function (worker) {
       });
     });
     
-    socket.on('getSingleHighScores', function(level) {
-      scoreUtils.getSingleHighScores(rClient, level, 20, function(err, highScores) {
-        if(!err) socket.emit('singleHighScores', highScores);
+    socket.on('getSingleHighScores', (level, res) => {
+      // console.log('getSingleHighScores', level);
+      scoreUtils.getSingleHighScores(rClient, level, 50, (err, scores) => {
+        res(err, {level: level, scores: scores});
       })
     });
 

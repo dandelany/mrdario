@@ -6,12 +6,14 @@ import TitlePage from 'app/components/pages/TitlePage';
 import GameSettings from 'app/components/pages/GameSettings';
 import SinglePlayerGame from 'app/components/pages/SinglePlayerGame';
 import MirrorGame from 'app/components/pages/MirrorGame';
+import HighScores from 'app/components/pages/HighScores';
 
 export default (
   <Route name="app" path="/" component={AppContainer}>
     <Route path="settings" component={GameSettings} />
     <Route name="single" path="game/level/:level/speed/:speed(/:mode)" component={SinglePlayerGame} />
     <Route name="mirror" path="mirror/level/:level/speed/:speed(/:mode)" component={MirrorGame} />
+    <Route path="highscores" component={HighScores} />
     <IndexRoute name="title" component={TitlePage} />
   </Route>
 );
