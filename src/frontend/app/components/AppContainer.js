@@ -17,18 +17,11 @@ function initSocketClient() {
     console.error('Socket error - ' + err);
   });
 
-
-  // socket.on('singleHighScores', (data, res) => {
-  //   console.log('got some high scores', data);
-  // });
-
   socket.on('connect', function() {
     console.log('Socket connected - OK');
 
     // socket.emit('getSingleHighScores', 0);
   });
-
-
 
   return socket;
 }

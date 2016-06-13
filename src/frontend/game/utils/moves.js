@@ -98,24 +98,41 @@ export function rotatePill(grid, pill, direction) {
   const newPartTypes = isVertical ?
     [GRID_OBJECTS.PILL_LEFT, GRID_OBJECTS.PILL_RIGHT] : [GRID_OBJECTS.PILL_TOP, GRID_OBJECTS.PILL_BOTTOM];
 
-  if(isVertical) { // vertical to horizontal
-    if(!isEmpty(pillNeighbors[1].right)) {
-      if(!isEmpty(pillNeighbors[1].left)) return noMove; // no kick, stuck between blocks
-      // todo kick left
-      return noMove;
-    }
+  if(isVertical) { // rotate vertical to horizontal
 
-    if(direction === 'cw') {
-      grid = grid.setIn([pillRow+1, pillCol], pillParts[1].set('type', newPartTypes[0]));
-      grid = grid.setIn([pillRow+1, pillCol+1], pillParts[0].set('type', newPartTypes[1]));
+    if(isEmpty(pillNeighbors[1].right)) {
+      // empty space to the right
+      if(direction === 'cw') {
+        grid = grid.setIn([pillRow+1, pillCol], pillParts[1].set('type', newPartTypes[0]));
+        grid = grid.setIn([pillRow+1, pillCol+1], pillParts[0].set('type', newPartTypes[1]));
+      } else {
+        grid = grid.setIn([pillRow+1, pillCol], pillParts[0].set('type', newPartTypes[0]));
+        grid = grid.setIn([pillRow+1, pillCol+1], pillParts[1].set('type', newPartTypes[1]));
+      }
+      grid = grid.setIn([pillRow, pillCol], emptyObject());
+      pill = [[pillRow+1, pillCol], [pillRow+1, pillCol+1]];
+
     } else {
-      grid = grid.setIn([pillRow+1, pillCol], pillParts[0].set('type', newPartTypes[0]));
-      grid = grid.setIn([pillRow+1, pillCol+1], pillParts[1].set('type', newPartTypes[1]));
-    }
-    grid = grid.setIn([pillRow, pillCol], emptyObject());
-    pill = [[pillRow+1, pillCol], [pillRow+1, pillCol+1]];
+      // no room on the right for normal rotate
+      if(!isEmpty(pillNeighbors[1].left)) // no rotate, stuck between blocks
+        return noMove;
 
-  } else { // horizontal to vertical
+      // there is room to the left, but not the right - so "kick" the pill to the left
+      const newPill = [[pillRow+1, pillCol-1], [pillRow+1, pillCol]];
+      if(direction === 'cw') {
+        grid = grid.setIn(newPill[0], pillParts[1].set('type', newPartTypes[0]));
+        grid = grid.setIn(newPill[1], pillParts[0].set('type', newPartTypes[1]));
+      } else {
+        grid = grid.setIn(newPill[0], pillParts[0].set('type', newPartTypes[0]));
+        grid = grid.setIn(newPill[1], pillParts[1].set('type', newPartTypes[1]));
+      }
+      grid = grid.setIn([pillRow, pillCol], emptyObject());
+      pill = newPill;
+      return {grid, pill, didMove: true};
+    }
+
+  } else { // rotate horizontal to vertical
+
     if(!isEmpty(pillNeighbors[0].up) || pill[0][0] === 0) return noMove; // no kick here
 
     if(direction === 'cw') {
