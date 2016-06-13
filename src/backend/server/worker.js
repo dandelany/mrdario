@@ -41,7 +41,10 @@ module.exports.run = function (worker) {
   */
   scServer.on('connection', function (socket) {
 
-    console.log('CONNECTED - IP: ' + socket.remoteAddress + '; ID: ' + socket.id + '; STATE: ' + socket.state);
+
+    const clientIpAddress = _.get(socket, 'request.header.x-forwarded-for', socket.remoteAddress);
+    console.log('CONNECTED - IP: ' + clientIpAddress + '; ID: ' + socket.id + '; STATE: ' + socket.state);
+    // console.log(console.log(socket));
 
     // Some sample logic to show how to handle client events,
     // replace this with your own logic
