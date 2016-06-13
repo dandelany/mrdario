@@ -80,6 +80,7 @@ module.exports.run = function (worker) {
 
     socket.on('disconnect', function () {
       // clearInterval(interval);
+      console.log('DISCONNECTED - IP: ' + socket.remoteAddress + '; ID: ' + socket.id + '; STATE: ' + socket.state);
     });
   });
 };
