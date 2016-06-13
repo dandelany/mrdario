@@ -17,6 +17,9 @@ function initSingleGame() {
   return {id, token};
 }
 
+function getClientIpAddress(socket) {
+  return _.get(socket, 'request.headers.x-forwarded-for', socket.remoteAddress);
+}
 
 module.exports.run = function (worker) {
   console.log('   >> Worker PID:', process.pid);
@@ -42,8 +45,7 @@ module.exports.run = function (worker) {
   scServer.on('connection', function (socket) {
 
     // console.log(socket.request.headers);
-    const clientIpAddress = _.get(socket, 'request.headers.x-forwarded-for', socket.remoteAddress);
-    console.log('CONNECTED - IP: ' + clientIpAddress + '; ID: ' + socket.id + '; STATE: ' + socket.state);
+    console.log('CONNECTED - IP: ' + getClientIpAddress(socket) + '; ID: ' + socket.id + '; STATE: ' + socket.state);
     // console.log(console.log(socket));
 
     // Some sample logic to show how to handle client events,
@@ -83,7 +85,7 @@ module.exports.run = function (worker) {
 
     socket.on('disconnect', function () {
       // clearInterval(interval);
-      console.log('DISCONNECTED - IP: ' + socket.remoteAddress + '; ID: ' + socket.id + '; STATE: ' + socket.state);
+      console.log('DISCONNECTED - IP: ' + getClientIpAddress(socket) + '; ID: ' + socket.id + '; STATE: ' + socket.state);
     });
   });
 };
