@@ -41,6 +41,8 @@ module.exports.run = function (worker) {
   */
   scServer.on('connection', function (socket) {
 
+    console.log('new socket connection');
+
     // Some sample logic to show how to handle client events,
     // replace this with your own logic
 
