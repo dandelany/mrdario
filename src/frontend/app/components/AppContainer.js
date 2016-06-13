@@ -10,8 +10,8 @@ function getWindowSize() {
 }
 
 function initSocketClient() {
-  // var socket = socketCluster.connect({port: 3000});
-  var socket = socketCluster.connect({port: 8000});
+  var socket = socketCluster.connect({port: 3000});
+  // var socket = socketCluster.connect({port: 8000});
 
   socket.on('error', (err) => {
     console.error('Socket error - ' + err);

@@ -179,6 +179,21 @@
         "byName": {},
         "byBlocks": {}
       }
+    },
+    {
+      "nextFreeModuleId": 3,
+      "modules": {
+        "byIdentifier": {
+          "node_modules/html-webpack-plugin/lib/loader.js!app/index.ejs": 0,
+          "node_modules/lodash/lodash.js": 1,
+          "node_modules/webpack/buildin/module.js": 2
+        }
+      },
+      "nextFreeChunkId": 1,
+      "chunks": {
+        "byName": {},
+        "byBlocks": {}
+      }
     }
   ],
   "nextFreeModuleId": 767,
