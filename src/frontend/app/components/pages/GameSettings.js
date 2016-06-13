@@ -34,9 +34,12 @@ export default class GameSettings extends React.Component {
 
       <div className="settings-content">
         <div>
-          <h3>Name (for high scores)</h3>
-          <div>
+          <h3>
+            Name:
             <input type="text" value={this.state.name} onChange={this.onChangeName} placeholder="Anonymous"/>
+          </h3>
+          <div>
+
           </div>
 
           <h3>Level {this.state.level}</h3>

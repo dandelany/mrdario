@@ -33,7 +33,7 @@ const Scores = (props) => {
           High Scores
           {highScores.map(([name, score], i) => (
             <div className={(i === rank) ? "score score-active" : "score"}>
-              <strong>{name}</strong> — {score}
+              <strong>#{i + 1} {name}</strong> — {score}
             </div>
           ))}
         </div>
