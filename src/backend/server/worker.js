@@ -51,10 +51,10 @@ module.exports.run = function (worker) {
   // Handle incoming socket connections, and listen for events
   scServer.on('connection', function (socket) {
 
-    console.log('CONNECT: ', getSocketInfo(socket));
+    console.log('CONNECT: ', JSON.stringify(getSocketInfo(socket)));
 
     socket.on('disconnect', function () {
-      console.log('DISCONNECT: ', getSocketInfo(socket));
+      console.log('DISCONNECT: ', JSON.stringify(getSocketInfo(socket)));
     });
 
 
