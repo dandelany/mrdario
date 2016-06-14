@@ -20,6 +20,14 @@ function initSingleGame() {
 function getClientIpAddress(socket) {
   return _.get(socket, 'request.headers.x-forwarded-for', socket.remoteAddress);
 }
+function getSocketInfo(socket) {
+  return {
+    state: socket.state,
+    ip: getClientIpAddress(socket),
+    id: socket.id,
+    ua: _.get(socket, 'request.headers.user-agent', '')
+  };
+}
 
 module.exports.run = function (worker) {
   console.log('   >> Worker PID:', process.pid);
@@ -31,41 +39,24 @@ module.exports.run = function (worker) {
 
   httpServer.on('request', app);
 
-  var count = 0;
 
+  // initialize redis client for storage
   var rClient = redis.createClient();
-
   rClient.on("error", function (err) {
     console.log("Error " + err);
   });
 
-  /*
-    In here we handle our incoming realtime connections and listen for events.
-  */
+
+  // Websocket API worker
+  // Handle incoming socket connections, and listen for events
   scServer.on('connection', function (socket) {
 
-    // console.log(socket.request.headers);
-    console.log('CONNECTED - IP: ' + getClientIpAddress(socket) + '; ID: ' + socket.id + '; STATE: ' + socket.state);
-    // console.log(console.log(socket));
+    console.log('CONNECT: ', getSocketInfo(socket));
 
-    // Some sample logic to show how to handle client events,
-    // replace this with your own logic
-
-    socket.on('sampleClientEvent', function (data) {
-      count++;
-      console.log('Handled sampleClientEvent', data);
-      scServer.exchange.publish('sample', count);
+    socket.on('disconnect', function () {
+      console.log('DISCONNECT: ', getSocketInfo(socket));
     });
 
-    socket.on('moves', function (data) {
-      console.log('got moves', data);
-    });
-
-    socket.on('initSingleGame', () => {
-      // const {id, token} = initSingleGame();
-      // console.log('newSingleGame', id, token);
-      // socket.emit('newSingleGame', {id, token});
-    });
 
     socket.on('singleGameScore', (data, res) => {
       scoreUtils.handleSingleScore(rClient, data, function(err, rank, scoreInfo) {
@@ -83,9 +74,14 @@ module.exports.run = function (worker) {
       })
     });
 
-    socket.on('disconnect', function () {
-      // clearInterval(interval);
-      console.log('DISCONNECTED - IP: ' + getClientIpAddress(socket) + '; ID: ' + socket.id + '; STATE: ' + socket.state);
-    });
+    // socket.on('moves', function (data) {
+    //   console.log('got moves', data);
+    // });
+    //
+    // socket.on('initSingleGame', () => {
+    //   // const {id, token} = initSingleGame();
+    //   // console.log('newSingleGame', id, token);
+    //   // socket.emit('newSingleGame', {id, token});
+    // });
   });
 };
