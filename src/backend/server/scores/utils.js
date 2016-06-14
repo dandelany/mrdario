@@ -10,8 +10,6 @@ function getHighScoreNameKey(name) {
 }
 
 function handleSingleScore(rClient, data, callback) {
-  console.log('new single player score', data);
-
   if(!_.isArray(data) || data.length != 3) return;
   var level = data[0];
   var name = data[1];

@@ -29,6 +29,7 @@ function getSocketInfo(socket) {
     time: Number(new Date())
   };
 }
+function socketInfoStr(socket) { return JSON.stringify(getSocketInfo(socket)); }
 
 module.exports.run = function (worker) {
   console.log('   >> Worker PID:', process.pid);
@@ -52,10 +53,10 @@ module.exports.run = function (worker) {
   // Handle incoming socket connections, and listen for events
   scServer.on('connection', function (socket) {
 
-    console.log('CONNECT: ', JSON.stringify(getSocketInfo(socket)));
+    console.log('CONNECT: ', socketInfoStr(socket));
 
     socket.on('disconnect', function () {
-      console.log('DISCONNECT: ', JSON.stringify(getSocketInfo(socket)));
+      console.log('DISCONNECT: ', socketInfoStr(socket));
     });
 
 
@@ -63,6 +64,7 @@ module.exports.run = function (worker) {
       scoreUtils.handleSingleScore(rClient, data, function(err, rank, scoreInfo) {
         if(err) { res(err); return; }
         scoreUtils.getSingleHighScores(rClient, scoreInfo.level, 15, (err, scores) => {
+          console.log('SCORE:', JSON.stringify({rank, scoreInfo, socket: getSocketInfo(socket)}), '\u0007');
           res(err, {rank: rank, scores: scores});
         });
       });
