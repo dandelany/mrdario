@@ -25,7 +25,8 @@ function getSocketInfo(socket) {
     state: socket.state,
     ip: getClientIpAddress(socket),
     id: socket.id,
-    ua: _.get(socket, 'request.headers.user-agent', '')
+    ua: _.get(socket, 'request.headers.user-agent', ''),
+    time: Number(new Date())
   };
 }
 
