@@ -209,9 +209,24 @@
         "byName": {},
         "byBlocks": {}
       }
+    },
+    {
+      "nextFreeModuleId": 3,
+      "modules": {
+        "byIdentifier": {
+          "node_modules/html-webpack-plugin/lib/loader.js!app/index.ejs": 0,
+          "node_modules/lodash/lodash.js": 1,
+          "node_modules/webpack/buildin/module.js": 2
+        }
+      },
+      "nextFreeChunkId": 1,
+      "chunks": {
+        "byName": {},
+        "byBlocks": {}
+      }
     }
   ],
-  "nextFreeModuleId": 767,
+  "nextFreeModuleId": 822,
   "modules": {
     "byIdentifier": {
       "multi app": 0,
@@ -981,7 +996,62 @@
       "node_modules/rc-trigger/lib/LazyRenderBox.js": 763,
       "node_modules/rc-trigger/lib/utils.js": 764,
       "node_modules/rc-slider/lib/Steps.js": 765,
-      "node_modules/rc-slider/lib/Marks.js": 766
+      "node_modules/rc-slider/lib/Marks.js": 766,
+      "node_modules/lodash/times.js": 767,
+      "node_modules/lodash/_baseIteratee.js": 768,
+      "node_modules/lodash/_baseMatches.js": 769,
+      "node_modules/lodash/_baseIsMatch.js": 770,
+      "node_modules/lodash/_Stack.js": 771,
+      "node_modules/lodash/_stackClear.js": 772,
+      "node_modules/lodash/_stackDelete.js": 773,
+      "node_modules/lodash/_stackGet.js": 774,
+      "node_modules/lodash/_stackHas.js": 775,
+      "node_modules/lodash/_stackSet.js": 776,
+      "node_modules/lodash/_baseIsEqual.js": 777,
+      "node_modules/lodash/_baseIsEqualDeep.js": 778,
+      "node_modules/lodash/_equalArrays.js": 779,
+      "node_modules/lodash/_SetCache.js": 780,
+      "node_modules/lodash/_setCacheAdd.js": 781,
+      "node_modules/lodash/_setCacheHas.js": 782,
+      "node_modules/lodash/_arraySome.js": 783,
+      "node_modules/lodash/_equalByTag.js": 784,
+      "node_modules/lodash/_Uint8Array.js": 785,
+      "node_modules/lodash/_mapToArray.js": 786,
+      "node_modules/lodash/_setToArray.js": 787,
+      "node_modules/lodash/_equalObjects.js": 788,
+      "node_modules/lodash/_baseHas.js": 789,
+      "node_modules/lodash/_getPrototype.js": 790,
+      "node_modules/lodash/keys.js": 791,
+      "node_modules/lodash/_baseKeys.js": 792,
+      "node_modules/lodash/_indexKeys.js": 793,
+      "node_modules/lodash/_baseTimes.js": 794,
+      "node_modules/lodash/isString.js": 795,
+      "node_modules/lodash/_isIndex.js": 796,
+      "node_modules/lodash/_isPrototype.js": 797,
+      "node_modules/lodash/_getTag.js": 798,
+      "node_modules/lodash/_DataView.js": 799,
+      "node_modules/lodash/_Promise.js": 800,
+      "node_modules/lodash/_Set.js": 801,
+      "node_modules/lodash/_WeakMap.js": 802,
+      "node_modules/lodash/isTypedArray.js": 803,
+      "node_modules/lodash/_getMatchData.js": 804,
+      "node_modules/lodash/_isStrictComparable.js": 805,
+      "node_modules/lodash/toPairs.js": 806,
+      "node_modules/lodash/_createToPairs.js": 807,
+      "node_modules/lodash/_baseToPairs.js": 808,
+      "node_modules/lodash/_arrayMap.js": 809,
+      "node_modules/lodash/_setToPairs.js": 810,
+      "node_modules/lodash/_matchesStrictComparable.js": 811,
+      "node_modules/lodash/_baseMatchesProperty.js": 812,
+      "node_modules/lodash/hasIn.js": 813,
+      "node_modules/lodash/_baseHasIn.js": 814,
+      "node_modules/lodash/_hasPath.js": 815,
+      "node_modules/lodash/identity.js": 816,
+      "node_modules/lodash/property.js": 817,
+      "node_modules/lodash/_basePropertyDeep.js": 818,
+      "node_modules/lodash/toInteger.js": 819,
+      "node_modules/lodash/toFinite.js": 820,
+      "node_modules/lodash/constant.js": 821
     }
   },
   "nextFreeChunkId": 2,
