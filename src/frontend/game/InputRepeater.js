@@ -1,6 +1,8 @@
 import {INPUTS} from './constants';
 
 export default class InputRepeater {
+  // the # of frames for which an input must be held down until it repeats.
+  // different for each input, based on empirical testing
   static repeatIntervals = {
     [INPUTS.UP]: 24,
     [INPUTS.DOWN]: 4,
@@ -52,10 +54,11 @@ export default class InputRepeater {
   }
 
   _updateMoveCounters() {
-    _.each(this.movingCounters, (count, inputType) => {
-      this.movingDirections.has(inputType) ?
-        this.movingCounters[inputType]++ :
-        this.movingCounters[inputType] = 0;
-    });
+    const {movingCounters, movingDirections} = this;
+    for(const inputType in movingCounters) {
+      movingDirections.has(inputType) ?
+        movingCounters[inputType]++ :
+        movingCounters[inputType] = 0;
+    }
   }
 }
