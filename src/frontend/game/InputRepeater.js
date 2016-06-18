@@ -29,36 +29,33 @@ export default class InputRepeater {
   }
   
   tick(inputQueue = []) {
+    const {movingCounters, movingDirections} = this;
     let moveQueue = [];
     
     for(const {input, eventType} of inputQueue) {
-      if(eventType === 'keydown' && !this.movingDirections.has(input)) {
+      if(eventType === 'keydown' && !movingDirections.has(input)) {
         moveQueue.push(input);
-        this.movingDirections.add(input);
+        movingDirections.add(input);
 
       } else if(eventType === "keyup") {
-        this.movingDirections.delete(input);
+        movingDirections.delete(input);
       }
     }
     
-    for(const input of this.movingDirections) {
-      if(this.movingCounters[input] >= InputRepeater.repeatIntervals[input]) {
+    for(const input of movingDirections) {
+      if(movingCounters[input] >= InputRepeater.repeatIntervals[input]) {
         moveQueue.push(input);
-        this.movingCounters[input] = 0;
+        movingCounters[input] = 0;
       }
     }
-    
-    this._updateMoveCounters();
 
-    return moveQueue;
-  }
-
-  _updateMoveCounters() {
-    const {movingCounters, movingDirections} = this;
+    // update moving counters
     for(const inputType in movingCounters) {
       movingDirections.has(inputType) ?
         movingCounters[inputType]++ :
         movingCounters[inputType] = 0;
     }
+    
+    return moveQueue;
   }
 }
