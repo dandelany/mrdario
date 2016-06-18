@@ -4,9 +4,14 @@ import keyMirror from 'keymirror';
 import StateMachine  from 'javascript-state-machine';
 
 import {INPUTS, COLORS, GRAVITY_TABLE} from './constants';
-import {Playfield} from './Playfield';
 import InputRepeater from './InputRepeater';
-import {generatePillSequence} from './utils/generators';
+
+import {generatePillSequence, emptyGrid, generateEnemies} from './utils/generators';
+import {hasViruses} from './utils/grid';
+import {
+  givePill, movePill, slamPill, rotatePill, dropDebris, flagFallingCells, destroyLines, removeDestroyed,
+} from './utils/moves';
+
 
 function gravityFrames(speed) {
   return GRAVITY_TABLE[Math.min(speed, GRAVITY_TABLE.length - 1)];
@@ -64,6 +69,10 @@ export default class Game extends EventEmitter {
     {name: 'lose', from: Game.modes.READY, to: Game.modes.ENDED},
     {name: 'reset', from: '*', to: Game.modes.LOADING}
   ];
+  
+  static createInitialGrid(width, height, level) {
+    return generateEnemies(emptyGrid(width, height), level, COLORS);
+  }
 
   constructor(options = {}) {
     options = _.defaults({}, options, Game.defaultOptions);
@@ -72,12 +81,12 @@ export default class Game extends EventEmitter {
     Object.assign(this, options);
 
     // finite state machine representing game mode
-    this.modeMachine = StateMachine.create({
-      initial: Game.modes.LOADING,
-      events: Game.modeTransitions
-    });
+    this.modeMachine = this._initModeMachine();
+
     // the grid, single source of truth for game playfield state
-    this.playfield = new Playfield({width: options.width, height: options.height});
+    const {grid, virusCount} = Game.createInitialGrid(options.width, options.height, options.level);
+    Object.assign(this, {grid, origVirusCount: virusCount});
+
     // current score
     this.score = 0;
     // sequence of pill colors to use in the game, will be generated if not passed
@@ -105,17 +114,28 @@ export default class Game extends EventEmitter {
     // input repeater, takes raw inputs and repeats them if they are held down
     // returns the real sequence of moves used by the game
     this.inputRepeater = new InputRepeater();
+  }
+
+  _initModeMachine() {
+    // finite state machine representing game mode
+    const modeMachine = StateMachine.create({
+      initial: Game.modes.LOADING,
+      events: Game.modeTransitions
+    });
 
     // attach event callbacks to be called when the mode machine transitions between states
-    this.modeMachine.onplay = () => this.counters.playTicks = 0;
-    this.modeMachine.ondestroy = () => this.counters.destroyTicks = 0;
-    this.modeMachine.oncascade = () => this.counters.cascadeTicks = 0;
-    this.modeMachine.onwin = () => this.onWin();
-    this.modeMachine.onlose = () => this.onLose();
-    //this.modeMachine.onenterstate = (event, lastMode, newMode) => {
+    modeMachine.onplay = () => this.counters.playTicks = 0;
+    modeMachine.ondestroy = () => this.counters.destroyTicks = 0;
+    modeMachine.oncascade = () => this.counters.cascadeTicks = 0;
+    modeMachine.onwin = () => this.onWin();
+    modeMachine.onlose = () => this.onLose();
+
+    //modeMachine.onenterstate = (event, lastMode, newMode) => {
     //    console.log('playfield mode transition:', event, lastMode, newMode);
     //};
-    //this.modeMachine.onreset = (event, lastMode, newMode) => {};
+    //modeMachine.onreset = (event, lastMode, newMode) => {};
+
+    return modeMachine;
   }
 
   doMoves(moveQueue) {
@@ -123,25 +143,30 @@ export default class Game extends EventEmitter {
 
     for(const input of moveQueue) {
       // move/rotate the pill based on the move input
-      let didMove;
+      let grid, pill, didMove;
 
       if(input === INPUTS.UP) {
-        didMove = this.playfield.slamPill();
+        ({grid, pill, didMove} = slamPill(this.grid, this.pill));
         // reconcile immediately after slam
         shouldReconcile = true;
 
       } else if(_.includes([INPUTS.LEFT, INPUTS.RIGHT, INPUTS.DOWN], input)) {
-        const direction = (input === INPUTS.DOWN) ? 'down' :
+        const direction =
+          (input === INPUTS.DOWN) ? 'down' :
           (input === INPUTS.LEFT) ? 'left' : 'right';
-        didMove = this.playfield.movePill(direction);
+
+        ({grid, pill, didMove} = movePill(this.grid, this.pill, direction));
 
         // trying to move down, but couldn't; we are ready to reconcile
         if(input === INPUTS.DOWN && !didMove) shouldReconcile = true;
 
       } else if(_.includes([INPUTS.ROTATE_CCW, INPUTS.ROTATE_CW], input)) {
         const direction = (input === INPUTS.ROTATE_CCW) ? 'ccw' : 'cw';
-        didMove = this.playfield.rotatePill(direction);
+
+        ({grid, pill, didMove} = rotatePill(this.grid, this.pill, direction));
       }
+
+      if(didMove) Object.assign(this, {grid, pill});
     }
 
     return shouldReconcile;
@@ -172,8 +197,6 @@ export default class Game extends EventEmitter {
   }
 
   _tickLoading() {
-    const generated = this.playfield.generateViruses(this.level);
-    this.origVirusCount = generated.virusCount;
     this.modeMachine.loaded();
   }
 
@@ -198,8 +221,9 @@ export default class Game extends EventEmitter {
     if(this.counters.playTicks > this.playGravity
       && !this.inputRepeater.movingDirections.has(INPUTS.DOWN)) { // deactivate gravity while moving down
       this.counters.playTicks = 0;
-      const didMove = this.playfield.movePill('down');
+      const {grid, pill, didMove} = movePill(this.grid, this.pill, 'down');
       if(!didMove) shouldReconcile = true;
+      else Object.assign(this, {grid, pill});
     }
 
     // pill can't move any further, reconcile the board
@@ -209,7 +233,8 @@ export default class Game extends EventEmitter {
   _tickReconcile() {
     // playfield is locked, check for same-color lines
     // setting them to destroyed if they are found
-    const {hasLines, lines, destroyedCount, virusCount} = this.playfield.destroyLines();
+    const {grid, lines, hasLines, destroyedCount, virusCount} = destroyLines(this.grid);
+    this.grid = grid;
 
     if(hasLines)  {
       this.cascadeLineCount += lines.length;
@@ -218,10 +243,10 @@ export default class Game extends EventEmitter {
         (Math.pow(virusCount, this.cascadeLineCount) * 3 * 5);
     }
 
-    const hasViruses = this.playfield.hasViruses();
+    const gridHasViruses = hasViruses(this.grid);
 
     // killed all viruses, you win
-    if(!hasViruses) {
+    if(!gridHasViruses) {
       // lower levels get a bit more expected time (higher time bonus)
       // because viruses are far apart, bonus is harder to get
       const expectedTicksPerVirus = 320 + (Math.max(0, 40 - this.origVirusCount) * 3);
@@ -240,7 +265,7 @@ export default class Game extends EventEmitter {
     // stay in destruction state a few ticks to animate destruction
     if(this.counters.destroyTicks >= this.destroyTicks) {
       // empty the destroyed cells
-      this.playfield.removeDestroyed();
+      this.grid = removeDestroyed(this.grid);
       this.modeMachine.cascade();
     }
     this.counters.destroyTicks++;
@@ -249,17 +274,20 @@ export default class Game extends EventEmitter {
   _tickCascade() {
     if(this.counters.cascadeTicks === 0) {
       // check if there is any debris to drop
-      let {fallingCells} = this.playfield.flagFallingCells();
+      const {grid, fallingCells} = flagFallingCells(this.grid);
+      Object.assign(this, {grid});
       // nothing to drop, ready for another pill
       if(!fallingCells.length) this.modeMachine.ready();
 
     } else if(this.counters.cascadeTicks % this.cascadeGravity === 0) {
       // drop the cells for the current cascade
-      const dropped = this.playfield.dropDebris();
+      const dropped = dropDebris(this.grid);
+      this.grid = dropped.grid;
       // compute the next cascade
       // flag falling cells for next cascade so they are excluded by reconciler
       // (falling pieces cant make lines)
-      const next = this.playfield.flagFallingCells();
+      const next = flagFallingCells(this.grid);
+      this.grid = next.grid;
 
       if(next.fallingCells.length < dropped.fallingCells.length) {
         // some of the falling cells from this cascade have stopped
@@ -273,7 +301,8 @@ export default class Game extends EventEmitter {
   givePill() {
     const pillColors = this.pillSequence[this.counters.pillSequenceIndex];
     // try to add a new pill, false if blocked
-    const didGive = this.playfield.givePill(pillColors);
+    const {grid, pill, didGive} = givePill(this.grid, pillColors);
+    Object.assign(this, {grid, pill});
 
     if(didGive) {
       this.counters.pillSequenceIndex++; // todo no need to save this it can be derived from pillcount % length

@@ -151,7 +151,10 @@ export default class SingleGameController {
   }
   tickGame() {
     // tick the game, sending current queue of moves
+    // const start = performance.now();
     this.game.tick(this.moveInputQueue);
+    // const took = performance.now() - start;
+    // if(took > 1) console.log('game tick took ', took);
     this.moveInputQueue = [];
   }
 
@@ -159,7 +162,7 @@ export default class SingleGameController {
     // minimal description of game state to render
     return {
       mode: this.modeMachine.current,
-      grid: this.game.playfield.grid,
+      grid: this.game.grid,
       score: this.game.score,
       timeBonus: this.game.timeBonus
     };
