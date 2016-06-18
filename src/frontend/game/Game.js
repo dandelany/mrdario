@@ -107,7 +107,6 @@ export default class Game extends EventEmitter {
       playTicks: 0,
       cascadeTicks: 0,
       destroyTicks: 0,
-      pillSequenceIndex: 0,
       pillCount: 0
     };
 
@@ -204,16 +203,15 @@ export default class Game extends EventEmitter {
     this.cascadeLineCount = 0;
 
     // try to add a new pill
-    const pillColors = this.pillSequence[this.counters.pillSequenceIndex];
+    const {pillCount} = this.counters;
+    const pillSequenceIndex = pillCount % this.pillSequence.length;
+    const pillColors = this.pillSequence[pillSequenceIndex];
     const {grid, pill, didGive} = givePill(this.grid, pillColors);
     Object.assign(this, {grid, pill});
 
     if(didGive) {
       // got a new pill!
-      this.counters.pillSequenceIndex++; // todo no need to save this it can be derived from pillcount % length
-      if(this.counters.pillSequenceIndex == this.pillSequence.length) this.counters.pillSequenceIndex = 0;
       this.counters.pillCount++;
-
       this.modeMachine.play();
     } else {
       // didn't get a pill, the entrance is blocked and we lose
