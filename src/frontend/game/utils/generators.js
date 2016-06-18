@@ -66,7 +66,8 @@ export function generateVirus(grid, level, colors, remaining) {
 }
 
 export function minVirusRow(level) {
-  return MIN_VIRUS_ROW_TABLE[Math.min(level, MIN_VIRUS_ROW_TABLE.length - 1)];
+  // offset by +1 to account for the extra "true" top row
+  return MIN_VIRUS_ROW_TABLE[Math.min(level, MIN_VIRUS_ROW_TABLE.length - 1)] + 1;
 }
 
 export function nextGridCell([rowI, colI], numRows, numCols) {

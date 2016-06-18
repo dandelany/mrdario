@@ -8,9 +8,8 @@ import InputRepeater from './InputRepeater';
 
 import {generatePillSequence, emptyGrid, generateEnemies} from './utils/generators';
 import {hasViruses} from './utils/grid';
-import {
-  givePill, movePill, slamPill, rotatePill, dropDebris, flagFallingCells, destroyLines, removeDestroyed,
-} from './utils/moves';
+import {givePill, movePill, slamPill, rotatePill, dropDebris, flagFallingCells, destroyLines, removeDestroyed}
+  from './utils/moves';
 
 
 function gravityFrames(speed) {
@@ -71,7 +70,7 @@ export default class Game extends EventEmitter {
   ];
   
   static createInitialGrid(width, height, level) {
-    return generateEnemies(emptyGrid(width, height), level, COLORS);
+    return generateEnemies(emptyGrid(width, height + 1), level, COLORS);
   }
 
   constructor(options = {}) {
