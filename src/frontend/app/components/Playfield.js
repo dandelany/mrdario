@@ -49,13 +49,18 @@ export default class Playfield extends React.Component {
 
   render() {
     const grid = this.props.grid.toJS();
+    // first row of grid is "true" top row which is out of play and should be rendered above the playfield
+
     const numRows = grid.length;
     const numCols = grid[0].length;
     const cellSize = this.props.cellSize;
     const width = numCols * cellSize;
     const height = numRows * cellSize;
 
-    return <svg style={{width, height}}>
+    // translate svg up by one row to account for out-of-sight true top row
+    const style = {width, height, transform: `translate(0, ${-cellSize}px)`};
+
+    return <svg style={style}>
       {grid.map((row, rowI) => {
         return _.compact(row.map((cell, colI) => {
           // make individual SVGs for each non-empty grid element

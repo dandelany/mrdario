@@ -116,10 +116,11 @@ class SinglePlayerGame extends React.Component {
     const {cellSize, params} = this.props;
     // pass fractional padding to set padding to a fraction of cell size
     const padding = (padding < 1) ? this.props.padding * cellSize : this.props.padding;
-    const numRows = gameState ? gameState.grid.size : 16;
+    const numRows = gameState ? gameState.grid.size : 17;
     const numCols = gameState ? gameState.grid.get(0).size : 8;
     const width = (numCols * cellSize) + (padding * 2);
-    const height = (numRows * cellSize) + (padding * 2);
+    // make shorter by one row to account for special unplayable top row
+    const height = ((numRows - 1) * cellSize) + (padding * 2);
 
     const style = {position: 'relative', width, height, padding};
     const overlayStyle = {position: 'absolute', width, height, padding, left: 0};

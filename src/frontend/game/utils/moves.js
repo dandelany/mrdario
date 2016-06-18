@@ -15,17 +15,17 @@ import {makePillLeft, makePillRight, makeDestroyed, emptyObject} from './generat
 
 export function givePill(grid, pillColors) {
   // add new pill to grid
-  let row = grid.get(0);
-  const pillCol = Math.floor(row.size / 2) - 1;
-  const pill = [[0, pillCol], [0, pillCol+1]];
+  // added to row 1, because 0 is special "true" top row which is cleared every turn
+  const rowI = 1;
+  let row = grid.get(rowI);
+  const colI = Math.floor(row.size / 2) - 1;
+  const pill = [[rowI, colI], [rowI, colI+1]];
 
   if(!pill.every(cell => isEmpty(grid.getIn(cell))))
     return {grid, pill, didGive: false};
 
-  const pillLeft = makePillLeft(get(pillColors, '0.color'));
-  const pillRight = makePillRight(get(pillColors, '1.color'));
-  grid = grid.setIn([0, pillCol], pillLeft);
-  grid = grid.setIn([0, pillCol+1], pillRight);
+  grid = grid.setIn(pill[0], makePillLeft(get(pillColors, '0.color')));
+  grid = grid.setIn(pill[1], makePillRight(get(pillColors, '1.color')));
 
   return {grid, pill, didGive: true};
 }
@@ -159,7 +159,6 @@ export function destroyCell(grid, [rowI, colI]) {
 }
 export const destroyCells = (grid, cells) => updateCellsWith(grid, cells, destroyCell);
 
-
 export function removeCell(grid, [rowI, colI]) {
   // set grid cell to empty
   return grid.setIn([rowI, colI], emptyObject());
@@ -244,4 +243,16 @@ export function flagFallingCells(grid) {
   grid = grid.map(row => row.map(cell => cell.set('isFalling', false)));
   dropped.fallingCells.forEach(cell => grid = grid.setIn(cell.concat(['isFalling']), true));
   return {grid, fallingCells: dropped.fallingCells};
+}
+
+export function clearTopRow(grid) {
+  // clear all cells in the top row
+  const row = grid.get(0);
+  const cells = row.map((col, colI) => [0, colI]);
+  grid = removeCells(grid, cells);
+
+  // turn remaining widowed pill halves into rounded 1-square pill segments
+  grid = setPillSegments(grid, findWidows(grid));
+
+  return grid;
 }

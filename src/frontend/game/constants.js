@@ -1,3 +1,5 @@
+import times from 'lodash/times';
+import constant from 'lodash/constant';
 import keyMirror from 'keymirror';
 
 export const MODES = keyMirror({
@@ -86,7 +88,7 @@ export const GRAVITY_TABLE = [
 // http://tetrisconcept.net/wiki/Dr._Mario#Virus_Generation
 // highest row where viruses can be generated at virus level [index]
 // inverse of original because we count from top
-export const MIN_VIRUS_ROW_TABLE = _.times(14, _.constant(6)).concat([5, 5, 4, 4, 3, 3]);
+export const MIN_VIRUS_ROW_TABLE = times(14, constant(6)).concat([5, 5, 4, 4, 3, 3]);
 
 // http://www.gamefaqs.com/nes/587241-dr-mario/faqs/9483
 // # of viruses at virus level [index]

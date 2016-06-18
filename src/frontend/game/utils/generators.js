@@ -22,8 +22,8 @@ export function getLevelVirusCount(level) {
   return VIRUS_COUNT_TABLE[Math.min(level, VIRUS_COUNT_TABLE.length - 1)];
 }
 
-export function generateViruses(grid, level, colors) {
-  // generate random viruses in a (empty) grid
+export function generateEnemies(grid, level, colors) {
+  // generate random enemies in a (empty) grid
   // inspired by http://tetrisconcept.net/wiki/Dr._Mario#Virus_Generation
   let virusCount = getLevelVirusCount(level);
   const origVirusCount = virusCount;
@@ -66,7 +66,8 @@ export function generateVirus(grid, level, colors, remaining) {
 }
 
 export function minVirusRow(level) {
-  return MIN_VIRUS_ROW_TABLE[Math.min(level, MIN_VIRUS_ROW_TABLE.length - 1)];
+  // offset by +1 to account for the extra "true" top row
+  return MIN_VIRUS_ROW_TABLE[Math.min(level, MIN_VIRUS_ROW_TABLE.length - 1)] + 1;
 }
 
 export function nextGridCell([rowI, colI], numRows, numCols) {

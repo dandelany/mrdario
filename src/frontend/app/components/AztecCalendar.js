@@ -30,7 +30,7 @@ export default class AztecCalendar extends React.Component {
     },
     title: {
       colorSets: colorGroups,
-      cycleTime: 1000,
+      cycleTime: 1500,
       repeat: true
     },
     won: {
