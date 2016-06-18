@@ -8,8 +8,9 @@ import InputRepeater from './InputRepeater';
 
 import {generatePillSequence, emptyGrid, generateEnemies} from './utils/generators';
 import {hasViruses} from './utils/grid';
-import {givePill, movePill, slamPill, rotatePill, dropDebris, flagFallingCells, destroyLines, removeDestroyed}
-  from './utils/moves';
+import
+  {givePill, movePill, slamPill, rotatePill, dropDebris, flagFallingCells, destroyLines, removeDestroyed, clearTopRow}
+from './utils/moves';
 
 
 function gravityFrames(speed) {
@@ -243,6 +244,9 @@ export default class Game extends EventEmitter {
   }
 
   _tickReconcile() {
+    // clear top row first, to ensure player can't get lines from it
+    this.grid = clearTopRow(this.grid);
+
     // playfield is locked, check for same-color lines
     // setting them to destroyed if they are found
     const {grid, lines, hasLines, destroyedCount, virusCount} = destroyLines(this.grid);

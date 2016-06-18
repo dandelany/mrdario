@@ -159,7 +159,6 @@ export function destroyCell(grid, [rowI, colI]) {
 }
 export const destroyCells = (grid, cells) => updateCellsWith(grid, cells, destroyCell);
 
-
 export function removeCell(grid, [rowI, colI]) {
   // set grid cell to empty
   return grid.setIn([rowI, colI], emptyObject());
@@ -244,4 +243,16 @@ export function flagFallingCells(grid) {
   grid = grid.map(row => row.map(cell => cell.set('isFalling', false)));
   dropped.fallingCells.forEach(cell => grid = grid.setIn(cell.concat(['isFalling']), true));
   return {grid, fallingCells: dropped.fallingCells};
+}
+
+export function clearTopRow(grid) {
+  // clear all cells in the top row
+  const row = grid.get(0);
+  const cells = row.map((col, colI) => [0, colI]);
+  grid = removeCells(grid, cells);
+
+  // turn remaining widowed pill halves into rounded 1-square pill segments
+  grid = setPillSegments(grid, findWidows(grid));
+
+  return grid;
 }
