@@ -201,10 +201,23 @@ export default class Game extends EventEmitter {
 
   _tickReady() {
     this.cascadeLineCount = 0;
-    // try to add a pill to the playfield
-    if(this.givePill()) this.modeMachine.play();
-    // if it didn't work, pill entrance is blocked and we lose
-    else this.modeMachine.lose();
+
+    // try to add a new pill
+    const pillColors = this.pillSequence[this.counters.pillSequenceIndex];
+    const {grid, pill, didGive} = givePill(this.grid, pillColors);
+    Object.assign(this, {grid, pill});
+
+    if(didGive) {
+      // got a new pill!
+      this.counters.pillSequenceIndex++; // todo no need to save this it can be derived from pillcount % length
+      if(this.counters.pillSequenceIndex == this.pillSequence.length) this.counters.pillSequenceIndex = 0;
+      this.counters.pillCount++;
+
+      this.modeMachine.play();
+    } else {
+      // didn't get a pill, the entrance is blocked and we lose
+      this.modeMachine.lose();
+    }
   }
 
   _tickPlaying(moveQueue) {
@@ -295,19 +308,5 @@ export default class Game extends EventEmitter {
       }
     }
     this.counters.cascadeTicks++;
-  }
-
-  givePill() {
-    const pillColors = this.pillSequence[this.counters.pillSequenceIndex];
-    // try to add a new pill, false if blocked
-    const {grid, pill, didGive} = givePill(this.grid, pillColors);
-    Object.assign(this, {grid, pill});
-
-    if(didGive) {
-      this.counters.pillSequenceIndex++; // todo no need to save this it can be derived from pillcount % length
-      if(this.counters.pillSequenceIndex == this.pillSequence.length) this.counters.pillSequenceIndex = 0;
-      this.counters.pillCount++;
-    }
-    return didGive;
   }
 }
