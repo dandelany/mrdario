@@ -244,7 +244,8 @@ export default class Game extends EventEmitter {
   }
 
   _tickReconcile() {
-    // clear top row first, to ensure player can't get lines from it
+    // clear the true top row, in case any pills have been rotated up into it and stuck into place
+    // do this first to ensure player can't get lines from it
     this.grid = clearTopRow(this.grid);
 
     // playfield is locked, check for same-color lines
