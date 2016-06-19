@@ -58,7 +58,9 @@ module.exports.run = function (worker) {
     socket.on('disconnect', function () {
       console.log('DISCONNECT: ', socketInfoStr(socket));
     });
-
+    socket.on('error', (err) => {
+      console.log('ERROR ', err.name, err.message, ': ',  socketInfoStr(socket));
+    });
 
     socket.on('singleGameScore', (data, res) => {
       scoreUtils.handleSingleScore(rClient, data, function(err, rank, scoreInfo) {
