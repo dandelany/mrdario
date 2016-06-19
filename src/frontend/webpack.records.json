@@ -224,9 +224,24 @@
         "byName": {},
         "byBlocks": {}
       }
+    },
+    {
+      "nextFreeModuleId": 3,
+      "modules": {
+        "byIdentifier": {
+          "node_modules/html-webpack-plugin/lib/loader.js!app/index.ejs": 0,
+          "node_modules/lodash/lodash.js": 1,
+          "node_modules/webpack/buildin/module.js": 2
+        }
+      },
+      "nextFreeChunkId": 1,
+      "chunks": {
+        "byName": {},
+        "byBlocks": {}
+      }
     }
   ],
-  "nextFreeModuleId": 822,
+  "nextFreeModuleId": 831,
   "modules": {
     "byIdentifier": {
       "multi app": 0,
@@ -1051,7 +1066,16 @@
       "node_modules/lodash/_basePropertyDeep.js": 818,
       "node_modules/lodash/toInteger.js": 819,
       "node_modules/lodash/toFinite.js": 820,
-      "node_modules/lodash/constant.js": 821
+      "node_modules/lodash/constant.js": 821,
+      "node_modules/less-loader/stringify.loader.js!app/styles/settings.less": 822,
+      "node_modules/less-loader/stringify.loader.js!app/styles/game.less": 823,
+      "node_modules/babel-loader/index.js!node_modules/gamepad-plus/src/index.js": 824,
+      "node_modules/babel-loader/index.js!node_modules/gamepad-plus/src/lib/gamepads.js": 825,
+      "node_modules/babel-loader/index.js!node_modules/gamepad-plus/src/lib/event_emitter.js": 826,
+      "node_modules/babel-loader/index.js!node_modules/gamepad-plus/src/lib/utils.js": 827,
+      "node_modules/babel-loader/index.js!app/utils/makeReactSvg.js": 828,
+      "node_modules/babel-loader/index.js!app/components/game/PillPart.js": 829,
+      "node_modules/babel-loader/index.js!app/components/game/PillPreviewPanel.js": 830
     }
   },
   "nextFreeChunkId": 2,
