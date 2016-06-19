@@ -6,6 +6,10 @@
   font-size: 2.3vh;
 }
 
+.game-playfield-container {
+  display: inline-block;
+  position: relative;
+}
 .game-playfield {
   margin: 6.75vh auto 0;
   background: @beige;
@@ -19,8 +23,8 @@
   position: absolute;
   display: inline-block;
   top: 53%;
-  left: 63%;
-  transform: translate(0, -50%);
+  right: -20px;
+  transform: translate(100%, -50%);
   padding: 12px 18px;
   font-weight: bold;
 
@@ -31,7 +35,8 @@
   .game-panel;
   position: absolute;
   top: 30%;
-  left: 63%;
+  right: -20px;
+  transform: translate(100%, -50%);
 
   h5 { margin: 0 0 0.2em; }
 }

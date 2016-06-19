@@ -135,7 +135,7 @@ class SinglePlayerGame extends React.Component {
       nextPill = gameState.pillSequence[pillIndex];
     }
 
-    return <div>
+    return <div className="game-playfield-container">
       <div {...{style, className: 'game-playfield'}}>
         <WonOverlay {...{gameState, highScores, rank, params, style: wonOverlayStyle}} />
         <LostOverlay {...{gameState, params, style: lostOverlayStyle}} />
