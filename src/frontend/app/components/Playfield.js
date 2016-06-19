@@ -14,9 +14,6 @@ import destroyed from 'raw!app/svg/destroyed.svg';
 
 const viruses = [virusOrange, virusPurple, virusGreen];
 
-const pillHalfTypes =
-  [GRID_OBJECTS.PILL_TOP, GRID_OBJECTS.PILL_BOTTOM, GRID_OBJECTS.PILL_LEFT, GRID_OBJECTS.PILL_RIGHT];
-
 
 export default class Playfield extends React.Component {
   static defaultProps = {
@@ -49,20 +46,26 @@ export default class Playfield extends React.Component {
           let svgString;
           let transform = `translate(${colI * cellSize}, ${rowI * cellSize})`;
 
-          if(cell.type === GRID_OBJECTS.VIRUS) {
-            svgString = viruses[cell.color % viruses.length];
+          switch(cell.type) {
+            case GRID_OBJECTS.VIRUS:
+              svgString = viruses[cell.color % viruses.length];
+              break;
 
-          } else if(cell.type === GRID_OBJECTS.DESTROYED) {
-            svgString = destroyed;
+            case GRID_OBJECTS.DESTROYED:
+              svgString = destroyed;
+              break;
 
-          } else if(cell.type === GRID_OBJECTS.PILL_SEGMENT || _.includes(pillHalfTypes, cell.type)) {
-
-            const {type, color} = cell;
-            return <PillPart {...{
-              type, color, cellSize,
-              gProps: {transform},
-              svgProps: {width: cellSize, height: cellSize}}}
-            />;
+            case GRID_OBJECTS.PILL_SEGMENT:
+            case GRID_OBJECTS.PILL_TOP:
+            case GRID_OBJECTS.PILL_RIGHT:
+            case GRID_OBJECTS.PILL_BOTTOM:
+            case GRID_OBJECTS.PILL_LEFT:
+              const {type, color} = cell;
+              return <PillPart {...{
+                type, color, cellSize,
+                gProps: {transform},
+                svgProps: {width: cellSize, height: cellSize}}}
+              />;
           }
 
           return svgString ?

@@ -235,7 +235,6 @@ export default class Game extends EventEmitter {
     // gravity pulling pill down
     if(this.counters.playTicks > this.playGravity
       && !this.inputRepeater.movingDirections.has(INPUTS.DOWN)) { // deactivate gravity while moving down
-      console.log('gravity is', this.playGravity);
       this.counters.playTicks = 0;
       const {grid, pill, didMove} = movePill(this.grid, this.pill, 'down');
       if(!didMove) shouldReconcile = true;
