@@ -13,7 +13,7 @@ export default class SwipeManager extends EventEmitter {
   registerControls() {
     this.mc.add([
       // new Hammer.Swipe({direction: Hammer.DIRECTION_ALL}),
-      new Hammer.Pan({direction: Hammer.DIRECTION_ALL, threshold: 50}),
+      new Hammer.Pan({direction: Hammer.DIRECTION_ALL, threshold: 35}),
       new Hammer.Tap({ event: 'singletap' })
 
     ]);
