@@ -53,14 +53,6 @@ class SinglePlayerGame extends React.Component {
   }
 
   shouldComponentUpdate(newProps, newState) {
-    const {gameState} = newState;
-    if(gameState && gameState.pillSequence && _.isFinite(gameState.pillCount) &&
-      gameState.pillCount !== _.get(this.state, 'gameState.pillCount')) {
-      const pillIndex = gameState.pillCount % gameState.pillSequence.length;
-      const nextPill = gameState.pillSequence[pillIndex];
-      console.log('nextPill', nextPill);
-    }
-
     const hasChanged =
       !_.every(newState, (value, key) => shallowEqual(value, this.state[key])) ||
       !shallowEqual(newProps, this.props);
