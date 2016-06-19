@@ -159,12 +159,12 @@ export default class SingleGameController {
   }
 
   getState() {
+    const {grid, pillCount, pillSequence, score, timeBonus} = this.game;
     // minimal description of game state to render
     return {
       mode: this.modeMachine.current,
-      grid: this.game.grid,
-      score: this.game.score,
-      timeBonus: this.game.timeBonus
+      pillCount: this.game.counters.pillCount,
+      grid, pillSequence, score, timeBonus
     };
   }
 
