@@ -33,6 +33,8 @@ export default class Game extends EventEmitter {
     cascadeSpeed: 20,
     // time delay (in # of ticks) pills being destroyed stay in "destroyed" state before cascading
     destroyTicks: 20,
+    // after every accelerateInterval pills, gravity speed is increased by one
+    accelerateInterval: 10,
     // callbacks called when grid changes, game is won, or game is lost
     onChange: _.noop,
     onWin: _.noop,
@@ -92,11 +94,8 @@ export default class Game extends EventEmitter {
     // sequence of pill colors to use in the game, will be generated if not passed
     this.pillSequence = options.pillSequence || generatePillSequence(COLORS);
 
-    // value representing pill fall speed, increases over time
-    this.playSpeed = options.baseSpeed;
-    // increments every 10 capsules to speed up over time
-    this.speedCounter = 0;
     // lookup speed in gravityTable to get # of frames it takes to fall 1 row
+    // increases over time due to accelerateInterval
     this.playGravity = gravityFrames(options.baseSpeed);
     // # of frames it takes debris to fall 1 row during cascade
     this.cascadeGravity = gravityFrames(options.cascadeSpeed);
@@ -212,6 +211,11 @@ export default class Game extends EventEmitter {
     if(didGive) {
       // got a new pill!
       this.counters.pillCount++;
+
+      // update speed to match # of given pills
+      const speed = this.baseSpeed + Math.floor(this.counters.pillCount / this.accelerateInterval);
+      this.playGravity = gravityFrames(speed);
+
       this.modeMachine.play();
     } else {
       // didn't get a pill, the entrance is blocked and we lose
@@ -231,6 +235,7 @@ export default class Game extends EventEmitter {
     // gravity pulling pill down
     if(this.counters.playTicks > this.playGravity
       && !this.inputRepeater.movingDirections.has(INPUTS.DOWN)) { // deactivate gravity while moving down
+      console.log('gravity is', this.playGravity);
       this.counters.playTicks = 0;
       const {grid, pill, didMove} = movePill(this.grid, this.pill, 'down');
       if(!didMove) shouldReconcile = true;
