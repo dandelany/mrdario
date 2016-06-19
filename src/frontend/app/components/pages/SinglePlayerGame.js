@@ -5,7 +5,7 @@ import DeepDiff from 'deep-diff';
 const deepDiff = DeepDiff.diff;
 import shallowEqual from '../../utils/shallowEqual';
 
-import {MODES, DEFAULT_KEYS} from 'game/constants';
+import {MODES, DEFAULT_KEYS, GRID_OBJECTS} from 'game/constants';
 
 import KeyManager from 'app/inputs/KeyManager';
 import SwipeManager from 'app/inputs/SwipeManager';
@@ -14,6 +14,7 @@ import SingleGameController from 'game/SingleGameController.js';
 //import SinglePlayerGameController from 'game/SinglePlayerNetworkGameController';
 
 import Playfield from 'app/components/Playfield';
+import PillPreviewPanel from 'app/components/game/PillPreviewPanel';
 import WonOverlay from 'app/components/overlays/WonOverlay';
 import LostOverlay from 'app/components/overlays/LostOverlay';
 import responsiveGame from 'app/components/responsiveGame';
@@ -37,7 +38,7 @@ class SinglePlayerGame extends React.Component {
     if(!this.props.params.mode) this._initGame(this.props);
   }
   componentWillUnmount() {
-    this.props.socket.off('singleHighScores', this._highScoreHandler);
+    // this.props.socket.off('singleHighScores', this._highScoreHandler);
     if(this.game && this.game.cleanup) this.game.cleanup();
   }
 
@@ -52,6 +53,14 @@ class SinglePlayerGame extends React.Component {
   }
 
   shouldComponentUpdate(newProps, newState) {
+    const {gameState} = newState;
+    if(gameState && gameState.pillSequence && _.isFinite(gameState.pillCount) &&
+      gameState.pillCount !== _.get(this.state, 'gameState.pillCount')) {
+      const pillIndex = gameState.pillCount % gameState.pillSequence.length;
+      const nextPill = gameState.pillSequence[pillIndex];
+      console.log('nextPill', nextPill);
+    }
+
     const hasChanged =
       !_.every(newState, (value, key) => shallowEqual(value, this.state[key])) ||
       !shallowEqual(newProps, this.props);
@@ -127,21 +136,35 @@ class SinglePlayerGame extends React.Component {
 
     const lostOverlayStyle = {...overlayStyle, top: (params.mode === "lost") ? 0 : height};
     const wonOverlayStyle = {...overlayStyle, top: (params.mode === "won") ? 0 : height};
+    
+    let nextPill;
+    if(gameState && gameState.pillSequence && _.isFinite(gameState.pillCount)) {
+      const pillIndex = gameState.pillCount % gameState.pillSequence.length;
+      nextPill = gameState.pillSequence[pillIndex];
+    }
 
-    return <div {...{style, className: 'game-playfield'}}>
-      <WonOverlay {...{gameState, highScores, rank, params, style: wonOverlayStyle}} />
-      <LostOverlay {...{gameState, params, style: lostOverlayStyle}} />
-      {hasGrid ?
-        <Playfield grid={gameState.grid} cellSize={cellSize} />
-        : ''}
-
+    return <div>
+      <div {...{style, className: 'game-playfield'}}>
+        <WonOverlay {...{gameState, highScores, rank, params, style: wonOverlayStyle}} />
+        <LostOverlay {...{gameState, params, style: lostOverlayStyle}} />
+        {hasGrid ?
+          <Playfield grid={gameState.grid} cellSize={cellSize} />
+          : ''}
+      </div>
+      
       {gameState ?
         <div className="score-panel">
+          <h5>SCORE</h5>
           {gameState.score}
         </div>
-        : ''
+        : null
       }
-    </div>
+      
+      {nextPill ?
+        <PillPreviewPanel {...{cellSize, pill: nextPill}} />
+        : null
+      }
+    </div>;
   }
 }
 

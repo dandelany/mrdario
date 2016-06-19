@@ -54,15 +54,11 @@ module.exports = {
       {
         test: /\.jsx?$/,
         loaders: ['babel-loader'],
-        // loader: 'babel?' + JSON.stringify(babelSettings),
-        // exclude: /node_modules/,
-
         include: [
           path.join(__dirname, 'app'),
           path.join(__dirname, 'game'),
-          // path.join(__dirname, '../game')
-        ],
-
+          path.join(__dirname, 'node_modules/gamepad-plus/src')
+        ]
       },
       {
         test: /\.less?$/,

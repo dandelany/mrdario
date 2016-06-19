@@ -1,6 +1,7 @@
 import inRange from 'lodash/inRange';
 import {EventEmitter} from 'events';
-import Gamepads from 'gamepad-plus';
+// import Gamepads from 'gamepad-plus';
+import Gamepads from 'gamepad-plus/src';
 
 import {INPUTS} from 'game/constants';
 
@@ -137,8 +138,8 @@ export default class GamepadManager extends EventEmitter {
         });
 
         window.addEventListener('gamepadbuttondown', (e) => {
-          console.log('Gamepad button down at index %d: %s. Button: %d.',
-            e.gamepad.index, e.gamepad.id, e.button);
+          // console.log('Gamepad button down at index %d: %s. Button: %d.',
+          //   e.gamepad.index, e.gamepad.id, e.button);
 
           const {button} = e;
           // extra rotate button on SNES style button pads
@@ -150,8 +151,8 @@ export default class GamepadManager extends EventEmitter {
         });
 
         window.addEventListener('gamepadbuttonup', (e) => {
-          console.log('Gamepad button up at index %d: %s. Button: %d.',
-            e.gamepad.index, e.gamepad.id, e.button);
+          // console.log('Gamepad button up at index %d: %s. Button: %d.',
+          //   e.gamepad.index, e.gamepad.id, e.button);
 
           const {button} = e;
           if(button === 0 || button === 4) {
