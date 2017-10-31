@@ -5,12 +5,12 @@ import makeReactSvg from 'app/utils/makeReactSvg';
 
 import { GRID_OBJECTS, COLORS } from 'game/constants';
 
-import pillHalfOrange from 'raw!app/svg/pill_half_orange.svg';
-import pillHalfPurple from 'raw!app/svg/pill_half_purple.svg';
-import pillHalfGreen from 'raw!app/svg/pill_half_green.svg';
-import pillSegmentOrange from 'raw!app/svg/pill_segment_orange.svg';
-import pillSegmentPurple from 'raw!app/svg/pill_segment_purple.svg';
-import pillSegmentGreen from 'raw!app/svg/pill_segment_green.svg';
+import pillHalfOrange from 'raw-loader!app/svg/pill_half_orange.svg';
+import pillHalfPurple from 'raw-loader!app/svg/pill_half_purple.svg';
+import pillHalfGreen from 'raw-loader!app/svg/pill_half_green.svg';
+import pillSegmentOrange from 'raw-loader!app/svg/pill_segment_orange.svg';
+import pillSegmentPurple from 'raw-loader!app/svg/pill_segment_purple.svg';
+import pillSegmentGreen from 'raw-loader!app/svg/pill_segment_green.svg';
 
 const pillHalfSvgs = [pillHalfOrange, pillHalfPurple, pillHalfGreen];
 const pillHalves = _.fromPairs(COLORS.map((color, i) => [color, pillHalfSvgs[i % pillHalfSvgs.length]]));

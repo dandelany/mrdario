@@ -35,25 +35,25 @@ module.exports = {
     new HtmlPlugin({
       template: 'app/index.ejs'
     }),
-    new webpack.NoErrorsPlugin()
+    new webpack.NoEmitOnErrorsPlugin()
   ],
   resolve: {
-    root: [
+    modules: [
       path.join(__dirname, '.'),
-      // path.join(__dirname, '..')
+      'node_modules'
     ],
-    alias: {
+    // alias: {
       // app: "frontend",
       // game: "game"
-    },
+    // },
 
-    extensions: ['', '.js', '.jsx']
+    extensions: ['.js', '.jsx']
   },
   module: {
-    loaders: [
+    rules: [
       {
         test: /\.jsx?$/,
-        loaders: ['babel-loader'],
+        use: ['babel-loader'],
         include: [
           path.join(__dirname, 'app'),
           path.join(__dirname, 'game'),
@@ -62,15 +62,26 @@ module.exports = {
       },
       {
         test: /\.less?$/,
-        loader: "style!css!less"
+        use: [
+          'style-loader',
+          'css-loader',
+          'less-loader'
+        ]
       },
       {
         test: /.*img\/.*\.svg$/,
-        loaders: [
-          "file?name=svg/[name].[hash:7].[ext]",
-          'svgo-loader'
+        use: [
+          "file-loader?name=svg/[name].[hash:7].[ext]",
+          {
+            loader: 'svgo-loader',
+            options: {
+              plugins: [
+                {removeViewBox: false}
+              ]
+            }
+          }
         ]
       }
-    ]
+    ],
   }
 };

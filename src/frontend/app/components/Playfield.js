@@ -7,10 +7,10 @@ import PillPart from 'app/components/game/PillPart';
 
 import { GRID_OBJECTS } from 'game/constants';
 
-import virusOrange from 'raw!app/svg/virus_orange.svg';
-import virusPurple from 'raw!app/svg/virus_purple.svg';
-import virusGreen from 'raw!app/svg/virus_green.svg';
-import destroyed from 'raw!app/svg/destroyed.svg';
+import virusOrange from 'raw-loader!app/svg/virus_orange.svg';
+import virusPurple from 'raw-loader!app/svg/virus_purple.svg';
+import virusGreen from 'raw-loader!app/svg/virus_green.svg';
+import destroyed from 'raw-loader!app/svg/destroyed.svg';
 
 const viruses = [virusOrange, virusPurple, virusGreen];
 

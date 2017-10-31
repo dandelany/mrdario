@@ -10,7 +10,6 @@ config = _.merge(config, {
       'process.env.NODE_ENV': '"production"'
     }),
     new CleanPlugin(['build/frontend'], { root: path.resolve(__dirname , '../..'), verbose: true }),
-    new webpack.optimize.DedupePlugin(),
     new webpack.optimize.UglifyJsPlugin(),
     new webpack.optimize.CommonsChunkPlugin({
       name: 'vendor',
