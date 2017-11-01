@@ -1,16 +1,17 @@
 import _ from 'lodash';
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import SVGShimmerFills from 'app/components/lib/SVGShimmerFills';
 
 export default class SVGShimmerCycler extends React.Component {
   static propTypes = {
-    svgPath: React.PropTypes.string,
-    width: React.PropTypes.number,
-    height: React.PropTypes.number,
-    colorSets: React.PropTypes.array,
-    cycleTime: React.PropTypes.number,
-    repeat: React.PropTypes.bool
+    svgPath: PropTypes.string,
+    width: PropTypes.number,
+    height: PropTypes.number,
+    colorSets: PropTypes.array,
+    cycleTime: PropTypes.number,
+    repeat: PropTypes.bool
   };
   static defaultProps = {
     width: 600,

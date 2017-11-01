@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import SVGShimmerCycler from 'app/components/lib/SVGShimmerCycler'
 
@@ -13,7 +14,7 @@ const colorGroups = [undefined, oranges, greens, purples];
 
 export default class AztecCalendar extends React.Component {
   static propTypes = {
-    mode: React.PropTypes.oneOf([undefined, 'title', 'won', 'lost'])
+    mode: PropTypes.oneOf([undefined, 'title', 'won', 'lost'])
   };
 
   static defaultProps = {

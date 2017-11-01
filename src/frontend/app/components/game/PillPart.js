@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import React from 'react';
+import PropTypes from 'prop-types';
 import shallowEqual from 'app/utils/shallowEqual';
 import makeReactSvg from 'app/utils/makeReactSvg';
 
@@ -30,11 +31,11 @@ const pillHalfRotations = {
 
 export default class PillPart extends React.Component {
   static propTypes = {
-    type: React.PropTypes.oneOf([GRID_OBJECTS.PILL_SEGMENT, ...pillHalfTypes]).isRequired,
-    color: React.PropTypes.oneOf(COLORS),
-    cellSize: React.PropTypes.any,
-    gProps: React.PropTypes.object,
-    svgProps: React.PropTypes.object
+    type: PropTypes.oneOf([GRID_OBJECTS.PILL_SEGMENT, ...pillHalfTypes]).isRequired,
+    color: PropTypes.oneOf(COLORS),
+    cellSize: PropTypes.any,
+    gProps: PropTypes.object,
+    svgProps: PropTypes.object
   };
   static defaultProps = {
     color: COLORS[0],

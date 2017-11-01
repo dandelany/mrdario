@@ -33,10 +33,6 @@ add-dom-event-listener@1.x:
   dependencies:
     object-assign "4.x"
 
-after@0.8.1:
-  version "0.8.1"
-  resolved "http://artifactory.spotify.net/artifactory/api/npm/virtual-npm/after/-/after-0.8.1.tgz#ab5d4fb883f596816d3515f8f791c0af486dd627"
-
 ajv-keywords@^2.0.0:
   version "2.1.1"
   resolved "http://artifactory.spotify.net/artifactory/api/npm/virtual-npm/ajv-keywords/-/ajv-keywords-2.1.1.tgz#617997fc5f60576894c435f940d819e135b80762"
@@ -171,10 +167,6 @@ array-uniq@^1.0.0, array-uniq@^1.0.1, array-uniq@^1.0.2:
 array-unique@^0.2.1:
   version "0.2.1"
   resolved "http://artifactory.spotify.net/artifactory/api/npm/virtual-npm/array-unique/-/array-unique-0.2.1.tgz#a1d97ccafcbc2625cc70fadceb36a50c58b01a53"
-
-arraybuffer.slice@0.0.6:
-  version "0.0.6"
-  resolved "http://artifactory.spotify.net/artifactory/api/npm/virtual-npm/arraybuffer.slice/-/arraybuffer.slice-0.0.6.tgz#f33b2159f0532a3f3107a272c0ccfbd1ad2979ca"
 
 asap@~2.0.3:
   version "2.0.6"
@@ -778,10 +770,6 @@ babylon@^6.18.0:
   version "6.18.0"
   resolved "http://artifactory.spotify.net/artifactory/api/npm/virtual-npm/babylon/-/babylon-6.18.0.tgz#af2f3b88fa6f5c1e4c634d1a0f8eac4f55b395e3"
 
-backo2@1.0.2:
-  version "1.0.2"
-  resolved "http://artifactory.spotify.net/artifactory/api/npm/virtual-npm/backo2/-/backo2-1.0.2.tgz#31ab1ac8b129363463e35b3ebb69f4dfcfba7947"
-
 balanced-match@^0.4.2:
   version "0.4.2"
   resolved "http://artifactory.spotify.net/artifactory/api/npm/virtual-npm/balanced-match/-/balanced-match-0.4.2.tgz#cb3f3e3c732dc0f01ee70b403f302e61d7709838"
@@ -797,10 +785,6 @@ base-64@0.1.0:
 base62@^1.1.0:
   version "1.2.0"
   resolved "http://artifactory.spotify.net/artifactory/api/npm/virtual-npm/base62/-/base62-1.2.0.tgz#31e7e560dc846c9f44c1a531df6514da35474157"
-
-base64-arraybuffer@0.1.2:
-  version "0.1.2"
-  resolved "http://artifactory.spotify.net/artifactory/api/npm/virtual-npm/base64-arraybuffer/-/base64-arraybuffer-0.1.2.tgz#474df4a9f2da24e05df3158c3b1db3c3cd46a154"
 
 base64-js@^1.0.2:
   version "1.2.1"
@@ -819,16 +803,6 @@ bcrypt-pbkdf@^1.0.0:
 beeper@^1.0.0:
   version "1.1.1"
   resolved "http://artifactory.spotify.net/artifactory/api/npm/virtual-npm/beeper/-/beeper-1.1.1.tgz#e6d5ea8c5dad001304a70b22638447f69cb2f809"
-
-benchmark@1.0.0:
-  version "1.0.0"
-  resolved "http://artifactory.spotify.net/artifactory/api/npm/virtual-npm/benchmark/-/benchmark-1.0.0.tgz#2f1e2fa4c359f11122aa183082218e957e390c73"
-
-better-assert@~1.0.0:
-  version "1.0.2"
-  resolved "http://artifactory.spotify.net/artifactory/api/npm/virtual-npm/better-assert/-/better-assert-1.0.2.tgz#40866b9e1b9e0b55b481894311e68faffaebc522"
-  dependencies:
-    callsite "1.0.0"
 
 big.js@^3.1.3:
   version "3.2.0"
@@ -887,10 +861,6 @@ bl@^1.0.0:
   resolved "http://artifactory.spotify.net/artifactory/api/npm/virtual-npm/bl/-/bl-1.2.1.tgz#cac328f7bee45730d404b692203fcb590e172d5e"
   dependencies:
     readable-stream "^2.0.5"
-
-blob@0.0.4:
-  version "0.0.4"
-  resolved "http://artifactory.spotify.net/artifactory/api/npm/virtual-npm/blob/-/blob-0.0.4.tgz#bcf13052ca54463f30f9fc7e95b9a47630a94921"
 
 block-stream@*:
   version "0.0.9"
@@ -1060,10 +1030,6 @@ builtin-status-codes@^3.0.0:
 bytes@3.0.0:
   version "3.0.0"
   resolved "http://artifactory.spotify.net/artifactory/api/npm/virtual-npm/bytes/-/bytes-3.0.0.tgz#d32815404d689699f85a4ea4fa8755dd13a96048"
-
-callsite@1.0.0:
-  version "1.0.0"
-  resolved "http://artifactory.spotify.net/artifactory/api/npm/virtual-npm/callsite/-/callsite-1.0.0.tgz#280398e5d664bd74038b6f0905153e6e8af1bc20"
 
 camel-case@3.0.x:
   version "3.0.0"
@@ -1320,19 +1286,11 @@ commoner@^0.10.1:
     q "^1.1.2"
     recast "^0.11.17"
 
-component-bind@1.0.0:
-  version "1.0.0"
-  resolved "http://artifactory.spotify.net/artifactory/api/npm/virtual-npm/component-bind/-/component-bind-1.0.0.tgz#00c608ab7dcd93897c0009651b1d3a8e1e73bbd1"
-
 component-classes@^1.2.5:
   version "1.2.6"
   resolved "http://artifactory.spotify.net/artifactory/api/npm/virtual-npm/component-classes/-/component-classes-1.2.6.tgz#c642394c3618a4d8b0b8919efccbbd930e5cd691"
   dependencies:
     component-indexof "0.0.3"
-
-component-emitter@1.1.2:
-  version "1.1.2"
-  resolved "http://artifactory.spotify.net/artifactory/api/npm/virtual-npm/component-emitter/-/component-emitter-1.1.2.tgz#296594f2753daa63996d2af08d15a95116c9aec3"
 
 component-emitter@1.2.0:
   version "1.2.0"
@@ -1341,10 +1299,6 @@ component-emitter@1.2.0:
 component-indexof@0.0.3:
   version "0.0.3"
   resolved "http://artifactory.spotify.net/artifactory/api/npm/virtual-npm/component-indexof/-/component-indexof-0.0.3.tgz#11d091312239eb8f32c8f25ae9cb002ffe8d3c24"
-
-component-inherit@0.0.3:
-  version "0.0.3"
-  resolved "http://artifactory.spotify.net/artifactory/api/npm/virtual-npm/component-inherit/-/component-inherit-0.0.3.tgz#645fc4adf58b72b649d5cae65135619db26ff143"
 
 compressible@~2.0.11:
   version "2.0.12"
@@ -1463,7 +1417,7 @@ create-hmac@^1.1.0, create-hmac@^1.1.2, create-hmac@^1.1.4:
     safe-buffer "^5.0.1"
     sha.js "^2.4.8"
 
-create-react-class@15.x, create-react-class@^15.6.0:
+create-react-class@15.x, create-react-class@^15.6.0, create-react-class@^15.6.2:
   version "15.6.2"
   resolved "http://artifactory.spotify.net/artifactory/api/npm/virtual-npm/create-react-class/-/create-react-class-15.6.2.tgz#cf1ed15f12aad7f14ef5f2dfe05e6c42f91ef02a"
   dependencies:
@@ -1662,12 +1616,6 @@ date-now@^0.1.4:
 dateformat@^2.0.0:
   version "2.2.0"
   resolved "http://artifactory.spotify.net/artifactory/api/npm/virtual-npm/dateformat/-/dateformat-2.2.0.tgz#4065e2013cf9fb916ddfd82efb506ad4c6769062"
-
-debug@2.2.0:
-  version "2.2.0"
-  resolved "http://artifactory.spotify.net/artifactory/api/npm/virtual-npm/debug/-/debug-2.2.0.tgz#f87057e995b1a1f6ae6a4960664137bc56f039da"
-  dependencies:
-    ms "0.7.1"
 
 debug@2.6.9, debug@^2.2.0, debug@^2.6.6, debug@^2.6.8:
   version "2.6.9"
@@ -1993,34 +1941,6 @@ end-of-stream@^1.0.0:
   resolved "http://artifactory.spotify.net/artifactory/api/npm/virtual-npm/end-of-stream/-/end-of-stream-1.4.0.tgz#7a90d833efda6cfa6eac0f4949dbb0fad3a63206"
   dependencies:
     once "^1.4.0"
-
-engine.io-client@1.6.9:
-  version "1.6.9"
-  resolved "http://artifactory.spotify.net/artifactory/api/npm/virtual-npm/engine.io-client/-/engine.io-client-1.6.9.tgz#1d6ad48048a5083c95096943b29d36efdb212401"
-  dependencies:
-    component-emitter "1.1.2"
-    component-inherit "0.0.3"
-    debug "2.2.0"
-    engine.io-parser "1.2.4"
-    has-cors "1.1.0"
-    indexof "0.0.1"
-    parsejson "0.0.1"
-    parseqs "0.0.2"
-    parseuri "0.0.4"
-    ws "1.0.1"
-    xmlhttprequest-ssl "1.5.1"
-    yeast "0.1.2"
-
-engine.io-parser@1.2.4:
-  version "1.2.4"
-  resolved "http://artifactory.spotify.net/artifactory/api/npm/virtual-npm/engine.io-parser/-/engine.io-parser-1.2.4.tgz#e0897b0bf14e792d4cd2a5950553919c56948c42"
-  dependencies:
-    after "0.8.1"
-    arraybuffer.slice "0.0.6"
-    base64-arraybuffer "0.1.2"
-    blob "0.0.4"
-    has-binary "0.1.6"
-    utf8 "2.1.0"
 
 enhanced-resolve@^3.4.0:
   version "3.4.1"
@@ -2762,22 +2682,6 @@ has-ansi@^2.0.0:
   dependencies:
     ansi-regex "^2.0.0"
 
-has-binary@0.1.6:
-  version "0.1.6"
-  resolved "http://artifactory.spotify.net/artifactory/api/npm/virtual-npm/has-binary/-/has-binary-0.1.6.tgz#25326f39cfa4f616ad8787894e3af2cfbc7b6e10"
-  dependencies:
-    isarray "0.0.1"
-
-has-binary@0.1.7:
-  version "0.1.7"
-  resolved "http://artifactory.spotify.net/artifactory/api/npm/virtual-npm/has-binary/-/has-binary-0.1.7.tgz#68e61eb16210c9545a0a5cce06a873912fe1e68c"
-  dependencies:
-    isarray "0.0.1"
-
-has-cors@1.1.0:
-  version "1.1.0"
-  resolved "http://artifactory.spotify.net/artifactory/api/npm/virtual-npm/has-cors/-/has-cors-1.1.0.tgz#5e474793f7ea9843d1bb99c23eef49ff126fff39"
-
 has-flag@^1.0.0:
   version "1.0.0"
   resolved "http://artifactory.spotify.net/artifactory/api/npm/virtual-npm/has-flag/-/has-flag-1.0.0.tgz#9d9e793165ce017a00f00418c43f942a7b1d11fa"
@@ -3432,7 +3336,7 @@ json-stringify-safe@~5.0.1:
   version "5.0.1"
   resolved "http://artifactory.spotify.net/artifactory/api/npm/virtual-npm/json-stringify-safe/-/json-stringify-safe-5.0.1.tgz#1296a2d58fd45f19a0f6ce01d65701e2c735b6eb"
 
-json3@3.3.2, json3@^3.3.2:
+json3@^3.3.2:
   version "3.3.2"
   resolved "http://artifactory.spotify.net/artifactory/api/npm/virtual-npm/json3/-/json3-3.3.2.tgz#3c0434743df93e2f5c42aee7b19bcb483575f4e1"
 
@@ -3876,9 +3780,9 @@ mkdirp@0.5.x, "mkdirp@>=0.5 0", mkdirp@^0.5.0, mkdirp@^0.5.1, mkdirp@~0.5.0, mkd
   dependencies:
     minimist "0.0.8"
 
-mousetrap@1.5.3:
-  version "1.5.3"
-  resolved "http://artifactory.spotify.net/artifactory/api/npm/virtual-npm/mousetrap/-/mousetrap-1.5.3.tgz#33a900b15184427c4f583e9d9822ee6c3eaf265b"
+mousetrap@1.6.1:
+  version "1.6.1"
+  resolved "http://artifactory.spotify.net/artifactory/api/npm/virtual-npm/mousetrap/-/mousetrap-1.6.1.tgz#2a085f5c751294c75e7e81f6ec2545b29cbf42d9"
 
 mozjpeg@^4.0.0:
   version "4.1.1"
@@ -3887,10 +3791,6 @@ mozjpeg@^4.0.0:
     bin-build "^2.0.0"
     bin-wrapper "^3.0.0"
     logalot "^2.0.0"
-
-ms@0.7.1:
-  version "0.7.1"
-  resolved "http://artifactory.spotify.net/artifactory/api/npm/virtual-npm/ms/-/ms-0.7.1.tgz#9cd13c03adbff25b65effde7ce864ee952017098"
 
 ms@2.0.0:
   version "2.0.0"
@@ -4070,10 +3970,6 @@ object-assign@^2.0.0:
 object-assign@^3.0.0:
   version "3.0.0"
   resolved "http://artifactory.spotify.net/artifactory/api/npm/virtual-npm/object-assign/-/object-assign-3.0.0.tgz#9bedd5ca0897949bca47e7ff408062d549f587f2"
-
-object-component@0.0.3:
-  version "0.0.3"
-  resolved "http://artifactory.spotify.net/artifactory/api/npm/virtual-npm/object-component/-/object-component-0.0.3.tgz#f0c69aa50efc95b866c186f400a33769cb2f1291"
 
 object-keys@^1.0.8:
   version "1.0.11"
@@ -4258,24 +4154,6 @@ parse-json@^2.1.0, parse-json@^2.2.0:
   resolved "http://artifactory.spotify.net/artifactory/api/npm/virtual-npm/parse-json/-/parse-json-2.2.0.tgz#f480f40434ef80741f8469099f8dea18f55a4dc9"
   dependencies:
     error-ex "^1.2.0"
-
-parsejson@0.0.1:
-  version "0.0.1"
-  resolved "http://artifactory.spotify.net/artifactory/api/npm/virtual-npm/parsejson/-/parsejson-0.0.1.tgz#9b10c6c0d825ab589e685153826de0a3ba278bcc"
-  dependencies:
-    better-assert "~1.0.0"
-
-parseqs@0.0.2:
-  version "0.0.2"
-  resolved "http://artifactory.spotify.net/artifactory/api/npm/virtual-npm/parseqs/-/parseqs-0.0.2.tgz#9dfe70b2cddac388bde4f35b1f240fa58adbe6c7"
-  dependencies:
-    better-assert "~1.0.0"
-
-parseuri@0.0.4:
-  version "0.0.4"
-  resolved "http://artifactory.spotify.net/artifactory/api/npm/virtual-npm/parseuri/-/parseuri-0.0.4.tgz#806582a39887e1ea18dd5e2fe0e01902268e9350"
-  dependencies:
-    better-assert "~1.0.0"
 
 parseurl@~1.3.2:
   version "1.3.2"
@@ -4672,7 +4550,7 @@ promise@^7.1.1:
   dependencies:
     asap "~2.0.3"
 
-prop-types@15.x, prop-types@^15.5.10, prop-types@^15.5.4, prop-types@^15.5.8:
+prop-types@15.x, prop-types@^15.5.10, prop-types@^15.5.4, prop-types@^15.5.8, prop-types@^15.6.0:
   version "15.6.0"
   resolved "http://artifactory.spotify.net/artifactory/api/npm/virtual-npm/prop-types/-/prop-types-15.6.0.tgz#ceaf083022fc46b4a35f69e13ef75aed0d639856"
   dependencies:
@@ -4852,17 +4730,6 @@ react-dom@15.6.2:
     object-assign "^4.1.0"
     prop-types "^15.5.10"
 
-react-hot-api@^0.4.5:
-  version "0.4.7"
-  resolved "http://artifactory.spotify.net/artifactory/api/npm/virtual-npm/react-hot-api/-/react-hot-api-0.4.7.tgz#a7e22a56d252e11abd9366b61264cf4492c58171"
-
-react-hot-loader@1.3.0:
-  version "1.3.0"
-  resolved "http://artifactory.spotify.net/artifactory/api/npm/virtual-npm/react-hot-loader/-/react-hot-loader-1.3.0.tgz#7701658d02108b5bbc407e200dde591cb7a6ed69"
-  dependencies:
-    react-hot-api "^0.4.5"
-    source-map "^0.4.4"
-
 react-radio-group@2.2.0:
   version "2.2.0"
   resolved "http://artifactory.spotify.net/artifactory/api/npm/virtual-npm/react-radio-group/-/react-radio-group-2.2.0.tgz#6683a37b82eb77e48877486b0f9e8d2731af99be"
@@ -4890,9 +4757,9 @@ react-router@^4.2.0:
     prop-types "^15.5.4"
     warning "^3.0.0"
 
-react-slider@0.6.1:
-  version "0.6.1"
-  resolved "http://artifactory.spotify.net/artifactory/api/npm/virtual-npm/react-slider/-/react-slider-0.6.1.tgz#c71b50439e23a7243e8bfa4c227a0da8c89f98cf"
+react-slider@0.9.0:
+  version "0.9.0"
+  resolved "http://artifactory.spotify.net/artifactory/api/npm/virtual-npm/react-slider/-/react-slider-0.9.0.tgz#584ae63325be115581fc08bf7753adb8e4d4a0b1"
 
 react-widgets@3.3.1:
   version "3.3.1"
@@ -5372,32 +5239,6 @@ sntp@1.x.x:
   dependencies:
     hoek "2.x.x"
 
-socket.io-client@1.4.6:
-  version "1.4.6"
-  resolved "http://artifactory.spotify.net/artifactory/api/npm/virtual-npm/socket.io-client/-/socket.io-client-1.4.6.tgz#49b0ba537efd15b8297c84016e642e1c7c752c3d"
-  dependencies:
-    backo2 "1.0.2"
-    component-bind "1.0.0"
-    component-emitter "1.2.0"
-    debug "2.2.0"
-    engine.io-client "1.6.9"
-    has-binary "0.1.7"
-    indexof "0.0.1"
-    object-component "0.0.3"
-    parseuri "0.0.4"
-    socket.io-parser "2.2.6"
-    to-array "0.1.4"
-
-socket.io-parser@2.2.6:
-  version "2.2.6"
-  resolved "http://artifactory.spotify.net/artifactory/api/npm/virtual-npm/socket.io-parser/-/socket.io-parser-2.2.6.tgz#38dfd61df50dcf8ab1d9e2091322bf902ba28b99"
-  dependencies:
-    benchmark "1.0.0"
-    component-emitter "1.1.2"
-    debug "2.2.0"
-    isarray "0.0.1"
-    json3 "3.3.2"
-
 socketcluster-client@^4.3.17:
   version "4.3.19"
   resolved "http://artifactory.spotify.net/artifactory/api/npm/virtual-npm/socketcluster-client/-/socketcluster-client-4.3.19.tgz#df247662e29eb54160c923f02eaf958394994cb5"
@@ -5448,7 +5289,7 @@ source-map@0.5.x, source-map@^0.5.3, source-map@^0.5.6, source-map@~0.5.0, sourc
   version "0.5.7"
   resolved "http://artifactory.spotify.net/artifactory/api/npm/virtual-npm/source-map/-/source-map-0.5.7.tgz#8a039d2d1021d22d1ea14c80d8ea468ba2ef3fcc"
 
-source-map@^0.4.2, source-map@^0.4.4:
+source-map@^0.4.2:
   version "0.4.4"
   resolved "http://artifactory.spotify.net/artifactory/api/npm/virtual-npm/source-map/-/source-map-0.4.4.tgz#eba4f5da9c0dc999de68032d8b4f76173652036b"
   dependencies:
@@ -5833,10 +5674,6 @@ to-absolute-glob@^0.1.1:
   dependencies:
     extend-shallow "^2.0.1"
 
-to-array@0.1.4:
-  version "0.1.4"
-  resolved "http://artifactory.spotify.net/artifactory/api/npm/virtual-npm/to-array/-/to-array-0.1.4.tgz#17e6c11f73dd4f3d74cda7a4ff3238e9ad9bf890"
-
 to-arraybuffer@^1.0.0:
   version "1.0.1"
   resolved "http://artifactory.spotify.net/artifactory/api/npm/virtual-npm/to-arraybuffer/-/to-arraybuffer-1.0.1.tgz#7d229b1fcc637e466ca081180836a7aabff83f43"
@@ -6017,10 +5854,6 @@ url@^0.11.0:
 user-home@^1.1.1:
   version "1.1.1"
   resolved "http://artifactory.spotify.net/artifactory/api/npm/virtual-npm/user-home/-/user-home-1.1.1.tgz#2b5be23a32b63a7c9deb8d0f28d485724a3df190"
-
-utf8@2.1.0:
-  version "2.1.0"
-  resolved "http://artifactory.spotify.net/artifactory/api/npm/virtual-npm/utf8/-/utf8-2.1.0.tgz#0cfec5c8052d44a23e3aaa908104e8075f95dfd5"
 
 util-deprecate@~1.0.1:
   version "1.0.2"
@@ -6325,13 +6158,6 @@ wrappy@1:
   version "1.0.2"
   resolved "http://artifactory.spotify.net/artifactory/api/npm/virtual-npm/wrappy/-/wrappy-1.0.2.tgz#b5243d8f3ec1aa35f1364605bc0d1036e30ab69f"
 
-ws@1.0.1:
-  version "1.0.1"
-  resolved "http://artifactory.spotify.net/artifactory/api/npm/virtual-npm/ws/-/ws-1.0.1.tgz#7d0b2a2e58cddd819039c29c9de65045e1b310e9"
-  dependencies:
-    options ">=0.0.5"
-    ultron "1.0.x"
-
 xml-char-classes@^1.0.0:
   version "1.0.0"
   resolved "http://artifactory.spotify.net/artifactory/api/npm/virtual-npm/xml-char-classes/-/xml-char-classes-1.0.0.tgz#64657848a20ffc5df583a42ad8a277b4512bbc4d"
@@ -6350,10 +6176,6 @@ xmlbuilder@~9.0.1:
 xmldom@^0.1.22:
   version "0.1.27"
   resolved "http://artifactory.spotify.net/artifactory/api/npm/virtual-npm/xmldom/-/xmldom-0.1.27.tgz#d501f97b3bdb403af8ef9ecc20573187aadac0e9"
-
-xmlhttprequest-ssl@1.5.1:
-  version "1.5.1"
-  resolved "http://artifactory.spotify.net/artifactory/api/npm/virtual-npm/xmlhttprequest-ssl/-/xmlhttprequest-ssl-1.5.1.tgz#3b7741fea4a86675976e908d296d4445961faa67"
 
 "xtend@>=4.0.0 <4.1.0-0", xtend@^4.0.0, xtend@~4.0.0, xtend@~4.0.1:
   version "4.0.1"
@@ -6430,7 +6252,3 @@ yauzl@^2.2.1:
   dependencies:
     buffer-crc32 "~0.2.3"
     fd-slicer "~1.0.1"
-
-yeast@0.1.2:
-  version "0.1.2"
-  resolved "http://artifactory.spotify.net/artifactory/api/npm/virtual-npm/yeast/-/yeast-0.1.2.tgz#008e06d8094320c372dbc2f8ed76a0ca6c8ac419"

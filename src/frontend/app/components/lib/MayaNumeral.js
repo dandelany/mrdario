@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import React from 'react';
+import PropTypes from 'prop-types';
 
 const defaultStyles = {
   container: {
@@ -68,12 +69,12 @@ const MayaNumeralDigit = (props) => {
 
 export default class MayaNumeral extends React.Component {
   static propTypes = {
-    value: React.PropTypes.number.isRequired,
-    size: React.PropTypes.number,
-    color: React.PropTypes.string,
-    dotSymbol: React.PropTypes.string,
-    zeroSymbol: React.PropTypes.string,
-    styles: React.PropTypes.object
+    value: PropTypes.number.isRequired,
+    size: PropTypes.number,
+    color: PropTypes.string,
+    dotSymbol: PropTypes.string,
+    zeroSymbol: PropTypes.string,
+    styles: PropTypes.object
   };
   static defaultProps = {
     size: 10,

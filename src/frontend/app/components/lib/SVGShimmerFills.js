@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import React from 'react';
+import PropTypes from 'prop-types';
 
 
 function findSvgShapes(svg, tags = ['path', 'circle', 'rect']) {
@@ -18,9 +19,9 @@ function getFillShapes(shapes) {
 
 export default class SVGShimmerFills extends React.Component {
   static propTypes = {
-    svgPath: React.PropTypes.string,
-    colors: React.PropTypes.array,
-    shuffle: React.PropTypes.bool
+    svgPath: PropTypes.string,
+    colors: PropTypes.array,
+    shuffle: PropTypes.bool
   };
 
   static defaultProps = {
