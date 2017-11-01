@@ -1,6 +1,7 @@
 import React from 'react';
 import throttle from 'lodash/throttle';
 import socketCluster from 'socketcluster-client';
+import {withRouter} from 'react-router-dom';
 
 import {MODES} from 'game/constants';
 import AztecCalendar from 'app/components/AztecCalendar';
@@ -26,7 +27,7 @@ function initSocketClient() {
   return socket;
 }
 
-export default class AppContainer extends React.Component {
+class AppContainer extends React.Component {
   state = {
     ...getWindowSize(),
     mode: null
@@ -61,7 +62,7 @@ export default class AppContainer extends React.Component {
       {socket: this.socket, windowWidth, windowHeight, gridCols, gridRows, onChangeMode: this._onChangeMode};
 
     const calendarMode =
-      (window.location.pathname == '/') ? 'title' :
+      (this.props.location.pathname == '/') ? 'title' :
       (this.state.mode == MODES.LOST) ? 'lost' :
       (this.state.mode == MODES.WON) ? 'won' :
       undefined;
@@ -82,3 +83,5 @@ export default class AppContainer extends React.Component {
     </div>;
   }
 }
+
+export default withRouter(AppContainer);

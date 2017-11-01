@@ -88,7 +88,6 @@ class SinglePlayerGame extends React.Component {
       onChangeMode: (event, lastMode, newMode) => {
         console.log('onchangemode', event, lastMode, newMode);
         if(_.includes([MODES.LOST, MODES.WON], newMode)) {
-          // router.push(`/game/level/${level}/speed/${speed}/${newMode.toLowerCase()}`);
           this.setState({pendingMode: newMode.toLowerCase()});
           if(newMode === MODES.WON) this._handleWin();
         }
@@ -116,7 +115,6 @@ class SinglePlayerGame extends React.Component {
   }
 
   render() {
-
     const {gameState, highScores, rank, pendingMode} = this.state;
     const hasGame = this.game && gameState;
     const hasGrid = hasGame && gameState.grid;
