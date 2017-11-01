@@ -1,5 +1,5 @@
 import React from 'react';
-import {Link} from 'react-router';
+import {Link} from 'react-router-dom';
 import Slider from 'react-slider';
 
 export default class GameSettings extends React.Component {

@@ -54,15 +54,14 @@ export default class AppContainer extends React.Component {
   render() {
     const {windowWidth, windowHeight} = this.state;
 
-    const shouldAnimate = (this.props.location.pathname === '/');
-    const child = React.Children.only(this.props.children);
+    const shouldAnimate = (window.location.pathname === '/');
     const gridCols = 8;
     const gridRows = 16;
     const childProps =
       {socket: this.socket, windowWidth, windowHeight, gridCols, gridRows, onChangeMode: this._onChangeMode};
 
     const calendarMode =
-      (this.props.location.pathname == '/') ? 'title' :
+      (window.location.pathname == '/') ? 'title' :
       (this.state.mode == MODES.LOST) ? 'lost' :
       (this.state.mode == MODES.WON) ? 'won' :
       undefined;
@@ -76,7 +75,9 @@ export default class AppContainer extends React.Component {
       }}/>
 
       <div className="mrdario-page">
-        {React.cloneElement(child, childProps)}
+        {React.Children.map(this.props.children, (child => {
+          return React.cloneElement(child, childProps);
+        }))}
       </div>
     </div>;
   }

@@ -1,6 +1,6 @@
 import React from 'react';
 import _ from 'lodash';
-import {Link} from 'react-router';
+import {Link} from 'react-router-dom';
 import Slider from 'rc-slider';
 
 export default class HighScores extends React.Component {

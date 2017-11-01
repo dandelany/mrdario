@@ -1,6 +1,6 @@
 import React from 'react';
 import _ from 'lodash';
-import {Link, withRouter} from 'react-router';
+import {Link, withRouter} from 'react-router-dom';
 import DeepDiff from 'deep-diff';
 const deepDiff = DeepDiff.diff;
 import shallowEqual from '../../utils/shallowEqual';

@@ -1,6 +1,6 @@
 import React from 'react';
 import _ from 'lodash';
-import {Link, withRouter} from 'react-router';
+import {Link, withRouter, Redirect} from 'react-router-dom';
 import DeepDiff from 'deep-diff';
 const deepDiff = DeepDiff.diff;
 import shallowEqual from '../../utils/shallowEqual';
@@ -30,12 +30,13 @@ class SinglePlayerGame extends React.Component {
   state = {
     gameState: null,
     highScores: null,
-    rank: null
+    rank: null,
+    pendingMode: null
   };
 
   componentDidMount() {
     // mode means won or lost, no mode = playing
-    if(!this.props.params.mode) this._initGame(this.props);
+    if(!_.get(this.props, 'params.match.mode')) this._initGame(this.props);
   }
   componentWillUnmount() {
     // this.props.socket.off('singleHighScores', this._highScoreHandler);
@@ -43,13 +44,17 @@ class SinglePlayerGame extends React.Component {
   }
 
   componentWillReceiveProps(newProps) {
-    const {params} = this.props;
+    const {params} = this.props.match;
     const hasChanged = (key) => _.get(this.props, key) !== _.get(newProps, key);
     const shouldInitGame =
-      hasChanged('params.level') || hasChanged('params.speed') ||
-      (hasChanged('params.mode') && !newProps.params.mode);
+      hasChanged('match.params.level') || hasChanged('match.params.speed') ||
+      (hasChanged('match.params.mode') && !_.get(newProps, 'match.params.mode'));
 
     if(shouldInitGame) this._initGame(newProps);
+
+    if(!params.mode && this.state.pendingMode) {
+      this.setState({pendingMode: null});
+    }
   }
 
   shouldComponentUpdate(newProps, newState) {
@@ -64,7 +69,8 @@ class SinglePlayerGame extends React.Component {
   _initGame(props) {
     if(this.game && this.game.cleanup) this.game.cleanup();
 
-    const {params, router} = props;
+    const {router} = props;
+    const {params} = props.match;
     const level = parseInt(params.level) || 0;
     const speed = parseInt(params.speed) || 15;
 
@@ -82,7 +88,8 @@ class SinglePlayerGame extends React.Component {
       onChangeMode: (event, lastMode, newMode) => {
         console.log('onchangemode', event, lastMode, newMode);
         if(_.includes([MODES.LOST, MODES.WON], newMode)) {
-          router.push(`/game/level/${level}/speed/${speed}/${newMode.toLowerCase()}`);
+          // router.push(`/game/level/${level}/speed/${speed}/${newMode.toLowerCase()}`);
+          this.setState({pendingMode: newMode.toLowerCase()});
           if(newMode === MODES.WON) this._handleWin();
         }
         if(this.props.onChangeMode) this.props.onChangeMode(newMode);
@@ -93,7 +100,7 @@ class SinglePlayerGame extends React.Component {
 
   _handleWin() {
     const score = _.get(this, 'state.gameState.score');
-    const level = parseInt(_.get(this, 'props.params.level'));
+    const level = parseInt(_.get(this, 'props.match.params.level'));
     const name = window.localStorage ?
       (window.localStorage.getItem('mrdario-name') || 'Anonymous') : 'Anonymous';
 
@@ -109,12 +116,14 @@ class SinglePlayerGame extends React.Component {
   }
 
   render() {
-    const {gameState, highScores, rank} = this.state;
+
+    const {gameState, highScores, rank, pendingMode} = this.state;
     const hasGame = this.game && gameState;
     const hasGrid = hasGame && gameState.grid;
     // if(!hasGrid) return <div>loading</div>;
 
-    const {cellSize, params} = this.props;
+    const {cellSize} = this.props;
+    const {params} = this.props.match;
     // pass fractional padding to set padding to a fraction of cell size
     const padding = (padding < 1) ? this.props.padding * cellSize : this.props.padding;
     const numRows = gameState ? gameState.grid.size : 17;
@@ -136,6 +145,11 @@ class SinglePlayerGame extends React.Component {
     }
 
     return <div className="game-playfield-container">
+      {(pendingMode && pendingMode !== params.mode) ?
+        // if game has been won or lost, redirect to the proper URL
+        <Redirect push to={`/game/level/${params.level}/speed/${params.speed}/${pendingMode}`}/> :
+        null
+      }
       <div {...{style, className: 'game-playfield'}}>
         <WonOverlay {...{gameState, highScores, rank, params, style: wonOverlayStyle}} />
         <LostOverlay {...{gameState, params, style: lostOverlayStyle}} />

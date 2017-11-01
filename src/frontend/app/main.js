@@ -3,13 +3,16 @@ require('app/styles/main.less');
 
 import React from 'react';
 import {render} from 'react-dom';
-import {Router, hashHistory} from 'react-router';
+import {HashRouter as Router} from 'react-router-dom';
 
 import routes from './routes';
+import AppContainer from './components/AppContainer';
 
 render(
-  <Router history={hashHistory}>
-    {routes}
+  <Router>
+    <AppContainer>
+      {routes}
+    </AppContainer>
   </Router>,
   document.getElementById('container')
 );
