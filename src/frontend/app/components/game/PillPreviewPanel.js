@@ -8,6 +8,9 @@ export default class PillPreviewPanel extends React.Component {
   render() {
     const {pill, cellSize} = this.props;
 
+    const name = window.localStorage ?
+      (window.localStorage.getItem('mrdario-name') || 'Anonymous') : 'Anonymous';
+
     return <div
       className="pill-preview-panel"
       style={{padding: cellSize / 2}}
@@ -29,6 +32,15 @@ export default class PillPreviewPanel extends React.Component {
           svgProps: {width: cellSize, height: cellSize}
         }}/>
       </svg>
+
+      {
+        name === "BEA" ?
+          <div>
+            <h5>Hi baby</h5>
+            <h5>❤️</h5>
+          </div>
+          : null
+      }
     </div>
   }
 }
