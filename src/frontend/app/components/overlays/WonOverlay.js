@@ -32,7 +32,7 @@ const Scores = (props) => {
           <hr/>
           High Scores
           {highScores.map(([name, score], i) => (
-            <div className={(i === rank) ? "score score-active" : "score"}>
+            <div className={(i === rank) ? "score score-active" : "score"} key={i}>
               <strong>#{i + 1} {name}</strong> — {score}
             </div>
           ))}

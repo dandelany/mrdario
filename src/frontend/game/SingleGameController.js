@@ -56,11 +56,18 @@ export default class SingleGameController {
     // assign all options to instance variables
     Object.assign(this, options);
 
+    this.initGame();
+
     _.assign(this, {
       // a finite state machine representing game mode, & transitions between modes
-      modeMachine: StateMachine.create({
-        initial: MODES.READY,
-        events: SingleGameController.modeTransitions
+      modeMachine: new StateMachine({
+        init: MODES.READY,
+        transitions: SingleGameController.modeTransitions,
+        methods: {
+          onEnterState: this._onChangeMode,
+          onPlay: () => this.run(),
+          onReset: () => this.initGame()
+        }
       }),
       // queued up move inputs which will processed on the next tick
       moveInputQueue: [],
@@ -71,10 +78,7 @@ export default class SingleGameController {
       slowStep: options.slow * (1 / options.fps)
     });
 
-    this.initGame();
-    this.attachModeEvents();
     this.attachInputEvents();
-    this._onChangeMode(null, null, MODES.READY);
   }
   
   initGame() {
@@ -88,20 +92,15 @@ export default class SingleGameController {
     });
   }
 
-  _onChangeMode = (event, lastMode, newMode) => {
+  _onChangeMode = (lifecycle) => {
     // update mode of all input managers
-    this.inputManagers.forEach(inputManager => inputManager.setMode(newMode));
+    this.inputManagers.forEach(inputManager => inputManager.setMode(lifecycle.to));
     // re-render on any mode change
-    this.render(this.getState());
+    this.render(this.getState(lifecycle.to));
     // call handler
-    this.onChangeMode(event, lastMode, newMode);
+    this.onChangeMode(lifecycle.transition, lifecycle.from, lifecycle.to);
   };
 
-  attachModeEvents() {
-    this.modeMachine.onenterstate = this._onChangeMode;
-    this.modeMachine.onplay = () => this.run();
-    this.modeMachine.onreset = () => this.initGame();
-  }
   attachInputEvents() {
     this.inputManagers.forEach(inputManager => {
       inputManager.on(INPUTS.PLAY, () => this.modeMachine.play());
@@ -115,7 +114,7 @@ export default class SingleGameController {
   }
   enqueueMoveInput(input, eventType, event) {
     // queue a user move, to be sent to the game on the next tick
-    if (this.modeMachine.current !== MODES.PLAYING) return;
+    if (this.modeMachine.state !== MODES.PLAYING) return;
     this.moveInputQueue.push({input, eventType});
     if(event.preventDefault) event.preventDefault();
   }
@@ -132,7 +131,7 @@ export default class SingleGameController {
 
   tick() {
     // called once per frame
-    if(this.modeMachine.current !== MODES.PLAYING) return;
+    if(this.modeMachine.state !== MODES.PLAYING) return;
     const now = timestamp();
     const {dt, last, slow, slowStep} = this;
 
@@ -158,11 +157,11 @@ export default class SingleGameController {
     this.moveInputQueue = [];
   }
 
-  getState() {
+  getState(mode) {
     const {grid, pillCount, pillSequence, score, timeBonus} = this.game;
     // minimal description of game state to render
     return {
-      mode: this.modeMachine.current,
+      mode: mode || this.modeMachine.state,
       pillCount: this.game.counters.pillCount,
       grid, pillSequence, score, timeBonus
     };

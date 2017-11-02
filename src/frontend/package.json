@@ -15,7 +15,7 @@
     "gamepad-plus": "^1.0.14",
     "hammerjs": "^2.0.8",
     "immutable": "^3.8.2",
-    "javascript-state-machine": "^2.3.5",
+    "javascript-state-machine": "^3.0.1",
     "keymirror": "^0.1.1",
     "lodash": "^4.17.4",
     "mousetrap": "1.6.1",

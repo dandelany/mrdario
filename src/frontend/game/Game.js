@@ -116,17 +116,17 @@ export default class Game extends EventEmitter {
 
   _initModeMachine() {
     // finite state machine representing game mode
-    const modeMachine = StateMachine.create({
-      initial: Game.modes.LOADING,
-      events: Game.modeTransitions
+    const modeMachine = new StateMachine({
+      init: Game.modes.LOADING,
+      transitions: Game.modeTransitions,
+      methods: {
+        onPlay: () => this.counters.playTicks = 0,
+        onDestroy: () => this.counters.destroyTicks = 0,
+        onCascade: () => this.counters.cascadeTicks = 0,
+        onWin: () => this.onWin(),
+        onLose: () => this.onLose()
+      }
     });
-
-    // attach event callbacks to be called when the mode machine transitions between states
-    modeMachine.onplay = () => this.counters.playTicks = 0;
-    modeMachine.ondestroy = () => this.counters.destroyTicks = 0;
-    modeMachine.oncascade = () => this.counters.cascadeTicks = 0;
-    modeMachine.onwin = () => this.onWin();
-    modeMachine.onlose = () => this.onLose();
 
     //modeMachine.onenterstate = (event, lastMode, newMode) => {
     //    console.log('playfield mode transition:', event, lastMode, newMode);
@@ -175,7 +175,7 @@ export default class Game extends EventEmitter {
     const moveQueue = this.inputRepeater.tick(inputQueue);
 
     // the main game loop, called once per game tick
-    switch (this.modeMachine.current) {
+    switch (this.modeMachine.state) {
       case Game.modes.LOADING:
         return this._tickLoading();
       case Game.modes.READY:
