@@ -60,9 +60,9 @@ export const DEFAULT_KEYS = {
     [INPUTS.ROTATE_CW]: 's',
     [INPUTS.PAUSE]: 'escape'
   },
-  [MODES.PAUSED]: { [INPUTS.RESUME]: 'enter, space, escape' },
-  [MODES.WON]: { [INPUTS.RESET]: 'enter, space, escape' },
-  [MODES.LOST]: { [INPUTS.RESET]: 'enter, space, escape' }
+  [MODES.PAUSED]: { [INPUTS.RESUME]: ['enter', 'space', 'escape'] },
+  [MODES.WON]: { [INPUTS.RESET]: ['enter', 'space', 'escape'] },
+  [MODES.LOST]: { [INPUTS.RESET]: ['enter', 'space', 'escape'] }
 };
 
 // how many colors are still humanly possible to play with?

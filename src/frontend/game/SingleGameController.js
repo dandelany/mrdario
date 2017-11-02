@@ -66,7 +66,9 @@ export default class SingleGameController {
         methods: {
           onEnterState: this._onChangeMode,
           onPlay: () => this.run(),
-          onReset: () => this.initGame()
+          onReset: () => this.initGame(),
+          // tick to get the game started again after being paused
+          onResume: () => this.tick()
         }
       }),
       // queued up move inputs which will processed on the next tick
@@ -104,8 +106,12 @@ export default class SingleGameController {
   attachInputEvents() {
     this.inputManagers.forEach(inputManager => {
       inputManager.on(INPUTS.PLAY, () => this.modeMachine.play());
-      inputManager.on(INPUTS.PAUSE, () => this.modeMachine.pause());
-      inputManager.on(INPUTS.RESUME, () => this.modeMachine.resume());
+      inputManager.on(INPUTS.PAUSE, (type) => {
+        if(type === 'keydown') this.modeMachine.pause();
+      });
+      inputManager.on(INPUTS.RESUME, (type) => {
+        if(type === 'keydown') this.modeMachine.resume();
+      });
       inputManager.on(INPUTS.RESET, () => this.modeMachine.reset());
 
       const moveInputs = [INPUTS.LEFT, INPUTS.RIGHT, INPUTS.DOWN, INPUTS.UP, INPUTS.ROTATE_CCW, INPUTS.ROTATE_CW];

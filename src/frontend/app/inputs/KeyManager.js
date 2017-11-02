@@ -15,14 +15,17 @@ export default class KeyManager extends EventEmitter {
   }
   unbindModeKeys(mode) {
     const modeBindings = this.keyBindings[mode] || {};
-    _.each(modeBindings, (keyStr, inputType) => Mousetrap.unbind(keyStr))
+    _.each(modeBindings, (keyStr, inputType) => {
+      Mousetrap.unbind(keyStr, 'keydown');
+      Mousetrap.unbind(keyStr, 'keyup');
+    });
   }
   bindModeKeys(mode) {
     const modeBindings = this.keyBindings[mode] || {};
     _.each(modeBindings, (keyStr, inputType) => {
       Mousetrap.bind(keyStr, this.handleInput.bind(this, inputType, 'keydown'), 'keydown');
       Mousetrap.bind(keyStr, this.handleInput.bind(this, inputType, 'keyup'), 'keyup');
-    })
+    });
   }
 
   handleInput(inputType, keyType, event) {
@@ -30,7 +33,6 @@ export default class KeyManager extends EventEmitter {
   }
 
   setMode(mode) {
-    console.log('set mode', mode);
     if(this.mode) this.unbindModeKeys(this.mode);
     this.bindModeKeys(mode);
     this.mode = mode;
