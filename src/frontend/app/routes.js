@@ -23,9 +23,31 @@ const PropsRoute = ({component, ...rest}) => {
 };
 
 export default [
-  <PropsRoute exact path="/" name="title" component={TitlePage} />,
-  <PropsRoute path="/settings" component={GameSettings} />,
-  <PropsRoute path="/game/level/:level/speed/:speed/:mode?" component={SinglePlayerGame} />,
-  <PropsRoute name="/mirror" path="/mirror/level/:level/speed/:speed/:mode?" component={MirrorGame} />,
-  <PropsRoute path="/highscores" component={HighScores} />,
+  <PropsRoute
+    exact path="/"
+    name="title"
+    key="title"
+    component={TitlePage}
+  />,
+  <PropsRoute
+    path="/settings"
+    key="settings"
+    component={GameSettings}
+  />,
+  <PropsRoute
+    path="/game/level/:level/speed/:speed/:mode?"
+    key="single-player-game"
+    component={SinglePlayerGame}
+  />,
+  <PropsRoute
+    name="mirror"
+    path="/mirror/level/:level/speed/:speed/:mode?"
+    key="mirror-game"
+    component={MirrorGame}
+  />,
+  <PropsRoute
+    path="/highscores"
+    key="highscores"
+    component={HighScores}
+  />,
 ];

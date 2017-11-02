@@ -1417,7 +1417,7 @@ create-hmac@^1.1.0, create-hmac@^1.1.2, create-hmac@^1.1.4:
     safe-buffer "^5.0.1"
     sha.js "^2.4.8"
 
-create-react-class@15.x, create-react-class@^15.6.0, create-react-class@^15.6.2:
+create-react-class@15.x, create-react-class@^15.6.2:
   version "15.6.2"
   resolved "http://artifactory.spotify.net/artifactory/api/npm/virtual-npm/create-react-class/-/create-react-class-15.6.2.tgz#cf1ed15f12aad7f14ef5f2dfe05e6c42f91ef02a"
   dependencies:
@@ -4721,14 +4721,14 @@ rc@^1.1.2, rc@^1.1.7:
     minimist "^1.2.0"
     strip-json-comments "~2.0.1"
 
-react-dom@15.6.2:
-  version "15.6.2"
-  resolved "http://artifactory.spotify.net/artifactory/api/npm/virtual-npm/react-dom/-/react-dom-15.6.2.tgz#41cfadf693b757faf2708443a1d1fd5a02bef730"
+react-dom@^16.0.0:
+  version "16.0.0"
+  resolved "http://artifactory.spotify.net/artifactory/api/npm/virtual-npm/react-dom/-/react-dom-16.0.0.tgz#9cc3079c3dcd70d4c6e01b84aab2a7e34c303f58"
   dependencies:
-    fbjs "^0.8.9"
+    fbjs "^0.8.16"
     loose-envify "^1.1.0"
-    object-assign "^4.1.0"
-    prop-types "^15.5.10"
+    object-assign "^4.1.1"
+    prop-types "^15.6.0"
 
 react-radio-group@2.2.0:
   version "2.2.0"
@@ -4776,15 +4776,14 @@ react-widgets@3.3.1:
     deconstruct-number-format "0.0.1"
     format-number-with-string "0.0.2"
 
-react@15.6.2:
-  version "15.6.2"
-  resolved "http://artifactory.spotify.net/artifactory/api/npm/virtual-npm/react/-/react-15.6.2.tgz#dba0434ab439cfe82f108f0f511663908179aa72"
+react@^16.0.0:
+  version "16.0.0"
+  resolved "http://artifactory.spotify.net/artifactory/api/npm/virtual-npm/react/-/react-16.0.0.tgz#ce7df8f1941b036f02b2cca9dbd0cb1f0e855e2d"
   dependencies:
-    create-react-class "^15.6.0"
-    fbjs "^0.8.9"
+    fbjs "^0.8.16"
     loose-envify "^1.1.0"
-    object-assign "^4.1.0"
-    prop-types "^15.5.10"
+    object-assign "^4.1.1"
+    prop-types "^15.6.0"
 
 read-all-stream@^3.0.0:
   version "3.1.0"
@@ -5551,8 +5550,8 @@ svgo@^0.7.0:
     whet.extend "~0.9.9"
 
 svgo@^1.0.0:
-  version "1.0.0"
-  resolved "http://artifactory.spotify.net/artifactory/api/npm/virtual-npm/svgo/-/svgo-1.0.0.tgz#38035feac99a235db4219ae0f80b626db11ab664"
+  version "1.0.1"
+  resolved "http://artifactory.spotify.net/artifactory/api/npm/virtual-npm/svgo/-/svgo-1.0.1.tgz#1cb4814177d43fd89afb7bdf946dae3b7a86e016"
   dependencies:
     coa "~2.0.0"
     colors "~1.1.2"

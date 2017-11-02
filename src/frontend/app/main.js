@@ -8,6 +8,8 @@ import {HashRouter as Router} from 'react-router-dom';
 import routes from './routes';
 import AppContainer from './components/AppContainer';
 
+window.React = React;
+
 render(
   <Router>
     <AppContainer>

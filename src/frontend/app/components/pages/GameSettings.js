@@ -1,6 +1,6 @@
 import React from 'react';
 import {Link} from 'react-router-dom';
-import Slider from 'react-slider';
+import Slider from 'rc-slider';
 
 export default class GameSettings extends React.Component {
   state = {
@@ -48,7 +48,6 @@ export default class GameSettings extends React.Component {
               value={this.state.level}
               onChange={this.onChangeLevel}
               min={0} max={20}
-              className='horizontal-slider'
             />
           </div>
 
@@ -58,7 +57,6 @@ export default class GameSettings extends React.Component {
               value={this.state.speed}
               onChange={this.onChangeSpeed}
               min={10} max={30}
-              className='horizontal-slider'
             />
           </div>
 
