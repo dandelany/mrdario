@@ -12,7 +12,6 @@
   },
   "dependencies": {
     "classnames": "2.2.5",
-    "create-react-class": "^15.6.2",
     "gamepad-plus": "^1.0.14",
     "hammerjs": "^2.0.8",
     "immutable": "^3.8.2",
@@ -24,11 +23,8 @@
     "rc-slider": "^8.3.5",
     "react": "^16.0.0",
     "react-dom": "^16.0.0",
-    "react-radio-group": "2.2.0",
     "react-router-dom": "^4.2.2",
-    "react-slider": "0.9.0",
-    "react-widgets": "3.3.1",
-    "socketcluster-client": "^4.3.17"
+    "socketcluster-client": "^8.0.2"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
