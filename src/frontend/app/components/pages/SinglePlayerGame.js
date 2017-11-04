@@ -19,6 +19,11 @@ import WonOverlay from 'app/components/overlays/WonOverlay';
 import LostOverlay from 'app/components/overlays/LostOverlay';
 import responsiveGame from 'app/components/responsiveGame';
 
+function getName() {
+  return window.localStorage ?
+    (window.localStorage.getItem('mrdario-name') || 'Anonymous') : 'Anonymous';
+}
+
 
 class SinglePlayerGame extends React.Component {
   static defaultProps = {
@@ -69,10 +74,14 @@ class SinglePlayerGame extends React.Component {
   _initGame(props) {
     if(this.game && this.game.cleanup) this.game.cleanup();
 
-    const {router} = props;
+    const {router, socket} = props;
     const {params} = props.match;
     const level = parseInt(params.level) || 0;
     const speed = parseInt(params.speed) || 15;
+
+    if(socket) {
+      socket.emit('infoStartGame', [getName(), level, speed], _.noop);
+    }
 
     // input managers controlling keyboard and touch events
     this.keyManager = new KeyManager(DEFAULT_KEYS);
@@ -90,6 +99,7 @@ class SinglePlayerGame extends React.Component {
         if(_.includes([MODES.LOST, MODES.WON], newMode)) {
           this.setState({pendingMode: newMode.toLowerCase()});
           if(newMode === MODES.WON) this._handleWin();
+          if(newMode === MODES.LOST) this._handleLose();
         }
         if(this.props.onChangeMode) this.props.onChangeMode(newMode);
       }
@@ -100,10 +110,9 @@ class SinglePlayerGame extends React.Component {
   _handleWin() {
     const score = _.get(this, 'state.gameState.score');
     const level = parseInt(_.get(this, 'props.match.params.level'));
-    const name = window.localStorage ?
-      (window.localStorage.getItem('mrdario-name') || 'Anonymous') : 'Anonymous';
+    const name = getName();
 
-    if(_.isFinite(level) && _.isFinite(score) && _.get(this, 'props.socket.state') === 'open') {
+    if(_.isFinite(level) && _.isFinite(score) && _.get(this, 'props.socket.state')) {
       console.log('socket is open, sending score');
       this.props.socket.emit('singleGameScore', [level, name, score], (err, data) => {
         if(err) throw new Error(err);
@@ -111,6 +120,18 @@ class SinglePlayerGame extends React.Component {
         console.log('high scores received!', scores, rank);
         this.setState({highScores: scores, rank: rank});
       });
+    }
+  }
+
+  _handleLose() {
+    const {socket} = this.props;
+    const {params} = this.props.match;
+    const level = parseInt(params.level) || 0;
+    const speed = parseInt(params.speed) || 15;
+    const score = _.get(this, 'state.gameState.score');
+
+    if(socket) {
+      socket.emit('infoLostGame', [getName(), level, speed, score], _.noop);
     }
   }
 

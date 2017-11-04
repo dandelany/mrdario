@@ -23,7 +23,6 @@ function handleSingleScore(rClient, data, callback) {
     if(err) callback(err);
 
     getHighScoreNameKeyRank(rClient, level, nameKey, function onGotScoreRank(err, rankReply) {
-      console.log('key rank', err, rankReply);
       callback(err, rankReply, {level: level, name: name, score: score});
     });
   });
