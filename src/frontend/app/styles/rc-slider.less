@@ -23,14 +23,16 @@
 
 
 @sliderSize: 4.5vh;
+@sliderHeight: 4.5vh;
+@sliderWidth: 2.5vh;
 @border-radius-base: 1.5vh;
 
 .@{prefixClass} {
   position: relative;
-  height: @sliderSize;
+  height: @sliderHeight;
   //width: 100%;
-  width: calc(~"100% - " @sliderSize);
-  margin-left: (@sliderSize / 2);
+  width: calc(~"100% - " @sliderWidth);
+  margin-left: (@sliderWidth / 2);
   border-radius: @border-radius-base;
   background-color: #ccc;
   box-shadow: inset 0 0 4px rgba(0,0,0,0.6);
@@ -42,7 +44,7 @@
   &-track {
     position: absolute;
     left: 0;
-    height: @sliderSize;
+    height: @sliderHeight;
     border-radius: @border-radius-base;
     background-color: tint(@primary-color, 60%);
     z-index: 1;
@@ -50,10 +52,10 @@
 
   &-handle {
     position: absolute;
-    margin-left: -(@sliderSize / 2);
+    margin-left: -(@sliderWidth / 2);
     //margin-top: -8px;
-    width: @sliderSize;
-    height: @sliderSize;
+    width: @sliderWidth;
+    height: @sliderHeight;
     //border: solid 2px tint(@primary-color, 50%);
     z-index: 2;
 
