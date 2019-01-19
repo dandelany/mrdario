@@ -3,7 +3,7 @@ import {EventEmitter} from 'events';
 import keyMirror from 'keymirror';
 import StateMachine  from 'javascript-state-machine';
 
-import {INPUTS, COLORS, GRAVITY_TABLE} from './constants';
+import {GameInput, COLORS, GRAVITY_TABLE} from './constants';
 import InputRepeater from './InputRepeater';
 
 import {generatePillSequence, emptyGrid, generateEnemies} from './utils/generators';
@@ -143,23 +143,23 @@ export default class Game extends EventEmitter {
       // move/rotate the pill based on the move input
       let grid, pill, didMove;
 
-      if(input === INPUTS.Up) {
+      if(input === GameInput.Up) {
         ({grid, pill, didMove} = slamPill(this.grid, this.pill));
         // reconcile immediately after slam
         shouldReconcile = true;
 
-      } else if(_.includes([INPUTS.Left, INPUTS.Right, INPUTS.Down], input)) {
+      } else if(_.includes([GameInput.Left, GameInput.Right, GameInput.Down], input)) {
         const direction =
-          (input === INPUTS.Down) ? 'down' :
-          (input === INPUTS.Left) ? 'left' : 'right';
+          (input === GameInput.Down) ? 'down' :
+          (input === GameInput.Left) ? 'left' : 'right';
 
         ({grid, pill, didMove} = movePill(this.grid, this.pill, direction));
 
         // trying to move down, but couldn't; we are ready to reconcile
-        if(input === INPUTS.Down && !didMove) shouldReconcile = true;
+        if(input === GameInput.Down && !didMove) shouldReconcile = true;
 
-      } else if(_.includes([INPUTS.RotateCCW, INPUTS.RotateCW], input)) {
-        const direction = (input === INPUTS.RotateCCW) ? 'ccw' : 'cw';
+      } else if(_.includes([GameInput.RotateCCW, GameInput.RotateCW], input)) {
+        const direction = (input === GameInput.RotateCCW) ? 'ccw' : 'cw';
 
         ({grid, pill, didMove} = rotatePill(this.grid, this.pill, direction));
       }
@@ -234,7 +234,7 @@ export default class Game extends EventEmitter {
 
     // gravity pulling pill down
     if(this.counters.playTicks > this.playGravity
-      && !this.inputRepeater.movingDirections.has(INPUTS.Down)) { // deactivate gravity while moving down
+      && !this.inputRepeater.movingDirections.has(GameInput.Down)) { // deactivate gravity while moving down
       this.counters.playTicks = 0;
       const {grid, pill, didMove} = movePill(this.grid, this.pill, 'down');
       if(!didMove) shouldReconcile = true;

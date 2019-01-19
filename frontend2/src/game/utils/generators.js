@@ -1,14 +1,14 @@
 import _ from 'lodash';
 import Imm from 'immutable';
 
-import {GRID_OBJECTS, COLORS, VIRUS_COUNT_TABLE, MIN_VIRUS_ROW_TABLE} from '../constants';
+import {GridObject, COLORS, VIRUS_COUNT_TABLE, MIN_VIRUS_ROW_TABLE} from '../constants';
 import {isEmpty, isColor, getCellNeighbors} from './grid';
 
-export const emptyObject = () => Imm.Map({type: GRID_OBJECTS.Empty});
-export const makeDestroyed = () => Imm.Map({type: GRID_OBJECTS.Destroyed});
-export const virusObject = (color) => Imm.Map({type: GRID_OBJECTS.Virus, color});
-export const makePillLeft = (color) => Imm.Map({type: GRID_OBJECTS.PillLeft, color});
-export const makePillRight = (color) => Imm.Map({type: GRID_OBJECTS.PillRight, color});
+export const emptyObject = () => Imm.Map({type: GridObject.Empty});
+export const makeDestroyed = () => Imm.Map({type: GridObject.Destroyed});
+export const virusObject = (color) => Imm.Map({type: GridObject.Virus, color});
+export const makePillLeft = (color) => Imm.Map({type: GridObject.PillLeft, color});
+export const makePillRight = (color) => Imm.Map({type: GridObject.PillRight, color});
 
 
 export const emptyGrid = (width, height) =>

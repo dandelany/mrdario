@@ -19,19 +19,19 @@ const pillSegmentSvgs = [pillSegmentOrange, pillSegmentPurple, pillSegmentGreen]
 const pillSegments = _.fromPairs(COLORS.map((color, i) => [color, pillSegmentSvgs[i % pillSegmentSvgs.length]]));
 
 const pillHalfTypes =
-  [GRID_OBJECTS.PILL_TOP, GRID_OBJECTS.PILL_BOTTOM, GRID_OBJECTS.PILL_LEFT, GRID_OBJECTS.PILL_RIGHT];
+  [GRID_OBJECTS.PillTop, GRID_OBJECTS.PillBottom, GRID_OBJECTS.PillLeft, GRID_OBJECTS.PillRight];
 
 const pillHalfRotations = {
-  [GRID_OBJECTS.PILL_TOP]: 0,
-  [GRID_OBJECTS.PILL_RIGHT]: 90,
-  [GRID_OBJECTS.PILL_BOTTOM]: 180,
-  [GRID_OBJECTS.PILL_LEFT]: 270
+  [GRID_OBJECTS.PillTop]: 0,
+  [GRID_OBJECTS.PillRight]: 90,
+  [GRID_OBJECTS.PillBottom]: 180,
+  [GRID_OBJECTS.PillLeft]: 270
 };
 
 
 export default class PillPart extends React.Component {
   static propTypes = {
-    type: PropTypes.oneOf([GRID_OBJECTS.PILL_SEGMENT, ...pillHalfTypes]).isRequired,
+    type: PropTypes.oneOf([GRID_OBJECTS.PillSegment, ...pillHalfTypes]).isRequired,
     color: PropTypes.oneOf(COLORS),
     cellSize: PropTypes.any,
     gProps: PropTypes.object,
@@ -49,7 +49,7 @@ export default class PillPart extends React.Component {
     let {gProps} = this.props;
     let svgString;
 
-    if(type === GRID_OBJECTS.PILL_SEGMENT) {
+    if(type === GRID_OBJECTS.PillSegment) {
       svgString = pillSegments[color];
 
     } else {

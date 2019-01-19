@@ -1,15 +1,15 @@
-import {INPUTS} from './constants';
+import {GameInput} from './constants';
 
 export default class InputRepeater {
   // the # of frames for which an input must be held down until it repeats.
   // different for each input, based on empirical testing
   static repeatIntervals = {
-    [INPUTS.Up]: 24,
-    [INPUTS.Down]: 4,
-    [INPUTS.Left]: 8,
-    [INPUTS.Right]: 8,
-    [INPUTS.RotateCCW]: 12,
-    [INPUTS.RotateCW]: 12
+    [GameInput.Up]: 24,
+    [GameInput.Down]: 4,
+    [GameInput.Left]: 8,
+    [GameInput.Right]: 8,
+    [GameInput.RotateCCW]: 12,
+    [GameInput.RotateCW]: 12
   };
   
   constructor() {
@@ -19,12 +19,12 @@ export default class InputRepeater {
     // these counters count up while a move key is held down (for normalizing key-repeat)
     // ie. represents the # of frames during which we have been moving in a particular direction
     this.movingCounters = {
-      [INPUTS.Up]: 0,
-      [INPUTS.Down]: 0,
-      [INPUTS.Left]: 0,
-      [INPUTS.Right]: 0,
-      [INPUTS.RotateCCW]: 0,
-      [INPUTS.RotateCW]: 0
+      [GameInput.Up]: 0,
+      [GameInput.Down]: 0,
+      [GameInput.Left]: 0,
+      [GameInput.Right]: 0,
+      [GameInput.RotateCCW]: 0,
+      [GameInput.RotateCW]: 0
     };
   }
   

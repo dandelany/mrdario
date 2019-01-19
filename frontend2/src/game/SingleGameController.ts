@@ -1,11 +1,10 @@
-import _ from 'lodash';
-import React from 'react';
-import StateMachine from 'javascript-state-machine';
+import * as _ from 'lodash';
+import {create as createStateMachine, StateMachine} from 'javascript-state-machine';
 
-import Game from 'game/Game';
+import Game from './Game';
 
 import {
-  MODES, INPUTS, PLAYFIELD_WIDTH, PLAYFIELD_HEIGHT,
+  GameMode, GameInput, PLAYFIELD_WIDTH, PLAYFIELD_HEIGHT,
 } from './constants';
 
 // a game controller class for the basic 1-player game, played entirely on the client (in browser)
@@ -41,14 +40,17 @@ export default class SingleGameController {
 
   // transitions between modes (state machine states)
   static modeTransitions = [
-    {name: 'play',   from: MODES.Ready,   to: MODES.Playing},
-    {name: 'pause',  from: MODES.Playing, to: MODES.Paused},
-    {name: 'resume', from: MODES.Paused,  to: MODES.Playing},
-    {name: 'win',    from: MODES.Playing, to: MODES.Won},
-    {name: 'lose',   from: MODES.Playing, to: MODES.Lost},
-    {name: 'reset',  from: ['*'], to: MODES.Ready},
-    {name: 'end',    from: ['*'], to: MODES.Ended}
+    {name: 'play',   from: GameMode.Ready,   to: GameMode.Playing},
+    {name: 'pause',  from: GameMode.Playing, to: GameMode.Paused},
+    {name: 'resume', from: GameMode.Paused,  to: GameMode.Playing},
+    {name: 'win',    from: GameMode.Playing, to: GameMode.Won},
+    {name: 'lose',   from: GameMode.Playing, to: GameMode.Lost},
+    {name: 'reset',  from: ['*'], to: GameMode.Ready},
+    {name: 'end',    from: ['*'], to: GameMode.Ended}
   ];
+
+
+  modeMachine?: StateMachine;
 
   constructor(options = {}) {
     options = _.defaults({}, options, SingleGameController.defaultOptions);
@@ -60,8 +62,8 @@ export default class SingleGameController {
 
     _.assign(this, {
       // a finite state machine representing game mode, & transitions between modes
-      modeMachine: new StateMachine({
-        init: MODES.Ready,
+      modeMachine: createStateMachine({
+        init: GameMode.Ready,
         transitions: SingleGameController.modeTransitions,
         methods: {
           onEnterState: this._onChangeMode,
@@ -105,22 +107,22 @@ export default class SingleGameController {
 
   attachInputEvents() {
     this.inputManagers.forEach(inputManager => {
-      inputManager.on(INPUTS.Play, () => this.modeMachine.play());
-      inputManager.on(INPUTS.Pause, (type) => {
+      inputManager.on(GameInput.Play, () => this.modeMachine.play());
+      inputManager.on(GameInput.Pause, (type) => {
         if(type === 'keydown') this.modeMachine.pause();
       });
-      inputManager.on(INPUTS.Resume, (type) => {
+      inputManager.on(GameInput.Resume, (type) => {
         if(type === 'keydown') this.modeMachine.resume();
       });
-      inputManager.on(INPUTS.Reset, () => this.modeMachine.reset());
+      inputManager.on(GameInput.Reset, () => this.modeMachine.reset());
 
-      const moveInputs = [INPUTS.Left, INPUTS.Right, INPUTS.Down, INPUTS.Up, INPUTS.RotateCCW, INPUTS.RotateCW];
+      const moveInputs = [GameInput.Left, GameInput.Right, GameInput.Down, GameInput.Up, GameInput.RotateCCW, GameInput.RotateCW];
       moveInputs.forEach(input => inputManager.on(input, this.enqueueMoveInput.bind(this, input)));
     });
   }
   enqueueMoveInput(input, eventType, event) {
     // queue a user move, to be sent to the game on the next tick
-    if (this.modeMachine.state !== MODES.Playing) return;
+    if (this.modeMachine.state !== GameMode.Playing) return;
     this.moveInputQueue.push({input, eventType});
     if(event.preventDefault) event.preventDefault();
   }
@@ -137,7 +139,7 @@ export default class SingleGameController {
 
   tick() {
     // called once per frame
-    if(this.modeMachine.state !== MODES.Playing) return;
+    if(this.modeMachine.state !== GameMode.Playing) return;
     const now = timestamp();
     const {dt, last, slow, slowStep} = this;
 

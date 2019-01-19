@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import Imm from 'immutable';
 
-import {GRID_OBJECTS} from '../constants';
+import {GridObject} from '../constants';
 
 // these are pure stateless functions which contain the majority of the game logic
 // they use Immutable objects to represent the grid and return new objects on 'mutation'
@@ -9,12 +9,12 @@ import {GRID_OBJECTS} from '../constants';
 export const isObjType = (obj, type) => (obj && obj.get && obj.get('type') === type);
 export const isColor = (obj, color) => (obj && obj.get && obj.get('color') === color);
 
-export const isEmpty = (obj) => isObjType(obj, GRID_OBJECTS.Empty);
-export const isDestroyed = (obj) => isObjType(obj, GRID_OBJECTS.Destroyed);
-export const isPillTop = (obj) => isObjType(obj, GRID_OBJECTS.PillTop);
-export const isPillLeft = (obj) => isObjType(obj, GRID_OBJECTS.PillLeft);
-export const isPillSegment = (obj) => isObjType(obj, GRID_OBJECTS.PillSegment);
-export const isVirus = (obj) => isObjType(obj, GRID_OBJECTS.Virus);
+export const isEmpty = (obj) => isObjType(obj, GridObject.Empty);
+export const isDestroyed = (obj) => isObjType(obj, GridObject.Destroyed);
+export const isPillTop = (obj) => isObjType(obj, GridObject.PillTop);
+export const isPillLeft = (obj) => isObjType(obj, GridObject.PillLeft);
+export const isPillSegment = (obj) => isObjType(obj, GridObject.PillSegment);
+export const isVirus = (obj) => isObjType(obj, GridObject.Virus);
 
 export function hasViruses(grid) {
   return !grid.every(row => row.every(cell => !isVirus(cell)));
@@ -92,8 +92,8 @@ export function findLinesIn(row, lineLength = 4, excludeFlag = 'isFalling') {
 
 // find "widows", half-pill pieces whose other halves have been destroyed
 export function findWidows(grid) {
-  const {PILL_LEFT, PILL_RIGHT, PILL_TOP, PILL_BOTTOM} = GRID_OBJECTS;
-  const pillTypes = [PILL_LEFT, PILL_RIGHT, PILL_TOP, PILL_BOTTOM];
+  const {PillLeft, PillRight, PillTop, PillBottom} = GridObject;
+  const pillTypes = [PillLeft, PillRight, PillTop, PillBottom];
 
   return _.flatten(grid.reduce((widows, row, rowI) => {
     widows.push(row.reduce((rowWidows, obj, colI) => {
@@ -103,10 +103,10 @@ export function findWidows(grid) {
       const cell = [rowI, colI];
       const neighbors = getCellNeighbors(grid, cell);
       const isWidow =
-        ((type === PILL_LEFT) && !isObjType(neighbors.right, PILL_RIGHT)) ||
-        ((type === PILL_RIGHT) && !isObjType(neighbors.left, PILL_LEFT))  ||
-        ((type === PILL_TOP) && !isObjType(neighbors.down, PILL_BOTTOM))  ||
-        ((type === PILL_BOTTOM) && !isObjType(neighbors.up, PILL_TOP));
+        ((type === PillLeft) && !isObjType(neighbors.right, PillRight)) ||
+        ((type === PillRight) && !isObjType(neighbors.left, PillLeft))  ||
+        ((type === PillTop) && !isObjType(neighbors.down, PillBottom))  ||
+        ((type === PillBottom) && !isObjType(neighbors.up, PillTop));
 
       if(isWidow) rowWidows.push(cell);
       return rowWidows;

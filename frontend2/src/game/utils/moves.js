@@ -2,7 +2,7 @@ import get from 'lodash/get';
 import isUndefined from 'lodash/isUndefined';
 import flatten from 'lodash/flatten';
 
-import {GRID_OBJECTS} from '../constants';
+import {GridObject} from '../constants';
 import {
   isEmpty, isDestroyed, isPillLeft, isPillTop, isPillSegment, isVirus, isPillVertical,
   getCellNeighbors, canMoveCell, deltaRowCol, findLines, findWidows
@@ -96,7 +96,7 @@ export function rotatePill(grid, pill, direction) {
 
   const pillParts = pill.map(([segRow, segCol]) => grid.getIn([segRow, segCol]));
   const newPartTypes = isVertical ?
-    [GRID_OBJECTS.PillLeft, GRID_OBJECTS.PillRight] : [GRID_OBJECTS.PillTop, GRID_OBJECTS.PillBottom];
+    [GridObject.PillLeft, GridObject.PillRight] : [GridObject.PillTop, GridObject.PillBottom];
 
   if(isVertical) { // rotate vertical to horizontal
 
@@ -167,7 +167,7 @@ export const removeCells = (grid, cells) => updateCellsWith(grid, cells, removeC
 
 export function setPillSegment(grid, [rowI, colI]) {
   // set grid cell to be a rounded pill segment (rather than half pill)
-  grid = grid.mergeIn([rowI, colI], {type: GRID_OBJECTS.PillSegment});
+  grid = grid.mergeIn([rowI, colI], {type: GridObject.PillSegment});
   return grid;
 }
 export const setPillSegments = (grid, cells) => updateCellsWith(grid, cells, setPillSegment);

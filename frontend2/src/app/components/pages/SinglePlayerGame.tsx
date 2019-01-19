@@ -1,31 +1,46 @@
-import React from 'react';
-import _ from 'lodash';
-import {Link, withRouter, Redirect} from 'react-router-dom';
-import DeepDiff from 'deep-diff';
-const deepDiff = DeepDiff.diff;
-import shallowEqual from '../../utils/shallowEqual';
+import * as React from 'react';
+import * as _ from 'lodash';
+import { withRouter, Redirect, RouteComponentProps } from "react-router-dom";
+// import * as DeepDiff from 'deep-diff';
+// const deepDiff = DeepDiff.diff;
+import shallowEqual from '@/app/utils/shallowEqual';
 
-import {MODES, DEFAULT_KEYS, GRID_OBJECTS} from 'game/constants';
+import {GameMode, DEFAULT_KEYS} from "@/game/constants";
 
-import KeyManager from 'app/inputs/KeyManager';
-import SwipeManager from 'app/inputs/SwipeManager';
-import GamepadManager from 'app/inputs/GamepadManager';
-import SingleGameController from 'game/SingleGameController.js';
+import KeyManager from '@/app/inputs/KeyManager';
+// import SwipeManager from 'app/inputs/SwipeManager';
+// import GamepadManager from 'app/inputs/GamepadManager';
+import SingleGameController from '@/game/SingleGameController';
 //import SinglePlayerGameController from 'game/SinglePlayerNetworkGameController';
 
-import Playfield from 'app/components/Playfield';
-import PillPreviewPanel from 'app/components/game/PillPreviewPanel';
-import WonOverlay from 'app/components/overlays/WonOverlay';
-import LostOverlay from 'app/components/overlays/LostOverlay';
-import responsiveGame from 'app/components/responsiveGame';
+import Playfield from '@/app/components/game/Playfield';
+import PillPreviewPanel from '@/app/components/game/PillPreviewPanel';
+import WonOverlay from '@/app/components/overlays/WonOverlay';
+import LostOverlay from '@/app/components/overlays/LostOverlay';
+import responsiveGame from '@/app/components/responsiveGame';
+import { SCClientSocket } from "socketcluster-client";
 
 function getName() {
   return window.localStorage ?
     (window.localStorage.getItem('mrdario-name') || 'Anonymous') : 'Anonymous';
 }
 
+export interface SinglePlayerGameProps extends RouteComponentProps {
+  cellSize: number;
+  heightPercent: number;
+  padding: number;
+  socket?: SCClientSocket;
+}
 
-class SinglePlayerGame extends React.Component {
+export interface SinglePlayerGameState {
+  gameState: null;
+  highScores: null;
+  rank: null;
+  pendingMode: null;
+}
+
+
+class SinglePlayerGame extends React.Component<SinglePlayerGameProps, SinglePlayerGameState> {
   static defaultProps = {
     cellSize: 32,
     heightPercent: .85,
@@ -39,6 +54,9 @@ class SinglePlayerGame extends React.Component {
     pendingMode: null
   };
 
+  game?: any;
+  keyManager?: KeyManager;
+
   componentDidMount() {
     // mode means won or lost, no mode = playing
     if(!_.get(this.props, 'params.match.mode')) this._initGame(this.props);
@@ -48,9 +66,9 @@ class SinglePlayerGame extends React.Component {
     if(this.game && this.game.cleanup) this.game.cleanup();
   }
 
-  componentWillReceiveProps(newProps) {
+  componentWillReceiveProps(newProps: SinglePlayerGameProps) {
     const {params} = this.props.match;
-    const hasChanged = (key) => _.get(this.props, key) !== _.get(newProps, key);
+    const hasChanged = (key: string) => _.get(this.props, key) !== _.get(newProps, key);
     const shouldInitGame =
       hasChanged('match.params.level') || hasChanged('match.params.speed') ||
       (hasChanged('match.params.mode') && !_.get(newProps, 'match.params.mode'));
@@ -62,7 +80,7 @@ class SinglePlayerGame extends React.Component {
     }
   }
 
-  shouldComponentUpdate(newProps, newState) {
+  shouldComponentUpdate(newProps: SinglePlayerGameProps, newState: SinglePlayerGameState) {
     const hasChanged =
       !_.every(newState, (value, key) => shallowEqual(value, this.state[key])) ||
       !shallowEqual(newProps, this.props);
@@ -71,10 +89,10 @@ class SinglePlayerGame extends React.Component {
   }
 
 
-  _initGame(props) {
+  _initGame(props: SinglePlayerGameProps) {
     if(this.game && this.game.cleanup) this.game.cleanup();
 
-    const {router, socket} = props;
+    const {socket} = props;
     const {params} = props.match;
     const level = parseInt(params.level) || 0;
     const speed = parseInt(params.speed) || 15;
@@ -85,21 +103,22 @@ class SinglePlayerGame extends React.Component {
 
     // input managers controlling keyboard and touch events
     this.keyManager = new KeyManager(DEFAULT_KEYS);
-    this.touchManager = new SwipeManager();
-    this.gamepadManager = new GamepadManager();
+    // this.touchManager = new SwipeManager();
+    // this.gamepadManager = new GamepadManager();
 
     // create new game controller that will run the game
     // and update component state whenever game state changes to re-render
     this.game = new SingleGameController({
       level, speed,
-      inputManagers: [this.keyManager, this.touchManager, this.gamepadManager],
+      // inputManagers: [this.keyManager, this.touchManager, this.gamepadManager],
+      inputManagers: [this.keyManager],
       render: (gameState) => this.setState({gameState}),
       onChangeMode: (event, lastMode, newMode) => {
         console.log('onchangemode', event, lastMode, newMode);
-        if(_.includes([MODES.Lost, MODES.Won], newMode)) {
+        if(_.includes([GameMode.Lost, GameMode.Won], newMode)) {
           this.setState({pendingMode: newMode.toLowerCase()});
-          if(newMode === MODES.Won) this._handleWin();
-          if(newMode === MODES.Lost) this._handleLose();
+          if(newMode === GameMode.Won) this._handleWin();
+          if(newMode === GameMode.Lost) this._handleLose();
         }
         if(this.props.onChangeMode) this.props.onChangeMode(newMode);
       }

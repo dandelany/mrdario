@@ -44,25 +44,25 @@ export const SPEED_LEVELS = keyMirror({
 // http://tetrisconcept.net/wiki/Dr._Mario#Gravity
 // base speed by level
 export const BASE_SPEED_TABLE = {
-  [SPEED_LEVELS.LOW]:    15,
-  [SPEED_LEVELS.MEDIUM]: 25,
-  [SPEED_LEVELS.HIGH]:   31
+  [SPEED_LEVELS.Low]:    15,
+  [SPEED_LEVELS.Medium]: 25,
+  [SPEED_LEVELS.High]:   31
 };
 
 export const DEFAULT_KEYS = {
   //[MODES.READY]: { [INPUTS.PLAY]: 'enter, space, escape' },
-  [MODES.PLAYING]: {
-    [INPUTS.LEFT]: 'left',
-    [INPUTS.RIGHT]: 'right',
-    [INPUTS.UP]: 'up',
-    [INPUTS.DOWN]: 'down',
-    [INPUTS.ROTATE_CCW]: 'a',
-    [INPUTS.ROTATE_CW]: 's',
-    [INPUTS.PAUSE]: 'escape'
+  [MODES.Playing]: {
+    [INPUTS.Left]: 'left',
+    [INPUTS.Right]: 'right',
+    [INPUTS.Up]: 'up',
+    [INPUTS.Down]: 'down',
+    [INPUTS.RotateCCW]: 'a',
+    [INPUTS.RotateCW]: 's',
+    [INPUTS.Pause]: 'escape'
   },
-  [MODES.PAUSED]: { [INPUTS.RESUME]: ['enter', 'space', 'escape'] },
-  [MODES.WON]: { [INPUTS.RESET]: ['enter', 'space', 'escape'] },
-  [MODES.LOST]: { [INPUTS.RESET]: ['enter', 'space', 'escape'] }
+  [MODES.Paused]: { [INPUTS.Resume]: ['enter', 'space', 'escape'] },
+  [MODES.Won]: { [INPUTS.Reset]: ['enter', 'space', 'escape'] },
+  [MODES.Lost]: { [INPUTS.Reset]: ['enter', 'space', 'escape'] }
 };
 
 // how many colors are still humanly possible to play with?

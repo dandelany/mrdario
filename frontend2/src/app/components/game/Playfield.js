@@ -3,7 +3,7 @@ import React from 'react';
 import shallowEqual from 'app/utils/shallowEqual';
 import makeReactSvg from 'app/utils/makeReactSvg';
 
-import PillPart from 'app/components/game/PillPart';
+import PillPart from './PillPart';
 
 import { GRID_OBJECTS } from 'game/constants';
 

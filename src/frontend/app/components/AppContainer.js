@@ -63,8 +63,8 @@ class AppContainer extends React.Component {
 
     const calendarMode =
       (this.props.location.pathname == '/') ? 'title' :
-      (this.state.mode == MODES.LOST) ? 'lost' :
-      (this.state.mode == MODES.WON) ? 'won' :
+      (this.state.mode == MODES.Lost) ? 'lost' :
+      (this.state.mode == MODES.Won) ? 'won' :
       undefined;
 
     return <div id="mrdario" style={{width: '100%', height: '100%'}}>
