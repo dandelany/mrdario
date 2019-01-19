@@ -1,0 +1,146 @@
+//@import './rc-slider.less';
+@import 'settings.scss';
+@import 'game';
+
+body {
+  font-family: 'Coustard', 'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, serif;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #333;
+}
+@keyframes popup {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(4);
+  }
+  90% {
+    transform: scale(0.5);
+  }
+}
+.popup {
+  animation: popup 1.2s 0.5s ease infinite;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+::-webkit-scrollbar {
+  -webkit-appearance: none;
+  width: 10px;
+  height: 18px;
+}
+::-webkit-scrollbar-thumb {
+  background-clip: padding-box;
+  height: 6px;
+  border-radius: 10px;
+  border: 2px solid rgba(0, 0, 0, 0);
+  background-color: rgba(0,0,0,.5);
+  -webkit-box-shadow: 0 0 1px rgba(255,255,255,.5);
+}
+
+span.btn-white {
+  color: #101010;
+  background-color: rgba(255, 255, 255, 0.85);
+  display: inline-block;
+  padding: 8px 12px;
+  border-radius: 12px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+  border: 4px solid black;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 0.95);
+  }
+  &.disabled {
+    border: 4px solid #777;
+    color: #777;
+    cursor: default;
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.85);
+    }
+  }
+}
+
+
+.aztec-calendar {
+  position: absolute;
+  z-index: 0;
+}
+
+.mrdario-page {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: 100;
+  text-align: center;
+}
+
+%center-absolute {
+  position: absolute;
+  margin: 0 auto;
+  left: 0;
+  right: 0;
+}
+.center-absolute {
+  @extend %center-absolute;
+}
+
+.page-title {
+  .title-head, .title-game-options {
+    @extend %center-absolute;
+  }
+
+  .title-head {
+    top: 12%;
+    h1 {
+      margin: 0;
+      display: inline-block;
+      font-size: 9vh;
+      padding: 2vmin 4vmin;
+      background-color: rgba(255, 255, 255, 0.85);
+      border-radius: 20vmin;
+      border: 2vmin solid black;
+    }
+  }
+
+  .title-game-options {
+    top: 65%;
+    font-size: 16pt;
+  }
+}
+
+
+
+.high-scores {
+  display: inline-block;
+  background: #f0f0f0;
+  padding: 4vh 2vh;
+  margin-top: 13vh;
+  width: 47.5vh;
+  max-height: 68vh;
+  overflow-y: scroll;
+  text-align: center;
+
+  table {
+    td {
+      .score-name {
+        overflow: hidden;
+        width: 30vh;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        font-weight: bold;
+      }
+
+      text-align: left;
+      &:last-child {
+        text-align: right;
+      }
+    }
+  }
+}
