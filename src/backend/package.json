@@ -5,16 +5,35 @@
   "version": "0.2.0",
   "private": true,
   "main": "src/index.js",
-  "scripts": {},
+  "scripts": {
+    "build": "tsc -p .",
+    "build:live": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/server.js",
+    "start": "npm run build:live",
+    "start:docker": "node dockerwait.js && node ${SOCKETCLUSTER_MASTER_CONTROLLER:-server.js}"
+  },
   "dependencies": {
+    "connect": "3.6.6",
     "date-fns": "^1.29.0",
-    "express": "4.16.2",
-    "lodash": "4.17.4",
+    "express": "4.16.4",
+    "lodash": "4.17.11",
     "minimist": "^1.2.0",
+    "morgan": "^1.9.1",
     "random-word-by-length": "^0.1.0",
     "redis": "^2.6.1",
-    "socketcluster": "8.0.2",
-    "uuid": "3.1.0"
+    "sc-errors": "^1.4.1",
+    "sc-framework-health-check": "^2.0.0",
+    "sc-hot-reboot": "^1.0.0",
+    "scc-broker-client": "^6.1.0",
+    "serve-static": "1.13.2",
+    "socketcluster": "^14.3.3",
+    "socketcluster-client": "^14.2.1",
+    "uuid": "3.3.2"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "@types/node": "^10.12.18",
+    "@types/redis": "^2.8.10",
+    "nodemon": "^1.18.9",
+    "ts-node": "^7.0.1",
+    "typescript": "^3.2.4"
+  }
 }
