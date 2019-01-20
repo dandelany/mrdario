@@ -1,0 +1,30 @@
+{
+  "name": "mrdario-core",
+  "version": "2.0.0",
+  "description": "Core game code for Mr. Dario",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "test": "jest --config jestconfig.json",
+    "build": "tsc",
+    "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
+    "lint": "tslint -p tsconfig.json --fix"
+  },
+  "author": "Dan Delany <dan.delany@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/jest": "^23.3.13",
+    "@types/lodash": "^4.14.120",
+    "jest": "^23.6.0",
+    "prettier": "^1.15.3",
+    "ts-jest": "^23.10.5",
+    "tslint": "^5.12.1",
+    "tslint-config-prettier": "^1.17.0",
+    "typescript": "^3.2.4"
+  },
+  "dependencies": {
+    "immer": "^1.10.5",
+    "immutable": "^4.0.0-rc.12",
+    "lodash": "^4.17.11"
+  }
+}
