@@ -1,4 +1,4 @@
-import SinglePlayerGameController, { GameControllerOptions } from "./SingleGameController";
+import SinglePlayerGameController, { GameControllerOptions } from "./browser/SingleGameController";
 
 // WIP for sending moves to server...
 

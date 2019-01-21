@@ -8,10 +8,10 @@ import shallowEqual from '@/app/utils/shallowEqual';
 import {DEFAULT_KEYS} from "mrdario-core/lib/constants";
 import { GameControllerMode, GameControllerState, PillColors } from "mrdario-core/src/types";
 
-import KeyManager from 'mrdario-core/src/inputs/KeyManager';
+import KeyManager from 'mrdario-core/src/browser/inputs/KeyManager';
 // import SwipeManager from 'mrdario-core/src/inputs/SwipeManager';
 // import GamepadManager from 'mrdario-core/src/inputs/GamepadManager';
-import SingleGameController from 'mrdario-core/src/SingleGameController';
+import SingleGameController from 'mrdario-core/src/browser/SingleGameController';
 //import SinglePlayerGameController from 'game/SinglePlayerNetworkGameController';
 
 import Playfield from '@/app/components/game/Playfield';
@@ -111,14 +111,14 @@ class SinglePlayerGame extends React.Component<SinglePlayerGameProps, SinglePlay
       // inputManagers: [this.keyManager, this.touchManager, this.gamepadManager],
       inputManagers: [this.keyManager],
       render: (gameState: GameControllerState) => this.setState({gameState}),
-      onChangeMode: (transition, lastMode: GameControllerMode, nextMode: GameControllerMode) => {
-        console.log('onchangemode', transition, lastMode, nextMode);
-        if(_.includes([GameControllerMode.Lost, GameControllerMode.Won], nextMode)) {
-          this.setState({pendingMode: nextMode});
-          if(nextMode === GameControllerMode.Won) this._handleWin();
-          if(nextMode === GameControllerMode.Lost) this._handleLose();
+      onChangeMode: (fromMode: GameControllerMode, toMode: GameControllerMode) => {
+        console.log('onchangemode', fromMode, toMode);
+        if(_.includes([GameControllerMode.Lost, GameControllerMode.Won], toMode)) {
+          this.setState({pendingMode: toMode});
+          if(toMode === GameControllerMode.Won) this._handleWin();
+          if(toMode === GameControllerMode.Lost) this._handleLose();
         }
-        if(this.props.onChangeMode) this.props.onChangeMode(nextMode);
+        if(this.props.onChangeMode) this.props.onChangeMode(toMode);
       }
     });
     this.game.play();

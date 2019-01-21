@@ -8,7 +8,7 @@ import {
 import { inRange } from "lodash";
 // import Gamepads from "gamepad-plus/src";
 
-import { GameControllerMode, GameInput, InputEventType } from "../types";
+import { GameControllerMode, GameInput, InputEventType } from "../../types/index";
 
 const gamepadConfig = {
   axisThreshold: 0,
