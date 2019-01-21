@@ -5,7 +5,8 @@ import { withRouter, Redirect, RouteComponentProps } from "react-router-dom";
 // const deepDiff = DeepDiff.diff;
 import shallowEqual from '@/app/utils/shallowEqual';
 
-import {GameMode, DEFAULT_KEYS} from "@/game/constants";
+import {DEFAULT_KEYS} from "mrdario-core/src/constants";
+import {GameControllerMode} from "mrdario-core/src/types";
 
 import KeyManager from '@/app/inputs/KeyManager';
 // import SwipeManager from 'app/inputs/SwipeManager';
@@ -115,10 +116,10 @@ class SinglePlayerGame extends React.Component<SinglePlayerGameProps, SinglePlay
       render: (gameState) => this.setState({gameState}),
       onChangeMode: (event, lastMode, newMode) => {
         console.log('onchangemode', event, lastMode, newMode);
-        if(_.includes([GameMode.Lost, GameMode.Won], newMode)) {
+        if(_.includes([GameControllerMode.Lost, GameControllerMode.Won], newMode)) {
           this.setState({pendingMode: newMode.toLowerCase()});
-          if(newMode === GameMode.Won) this._handleWin();
-          if(newMode === GameMode.Lost) this._handleLose();
+          if(newMode === GameControllerMode.Won) this._handleWin();
+          if(newMode === GameControllerMode.Lost) this._handleLose();
         }
         if(this.props.onChangeMode) this.props.onChangeMode(newMode);
       }

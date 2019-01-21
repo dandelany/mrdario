@@ -3,16 +3,23 @@ import {
   GridObject,
   GridObjectDestroyed,
   GridObjectEmpty,
-  GridObjectPillBottom, GridObjectPillHalf,
+  GridObjectPillBottom,
+  GridObjectPillHalf,
   GridObjectPillLeft,
-  GridObjectPillRight, GridObjectPillSegment,
+  GridObjectPillPart,
+  GridObjectPillRight,
+  GridObjectPillSegment,
   GridObjectPillTop,
   GridObjectType,
   GridObjectWithColor,
   MaybeGridObject,
-  MaybeGridObjectWithColor
+  MaybeGridObjectWithColor,
+  PillLocation
 } from "../types";
 
+export function isGridObject(obj: MaybeGridObject): obj is GridObject {
+  return !!obj && obj.type !== undefined;
+}
 export function isObjType(obj: MaybeGridObject, type: GridObjectType): boolean {
   return !!obj && obj.type === type;
 }
@@ -22,7 +29,6 @@ export function hasColor(obj: GridObject | GridObjectWithColor): obj is GridObje
 export function isColor(obj: MaybeGridObjectWithColor, color: GameColor): boolean {
   return !!obj && hasColor(obj) && obj.color === color;
 }
-
 export function isEmpty(obj: MaybeGridObject): obj is GridObjectEmpty {
   return isObjType(obj, GridObjectType.Empty);
 }
@@ -55,4 +61,10 @@ export function isPillHalf(obj: MaybeGridObject): obj is GridObjectPillHalf {
       isObjType(obj, GridObjectType.PillTop) ||
       isObjType(obj, GridObjectType.PillBottom))
   );
+}
+export function isPillPart(obj: MaybeGridObject): obj is GridObjectPillPart {
+  return !!obj && (isPillHalf(obj) || isObjType(obj, GridObjectType.PillSegment));
+}
+export function isPillLocation(obj: PillLocation | undefined | null): obj is PillLocation {
+  return !!obj;
 }

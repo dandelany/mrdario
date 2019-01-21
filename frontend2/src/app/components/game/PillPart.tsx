@@ -1,8 +1,7 @@
-import * as _ from 'lodash';
 import * as React from 'react';
 import makeReactSvg from '../../utils/makeReactSvg';
 
-import { GridObject, GameColor } from "@/game/constants";
+import { GridObjectType, GameColor } from "mrdario-core/src/types";
 
 import * as pillHalfOrange from '!raw-loader!../../svg/pill_half_orange.svg';
 import * as pillHalfPurple from '!raw-loader!app/svg/pill_half_purple.svg';
@@ -15,25 +14,25 @@ import * as pillSegmentGreen from '!raw-loader!app/svg/pill_segment_green.svg';
 type PillPartSVGByColor = {[C in GameColor]: string};
 
 const pillHalves: PillPartSVGByColor = {
-  [GameColor.Orange]: pillHalfOrange,
-  [GameColor.Purple]: pillHalfPurple,
-  [GameColor.Green]: pillHalfGreen
+  [GameColor.Color1]: pillHalfOrange,
+  [GameColor.Color2]: pillHalfPurple,
+  [GameColor.Color3]: pillHalfGreen
 };
 
 const pillSegments: PillPartSVGByColor = {
-  [GameColor.Orange]: pillSegmentOrange,
-  [GameColor.Purple]: pillSegmentPurple,
-  [GameColor.Green]: pillSegmentGreen
+  [GameColor.Color1]: pillSegmentOrange,
+  [GameColor.Color2]: pillSegmentPurple,
+  [GameColor.Color3]: pillSegmentGreen
 };
 
-type PillHalfType = GridObject.PillTop | GridObject.PillBottom | GridObject.PillLeft | GridObject.PillRight;
-type PillPartType = PillHalfType | GridObject.PillSegment;
+type PillHalfType = GridObjectType.PillTop | GridObjectType.PillBottom | GridObjectType.PillLeft | GridObjectType.PillRight;
+type PillPartType = PillHalfType | GridObjectType.PillSegment;
 
 const pillHalfRotations: {[P in PillHalfType]: number} = {
-  [GridObject.PillTop]: 0,
-  [GridObject.PillRight]: 90,
-  [GridObject.PillBottom]: 180,
-  [GridObject.PillLeft]: 270
+  [GridObjectType.PillTop]: 0,
+  [GridObjectType.PillRight]: 90,
+  [GridObjectType.PillBottom]: 180,
+  [GridObjectType.PillLeft]: 270
 };
 
 interface PillPartProps {
@@ -48,7 +47,7 @@ interface PillPartProps {
 
 export default class PillPart extends React.Component<PillPartProps> {
   static defaultProps = {
-    color: GameColor.Orange,
+    color: GameColor.Color1,
     cellSize: 36,
     gProps: {
     },
@@ -60,7 +59,7 @@ export default class PillPart extends React.Component<PillPartProps> {
     let {gProps} = this.props;
     let svgString;
 
-    if(type === GridObject.PillSegment) {
+    if(type === GridObjectType.PillSegment) {
       svgString = pillSegments[color];
 
     } else {

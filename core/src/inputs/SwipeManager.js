@@ -1,7 +1,7 @@
-import {EventEmitter} from 'events';
-import Hammer from 'hammerjs';
+import { EventEmitter } from "events";
+import Hammer from "hammerjs";
 
-import {INPUTS} from 'game/constants';
+import { INPUTS } from "game/constants";
 
 export default class SwipeManager extends EventEmitter {
   constructor() {
@@ -13,16 +13,14 @@ export default class SwipeManager extends EventEmitter {
   registerControls() {
     this.mc.add([
       // new Hammer.Swipe({direction: Hammer.DIRECTION_ALL}),
-      new Hammer.Pan({direction: Hammer.DIRECTION_ALL, threshold: 35}),
-      new Hammer.Tap({ event: 'singletap' })
-
+      new Hammer.Pan({ direction: Hammer.DIRECTION_ALL, threshold: 35 }),
+      new Hammer.Tap({ event: "singletap" })
     ]);
 
     // this.mc.on('swipeup', this.triggerKeyInputs.bind(this, INPUTS.UP));
     // this.mc.on('swipeleft', this.triggerKeyInputs.bind(this, INPUTS.LEFT));
     // this.mc.on('swiperight', this.triggerKeyInputs.bind(this, INPUTS.RIGHT));
     // this.mc.on('swipedown', this.triggerKeyInputs.bind(this, INPUTS.DOWN));
-
 
     // this.mc.on('panup', () => console.log('panup'));
     // this.mc.on('panleft', () => console.log('panleft'));
@@ -36,44 +34,41 @@ export default class SwipeManager extends EventEmitter {
 
     this.downInputs = new Set();
 
-    this.mc.on('panstart', (e) => {
-      console.log('panstart', e.additionalEvent);
-      switch(e.additionalEvent) {
-        case 'panup':
-          this.handleInput(INPUTS.Up, 'keydown', e);
+    this.mc.on("panstart", e => {
+      console.log("panstart", e.additionalEvent);
+      switch (e.additionalEvent) {
+        case "panup":
+          this.handleInput(INPUTS.Up, "keydown", e);
           this.downInputs.add(INPUTS.Up);
           break;
-        case 'pandown':
-          this.handleInput(INPUTS.Down, 'keydown', e);
+        case "pandown":
+          this.handleInput(INPUTS.Down, "keydown", e);
           this.downInputs.add(INPUTS.Down);
           break;
-        case 'panleft':
-          this.handleInput(INPUTS.Left, 'keydown', e);
+        case "panleft":
+          this.handleInput(INPUTS.Left, "keydown", e);
           this.downInputs.add(INPUTS.Left);
           break;
-        case 'panright':
-          this.handleInput(INPUTS.Right, 'keydown', e);
+        case "panright":
+          this.handleInput(INPUTS.Right, "keydown", e);
           this.downInputs.add(INPUTS.Right);
           break;
       }
     });
 
-    this.mc.on('panend', (e) => {
-      for(const inputType of this.downInputs) {
-        this.handleInput(inputType, 'keyup', e);
+    this.mc.on("panend", e => {
+      for (const inputType of this.downInputs) {
+        this.handleInput(inputType, "keyup", e);
         this.downInputs.delete(inputType);
       }
     });
 
-
-
-
-    this.mc.on('singletap', this.triggerKeyInputs.bind(this, INPUTS.RotateCW));
+    this.mc.on("singletap", this.triggerKeyInputs.bind(this, INPUTS.RotateCW));
   }
 
   triggerKeyInputs(inputType, event) {
-    this.handleInput(inputType, 'keydown', event);
-    setTimeout(() => this.handleInput(inputType, 'keyup', event), 10);
+    this.handleInput(inputType, "keydown", event);
+    setTimeout(() => this.handleInput(inputType, "keyup", event), 10);
   }
   handleInput(inputType, keyType, event) {
     super.emit(inputType, keyType, event);

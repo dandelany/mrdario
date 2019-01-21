@@ -1,24 +1,25 @@
-import {times, sample, random, values} from "lodash";
+import { random, sample, times, values } from "lodash";
 
 import {
-  GridObjectType,
-  GridObject,
-  GridObjectEmpty,
-  GridObjectDestroyed,
   GameColor,
-  GridObjectVirus,
-  GridObjectPillLeft,
-  GridObjectPillRight,
   GameGrid,
   GameGridRow,
+  GridCellLocation,
+  GridObject,
+  GridObjectDestroyed,
+  GridObjectEmpty,
+  GridObjectPillLeft,
+  GridObjectPillRight,
+  GridObjectType,
+  GridObjectVirus,
+  MaybeGridObject,
   OneOrMore,
-  PillColors,
-  GridCellLocation, MaybeGridObject
+  PillColors
 } from "../types";
 
-import { VIRUS_COUNT_TABLE, MIN_VIRUS_ROW_TABLE } from "../constants";
-import { isEmpty, isColor, hasColor } from "./guards";
-import { getCellNeighbors, getInGrid } from "./grid";
+import { MIN_VIRUS_ROW_TABLE, VIRUS_COUNT_TABLE } from "../constants";
+import { getCellNeighbors, getInGrid, setInGrid } from "./grid";
+import { hasColor, isColor, isEmpty } from "./guards";
 
 export function makeEmpty(): GridObjectEmpty {
   return { type: GridObjectType.Empty };
@@ -75,9 +76,11 @@ export function generateEnemies(
   const origVirusCount = virusCount;
 
   while (virusCount) {
-    let { cell, virus } = generateVirus(grid, level, colors, virusCount);
-    if (!virus) continue; // bad virus, try again
-    grid = grid.setIn(cell, virus); // good virus, put it in the cell
+    const { cell, virus } = generateVirus(grid, level, colors, virusCount);
+    if (!virus || !cell) {
+      continue;
+    } // bad virus, try again
+    grid = setInGrid(grid, cell, virus); // good virus, put it in the cell
     virusCount--;
   }
 
@@ -98,22 +101,26 @@ export function generateVirus(
 
   // while not a valid location, step through the grid until we find one
   while (!isValidNewVirusLocation(grid, [vRow, vCol], colors)) {
-    let next = nextGridCell([vRow, vCol], numRows, numCols);
+    const next = nextGridCell([vRow, vCol], numRows, numCols);
     // stepped out the end of the grid, start over
-    if (next === null) return { cell: null, virus: null };
+    if (next === null) {
+      return { cell: null, virus: null };
+    }
     [vRow, vCol] = next;
   }
 
   // generate a color for the virus that is not in the nearby neighbors
   let colorSeed = remaining % (colors.length + 1);
-  let color = colorSeed === colors.length ? sample(colors) as GameColor : colors[colorSeed];
+  let color = colorSeed === colors.length ? (sample(colors) as GameColor) : colors[colorSeed];
   while (!isValidNewVirusColor(grid, [vRow, vCol], color)) {
     colorSeed = (colorSeed + 1) % (colors.length + 1);
-    color = colorSeed === colors.length ? sample(colors) as GameColor : colors[colorSeed];
+    color = colorSeed === colors.length ? (sample(colors) as GameColor) : colors[colorSeed];
   }
 
-  // done, return the virus and it's location
-  return { cell: [vRow, vCol], virus: makeVirus(color) };
+  // done, return the virus and its location
+  const cell: GridCellLocation = [vRow, vCol];
+  const virus: GridObjectVirus = makeVirus(color);
+  return { cell, virus };
 }
 
 export function minVirusRow(level: number): number {
@@ -144,13 +151,17 @@ export function isValidNewVirusLocation(
   nearby?: MaybeGridObject[]
 ) {
   // cell must be empty
-  if (!isEmpty(getInGrid(grid, [rowI, colI]))) return false;
-  if (!nearby) nearby = values(getCellNeighbors(grid, [rowI, colI], 2));
+  if (!isEmpty(getInGrid(grid, [rowI, colI]))) {
+    return false;
+  }
+  if (!nearby) {
+    nearby = values(getCellNeighbors(grid, [rowI, colI], 2));
+  }
   // location is valid if not all colors are present in the 4 nearby cells
   return !colors.every((color: GameColor) => {
     return (nearby as MaybeGridObject[]).some((obj: MaybeGridObject) => {
       return !!obj && hasColor(obj) && isColor(obj, color);
-    })
+    });
   });
 }
 
@@ -160,7 +171,9 @@ export function isValidNewVirusColor(
   color: GameColor,
   nearby?: MaybeGridObject[]
 ) {
-  if (!nearby) nearby = values(getCellNeighbors(grid, [rowI, colI], 2));
+  if (!nearby) {
+    nearby = values(getCellNeighbors(grid, [rowI, colI], 2));
+  }
   // virus color is valid here if none of the nearby neighbors are the same color
   return !(nearby as MaybeGridObject[]).some((obj: MaybeGridObject) => {
     return !!obj && hasColor(obj) && isColor(obj, color);

@@ -1,11 +1,9 @@
-import * as _ from 'lodash';
-import {create as createStateMachine, StateMachine} from 'javascript-state-machine';
+import * as _ from "lodash";
+import { StateMachine } from "javascript-state-machine";
 
-import Game from './Game';
+import Game from "./Game";
 
-import {
-  GameMode, GameInput, PLAYFIELD_WIDTH, PLAYFIELD_HEIGHT,
-} from './constants';
+import { GameMode, GameInput, PLAYFIELD_WIDTH, PLAYFIELD_HEIGHT } from "./constants";
 
 // a game controller class for the basic 1-player game, played entirely on the client (in browser)
 // controls the frame timing and must tick the Game object once per frame
@@ -13,7 +11,6 @@ import {
 // controls the high-level game state and must call render() when game state changes
 
 export default class SingleGameController {
-
   // options that can be passed to control game parameters
   static defaultOptions = {
     // list of input managers, eg. of keyboard, touch events
@@ -40,15 +37,14 @@ export default class SingleGameController {
 
   // transitions between modes (state machine states)
   static modeTransitions = [
-    {name: 'play',   from: GameMode.Ready,   to: GameMode.Playing},
-    {name: 'pause',  from: GameMode.Playing, to: GameMode.Paused},
-    {name: 'resume', from: GameMode.Paused,  to: GameMode.Playing},
-    {name: 'win',    from: GameMode.Playing, to: GameMode.Won},
-    {name: 'lose',   from: GameMode.Playing, to: GameMode.Lost},
-    {name: 'reset',  from: ['*'], to: GameMode.Ready},
-    {name: 'end',    from: ['*'], to: GameMode.Ended}
+    { name: "play", from: GameMode.Ready, to: GameMode.Playing },
+    { name: "pause", from: GameMode.Playing, to: GameMode.Paused },
+    { name: "resume", from: GameMode.Paused, to: GameMode.Playing },
+    { name: "win", from: GameMode.Playing, to: GameMode.Won },
+    { name: "lose", from: GameMode.Playing, to: GameMode.Lost },
+    { name: "reset", from: ["*"], to: GameMode.Ready },
+    { name: "end", from: ["*"], to: GameMode.Ended }
   ];
-
 
   modeMachine?: StateMachine;
 
@@ -62,7 +58,7 @@ export default class SingleGameController {
 
     _.assign(this, {
       // a finite state machine representing game mode, & transitions between modes
-      modeMachine: createStateMachine({
+      modeMachine: new StateMachine({
         init: GameMode.Ready,
         transitions: SingleGameController.modeTransitions,
         methods: {
@@ -84,11 +80,12 @@ export default class SingleGameController {
 
     this.attachInputEvents();
   }
-  
+
   initGame() {
-    const {width, height, level, speed} = this;
+    const { width, height, level, speed } = this;
     this.game = new Game({
-      width, height,
+      width,
+      height,
       level,
       baseSpeed: speed,
       onWin: () => this.modeMachine.win(),
@@ -96,7 +93,7 @@ export default class SingleGameController {
     });
   }
 
-  _onChangeMode = (lifecycle) => {
+  _onChangeMode = lifecycle => {
     // update mode of all input managers
     this.inputManagers.forEach(inputManager => inputManager.setMode(lifecycle.to));
     // re-render on any mode change
@@ -108,23 +105,30 @@ export default class SingleGameController {
   attachInputEvents() {
     this.inputManagers.forEach(inputManager => {
       inputManager.on(GameInput.Play, () => this.modeMachine.play());
-      inputManager.on(GameInput.Pause, (type) => {
-        if(type === 'keydown') this.modeMachine.pause();
+      inputManager.on(GameInput.Pause, type => {
+        if (type === "keydown") this.modeMachine.pause();
       });
-      inputManager.on(GameInput.Resume, (type) => {
-        if(type === 'keydown') this.modeMachine.resume();
+      inputManager.on(GameInput.Resume, type => {
+        if (type === "keydown") this.modeMachine.resume();
       });
       inputManager.on(GameInput.Reset, () => this.modeMachine.reset());
 
-      const moveInputs = [GameInput.Left, GameInput.Right, GameInput.Down, GameInput.Up, GameInput.RotateCCW, GameInput.RotateCW];
+      const moveInputs = [
+        GameInput.Left,
+        GameInput.Right,
+        GameInput.Down,
+        GameInput.Up,
+        GameInput.RotateCCW,
+        GameInput.RotateCW
+      ];
       moveInputs.forEach(input => inputManager.on(input, this.enqueueMoveInput.bind(this, input)));
     });
   }
   enqueueMoveInput(input, eventType, event) {
     // queue a user move, to be sent to the game on the next tick
     if (this.modeMachine.state !== GameMode.Playing) return;
-    this.moveInputQueue.push({input, eventType});
-    if(event.preventDefault) event.preventDefault();
+    this.moveInputQueue.push({ input, eventType });
+    if (event.preventDefault) event.preventDefault();
   }
 
   play() {
@@ -133,26 +137,26 @@ export default class SingleGameController {
 
   run() {
     // called when gameplay starts, to initialize the game loop
-    _.assign(this, {dt: 0, last: timestamp()});
+    _.assign(this, { dt: 0, last: timestamp() });
     requestAnimationFrame(this.tick.bind(this));
   }
 
   tick() {
     // called once per frame
-    if(this.modeMachine.state !== GameMode.Playing) return;
+    if (this.modeMachine.state !== GameMode.Playing) return;
     const now = timestamp();
-    const {dt, last, slow, slowStep} = this;
+    const { dt, last, slow, slowStep } = this;
 
     // allows the number of ticks to stay consistent
     // even if FPS changes or lags due to performance
     this.dt = dt + Math.min(1, (now - last) / 1000);
-    while(this.dt > slowStep) {
+    while (this.dt > slowStep) {
       this.dt = this.dt - slowStep;
       this.tickGame();
     }
 
     // render with the current game state
-    this.render(this.getState(), this.dt/slow);
+    this.render(this.getState(), this.dt / slow);
     this.last = now;
     requestAnimationFrame(this.tick.bind(this));
   }
@@ -166,12 +170,15 @@ export default class SingleGameController {
   }
 
   getState(mode) {
-    const {grid, pillCount, pillSequence, score, timeBonus} = this.game;
+    const { grid, pillCount, pillSequence, score, timeBonus } = this.game;
     // minimal description of game state to render
     return {
       mode: mode || this.modeMachine.state,
       pillCount: this.game.counters.pillCount,
-      grid, pillSequence, score, timeBonus
+      grid,
+      pillSequence,
+      score,
+      timeBonus
     };
   }
 

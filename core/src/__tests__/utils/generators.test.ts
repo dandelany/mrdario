@@ -1,6 +1,8 @@
 import {
   makeDestroyed,
-  makeEmpty, makeEmptyGrid, makeEmptyGridRow,
+  makeEmpty,
+  makeEmptyGrid,
+  makeEmptyGridRow,
   makePillLeft,
   makePillRight,
   makeVirus
@@ -54,10 +56,10 @@ describe("Generators", () => {
   });
   test("makeEmptyGridRow", () => {
     const mockEmptyGridRow = [
-      {type: GridObjectType.Empty},
-      {type: GridObjectType.Empty},
-      {type: GridObjectType.Empty},
-      {type: GridObjectType.Empty}
+      { type: GridObjectType.Empty },
+      { type: GridObjectType.Empty },
+      { type: GridObjectType.Empty },
+      { type: GridObjectType.Empty }
     ];
     const emptyRow = makeEmptyGridRow(4);
     expect(emptyRow).toEqual(mockEmptyGridRow);
@@ -65,17 +67,17 @@ describe("Generators", () => {
   test("makeEmptyGrid", () => {
     const mockEmptyGrid = [
       [
-        {type: GridObjectType.Empty},
-        {type: GridObjectType.Empty},
-        {type: GridObjectType.Empty}
+        { type: GridObjectType.Empty },
+        { type: GridObjectType.Empty },
+        { type: GridObjectType.Empty }
       ],
       [
-        {type: GridObjectType.Empty},
-        {type: GridObjectType.Empty},
-        {type: GridObjectType.Empty}
+        { type: GridObjectType.Empty },
+        { type: GridObjectType.Empty },
+        { type: GridObjectType.Empty }
       ]
     ];
     const emptyGrid = makeEmptyGrid(3, 2);
     expect(emptyGrid).toEqual(mockEmptyGrid);
-  })
+  });
 });

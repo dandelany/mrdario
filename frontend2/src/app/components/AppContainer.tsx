@@ -1,7 +1,7 @@
 import * as React from "react";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 
-import { GameMode } from "../../game/constants";
+import { GameMode } from "mrdario-core/src/types";
 import AztecCalendar, { AztecCalendarMode } from "./AztecCalendar";
 import { create as createSocket, SCClientSocket } from "socketcluster-client";
 
