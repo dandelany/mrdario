@@ -8,10 +8,10 @@ import shallowEqual from '@/app/utils/shallowEqual';
 import {DEFAULT_KEYS} from "mrdario-core/src/constants";
 import {GameControllerMode} from "mrdario-core/src/types";
 
-import KeyManager from '@/app/inputs/KeyManager';
-// import SwipeManager from 'app/inputs/SwipeManager';
-// import GamepadManager from 'app/inputs/GamepadManager';
-import SingleGameController from '@/game/SingleGameController';
+import KeyManager from 'mrdario-core/src/inputs/KeyManager';
+// import SwipeManager from 'mrdario-core/src/inputs/SwipeManager';
+import GamepadManager from 'mrdario-core/src/inputs/GamepadManager';
+import SingleGameController from 'mrdario-core/src/SingleGameController';
 //import SinglePlayerGameController from 'game/SinglePlayerNetworkGameController';
 
 import Playfield from '@/app/components/game/Playfield';

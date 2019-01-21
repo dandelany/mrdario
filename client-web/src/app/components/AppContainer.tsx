@@ -1,7 +1,7 @@
 import * as React from "react";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 
-import { GameMode } from "mrdario-core/src/types";
+import { GameControllerMode } from "mrdario-core/src/types";
 import AztecCalendar, { AztecCalendarMode } from "./AztecCalendar";
 import { create as createSocket, SCClientSocket } from "socketcluster-client";
 
@@ -30,7 +30,7 @@ interface AppContainerProps extends RouteComponentProps {}
 interface AppContainerState {
   windowWidth: number;
   windowHeight: number;
-  mode: null | GameMode;
+  mode: null | GameControllerMode;
   location?: string;
 }
 
@@ -60,7 +60,7 @@ class AppContainer extends React.Component<AppContainerProps, AppContainerState>
     this.setState(getWindowSize());
   };
 
-  _onChangeMode = (mode: GameMode) => this.setState({ mode });
+  _onChangeMode = (mode: GameControllerMode) => this.setState({ mode });
 
   render() {
     const { windowWidth, windowHeight } = this.state;
@@ -81,8 +81,8 @@ class AppContainer extends React.Component<AppContainerProps, AppContainerState>
 
     const calendarMode: AztecCalendarMode =
       (this.props.location.pathname == '/') ? AztecCalendarMode.Title :
-      (this.state.mode == GameMode.Lost) ? AztecCalendarMode.Lost :
-      (this.state.mode == GameMode.Won) ? AztecCalendarMode.Won :
+      (this.state.mode == GameControllerMode.Lost) ? AztecCalendarMode.Lost :
+      (this.state.mode == GameControllerMode.Won) ? AztecCalendarMode.Won :
       AztecCalendarMode.Title;
 
     return (
