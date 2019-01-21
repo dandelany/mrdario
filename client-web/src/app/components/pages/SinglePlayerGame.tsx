@@ -5,12 +5,12 @@ import { withRouter, Redirect, RouteComponentProps } from "react-router-dom";
 // const deepDiff = DeepDiff.diff;
 import shallowEqual from '@/app/utils/shallowEqual';
 
-import {DEFAULT_KEYS} from "mrdario-core/src/constants";
-import {GameControllerMode} from "mrdario-core/src/types";
+import {DEFAULT_KEYS} from "mrdario-core/lib/constants";
+import { GameControllerMode, GameControllerState, PillColors } from "mrdario-core/src/types";
 
 import KeyManager from 'mrdario-core/src/inputs/KeyManager';
 // import SwipeManager from 'mrdario-core/src/inputs/SwipeManager';
-import GamepadManager from 'mrdario-core/src/inputs/GamepadManager';
+// import GamepadManager from 'mrdario-core/src/inputs/GamepadManager';
 import SingleGameController from 'mrdario-core/src/SingleGameController';
 //import SinglePlayerGameController from 'game/SinglePlayerNetworkGameController';
 
@@ -20,26 +20,28 @@ import WonOverlay from '@/app/components/overlays/WonOverlay';
 import LostOverlay from '@/app/components/overlays/LostOverlay';
 import responsiveGame from '@/app/components/responsiveGame';
 import { SCClientSocket } from "socketcluster-client";
+import { GameRouteParams, GameScoreResponse } from "@/app/types";
 
 function getName() {
   return window.localStorage ?
     (window.localStorage.getItem('mrdario-name') || 'Anonymous') : 'Anonymous';
 }
 
-export interface SinglePlayerGameProps extends RouteComponentProps {
+
+export interface SinglePlayerGameProps extends RouteComponentProps<GameRouteParams> {
   cellSize: number;
   heightPercent: number;
   padding: number;
   socket?: SCClientSocket;
+  onChangeMode?: (mode: GameControllerMode) => any;
 }
 
 export interface SinglePlayerGameState {
-  gameState: null;
-  highScores: null;
-  rank: null;
-  pendingMode: null;
+  gameState?: GameControllerState;
+  highScores?: [string, number][];
+  rank?: number;
+  pendingMode?: GameControllerMode;
 }
-
 
 class SinglePlayerGame extends React.Component<SinglePlayerGameProps, SinglePlayerGameState> {
   static defaultProps = {
@@ -48,19 +50,14 @@ class SinglePlayerGame extends React.Component<SinglePlayerGameProps, SinglePlay
     padding: 15
   };
 
-  state = {
-    gameState: null,
-    highScores: null,
-    rank: null,
-    pendingMode: null
-  };
+  state: SinglePlayerGameState = {};
 
   game?: any;
   keyManager?: KeyManager;
 
   componentDidMount() {
     // mode means won or lost, no mode = playing
-    if(!_.get(this.props, 'params.match.mode')) this._initGame(this.props);
+    if(!this.props.match.params.mode) this._initGame(this.props);
   }
   componentWillUnmount() {
     // this.props.socket.off('singleHighScores', this._highScoreHandler);
@@ -68,16 +65,17 @@ class SinglePlayerGame extends React.Component<SinglePlayerGameProps, SinglePlay
   }
 
   componentWillReceiveProps(newProps: SinglePlayerGameProps) {
-    const {params} = this.props.match;
-    const hasChanged = (key: string) => _.get(this.props, key) !== _.get(newProps, key);
+    const params: GameRouteParams = this.props.match.params;
+    const nextParams: GameRouteParams = newProps.match.params;
+
     const shouldInitGame =
-      hasChanged('match.params.level') || hasChanged('match.params.speed') ||
-      (hasChanged('match.params.mode') && !_.get(newProps, 'match.params.mode'));
+      params.level !== nextParams.level || params.speed !== nextParams.speed ||
+      (params.mode !== nextParams.mode && !nextParams.mode);
 
     if(shouldInitGame) this._initGame(newProps);
 
     if(!params.mode && this.state.pendingMode) {
-      this.setState({pendingMode: null});
+      this.setState({pendingMode: undefined});
     }
   }
 
@@ -88,7 +86,6 @@ class SinglePlayerGame extends React.Component<SinglePlayerGameProps, SinglePlay
 
     return hasChanged;
   }
-
 
   _initGame(props: SinglePlayerGameProps) {
     if(this.game && this.game.cleanup) this.game.cleanup();
@@ -113,71 +110,70 @@ class SinglePlayerGame extends React.Component<SinglePlayerGameProps, SinglePlay
       level, speed,
       // inputManagers: [this.keyManager, this.touchManager, this.gamepadManager],
       inputManagers: [this.keyManager],
-      render: (gameState) => this.setState({gameState}),
-      onChangeMode: (event, lastMode, newMode) => {
-        console.log('onchangemode', event, lastMode, newMode);
-        if(_.includes([GameControllerMode.Lost, GameControllerMode.Won], newMode)) {
-          this.setState({pendingMode: newMode.toLowerCase()});
-          if(newMode === GameControllerMode.Won) this._handleWin();
-          if(newMode === GameControllerMode.Lost) this._handleLose();
+      render: (gameState: GameControllerState) => this.setState({gameState}),
+      onChangeMode: (transition, lastMode: GameControllerMode, nextMode: GameControllerMode) => {
+        console.log('onchangemode', transition, lastMode, nextMode);
+        if(_.includes([GameControllerMode.Lost, GameControllerMode.Won], nextMode)) {
+          this.setState({pendingMode: nextMode});
+          if(nextMode === GameControllerMode.Won) this._handleWin();
+          if(nextMode === GameControllerMode.Lost) this._handleLose();
         }
-        if(this.props.onChangeMode) this.props.onChangeMode(newMode);
+        if(this.props.onChangeMode) this.props.onChangeMode(nextMode);
       }
     });
     this.game.play();
   }
 
-  _handleWin() {
-    const score = _.get(this, 'state.gameState.score');
-    const level = parseInt(_.get(this, 'props.match.params.level'));
-    const name = getName();
+  _handleWin = () => {
+    if(this.state.gameState && this.props.socket) {
+      const score = this.state.gameState.score;
+      const level = parseInt(this.props.match.params.level);
+      const name = getName();
 
-    if(_.isFinite(level) && _.isFinite(score) && _.get(this, 'props.socket.state')) {
-      console.log('socket is open, sending score');
-      this.props.socket.emit('singleGameScore', [level, name, score], (err, data) => {
-        if(err) throw new Error(err);
-        const {scores, rank} = data;
-        console.log('high scores received!', scores, rank);
-        this.setState({highScores: scores, rank: rank});
-      });
+      if(_.isFinite(level) && _.isFinite(score) && this.props.socket.state) {
+        console.log('socket is open, sending score');
+        this.props.socket.emit('singleGameScore', [level, name, score], (err, data) => {
+          if(err) throw err;
+          const scoreResponse = data as GameScoreResponse;
+          const {scores, rank} = scoreResponse;
+          console.log('high scores received!', scores, rank);
+          this.setState({highScores: scores, rank: rank});
+        });
+      }
     }
   }
 
   _handleLose() {
-    const {socket} = this.props;
-    const {params} = this.props.match;
-    const level = parseInt(params.level) || 0;
-    const speed = parseInt(params.speed) || 15;
-    const score = _.get(this, 'state.gameState.score');
+    if(this.state.gameState && this.props.socket) {
+      const level = parseInt(this.props.match.params.level);
+      const speed = parseInt(this.props.match.params.speed);
+      const score = this.state.gameState.score;
 
-    if(socket) {
-      socket.emit('infoLostGame', [getName(), level, speed, score], _.noop);
+      this.props.socket.emit('infoLostGame', [getName(), level, speed, score], _.noop);
     }
   }
 
   render() {
     const {gameState, highScores, rank, pendingMode} = this.state;
-    const hasGame = this.game && gameState;
-    const hasGrid = hasGame && gameState.grid;
+
     // if(!hasGrid) return <div>loading</div>;
 
-    const {cellSize} = this.props;
+    const {cellSize, padding: paddingProp} = this.props;
     const {params} = this.props.match;
+
     // pass fractional padding to set padding to a fraction of cell size
-    const padding = (padding < 1) ? this.props.padding * cellSize : this.props.padding;
-    const numRows = gameState ? gameState.grid.size : 17;
-    const numCols = gameState ? gameState.grid.get(0).size : 8;
-    const width = (numCols * cellSize) + (padding * 2);
+    const padding: number = (paddingProp > 0 && paddingProp < 1) ? paddingProp * cellSize : paddingProp;
+    const numRows: number = gameState ? gameState.grid.length : 17;
+    const numCols: number = gameState ? gameState.grid[0].length : 8;
+    const width: number = (numCols * cellSize) + (padding * 2);
     // make shorter by one row to account for special unplayable top row
-    const height = ((numRows - 1) * cellSize) + (padding * 2);
-
-    const style = {position: 'relative', width, height, padding};
-    const overlayStyle = {position: 'absolute', width, height, padding, left: 0};
-
+    const height: number = ((numRows - 1) * cellSize) + (padding * 2);
+    const style = {position: 'relative' as 'relative', width, height, padding};
+    const overlayStyle = {position: 'absolute' as 'absolute', width, height, padding, left: 0};
     const lostOverlayStyle = {...overlayStyle, top: (params.mode === "lost") ? 0 : height};
     const wonOverlayStyle = {...overlayStyle, top: (params.mode === "won") ? 0 : height};
     
-    let nextPill;
+    let nextPill: PillColors | undefined;
     if(gameState && gameState.pillSequence && _.isFinite(gameState.pillCount)) {
       const pillIndex = gameState.pillCount % gameState.pillSequence.length;
       nextPill = gameState.pillSequence[pillIndex];
@@ -189,10 +185,19 @@ class SinglePlayerGame extends React.Component<SinglePlayerGameProps, SinglePlay
         <Redirect push to={`/game/level/${params.level}/speed/${params.speed}/${pendingMode}`}/> :
         null
       }
-      <div {...{style, className: 'game-playfield'}}>
-        <WonOverlay {...{gameState, highScores, rank, params, style: wonOverlayStyle}} />
-        <LostOverlay {...{gameState, params, style: lostOverlayStyle}} />
-        {hasGrid ?
+      <div style={style} {...{className: 'game-playfield'}}>
+        <WonOverlay
+          gameState={gameState}
+          highScores={highScores}
+          rank={rank}
+          params={params}
+          style={wonOverlayStyle}
+        />
+        <LostOverlay
+          params={params}
+          style={lostOverlayStyle}
+        />
+        {gameState ?
           <Playfield grid={gameState.grid} cellSize={cellSize} />
           : ''}
       </div>

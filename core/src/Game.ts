@@ -1,5 +1,5 @@
 import { EventEmitter } from "events";
-import { StateMachine } from "javascript-state-machine";
+import StateMachine from "ts-javascript-state-machine";
 import * as _ from "lodash";
 
 import { COLORS, GRAVITY_TABLE, PLAYFIELD_HEIGHT, PLAYFIELD_WIDTH } from "./constants";
@@ -193,6 +193,7 @@ export default class Game extends EventEmitter {
   }
 
   public _initModeMachine() {
+    console.log("AGH", StateMachine);
     // finite state machine representing game mode
     const modeMachine = new StateMachine({
       init: GameMode.Loading,

@@ -9,8 +9,8 @@ var svgo  = new SVGO({
   ]
 });
 
-var spritesDir = './assets/sprite';
-var outDir = './src/app/svg';
+var spritesDir = '../assets/sprite';
+var outDir = '../client-web/src/app/svg';
 var filenames = fs.readdirSync(spritesDir);
 
 filenames.forEach((filename) => {

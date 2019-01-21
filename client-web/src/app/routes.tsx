@@ -3,8 +3,8 @@ import {Route} from 'react-router-dom';
 
 // import AppContainer from 'app/components/AppContainer';
 import TitlePage from './components/pages/TitlePage';
-// import GameSettings from 'app/components/pages/GameSettings';
-// import SinglePlayerGame from 'app/components/pages/SinglePlayerGame';
+import GameSettings from './components/pages/GameSettings';
+import SinglePlayerGame from './components/pages/SinglePlayerGame';
 // import MirrorGame from 'app/components/pages/MirrorGame';
 import HighScores from './components/pages/HighScores';
 
@@ -37,23 +37,24 @@ export default [
     key="highscores"
     component={HighScores}
   />,
-  /*
-  <PropsRoute
-    path="/settings"
-    key="settings"
-    component={GameSettings}
-  />,
   <PropsRoute
     path="/game/level/:level/speed/:speed/:mode?"
     key="single-player-game"
     component={SinglePlayerGame}
   />,
-  <PropsRoute
-    name="mirror"
-    path="/mirror/level/:level/speed/:speed/:mode?"
-    key="mirror-game"
-    component={MirrorGame}
-  />,
 
-  */
+  <PropsRoute
+    path="/settings"
+    key="settings"
+    component={GameSettings}
+  />,
+  /*
+    <PropsRoute
+      name="mirror"
+      path="/mirror/level/:level/speed/:speed/:mode?"
+      key="mirror-game"
+      component={MirrorGame}
+    />,
+
+    */
 ];

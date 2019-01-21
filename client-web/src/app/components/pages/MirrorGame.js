@@ -5,14 +5,12 @@ import DeepDiff from 'deep-diff';
 const deepDiff = DeepDiff.diff;
 import shallowEqual from '../../utils/shallowEqual';
 
-import {GameControllerMode} from "mrdario-core/src/types";
-import {DEFAULT_KEYS} from "mrdario-core/src/constants";
-// import SingleGameController from 'game/SingleGameController.js';
-import MasterClientGameController from 'mrdario-core/src/MasterClientGameController';
+import {MODES, DEFAULT_KEYS} from 'game/constants';
 
 import KeyManager from 'app/inputs/KeyManager';
 import SwipeManager from 'app/inputs/SwipeManager';
-
+// import SingleGameController from 'game/SingleGameController.js';
+import MasterClientGameController from 'game/MasterClientGameController';
 
 import Playfield from 'app/components/Playfield';
 import WonOverlay from 'app/components/overlays/WonOverlay';
@@ -82,7 +80,7 @@ class MirrorGame extends React.Component {
       render: (gameState) => this.setState({gameState}),
       onChangeMode: (event, lastMode, newMode) => {
         console.log('onchangemode', event, lastMode, newMode);
-        if(_.includes([GameControllerMode.Lost, GameControllerMode.Won], newMode)) {
+        if(_.includes([MODES.Lost, MODES.Won], newMode)) {
           router.push(`/mirror/level/${level}/speed/${speed}/${newMode.toLowerCase()}`);
         }
         if(this.props.onChangeMode) this.props.onChangeMode(newMode);

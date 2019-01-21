@@ -2,18 +2,17 @@ import * as React from 'react';
 import {Link} from 'react-router-dom';
 
 import MayaNumeral from '../lib/MayaNumeral';
+import { GameRouteParams } from "@/app/types";
 
 interface LostOverlayProps {
   style?: object;
-  params: {
-    level: number,
-    speed: number
-  }
+  params: GameRouteParams
 }
 
 const LostOverlay: React.FunctionComponent<LostOverlayProps> = (props) => {
   const {style, params} = props;
-  const {level, speed} = params;
+  const level = parseInt(params.level) || 0;
+  const speed = parseInt(params.speed) || 0;
   const thisLevelPath = `/game/level/${level}/speed/${speed}`;
 
   return <div className="game-overlay" style={style}>

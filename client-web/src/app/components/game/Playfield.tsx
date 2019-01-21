@@ -7,10 +7,10 @@ import PillPart from "./PillPart";
 
 import { GameGrid, GridObjectType } from "mrdario-core/src/types";
 
-import * as virusOrange from "!raw-loader!app/svg/virus_orange.svg";
-import * as virusPurple from "!raw-loader!app/svg/virus_purple.svg";
-import * as virusGreen from "!raw-loader!app/svg/virus_green.svg";
-import * as destroyed from "!raw-loader!app/svg/destroyed.svg";
+import * as virusOrange from "!raw-loader!@/app/svg/virus_orange.svg";
+import * as virusPurple from "!raw-loader!@/app/svg/virus_purple.svg";
+import * as virusGreen from "!raw-loader!@/app/svg/virus_green.svg";
+import * as destroyed from "!raw-loader!@/app/svg/destroyed.svg";
 
 const viruses = [virusOrange, virusPurple, virusGreen];
 

@@ -2,6 +2,7 @@ import * as React from 'react';
 import {Link} from 'react-router-dom';
 
 import MayaNumeral from '../lib/MayaNumeral';
+import { GameRouteParams } from "@/app/types";
 
 interface GameState {
   timeBonus: number,
@@ -59,16 +60,13 @@ interface WonOverlayProps {
   highScores?: HighScores;
   rank?: number;
   style?: object;
-  params: {
-    level: number,
-    speed: number
-  }
+  params: GameRouteParams
 }
 
 const WonOverlay: React.FunctionComponent<WonOverlayProps> = (props) => {
   const {style, params, gameState, highScores, rank} = props;
-  const level = params.level || 0;
-  const speed = params.speed || 0;
+  const level = parseInt(params.level) || 0;
+  const speed = parseInt(params.speed) || 0;
   const nextLevelPath = `/game/level/${level + 1}/speed/${speed}`;
 
   return <div className="game-overlay" style={style}>
