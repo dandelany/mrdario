@@ -156,7 +156,7 @@ export function findLinesIn(
       curLine = [];
     }
     // add cell to current line if non-empty and non-excluded
-    if (color === undefined && !shouldExclude) {
+    if (color !== undefined && !shouldExclude) {
       curLine.push(colIndex);
     }
     // end of row, add last line to result if long enough
