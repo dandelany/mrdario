@@ -2,77 +2,22 @@ import * as _ from "lodash";
 
 import Game from "../Game";
 
+import { TypeState } from "typestate";
 import { PLAYFIELD_HEIGHT, PLAYFIELD_WIDTH } from "../constants";
 import {
   GameControllerMode,
+  GameControllerOptions,
   GameControllerState,
   GameInput,
   GameInputMove,
   InputEventType,
   InputManager
 } from "../types";
-import { TypeState } from "typestate";
 
 // a game controller class for the basic 1-player game, played entirely on the client (in browser)
 // controls the frame timing and must tick the Game object once per frame
 // handles inputs and passes them into the Game
 // controls the high-level game state and must call render() when game state changes
-
-export enum GameControllerModeTransitionType {
-  Play = "play",
-  Pause = "pause",
-  Resume = "resume",
-  Win = "win",
-  Lose = "lose",
-  Reset = "reset",
-  End = "end"
-}
-
-// transitions between modes (state machine states)
-export const modeTransitions = [
-  {
-    name: GameControllerModeTransitionType.Play,
-    from: GameControllerMode.Ready,
-    to: GameControllerMode.Playing
-  },
-  {
-    name: GameControllerModeTransitionType.Pause,
-    from: GameControllerMode.Playing,
-    to: GameControllerMode.Paused
-  },
-  {
-    name: GameControllerModeTransitionType.Resume,
-    from: GameControllerMode.Paused,
-    to: GameControllerMode.Playing
-  },
-  {
-    name: GameControllerModeTransitionType.Win,
-    from: GameControllerMode.Playing,
-    to: GameControllerMode.Won
-  },
-  {
-    name: GameControllerModeTransitionType.Lose,
-    from: GameControllerMode.Playing,
-    to: GameControllerMode.Lost
-  },
-  { name: GameControllerModeTransitionType.Reset, from: ["*"], to: GameControllerMode.Ready },
-  { name: GameControllerModeTransitionType.End, from: ["*"], to: GameControllerMode.Ended }
-];
-
-export interface GameControllerOptions {
-  inputManagers: InputManager[];
-  render: (state: GameControllerState, dt?: number) => any;
-  onChangeMode: (
-    fromMode: GameControllerMode,
-    toMode: GameControllerMode
-  ) => any;
-  level: number;
-  speed: number;
-  height: number;
-  width: number;
-  fps: number;
-  slow: number;
-}
 
 // options that can be passed to control game parameters
 export const defaultOptions: GameControllerOptions = {
@@ -99,8 +44,6 @@ export const defaultOptions: GameControllerOptions = {
 };
 
 export default class SingleGameController {
-  private fsm: TypeState.FiniteStateMachine<GameControllerMode>;
-  // public modeMachine: StateMachine;
   public game: Game;
   public options: GameControllerOptions;
   public moveInputQueue: any; // todo
@@ -108,6 +51,7 @@ export default class SingleGameController {
   public slowStep: number;
   public dt: number = 0;
   public last: number = 0;
+  private fsm: TypeState.FiniteStateMachine<GameControllerMode>;
 
   constructor(passedOptions: Partial<GameControllerOptions> = {}) {
     const options: GameControllerOptions = _.defaults({}, passedOptions, defaultOptions);
@@ -116,18 +60,6 @@ export default class SingleGameController {
     this.game = this.initGame();
 
     // a finite state machine representing game mode, & transitions between modes
-    // this.modeMachine = new StateMachine({
-    //   init: GameControllerMode.Ready,
-    //   transitions: modeTransitions,
-    //   methods: {
-    //     onEnterState: this._onChangeMode,
-    //     onPlay: () => this.run(),
-    //     onReset: () => (this.game = this.initGame()),
-    //     // tick to get the game started again after being paused
-    //     onResume: () => this.tick()
-    //   }
-    // });
-
     this.fsm = this.initStateMachine();
 
     // queued up move inputs which will processed on the next tick
@@ -140,48 +72,6 @@ export default class SingleGameController {
 
     this.attachInputEvents();
   }
-  private initStateMachine(): TypeState.FiniteStateMachine<GameControllerMode> {
-    const fsm = new TypeState.FiniteStateMachine<GameControllerMode>(GameControllerMode.Ready);
-
-    // Play
-    fsm.from(GameControllerMode.Ready).to(GameControllerMode.Playing);
-    // Pause
-    fsm.from(GameControllerMode.Playing).to(GameControllerMode.Paused);
-    // Resume
-    fsm.from(GameControllerMode.Paused).to(GameControllerMode.Playing);
-    // Win
-    fsm.from(GameControllerMode.Playing).to(GameControllerMode.Won);
-    // Lose
-    fsm.from(GameControllerMode.Playing).to(GameControllerMode.Lost);
-    // Reset
-    fsm.fromAny(GameControllerMode).to(GameControllerMode.Ready);
-    // End
-    fsm.fromAny(GameControllerMode).to(GameControllerMode.Ended);
-
-    // Play
-    fsm.on(GameControllerMode.Playing, () => {
-      this.run();
-    });
-    // Reset
-    fsm.on(GameControllerMode.Ready, () => {
-      console.log('on reset');
-      this.game = this.initGame();
-    });
-    fsm.on(GameControllerMode.Playing, (from) => {
-      if(from === GameControllerMode.Paused) {
-        // Resume
-        // tick to get the game started again after being paused
-        this.tick();
-      }
-    });
-
-    // todo attach handler for all mode changes
-    fsm.onTransition = (from: GameControllerMode, to: GameControllerMode) => {
-      this._onChangeMode(from, to);
-    };
-
-    return fsm;
-  }
 
   public initGame(): Game {
     const { width, height, level, speed } = this.options;
@@ -191,53 +81,30 @@ export default class SingleGameController {
       level,
       baseSpeed: speed,
       onWin: () => {
-        // this.modeMachine.win();
         this.fsm.go(GameControllerMode.Won);
       },
       onLose: () => {
-        // this.modeMachine.lose()
         this.fsm.go(GameControllerMode.Lost);
       }
     });
   }
 
-  // public _onChangeMode = (lifecycle: StateMachine.LifeCycle): void => {
-  public _onChangeMode = (fromMode: GameControllerMode, toMode: GameControllerMode): void => {
-
-    // const fromMode = lifecycle.from as GameControllerMode;
-    // const toMode = lifecycle.to as GameControllerMode;
-    // const transitionType = lifecycle.transition as GameControllerModeTransitionType;
-
-    // update mode of all input managers
-    this.options.inputManagers.forEach((inputManager: InputManager) => {
-      inputManager.setMode(toMode);
-    });
-    // re-render on any mode change
-    this.options.render(this.getState(toMode));
-    // call handler
-    this.options.onChangeMode(fromMode, toMode);
-  };
-
   public attachInputEvents(): void {
     this.options.inputManagers.forEach((inputManager: InputManager) => {
       inputManager.on(GameInput.Play, () => {
-        // this.modeMachine.play()
         this.fsm.go(GameControllerMode.Playing);
       });
       inputManager.on(GameInput.Pause, (eventType: InputEventType) => {
         if (eventType === InputEventType.KeyDown) {
-          // this.modeMachine.pause();
           this.fsm.go(GameControllerMode.Paused);
         }
       });
       inputManager.on(GameInput.Resume, (eventType: InputEventType) => {
         if (eventType === InputEventType.KeyDown) {
-          // this.modeMachine.resume();
           this.fsm.go(GameControllerMode.Playing);
         }
       });
       inputManager.on(GameInput.Reset, () => {
-        // this.modeMachine.reset()
         this.fsm.go(GameControllerMode.Ready);
       });
 
@@ -261,7 +128,6 @@ export default class SingleGameController {
   }
   public enqueueMoveInput(input: GameInputMove, eventType: InputEventType, _event: Event) {
     // queue a user move, to be sent to the game on the next tick
-    // if (!this.modeMachine.is(GameControllerMode.Playing)) {
     if (!this.fsm.is(GameControllerMode.Playing)) {
       return;
     }
@@ -269,7 +135,6 @@ export default class SingleGameController {
   }
 
   public play() {
-    // this.modeMachine.play();
     this.fsm.go(GameControllerMode.Playing);
   }
 
@@ -282,7 +147,6 @@ export default class SingleGameController {
 
   public tick() {
     // called once per frame
-    // if (this.modeMachine.is(GameControllerMode.Playing)) {
     if (!this.fsm.is(GameControllerMode.Playing)) {
       return;
     }
@@ -326,10 +190,64 @@ export default class SingleGameController {
 
   public cleanup() {
     // cleanup the game when we're done
-    // this.modeMachine.end();
     this.fsm.go(GameControllerMode.Ended);
     this.options.inputManagers.forEach(manager => manager.removeAllListeners());
   }
+
+  private initStateMachine(): TypeState.FiniteStateMachine<GameControllerMode> {
+    // a finite state machine representing game mode, & transitions between modes
+    const fsm = new TypeState.FiniteStateMachine<GameControllerMode>(GameControllerMode.Ready);
+
+    // Play
+    fsm.from(GameControllerMode.Ready).to(GameControllerMode.Playing);
+    // Pause
+    fsm.from(GameControllerMode.Playing).to(GameControllerMode.Paused);
+    // Resume
+    fsm.from(GameControllerMode.Paused).to(GameControllerMode.Playing);
+    // Win
+    fsm.from(GameControllerMode.Playing).to(GameControllerMode.Won);
+    // Lose
+    fsm.from(GameControllerMode.Playing).to(GameControllerMode.Lost);
+    // Reset
+    fsm.fromAny(GameControllerMode).to(GameControllerMode.Ready);
+    // End
+    fsm.fromAny(GameControllerMode).to(GameControllerMode.Ended);
+
+    // Play
+    fsm.on(GameControllerMode.Playing, () => {
+      this.run();
+    });
+    // Reset
+    fsm.on(GameControllerMode.Ready, () => {
+      console.log("on reset");
+      this.game = this.initGame();
+    });
+    fsm.on(GameControllerMode.Playing, from => {
+      if (from === GameControllerMode.Paused) {
+        // Resume
+        // tick to get the game started again after being paused
+        this.tick();
+      }
+    });
+
+    // todo attach handler for all mode changes
+    fsm.onTransition = (from: GameControllerMode, to: GameControllerMode) => {
+      this._onChangeMode(from, to);
+    };
+
+    return fsm;
+  }
+
+  private _onChangeMode = (fromMode: GameControllerMode, toMode: GameControllerMode): void => {
+    // update mode of all input managers
+    this.options.inputManagers.forEach((inputManager: InputManager) => {
+      inputManager.setMode(toMode);
+    });
+    // re-render on any mode change
+    this.options.render(this.getState(toMode));
+    // call handler
+    this.options.onChangeMode(fromMode, toMode);
+  };
 }
 
 function timestamp(): number {

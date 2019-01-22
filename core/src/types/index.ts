@@ -9,6 +9,8 @@ import {
 } from "./enums";
 export * from "./enums";
 
+export * from "./GameController";
+
 export type Tuple<TItem, TLength extends number> = TItem[] & { length: TLength };
 
 export type OneOrMore<T> = { 0: T } & T[];
@@ -120,13 +122,4 @@ export interface InputManager {
   // on: (input: GameInput, callback: (inputType: GameInput, keyType: InputEventType, event: Event) => any) => any;
   on: (input: GameInput, callback: (keyType: InputEventType, event: Event) => any) => any;
   removeAllListeners: () => any;
-}
-
-export interface GameControllerState {
-  mode: GameControllerMode;
-  pillCount: number;
-  grid: GameGrid<number, number>;
-  pillSequence: PillColors[];
-  score: number;
-  timeBonus: number;
 }

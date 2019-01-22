@@ -1,13 +1,4 @@
 import {
-  makeDestroyed,
-  makeEmpty,
-  makeEmptyGrid,
-  makeEmptyGridRow,
-  makePillLeft,
-  makePillRight,
-  makeVirus
-} from "../../utils/generators";
-import {
   GameColor,
   GridObjectDestroyed,
   GridObjectEmpty,
@@ -16,6 +7,15 @@ import {
   GridObjectType,
   GridObjectVirus
 } from "../../types";
+import {
+  makeDestroyed,
+  makeEmpty,
+  makeEmptyGrid,
+  makeEmptyGridRow,
+  makePillLeft,
+  makePillRight,
+  makeVirus
+} from "../../utils/generators";
 
 describe("Generators", () => {
   test("makeEmpty", () => {
