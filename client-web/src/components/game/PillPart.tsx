@@ -1,17 +1,16 @@
-import * as React from 'react';
-import makeReactSvg from '@/utils/makeReactSvg';
+import * as React from "react";
+import makeReactSvg from "@/utils/makeReactSvg";
 
 import { GridObjectType, GameColor } from "mrdario-core/src/types";
 
-import * as pillHalfOrange from '!raw-loader!@/svg/pill_half_orange.svg';
-import * as pillHalfPurple from '!raw-loader!@/svg/pill_half_purple.svg';
-import * as pillHalfGreen from '!raw-loader!@/svg/pill_half_green.svg';
-import * as pillSegmentOrange from '!raw-loader!@/svg/pill_segment_orange.svg';
-import * as pillSegmentPurple from '!raw-loader!@/svg/pill_segment_purple.svg';
-import * as pillSegmentGreen from '!raw-loader!@/svg/pill_segment_green.svg';
+import * as pillHalfOrange from "!raw-loader!@/svg/pill_half_orange.svg";
+import * as pillHalfPurple from "!raw-loader!@/svg/pill_half_purple.svg";
+import * as pillHalfGreen from "!raw-loader!@/svg/pill_half_green.svg";
+import * as pillSegmentOrange from "!raw-loader!@/svg/pill_segment_orange.svg";
+import * as pillSegmentPurple from "!raw-loader!@/svg/pill_segment_purple.svg";
+import * as pillSegmentGreen from "!raw-loader!@/svg/pill_segment_green.svg";
 
-
-type PillPartSVGByColor = {[C in GameColor]: string};
+type PillPartSVGByColor = { [C in GameColor]: string };
 
 const pillHalves: PillPartSVGByColor = {
   [GameColor.Color1]: pillHalfOrange,
@@ -25,10 +24,14 @@ const pillSegments: PillPartSVGByColor = {
   [GameColor.Color3]: pillSegmentGreen
 };
 
-type PillHalfType = GridObjectType.PillTop | GridObjectType.PillBottom | GridObjectType.PillLeft | GridObjectType.PillRight;
+type PillHalfType =
+  | GridObjectType.PillTop
+  | GridObjectType.PillBottom
+  | GridObjectType.PillLeft
+  | GridObjectType.PillRight;
 type PillPartType = PillHalfType | GridObjectType.PillSegment;
 
-const pillHalfRotations: {[P in PillHalfType]: number} = {
+const pillHalfRotations: { [P in PillHalfType]: number } = {
   [GridObjectType.PillTop]: 0,
   [GridObjectType.PillRight]: 90,
   [GridObjectType.PillBottom]: 180,
@@ -36,42 +39,38 @@ const pillHalfRotations: {[P in PillHalfType]: number} = {
 };
 
 interface PillPartProps {
-  type: PillPartType,
-  color: GameColor,
-  cellSize: number,
+  type: PillPartType;
+  color: GameColor;
+  cellSize: number;
   gProps: {
-    transform?: string
-  },
-  svgProps: object
+    transform?: string;
+  };
+  svgProps: object;
 }
 
 export default class PillPart extends React.Component<PillPartProps> {
   static defaultProps = {
     color: GameColor.Color1,
     cellSize: 36,
-    gProps: {
-    },
+    gProps: {},
     svgProps: {}
   };
 
   render() {
-    const {type, color, cellSize, svgProps} = this.props;
-    let {gProps} = this.props;
+    const { type, color, cellSize, svgProps } = this.props;
+    let { gProps } = this.props;
     let svgString;
 
-    if(type === GridObjectType.PillSegment) {
+    if (type === GridObjectType.PillSegment) {
       svgString = pillSegments[color];
-
     } else {
       svgString = pillHalves[color];
       gProps = {
         ...gProps,
-        transform: `${gProps.transform || ''} rotate(${pillHalfRotations[type] || 0} ${cellSize / 2} ${cellSize / 2})`
+        transform: `${gProps.transform || ""} rotate(${pillHalfRotations[type] || 0} ${cellSize / 2} ${cellSize / 2})`
       };
     }
 
-    return svgString ?
-      makeReactSvg(svgString, gProps, svgProps)
-      : null;
+    return svgString ? makeReactSvg(svgString, gProps, svgProps) : null;
   }
 }

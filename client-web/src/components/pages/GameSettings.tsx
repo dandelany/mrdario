@@ -5,7 +5,7 @@ import Slider from "rc-slider";
 export interface GameSettingsState {
   level: number;
   speed: number;
-  speedLevels: any[]; //todo
+  speedLevels: any[]; // todo
   name: string;
 }
 

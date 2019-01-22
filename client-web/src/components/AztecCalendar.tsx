@@ -1,19 +1,19 @@
-import * as _ from 'lodash';
-import * as React from 'react';
+import * as _ from "lodash";
+import * as React from "react";
 
-import SVGShimmerCycler from '@/components/lib/SVGShimmerCycler';
+import SVGShimmerCycler from "@/components/ui/SVGShimmerCycler";
 
-const aztecCalendar: string = require('@/img/aztec_small.svg');
+const aztecCalendar: string = require("@/img/aztec_small.svg");
 
 const oranges = ["#BE1E2D", "#F05A28", "#F6921E"];
 const greens = ["#009345", "#006838", "#8BC53F", "#37B34A"];
-const purples = ["#5251A1", "#A376CD",  "#744B9D", "#7A6ED4"];
+const purples = ["#5251A1", "#A376CD", "#744B9D", "#7A6ED4"];
 const colorGroups = [undefined, oranges, greens, purples];
 
 export enum AztecCalendarMode {
-  Title = 'Title',
-  Won = 'Won',
-  Lost = 'Lost'
+  Title = "Title",
+  Won = "Won",
+  Lost = "Lost"
 }
 
 export interface AztecCalendarProps {
@@ -25,13 +25,12 @@ export interface AztecCalendarProps {
 }
 
 export default class AztecCalendar extends React.Component<AztecCalendarProps> {
-
   static defaultProps = {
     mode: AztecCalendarMode.Title,
     shouldAnimate: true,
     width: 600,
     height: 600,
-    cycleTime: 2000,
+    cycleTime: 2000
   };
 
   static modeShimmerProps = {
@@ -50,25 +49,28 @@ export default class AztecCalendar extends React.Component<AztecCalendarProps> {
       repeat: false
     },
     lost: {
-      colorSets: [['#000000']],
+      colorSets: [["#000000"]],
       shapesPerFrame: 8
     }
   };
 
   render() {
-    const {mode, width, height} = this.props;
+    const { mode, width, height } = this.props;
     const shimmerProps = _.get(AztecCalendar.modeShimmerProps, mode, AztecCalendar.modeShimmerProps.defaults);
 
-    return <div className="aztec-calendar">
-      <SVGShimmerCycler
-        {...{
-          svgPath: aztecCalendar,
-          colorSets: colorGroups,
-          shapesPerFrame: 4,
-          width, height,
-          ...shimmerProps
-        }}
-      />
-    </div>;
+    return (
+      <div className="aztec-calendar">
+        <SVGShimmerCycler
+          {...{
+            svgPath: aztecCalendar,
+            colorSets: colorGroups,
+            shapesPerFrame: 4,
+            width,
+            height,
+            ...shimmerProps
+          }}
+        />
+      </div>
+    );
   }
 }

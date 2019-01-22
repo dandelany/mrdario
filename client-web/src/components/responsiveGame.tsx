@@ -1,4 +1,4 @@
-import * as React from 'react';
+import * as React from "react";
 
 interface ResponsiveGameProps {
   heightPercent: number;
@@ -15,9 +15,9 @@ const responsiveGame = <P extends object>(GameComponent: React.ComponentType<P>)
     };
 
     render() {
-      const {heightPercent, padding, gridRows, windowHeight} = this.props;
-      const cellSize = Math.round(((windowHeight - (padding * 2)) * heightPercent) / gridRows);
-      return <GameComponent {...{cellSize, ...this.props}}/>;
+      const { heightPercent, padding, gridRows, windowHeight } = this.props;
+      const cellSize = Math.round(((windowHeight - padding * 2) * heightPercent) / gridRows);
+      return <GameComponent {...{ cellSize, ...this.props }} />;
     }
   };
 };

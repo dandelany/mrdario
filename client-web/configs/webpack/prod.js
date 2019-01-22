@@ -9,7 +9,7 @@ module.exports = merge(commonConfig, {
   entry: './index.tsx',
   output: {
     filename: 'js/bundle.[hash].min.js',
-    path: resolve(__dirname, '../../dist'),
+    path: resolve(__dirname, '../../build'),
     publicPath: '/',
   },
   devtool: 'source-map',

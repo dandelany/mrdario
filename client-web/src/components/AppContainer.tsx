@@ -10,7 +10,7 @@ function getWindowSize() {
 }
 
 function initSocketClient() {
-  var socket: SCClientSocket = createSocket({ port: 8000 });
+  let socket: SCClientSocket = createSocket({ port: 8000 });
 
   socket.on("error", err => {
     console.error("Socket error - " + err);
@@ -67,7 +67,7 @@ class AppContainer extends React.Component<AppContainerProps, AppContainerState>
 
     console.log(this.props, this.state);
 
-    const shouldAnimate = (window.location.pathname === '/');
+    const shouldAnimate = window.location.pathname === "/";
     const gridCols = 8;
     const gridRows = 16;
     const childProps = {
@@ -80,19 +80,24 @@ class AppContainer extends React.Component<AppContainerProps, AppContainerState>
     };
 
     const calendarMode: AztecCalendarMode =
-      (this.props.location.pathname == '/') ? AztecCalendarMode.Title :
-      (this.state.mode == GameControllerMode.Lost) ? AztecCalendarMode.Lost :
-      (this.state.mode == GameControllerMode.Won) ? AztecCalendarMode.Won :
-      AztecCalendarMode.Title;
+      this.props.location.pathname === "/"
+        ? AztecCalendarMode.Title
+        : this.state.mode === GameControllerMode.Lost
+          ? AztecCalendarMode.Lost
+          : this.state.mode === GameControllerMode.Won
+            ? AztecCalendarMode.Won
+            : AztecCalendarMode.Title;
 
     return (
       <div id="mrdario" style={{ width: "100%", height: "100%" }}>
-        <AztecCalendar {...{
-          width: windowWidth,
-          height: windowHeight,
-          shouldAnimate,
-          mode: calendarMode
-        }}/>
+        <AztecCalendar
+          {...{
+            width: windowWidth,
+            height: windowHeight,
+            shouldAnimate,
+            mode: calendarMode
+          }}
+        />
 
         <div className="mrdario-page">
           {React.Children.map(this.props.children, child => {

@@ -1,11 +1,11 @@
 import * as React from "react";
 
-require('@/styles/main.scss');
+require("@/styles/main.scss");
 
 import AppContainer from "./AppContainer";
 import { HashRouter as Router } from "react-router-dom";
 
-import routes from '@/routes';
+import routes from "@/routes";
 // import AppContainer from './components/AppContainer';
 
 export interface AppProps {}
@@ -15,12 +15,9 @@ export default class App extends React.Component<AppProps> {
     return (
       <Router>
         <div>
-          <AppContainer>
-            {routes}
-          </AppContainer>
+          <AppContainer>{routes}</AppContainer>
         </div>
       </Router>
     );
   }
 }
-

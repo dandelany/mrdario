@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import Slider from "rc-slider";
 import { SCClientSocket } from "socketcluster-client";
 
-import MayaNumeral from "@/components/lib/MayaNumeral";
+import MayaNumeral from "@/components/ui/MayaNumeral";
 
 type HighScoresRow = [string, number];
 
@@ -69,10 +69,7 @@ export default class HighScores extends React.Component<HighScoresProps, HighSco
 
           <h2>Level {level}</h2>
 
-          <MayaNumeral
-            value={13}
-            size={40}
-          />
+          <MayaNumeral value={13} size={40} />
 
           <Slider
             min={0}
