@@ -225,7 +225,7 @@ export default class Game extends EventEmitter {
       case GameMode.Cascade:
         return this._tickCascade();
       case GameMode.Ended:
-        console.log("ended!");
+        // console.log("ended!");
         return;
     }
   }
