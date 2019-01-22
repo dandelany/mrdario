@@ -167,8 +167,8 @@ class SinglePlayerGame extends React.Component<SinglePlayerGameProps, SinglePlay
     const height: number = (numRows - 1) * cellSize + padding * 2;
     const style = { position: "relative" as "relative", width, height, padding };
     const overlayStyle = { position: "absolute" as "absolute", width, height, padding, left: 0 };
-    const lostOverlayStyle = { ...overlayStyle, top: params.mode === "lost" ? 0 : height };
-    const wonOverlayStyle = { ...overlayStyle, top: params.mode === "won" ? 0 : height };
+    const lostOverlayStyle = { ...overlayStyle, top: params.mode === GameControllerMode.Lost ? 0 : height };
+    const wonOverlayStyle = { ...overlayStyle, top: params.mode === GameControllerMode.Won ? 0 : height };
 
     let nextPill: PillColors | undefined;
     if (gameState && gameState.pillSequence && _.isFinite(gameState.pillCount)) {
