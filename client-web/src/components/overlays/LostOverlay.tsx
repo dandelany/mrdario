@@ -1,8 +1,8 @@
 import * as React from 'react';
 import {Link} from 'react-router-dom';
 
-import MayaNumeral from '../lib/MayaNumeral';
-import { GameRouteParams } from "@/app/types";
+import MayaNumeral from '@/components/lib/MayaNumeral';
+import { GameRouteParams } from "@/types";
 
 interface LostOverlayProps {
   style?: object;

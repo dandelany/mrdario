@@ -3,7 +3,7 @@ import _ from 'lodash';
 import {Link, withRouter} from 'react-router-dom';
 import DeepDiff from 'deep-diff';
 const deepDiff = DeepDiff.diff;
-import shallowEqual from '../../utils/shallowEqual';
+import shallowEqual from '@/utils/shallowEqual';
 
 import {MODES, DEFAULT_KEYS} from 'game/constants';
 

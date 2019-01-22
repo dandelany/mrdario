@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import { GridObjectType, PillColors } from "mrdario-core/src/types";
-import PillPart from '@/app/components/game/PillPart';
+import PillPart from './PillPart';
 
 export interface PillPreviewPanelProps {
   cellSize: number;

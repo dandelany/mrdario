@@ -2,15 +2,16 @@ import * as React from 'react';
 import {Route} from 'react-router-dom';
 
 // import AppContainer from 'app/components/AppContainer';
-import TitlePage from './components/pages/TitlePage';
-import GameSettings from './components/pages/GameSettings';
-import SinglePlayerGame from './components/pages/SinglePlayerGame';
+import TitlePage from '@/components/pages/TitlePage';
+import GameSettings from '@/components/pages/GameSettings';
+import SinglePlayerGame from '@/components/pages/SinglePlayerGame';
 // import MirrorGame from 'app/components/pages/MirrorGame';
-import HighScores from './components/pages/HighScores';
+import HighScores from '@/components/pages/HighScores';
 
 type ComponentClassOrFunction = React.ComponentClass<any> | React.FunctionComponent<any>;
 
 // utils for passing props through to Route components
+// todo do we still need this???
 const renderMergedProps = (component: ComponentClassOrFunction, ...rest: any[]) => {
   const finalProps = Object.assign({}, ...rest);
   return React.createElement(component, finalProps);

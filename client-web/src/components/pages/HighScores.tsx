@@ -4,7 +4,8 @@ import { debounce } from "lodash";
 import { Link } from "react-router-dom";
 import Slider from "rc-slider";
 import { SCClientSocket } from "socketcluster-client";
-import MayaNumeral from "../lib/MayaNumeral";
+
+import MayaNumeral from "@/components/lib/MayaNumeral";
 
 type HighScoresRow = [string, number];
 

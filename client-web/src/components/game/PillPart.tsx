@@ -1,14 +1,14 @@
 import * as React from 'react';
-import makeReactSvg from '../../utils/makeReactSvg';
+import makeReactSvg from '@/utils/makeReactSvg';
 
 import { GridObjectType, GameColor } from "mrdario-core/src/types";
 
-import * as pillHalfOrange from '!raw-loader!@/app/svg/pill_half_orange.svg';
-import * as pillHalfPurple from '!raw-loader!@/app/svg/pill_half_purple.svg';
-import * as pillHalfGreen from '!raw-loader!@/app/svg/pill_half_green.svg';
-import * as pillSegmentOrange from '!raw-loader!@/app/svg/pill_segment_orange.svg';
-import * as pillSegmentPurple from '!raw-loader!@/app/svg/pill_segment_purple.svg';
-import * as pillSegmentGreen from '!raw-loader!@/app/svg/pill_segment_green.svg';
+import * as pillHalfOrange from '!raw-loader!@/svg/pill_half_orange.svg';
+import * as pillHalfPurple from '!raw-loader!@/svg/pill_half_purple.svg';
+import * as pillHalfGreen from '!raw-loader!@/svg/pill_half_green.svg';
+import * as pillSegmentOrange from '!raw-loader!@/svg/pill_segment_orange.svg';
+import * as pillSegmentPurple from '!raw-loader!@/svg/pill_segment_purple.svg';
+import * as pillSegmentGreen from '!raw-loader!@/svg/pill_segment_green.svg';
 
 
 type PillPartSVGByColor = {[C in GameColor]: string};

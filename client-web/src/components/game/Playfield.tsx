@@ -1,16 +1,16 @@
 import * as _ from "lodash";
 import * as React from "react";
-import shallowEqual from "@/app/utils/shallowEqual";
-import makeReactSvg from "@/app/utils/makeReactSvg";
+import shallowEqual from "@/utils/shallowEqual";
+import makeReactSvg from "@/utils/makeReactSvg";
 
 import PillPart from "./PillPart";
 
 import { GameGrid, GridObjectType } from "mrdario-core/src/types";
 
-import * as virusOrange from "!raw-loader!@/app/svg/virus_orange.svg";
-import * as virusPurple from "!raw-loader!@/app/svg/virus_purple.svg";
-import * as virusGreen from "!raw-loader!@/app/svg/virus_green.svg";
-import * as destroyed from "!raw-loader!@/app/svg/destroyed.svg";
+import * as virusOrange from "!raw-loader!@/svg/virus_orange.svg";
+import * as virusPurple from "!raw-loader!@/svg/virus_purple.svg";
+import * as virusGreen from "!raw-loader!@/svg/virus_green.svg";
+import * as destroyed from "!raw-loader!@/svg/destroyed.svg";
 
 const viruses = [virusOrange, virusPurple, virusGreen];
 

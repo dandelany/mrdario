@@ -1,11 +1,9 @@
 import * as _ from 'lodash';
 import * as React from 'react';
 
-import SVGShimmerCycler from './lib/SVGShimmerCycler';
+import SVGShimmerCycler from '@/components/lib/SVGShimmerCycler';
 
-const aztecCalendar: string = require('../img/aztec_small.svg');
-
-console.log('aztecCalendar', aztecCalendar);
+const aztecCalendar: string = require('@/img/aztec_small.svg');
 
 const oranges = ["#BE1E2D", "#F05A28", "#F6921E"];
 const greens = ["#009345", "#006838", "#8BC53F", "#37B34A"];
