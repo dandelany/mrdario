@@ -1,7 +1,7 @@
 import * as React from "react";
 import makeReactSvg from "@/utils/makeReactSvg";
 
-import { GridObjectType, GameColor } from "mrdario-core/src/types";
+import { GridObjectType, GameColor, GridObjectPillPartType, GridObjectPillHalfType } from "mrdario-core/src/types";
 
 import * as pillHalfOrange from "!raw-loader!@/svg/pill_half_orange.svg";
 import * as pillHalfPurple from "!raw-loader!@/svg/pill_half_purple.svg";
@@ -24,14 +24,7 @@ const pillSegments: PillPartSVGByColor = {
   [GameColor.Color3]: pillSegmentGreen
 };
 
-type PillHalfType =
-  | GridObjectType.PillTop
-  | GridObjectType.PillBottom
-  | GridObjectType.PillLeft
-  | GridObjectType.PillRight;
-type PillPartType = PillHalfType | GridObjectType.PillSegment;
-
-const pillHalfRotations: { [P in PillHalfType]: number } = {
+const pillHalfRotations: { [P in GridObjectPillHalfType]: number } = {
   [GridObjectType.PillTop]: 0,
   [GridObjectType.PillRight]: 90,
   [GridObjectType.PillBottom]: 180,
@@ -39,7 +32,7 @@ const pillHalfRotations: { [P in PillHalfType]: number } = {
 };
 
 interface PillPartProps {
-  type: PillPartType;
+  type: GridObjectPillPartType;
   color: GameColor;
   cellSize: number;
   gProps: {

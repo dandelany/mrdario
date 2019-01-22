@@ -22,19 +22,15 @@ export default class PillPreviewPanel extends React.Component<PillPreviewPanelPr
           <PillPart
             type={GridObjectType.PillLeft}
             color={pill[0].color}
-            {...{
-              cellSize,
-              svgProps: { width: cellSize, height: cellSize }
-            }}
+            cellSize={cellSize}
+            svgProps={{ width: cellSize, height: cellSize }}
           />
           <PillPart
-            {...{
-              type: GridObjectType.PillRight,
-              color: pill[1].color,
-              cellSize,
-              gProps: { transform: `translate(${cellSize},0)` },
-              svgProps: { width: cellSize, height: cellSize }
-            }}
+            type={GridObjectType.PillRight}
+            color={pill[1].color}
+            cellSize={cellSize}
+            gProps={{ transform: `translate(${cellSize},0)` }}
+            svgProps={{ width: cellSize, height: cellSize }}
           />
         </svg>
 
