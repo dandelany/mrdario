@@ -1,5 +1,5 @@
 import { EventEmitter } from "events";
-import * as _ from "lodash";
+import { defaults, includes, noop } from "lodash";
 import { TypeState } from "typestate";
 
 import { COLORS, GRAVITY_TABLE, PLAYFIELD_HEIGHT, PLAYFIELD_WIDTH } from "./constants";
@@ -77,9 +77,9 @@ export const defaultGameOptions: GameOptions = {
   // after every accelerateInterval pills, gravity speed is increased by one
   accelerateInterval: 10,
   // callbacks called when grid changes, game is won, or game is lost
-  onChange: _.noop,
-  onWin: _.noop,
-  onLose: _.noop
+  onChange: noop,
+  onWin: noop,
+  onLose: noop
 };
 
 export default class Game extends EventEmitter {
@@ -114,7 +114,7 @@ export default class Game extends EventEmitter {
 
   constructor(passedOptions: Partial<GameOptions> = {}) {
     super();
-    const options: GameOptions = _.defaults({}, passedOptions, defaultGameOptions);
+    const options: GameOptions = defaults({}, passedOptions, defaultGameOptions);
 
     // assign all options to instance variables
     this.options = options;
@@ -392,7 +392,7 @@ export default class Game extends EventEmitter {
         didMove = slammed.didMove;
         // reconcile immediately after slam
         shouldReconcile = true;
-      } else if (_.includes([GameInput.Left, GameInput.Right, GameInput.Down], input)) {
+      } else if (includes([GameInput.Left, GameInput.Right, GameInput.Down], input)) {
         const direction =
           input === GameInput.Down
             ? Direction.Down
@@ -408,7 +408,7 @@ export default class Game extends EventEmitter {
         if (input === GameInput.Down && !didMove) {
           shouldReconcile = true;
         }
-      } else if (_.includes([GameInput.RotateCCW, GameInput.RotateCW], input)) {
+      } else if (includes([GameInput.RotateCCW, GameInput.RotateCW], input)) {
         const direction: RotateDirection =
           input === GameInput.RotateCCW
             ? RotateDirection.CounterClockwise

@@ -1,4 +1,4 @@
-import * as _ from "lodash";
+import { defaults, noop } from "lodash";
 
 import Game from "../Game";
 
@@ -27,9 +27,9 @@ export const defaultOptions: GameControllerOptions = {
   inputManagers: [],
   // render function which is called when game state changes
   // this should be the main connection between game logic and presentation
-  render: _.noop,
+  render: noop,
   // callback called when state machine mode changes
-  onChangeMode: _.noop,
+  onChangeMode: noop,
   // current virus level (generally 1-20)
   level: 0,
   // pill fall speed
@@ -54,7 +54,7 @@ export default class SingleGameController {
   private fsm: TypeState.FiniteStateMachine<GameControllerMode>;
 
   constructor(passedOptions: Partial<GameControllerOptions> = {}) {
-    const options: GameControllerOptions = _.defaults({}, passedOptions, defaultOptions);
+    const options: GameControllerOptions = defaults({}, passedOptions, defaultOptions);
     this.options = options;
 
     this.game = this.initGame();
@@ -247,7 +247,7 @@ export default class SingleGameController {
     this.options.render(this.getState(toMode));
     // call handler
     this.options.onChangeMode(fromMode, toMode);
-  };
+  }
 }
 
 function timestamp(): number {

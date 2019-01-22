@@ -1,5 +1,5 @@
 import { EventEmitter } from "events";
-import * as _ from "lodash";
+import { each } from "lodash";
 import * as Mousetrap from "mousetrap";
 import {
   GameControllerMode,
@@ -7,7 +7,7 @@ import {
   InputEventType,
   InputManager,
   KeyBindings
-} from "../../types/index";
+} from "../../types";
 
 export default class KeyManager extends EventEmitter implements InputManager {
   public mode?: GameControllerMode;
@@ -32,7 +32,7 @@ export default class KeyManager extends EventEmitter implements InputManager {
       return;
     }
     const modeBindings = this.keyBindings[mode] || {};
-    _.each(modeBindings, (keyStr, _inputType) => {
+    each(modeBindings, (keyStr, _inputType) => {
       if (!keyStr) {
         return;
       }
