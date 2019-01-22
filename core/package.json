@@ -8,7 +8,9 @@
     "test": "jest --config jestconfig.json",
     "build": "tsc",
     "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
-    "lint": "tslint -p tsconfig.json --fix"
+    "lint": "tslint -p tsconfig.json --fix",
+    "watch-changed": "npm run build; npm run test",
+    "watch": "onchange -i 'src/**/*.ts' 'src/**/*.js' -- npm run watch-changed"
   },
   "author": "Dan Delany <dan.delany@gmail.com>",
   "license": "MIT",
@@ -18,6 +20,7 @@
     "@types/lodash": "^4.14.120",
     "@types/mousetrap": "^1.6.1",
     "jest": "^23.6.0",
+    "onchange": "^5.2.0",
     "prettier": "^1.15.3",
     "ts-jest": "^23.10.5",
     "tslint": "^5.12.1",
