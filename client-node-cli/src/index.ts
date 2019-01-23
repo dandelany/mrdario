@@ -13,12 +13,14 @@ import {
 import { hasColor } from "mrdario-core/lib/utils/guards";
 import keypress = require("keypress");
 
+import { create as createSocket, SCClientSocket } from "socketcluster-client";
+
 keypress(process.stdin);
 
 const gridObjStrings: {[T in GridObjectType]: string} = {
   [GridObjectType.Empty]: '░░',
   // [GridObjectType.Empty]: '  ',
-  [GridObjectType.Virus]: ':(',
+  [GridObjectType.Virus]: '%@',
   [GridObjectType.PillSegment]: '▒▒',
   [GridObjectType.PillBottom]: '▒▒',
   [GridObjectType.PillTop]: '▒▒',
@@ -38,7 +40,7 @@ const keyBindings = {
 
 function renderWithColor(str: string, color: GameColor): string {
   if(color === GameColor.Color1) {
-    return chalk.red(str);
+    return chalk.redBright(str);
   } else if(color === GameColor.Color2) {
     return chalk.yellowBright(str);
   }
@@ -46,10 +48,11 @@ function renderWithColor(str: string, color: GameColor): string {
 }
 
 function renderObject(obj: GridObject): string {
-  if(hasColor(obj)) {
-    return renderWithColor(gridObjStrings[obj.type], obj.color);
-  }
-  return gridObjStrings[obj.type];
+  let objStr = hasColor(obj) ?
+    renderWithColor(gridObjStrings[obj.type], obj.color) :
+    gridObjStrings[obj.type];
+
+  return objStr;
 }
 
 function enqueueInputEvents(queue: MoveInputEvent[], input: GameInputMove) {
@@ -70,12 +73,39 @@ class CLIGameController {
   private lastGridStr = '';
 
   constructor() {
-    this.game = new Game();
+    this.game = new Game({
+      onLose: () => {
+        this.debugStr = "YOU LOSE :(";
+        this.render();
+        process.exit();
+      },
+      onWin: () => {
+        this.debugStr = "YOU WIN :)";
+        this.render();
+        process.exit();
+      }
+    });
     this.debugStr = 'debug';
     this.moveInputQueue = [];
 
     this.bindKeyEvents();
     this.render();
+
+    try {
+      let socket: SCClientSocket = createSocket({ port: 8000 });
+
+      socket.on('error', (err: Error) => {this.debugStr = err.message});
+
+      socket.on("connect", () => {
+        // console.log("Socket connected - OK");
+        this.debugStr = "CONNECTED"
+
+        // socket.emit('sampleClientEvent', 0);
+      });
+    } catch(e) {
+      // this.debugStr = e.message;
+    }
+
 
     setInterval(() => {
       this.tick();
