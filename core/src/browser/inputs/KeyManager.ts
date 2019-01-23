@@ -61,7 +61,7 @@ export default class KeyManager extends EventEmitter implements InputManager {
   }
 
   public handleInput(inputType: GameInput, keyType: InputEventType, event: KeyboardEvent) {
-    super.emit(inputType, keyType, event);
+    super.emit(inputType, keyType);
     if (event.preventDefault) {
       event.preventDefault();
     }

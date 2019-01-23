@@ -118,15 +118,14 @@ export default class SingleGameController {
       ];
       moveInputs.forEach((input: GameInputMove) => {
         const boundEnqueueInput: (
-          eventType: InputEventType,
-          event: Event
+          eventType: InputEventType
         ) => void = this.enqueueMoveInput.bind(this, input);
 
         inputManager.on(input, boundEnqueueInput);
       });
     });
   }
-  public enqueueMoveInput(input: GameInputMove, eventType: InputEventType, _event: Event) {
+  public enqueueMoveInput(input: GameInputMove, eventType: InputEventType) {
     // queue a user move, to be sent to the game on the next tick
     if (!this.fsm.is(GameControllerMode.Playing)) {
       return;

@@ -98,7 +98,8 @@ export type PillColors = [{ color: GameColor }, { color: GameColor }];
 
 export type SpeedTable = { [S in SpeedLevel]: number };
 
-export type KeyBindings = { [M in GameControllerMode]?: { [I in GameInput]?: string | string[] } };
+export type ModeKeyBindings = {[I in GameInput]?: string | string[] };
+export type KeyBindings = { [M in GameControllerMode]?: ModeKeyBindings };
 
 export type GameInputMove =
   | GameInput.Up
@@ -120,6 +121,6 @@ export interface MoveInputEvent {
 export interface InputManager {
   setMode: (mode: GameControllerMode) => any;
   // on: (input: GameInput, callback: (inputType: GameInput, keyType: InputEventType, event: Event) => any) => any;
-  on: (input: GameInput, callback: (keyType: InputEventType, event: Event) => any) => any;
+  on: (input: GameInput, callback: (keyType: InputEventType) => any) => any;
   removeAllListeners: () => any;
 }
