@@ -78,13 +78,8 @@ export type GridObjectPillPartType = GridObjectPillHalfType | GridObjectType.Pil
 export type MaybeGridObject = GridObject | null;
 export type MaybeGridObjectWithColor = GridObjectWithColor | null;
 
-export type GameGridRow<Width extends number> = Tuple<GridObject, Width>;
-
-// todo why do i have to write this as GameGrid<number, number> everywhere...
-export type GameGrid<Width extends number, Height extends number> = Tuple<
-  GameGridRow<Width>,
-  Height
->;
+export type GameGridRow = GridObject[];
+export type GameGrid = GameGridRow[];
 
 // todo use generics to make sure numbers are in range of grid?
 export type GridCellLocation = [number, number];

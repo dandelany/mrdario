@@ -16,7 +16,7 @@ const viruses = [virusOrange, virusPurple, virusGreen];
 
 export interface PlayfieldProps {
   cellSize: number;
-  grid: GameGrid<number, number>;
+  grid: GameGrid;
 }
 export default class Playfield extends React.Component<PlayfieldProps> {
   static defaultProps = {

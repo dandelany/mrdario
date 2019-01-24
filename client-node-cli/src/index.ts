@@ -98,7 +98,7 @@ export class CLIGameClient {
         process.exit();
       },
       render: (game) => {
-        const gridRowStrs = game.grid.map((row: GameGridRow<number>) => {
+        const gridRowStrs = game.grid.map((row: GameGridRow) => {
           const objStrs = row.map((obj: GridObject) => {
             return renderObject(obj, GRID_OBJECT_STRINGS);
           });
@@ -267,7 +267,7 @@ class CLIGameController {
 
   render() {
     this.options.render(this.game);
-    // const gridRowStrs = this.game.grid.map((row: GameGridRow<number>) => {
+    // const gridRowStrs = this.game.grid.map((row: GameGridRow) => {
     //   const objStrs = row.map((obj: GridObject) => {
     //     return renderObject(obj, GRID_OBJECT_STRINGS);
     //   });

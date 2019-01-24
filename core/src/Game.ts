@@ -98,7 +98,7 @@ export default class Game extends EventEmitter {
 
   public options: GameOptions;
   public fsm: TypeState.FiniteStateMachine<GameMode>;
-  public grid: GameGrid<number, number>;
+  public grid: GameGrid;
   public pill?: PillLocation;
   public origVirusCount: number;
   public pillSequence: PillColors[];
@@ -381,7 +381,7 @@ export default class Game extends EventEmitter {
 
     for (const input of moveQueue) {
       // move/rotate the pill based on the move input
-      let grid: GameGrid<number, number> = this.grid;
+      let grid: GameGrid = this.grid;
       let pill: PillLocation = this.pill;
       let didMove: boolean = false;
 

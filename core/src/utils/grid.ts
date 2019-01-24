@@ -29,7 +29,7 @@ import {
 // these are pure stateless functions which contain the majority of the game logic
 // they use Immutable objects to represent the grid and return new objects on 'mutation'
 
-export function getInRow(row: GameGridRow<number>, colIndex: number): MaybeGridObject {
+export function getInRow(row: GameGridRow, colIndex: number): MaybeGridObject {
   if (colIndex >= row.length || colIndex < 0) {
     return null;
   }
@@ -37,7 +37,7 @@ export function getInRow(row: GameGridRow<number>, colIndex: number): MaybeGridO
 }
 
 export function getInGrid(
-  grid: GameGrid<number, number>,
+  grid: GameGrid,
   location: GridCellLocation
 ): MaybeGridObject {
   const [rowIndex, colIndex] = location;
@@ -48,23 +48,23 @@ export function getInGrid(
 }
 
 export function setInRow(
-  row: GameGridRow<number>,
+  row: GameGridRow,
   colIndex: number,
   value: GridObject
-): GameGridRow<number> {
+): GameGridRow {
   if (colIndex >= row.length || colIndex < 0) {
     return row;
   }
-  return produce(row, (draftRow: GameGridRow<number>) => {
+  return produce(row, (draftRow: GameGridRow) => {
     draftRow[colIndex] = value;
   });
 }
 
 export function setInGrid(
-  grid: GameGrid<number, number>,
+  grid: GameGrid,
   location: GridCellLocation,
   value: GridObject
-): GameGrid<number, number> {
+): GameGrid {
   const [rowIndex, colIndex] = location;
   if (rowIndex >= grid.length || rowIndex < 0) {
     return grid;
@@ -73,7 +73,7 @@ export function setInGrid(
   if (colIndex >= row.length || colIndex < 0) {
     return grid;
   }
-  return produce(grid, (draftGrid: GameGrid<number, number>) => {
+  return produce(grid, (draftGrid: GameGrid) => {
     draftGrid[rowIndex][colIndex] = value;
   });
 }
@@ -89,16 +89,16 @@ export function setPillPartFalling(obj: GridObjectPillPart, isFalling: boolean) 
   });
 }
 
-export function hasViruses(grid: GameGrid<number, number>): boolean {
+export function hasViruses(grid: GameGrid): boolean {
   return !grid.every(row => row.every(cell => !isVirus(cell)));
 }
 
-export function isPillVertical(grid: GameGrid<number, number>, pillCells: GridCellLocation[]) {
+export function isPillVertical(grid: GameGrid, pillCells: GridCellLocation[]) {
   return isPillTop(getInGrid(grid, pillCells[0]));
 }
 
 export function getCellNeighbors(
-  grid: GameGrid<number, number>,
+  grid: GameGrid,
   location: GridCellLocation,
   distance = 1
 ): GridCellNeighbors {
@@ -114,7 +114,7 @@ export function getCellNeighbors(
 }
 
 export function canMoveCell(
-  grid: GameGrid<number, number>,
+  grid: GameGrid,
   location: GridCellLocation,
   direction: Direction
 ) {
@@ -134,7 +134,7 @@ export function deltaRowCol(direction: Direction, distance: number = 1): GridCel
 
 // find same-color lines within a single row or column
 export function findLinesIn(
-  row: GameGridRow<number>,
+  row: GameGridRow,
   lineLength = 4,
   excludeFlag = "isFalling"
 ): number[][] {
@@ -171,12 +171,12 @@ export function findLinesIn(
 
 // the main reconcile function, looks for lines of 4 or more of the same color in the grid
 export function findLines(
-  grid: GameGrid<number, number>,
+  grid: GameGrid,
   lineLength: number = 4,
   excludeFlag: string = "isFalling"
 ): GridCellLocation[][] {
   const horizontalLines: GridCellLocation[][] = flatten(
-    grid.map((row: GameGridRow<number>, rowIndex: number) => {
+    grid.map((row: GameGridRow, rowIndex: number) => {
       const rowLines: number[][] = findLinesIn(row, lineLength, excludeFlag);
       return rowLines.map(
         (line: number[]): GridCellLocation[] => {
@@ -187,13 +187,13 @@ export function findLines(
   );
 
   // reslice grid into [col][row] instead of [row][col] format to check columns
-  const gridCols: GameGrid<number, number> = range(grid[0].length).map(
-    (colIndex: number): GameGridRow<number> => {
+  const gridCols: GameGrid = range(grid[0].length).map(
+    (colIndex: number): GameGridRow => {
       return grid.map(row => row[colIndex]);
     }
   );
   const verticalLines: GridCellLocation[][] = flatten(
-    gridCols.map((col: GameGridRow<number>, colIndex: number) => {
+    gridCols.map((col: GameGridRow, colIndex: number) => {
       const colLines: number[][] = findLinesIn(col, lineLength, excludeFlag);
       return colLines.map(
         (line: number[]): GridCellLocation[] =>
@@ -207,9 +207,9 @@ export function findLines(
 }
 
 // find "widows", half-pill pieces whose other halves have been destroyed
-export function findWidows(grid: GameGrid<number, number>): GridCellLocation[] {
+export function findWidows(grid: GameGrid): GridCellLocation[] {
   return flatten(
-    grid.reduce((widows: GridCellLocation[][], row: GameGridRow<number>, rowIndex: number) => {
+    grid.reduce((widows: GridCellLocation[][], row: GameGridRow, rowIndex: number) => {
       widows.push(
         row.reduce((rowWidows: GridCellLocation[], obj: GridObject, colIndex: number) => {
           if (!isPillHalf(obj)) {

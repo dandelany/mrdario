@@ -3,7 +3,7 @@ import { GameControllerMode, GameGrid, InputManager, PillColors } from "./index"
 export interface GameControllerState {
   mode: GameControllerMode;
   pillCount: number;
-  grid: GameGrid<number, number>;
+  grid: GameGrid;
   pillSequence: PillColors[];
   score: number;
   timeBonus: number;

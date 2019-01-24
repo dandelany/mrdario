@@ -44,11 +44,11 @@ import {
 // Immutable game grid/cell objects, returning the updated objects.
 // These contain most of the central game logic.
 
-export function givePill(grid: GameGrid<number, number>, pillColors: PillColors) {
+export function givePill(grid: GameGrid, pillColors: PillColors) {
   // add new pill to grid
   // added to row 1, because 0 is special "true" top row which is cleared every turn
   const rowI = 1;
-  const row: GameGridRow<number> = grid[rowI];
+  const row: GameGridRow = grid[rowI];
   const colI: number = Math.floor(row.length / 2) - 1;
   const pill: PillLocation = [[rowI, colI], [rowI, colI + 1]];
 
@@ -63,7 +63,7 @@ export function givePill(grid: GameGrid<number, number>, pillColors: PillColors)
 }
 
 export function moveCell(
-  grid: GameGrid<number, number>,
+  grid: GameGrid,
   cell: GridCellLocation,
   direction: Direction
 ) {
@@ -86,7 +86,7 @@ export function moveCell(
 }
 
 export function moveCells(
-  grid: GameGrid<number, number>,
+  grid: GameGrid,
   cells: GridCellLocation[],
   direction: Direction
 ) {
@@ -121,12 +121,12 @@ export function moveCells(
   return { grid, cells, didMove: true };
 }
 
-export function movePill(grid: GameGrid<number, number>, pill: PillLocation, direction: Direction) {
+export function movePill(grid: GameGrid, pill: PillLocation, direction: Direction) {
   const moved = moveCells(grid, pill, direction);
   return { grid: moved.grid, pill: moved.cells as PillLocation, didMove: moved.didMove };
 }
 
-export function slamPill(grid: GameGrid<number, number>, pill: PillLocation) {
+export function slamPill(grid: GameGrid, pill: PillLocation) {
   // pressing "up" will "slam" the pill down
   // (ie. move it instantly to the lowest legal position directly below it)
   let moving = true;
@@ -144,7 +144,7 @@ export function slamPill(grid: GameGrid<number, number>, pill: PillLocation) {
 }
 
 export function rotatePill(
-  grid: GameGrid<number, number>,
+  grid: GameGrid,
   pill: PillLocation,
   rotateDirection: RotateDirection
 ) {
@@ -220,46 +220,46 @@ export function rotatePill(
 }
 
 export function updateCellsWith(
-  grid: GameGrid<number, number>,
+  grid: GameGrid,
   cells: GridCellLocation[],
-  func: (grid: GameGrid<number, number>, cell: GridCellLocation) => GameGrid<number, number>
+  func: (grid: GameGrid, cell: GridCellLocation) => GameGrid
 ) {
   cells.forEach(cell => (grid = func(grid, cell)));
   return grid;
 }
 
 export function destroyCell(
-  grid: GameGrid<number, number>,
+  grid: GameGrid,
   location: GridCellLocation
-): GameGrid<number, number> {
+): GameGrid {
   // set grid cell to destroyed
   return setInGrid(grid, location, makeDestroyed());
 }
 export function destroyCells(
-  grid: GameGrid<number, number>,
+  grid: GameGrid,
   cells: GridCellLocation[]
-): GameGrid<number, number> {
+): GameGrid {
   return updateCellsWith(grid, cells, destroyCell);
 }
 
 export function removeCell(
-  grid: GameGrid<number, number>,
+  grid: GameGrid,
   location: GridCellLocation
-): GameGrid<number, number> {
+): GameGrid {
   // set grid cell to empty
   return setInGrid(grid, location, makeEmpty());
 }
 export function removeCells(
-  grid: GameGrid<number, number>,
+  grid: GameGrid,
   cells: GridCellLocation[]
-): GameGrid<number, number> {
+): GameGrid {
   return updateCellsWith(grid, cells, removeCell);
 }
 
 export function setPillSegment(
-  grid: GameGrid<number, number>,
+  grid: GameGrid,
   location: GridCellLocation
-): GameGrid<number, number> {
+): GameGrid {
   // set grid cell to be a rounded pill segment (rather than half pill)
   const pillPart = getInGrid(grid, location);
   if (isPillHalf(pillPart)) {
@@ -268,13 +268,13 @@ export function setPillSegment(
   return grid;
 }
 export function setPillSegments(
-  grid: GameGrid<number, number>,
+  grid: GameGrid,
   cells: GridCellLocation[]
-): GameGrid<number, number> {
+): GameGrid {
   return updateCellsWith(grid, cells, setPillSegment);
 }
 
-export function destroyLines(grid: GameGrid<number, number>, lines?: GridCellLocation[][]) {
+export function destroyLines(grid: GameGrid, lines?: GridCellLocation[][]) {
   // find all valid lines of same color grid objects and set them to destroyed
   if (lines === undefined) {
     lines = findLines(grid);
@@ -303,10 +303,10 @@ export function destroyLines(grid: GameGrid<number, number>, lines?: GridCellLoc
   return { grid, lines, hasLines, destroyedCount, virusCount };
 }
 
-export function removeDestroyed(grid: GameGrid<number, number>) {
+export function removeDestroyed(grid: GameGrid) {
   // find all "destroyed" objects in grid and set them to empty
   const destroyedCells: GridCellLocation[] = [];
-  grid.forEach((row: GameGridRow<number>, rowI: number) =>
+  grid.forEach((row: GameGridRow, rowI: number) =>
     row.forEach((cell: GridObject, colI) => {
       if (isDestroyed(cell)) {
         destroyedCells.push([rowI, colI]);
@@ -317,13 +317,13 @@ export function removeDestroyed(grid: GameGrid<number, number>) {
 }
 
 // find pieces in the grid which are unsupported and should fall in cascade
-export function dropDebris(grid: GameGrid<number, number>) {
+export function dropDebris(grid: GameGrid) {
   // start at the bottom of the grid and move up,
   // seeing which pieces can fall
   const fallingCells: GridCellLocation[] = [];
 
   for (let rowI = grid.length - 2; rowI >= 0; rowI--) {
-    const row: GameGridRow<number> = grid[rowI];
+    const row: GameGridRow = grid[rowI];
     for (let colI = 0; colI < row.length; colI++) {
       const obj = getInGrid(grid, [rowI, colI]);
       let didMove = false;
@@ -349,14 +349,14 @@ export function dropDebris(grid: GameGrid<number, number>) {
   return { grid, fallingCells };
 }
 
-export function flagFallingCells(grid: GameGrid<number, number>) {
+export function flagFallingCells(grid: GameGrid) {
   // find cells in the grid which are falling and set 'isFalling' flag on them, without actually dropping them
   // todo refactor, do we really need to do this
   // findLines should be able to detect which cells are falling so no need for this?
   const dropped = dropDebris(grid); // check if there is debris to drop
 
   for (let rowIndex = 0; rowIndex < grid.length; rowIndex++) {
-    const row: GameGridRow<number> = grid[rowIndex];
+    const row: GameGridRow = grid[rowIndex];
     for (let colIndex = 0; colIndex < row.length; colIndex++) {
       const obj: GridObject = row[colIndex];
       if (isPillPart(obj) && obj.isFalling) {
@@ -375,7 +375,7 @@ export function flagFallingCells(grid: GameGrid<number, number>) {
   return { grid, fallingCells: dropped.fallingCells };
 }
 
-export function clearTopRow(grid: GameGrid<number, number>) {
+export function clearTopRow(grid: GameGrid) {
   // clear all cells in the top row
   const cellsInTopRow: GridCellLocation[] = grid[0].map(
     (_col, colI: number): GridCellLocation => [0, colI]

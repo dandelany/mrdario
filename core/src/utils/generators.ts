@@ -37,16 +37,16 @@ export function makePillRight(color: GameColor): GridObjectPillRight {
   return { type: GridObjectType.PillRight, color };
 }
 
-export function makeEmptyGridRow<W extends number>(width: W): GameGridRow<W> {
-  return times<GridObject>(width, makeEmpty) as GameGridRow<W>;
+export function makeEmptyGridRow(width: number): GameGridRow {
+  return times<GridObject>(width, makeEmpty) as GameGridRow;
 }
-export function makeEmptyGrid<W extends number, H extends number>(
-  width: W,
-  height: H
-): GameGrid<W, H> {
-  return times<GameGridRow<W>>(height, () => {
+export function makeEmptyGrid(
+  width: number,
+  height: number
+): GameGrid {
+  return times<GameGridRow>(height, () => {
     return makeEmptyGridRow(width);
-  }) as GameGrid<W, H>;
+  }) as GameGrid;
 }
 
 export function generatePillSequence(
@@ -66,7 +66,7 @@ export function getLevelVirusCount(level: number): number {
 }
 
 export function generateEnemies(
-  grid: GameGrid<number, number>,
+  grid: GameGrid,
   level: number,
   colors: OneOrMore<GameColor>
 ) {
@@ -88,7 +88,7 @@ export function generateEnemies(
 }
 
 export function generateVirus(
-  grid: GameGrid<number, number>,
+  grid: GameGrid,
   level: number,
   colors: OneOrMore<GameColor>,
   remaining: number
@@ -145,7 +145,7 @@ export function nextGridCell(
 }
 
 export function isValidNewVirusLocation(
-  grid: GameGrid<number, number>,
+  grid: GameGrid,
   [rowI, colI]: GridCellLocation,
   colors: OneOrMore<GameColor>,
   nearby?: MaybeGridObject[]
@@ -166,7 +166,7 @@ export function isValidNewVirusLocation(
 }
 
 export function isValidNewVirusColor(
-  grid: GameGrid<number, number>,
+  grid: GameGrid,
   [rowI, colI]: GridCellLocation,
   color: GameColor,
   nearby?: MaybeGridObject[]
