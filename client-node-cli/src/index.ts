@@ -21,7 +21,6 @@ import { hasColor } from "mrdario-core/lib/utils/guards";
 
 import { GridObjectStringMap } from "./types";
 import { GRID_OBJECT_STRINGS, KEY_BINDINGS } from "./constants";
-// import keypress = require("keypress");
 import { Widgets } from "blessed";
 import { EventEmitter } from "events";
 
@@ -29,8 +28,6 @@ interface MoveInputEvent {
   input: GameInputMove;
   eventType: InputEventType;
 }
-
-
 
 export interface CLIGameClientOptions {
   gridObjectStrings: GridObjectStringMap;
@@ -53,8 +50,6 @@ export class CLIGameClient {
     var screen = blessed.screen({
       smartCSR: true
     });
-
-    screen.title = 'my window title';
 
     var box = blessed.box({
       top: 'center',
@@ -230,7 +225,8 @@ class CLIGameController {
     this.options = options;
     this.game = new Game({
       onLose: options.onLose,
-      onWin: options.onWin
+      onWin: options.onWin,
+      level: 12
     });
     this.moveInputQueue = [];
 

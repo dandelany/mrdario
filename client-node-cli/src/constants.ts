@@ -2,6 +2,7 @@ import { GameControllerMode, GameInput, GridObjectType, KeyBindings } from "mrda
 import { GridObjectStringMap } from "./types";
 
 export const GRID_OBJECT_STRINGS: GridObjectStringMap = {
+  // [GridObjectType.Empty]: '░░',
   [GridObjectType.Empty]: '░░',
   [GridObjectType.Virus]: '%@',
   [GridObjectType.PillSegment]: '▒▒',
