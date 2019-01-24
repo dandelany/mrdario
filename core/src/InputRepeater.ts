@@ -13,11 +13,11 @@ export const repeatIntervals: MoveInputNumberMap = INPUT_REPEAT_INTERVALS;
 
 export default class InputRepeater {
   public movingCounters: MoveInputNumberMap;
-  public movingDirections: Set<GameInputMove>;
+  public movingDirections: {[T in GameInputMove]?: true};
 
   constructor() {
     // the directions we are currently moving, while a move key is held down
-    this.movingDirections = new Set<GameInputMove>();
+    this.movingDirections = {};
 
     // these counters count up while a move key is held down (for normalizing key-repeat)
     // ie. represents the # of frames during which we have been moving in a particular direction
@@ -36,15 +36,16 @@ export default class InputRepeater {
     const moveQueue: GameInputMove[] = [];
 
     for (const { input, eventType } of inputQueue) {
-      if (eventType === InputEventType.KeyDown && !movingDirections.has(input)) {
+      if (eventType === InputEventType.KeyDown && !movingDirections[input]) {
         moveQueue.push(input);
-        movingDirections.add(input);
+        movingDirections[input] = true;
       } else if (eventType === InputEventType.KeyUp) {
-        movingDirections.delete(input);
+        delete movingDirections[input];
       }
     }
 
-    for (const input of movingDirections) {
+    for (const inputStr of Object.keys(movingDirections)) {
+      const input = inputStr as GameInputMove;
       if (movingCounters[input] >= repeatIntervals[input]) {
         moveQueue.push(input);
         movingCounters[input] = 0;
@@ -53,7 +54,7 @@ export default class InputRepeater {
 
     // update moving counters
     for (const inputType of Object.keys(movingCounters)) {
-      movingDirections.has(inputType as GameInputMove)
+      movingDirections[inputType as GameInputMove]
         ? movingCounters[inputType]++
         : (movingCounters[inputType] = 0);
     }

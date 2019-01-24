@@ -351,7 +351,7 @@ export default class Game extends EventEmitter {
     // gravity pulling pill down
     if (
       this.counters.playTicks > this.playGravity &&
-      !this.inputRepeater.movingDirections.has(GameInput.Down)
+      !this.inputRepeater.movingDirections[GameInput.Down]
     ) {
       // deactivate gravity while moving down
       this.counters.playTicks = 0;
