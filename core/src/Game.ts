@@ -83,6 +83,21 @@ export const defaultGameOptions: GameOptions = {
 };
 
 export default class Game extends EventEmitter {
+  public options: GameOptions;
+  public fsm: TypeState.FiniteStateMachine<GameMode>;
+  public grid: GameGrid;
+  public pill?: PillLocation;
+  public origVirusCount: number;
+  public pillSequence: PillColors[];
+  public playGravity: number;
+  public cascadeGravity: number;
+  public score: number;
+  public timeBonus: number = 0;
+
+  public counters: GameCounters;
+  private inputRepeater: InputRepeater;
+  private cascadeLineCount: number = 0;
+
   // game modes, used by the state machine
   // Loading: pre-ready state, todo: use this to populate viruses slowly?
   // Ready: ready for a new pill (first or otherwise)
@@ -96,22 +111,6 @@ export default class Game extends EventEmitter {
     return generateEnemies(makeEmptyGrid(width, height + 1), level, COLORS);
   }
 
-  public options: GameOptions;
-  public fsm: TypeState.FiniteStateMachine<GameMode>;
-  public grid: GameGrid;
-  public pill?: PillLocation;
-  public origVirusCount: number;
-  public pillSequence: PillColors[];
-  public playGravity: number;
-  public cascadeGravity: number;
-  // current score
-  public score: number = 0;
-  public timeBonus: number = 0;
-  // counters, mostly used to count # of frames we've been in a particular state
-  public counters: GameCounters;
-  private inputRepeater: InputRepeater;
-  private cascadeLineCount: number = 0;
-
   constructor(passedOptions: Partial<GameOptions> = {}) {
     super();
     const options: GameOptions = defaults({}, passedOptions, defaultGameOptions);
@@ -122,12 +121,12 @@ export default class Game extends EventEmitter {
     // finite state machine representing game mode
     this.fsm = this._initStateMachine();
 
+    // the player's score
+    this.score = 0;
+
     // the grid, single source of truth for game playfield state
-    const { grid, virusCount } = Game.createInitialGrid(
-      options.width,
-      options.height,
-      options.level
-    );
+    const { width, height, level } = this.options;
+    const { grid, virusCount } = generateEnemies(makeEmptyGrid(width, height + 1), level, COLORS);
     this.grid = grid;
     this.origVirusCount = virusCount;
 
@@ -140,13 +139,8 @@ export default class Game extends EventEmitter {
     // # of frames it takes debris to fall 1 row during cascade
     this.cascadeGravity = gravityFrames(options.cascadeSpeed);
 
-    this.counters = {
-      gameTicks: 0,
-      playTicks: 0,
-      cascadeTicks: 0,
-      destroyTicks: 0,
-      pillCount: 0
-    };
+    // counters, mostly used to count # of frames we've been in a particular state
+    this.counters = { gameTicks: 0, playTicks: 0, cascadeTicks: 0, destroyTicks: 0, pillCount: 0 };
 
     // input repeater, takes raw inputs and repeats them if they are held down
     // returns the real sequence of moves used by the game
@@ -154,6 +148,9 @@ export default class Game extends EventEmitter {
   }
 
   public _initStateMachine(): TypeState.FiniteStateMachine<GameMode> {
+    // create state machine to keep track of current game mode
+    const fsm = new TypeState.FiniteStateMachine<GameMode>(GameMode.Loading);
+
     // game modes, used by the state machine
     // Loading: pre-ready state, todo: use this to populate viruses slowly?
     // Ready: ready for a new pill (first or otherwise)
@@ -162,8 +159,6 @@ export default class Game extends EventEmitter {
     // Cascade: cascading line destruction & debris falling
     // Destruction: lines are being destroyed
     // Ended: game has ended
-
-    const fsm = new TypeState.FiniteStateMachine<GameMode>(GameMode.Loading);
 
     // Loaded
     fsm.from(GameMode.Loading).to(GameMode.Ready);
@@ -184,21 +179,24 @@ export default class Game extends EventEmitter {
     // Reset
     fsm.fromAny(GameMode).to(GameMode.Loading);
 
+    // onPlay
     fsm.on(GameMode.Playing, () => {
       this.counters.playTicks = 0;
     });
+    // onDestroy
     fsm.on(GameMode.Destruction, () => {
       this.counters.destroyTicks = 0;
     });
+    // onCascade
     fsm.on(GameMode.Cascade, () => {
       this.counters.cascadeTicks = 0;
     });
     fsm.on(GameMode.Ended, (from: GameMode | undefined) => {
       if (from === GameMode.Reconcile) {
-        // Win
+        // onWin
         this.options.onWin();
       } else if (from === GameMode.Ready) {
-        // Lose
+        // onLose
         this.options.onLose();
       }
     });
@@ -397,8 +395,8 @@ export default class Game extends EventEmitter {
           input === GameInput.Down
             ? Direction.Down
             : input === GameInput.Left
-            ? Direction.Left
-            : Direction.Right;
+              ? Direction.Left
+              : Direction.Right;
 
         const moved = movePill(this.grid, this.pill, direction);
         grid = moved.grid;

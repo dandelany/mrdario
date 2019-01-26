@@ -18,8 +18,9 @@ import {
 } from "../types";
 
 import { MIN_VIRUS_ROW_TABLE, VIRUS_COUNT_TABLE } from "../constants";
-import { getCellNeighbors, getInGrid, setInGrid } from "./grid";
+import { getCellNeighbors, getInGrid } from "./grid";
 import { hasColor, isColor, isEmpty } from "./guards";
+import { setInGrid } from "./setters";
 
 export function makeEmpty(): GridObjectEmpty {
   return { type: GridObjectType.Empty };

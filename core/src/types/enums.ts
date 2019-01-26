@@ -61,10 +61,10 @@ export enum GameColor {
 }
 
 export enum Direction {
-  Up = "Up",
-  Down = "Down",
-  Left = "Left",
-  Right = "Right"
+  Up = "DirUp",
+  Down = "DirDown",
+  Left = "DirLeft",
+  Right = "DirRight"
 }
 export enum RotateDirection {
   Clockwise = "Clockwise",

@@ -15,7 +15,7 @@ import {
   RotateDirection
 } from "../types";
 
-import { makeDestroyed, makeEmpty, makePillLeft, makePillRight } from "./generators";
+import { makeEmpty, makePillLeft, makePillRight } from "./generators";
 import {
   canMoveCell,
   deltaRowCol,
@@ -23,22 +23,26 @@ import {
   findWidows,
   getCellNeighbors,
   getInGrid,
-  isPillVertical,
-  setInGrid,
-  setPillPartFalling,
-  setPillPartType
+  isPillVertical
 } from "./grid";
 import {
   isDestroyed,
   isEmpty,
   isGridObject,
-  isPillHalf,
   isPillLeft,
   isPillPart,
   isPillSegment,
   isPillTop,
   isVirus
 } from "./guards";
+import {
+  destroyCells,
+  removeCells,
+  setPillSegments,
+  setInGrid,
+  setPillPartFalling,
+  setPillPartType, removeCell
+} from "./setters";
 
 // Pure functions which perform updates on the
 // Immutable game grid/cell objects, returning the updated objects.
@@ -59,14 +63,11 @@ export function givePill(grid: GameGrid, pillColors: PillColors) {
   grid = setInGrid(grid, pill[0], makePillLeft(pillColors[0].color));
   grid = setInGrid(grid, pill[1], makePillRight(pillColors[1].color));
 
+
   return { grid, pill, didGive: true };
 }
 
-export function moveCell(
-  grid: GameGrid,
-  cell: GridCellLocation,
-  direction: Direction
-) {
+export function moveCell(grid: GameGrid, cell: GridCellLocation, direction: Direction) {
   if (!canMoveCell(grid, cell, direction)) {
     return { grid, cell, didMove: false };
   }
@@ -79,17 +80,14 @@ export function moveCell(
   if (isGridObject(objToMove) && isGridObject(objToReplace)) {
     grid = setInGrid(grid, newCell, objToMove);
     grid = setInGrid(grid, cell, makeEmpty());
+    grid = removeCell(grid, cell);
 
     return { grid, cell: newCell, didMove: true };
   }
   return { grid, cell: newCell, didMove: false };
 }
 
-export function moveCells(
-  grid: GameGrid,
-  cells: GridCellLocation[],
-  direction: Direction
-) {
+export function moveCells(grid: GameGrid, cells: GridCellLocation[], direction: Direction) {
   // move a set of cells (eg. a pill) at once
   // either they ALL move successfully, or none of them move
   const [dRow, dCol]: [number, number] = deltaRowCol(direction);
@@ -143,11 +141,7 @@ export function slamPill(grid: GameGrid, pill: PillLocation) {
   return { grid, pill, didMove };
 }
 
-export function rotatePill(
-  grid: GameGrid,
-  pill: PillLocation,
-  rotateDirection: RotateDirection
-) {
+export function rotatePill(grid: GameGrid, pill: PillLocation, rotateDirection: RotateDirection) {
   // http://tetrisconcept.net/wiki/Dr._Mario#Rotation_system
   const pillNeighbors = [getCellNeighbors(grid, pill[0]), getCellNeighbors(grid, pill[1])];
   const isVertical = isPillVertical(grid, pill);
@@ -176,7 +170,7 @@ export function rotatePill(
         grid = setInGrid(grid, nextPill[0], setPillPartType(pillParts[0], nextPartTypes[0]));
         grid = setInGrid(grid, nextPill[1], setPillPartType(pillParts[1], nextPartTypes[1]));
       }
-      grid = setInGrid(grid, [pillRow, pillCol], makeEmpty());
+      grid = removeCell(grid, [pillRow, pillCol]);
       pill = nextPill;
     } else {
       // no room on the right for normal rotate
@@ -194,7 +188,7 @@ export function rotatePill(
         grid = setInGrid(grid, nextPill[0], setPillPartType(pillParts[0], nextPartTypes[0]));
         grid = setInGrid(grid, nextPill[1], setPillPartType(pillParts[1], nextPartTypes[1]));
       }
-      grid = setInGrid(grid, [pillRow, pillCol], makeEmpty());
+      grid = removeCell(grid, [pillRow, pillCol]);
       pill = nextPill;
       // return { grid, pill, didMove: true };
     }
@@ -213,65 +207,10 @@ export function rotatePill(
       grid = setInGrid(grid, nextPill[0], setPillPartType(pillParts[1], nextPartTypes[0]));
       grid = setInGrid(grid, nextPill[1], setPillPartType(pillParts[0], nextPartTypes[1]));
     }
-    grid = setInGrid(grid, [pillRow, pillCol + 1], makeEmpty());
+    grid = removeCell(grid, [pillRow, pillCol + 1]);
     pill = nextPill;
   }
   return { grid, pill, didMove: true };
-}
-
-export function updateCellsWith(
-  grid: GameGrid,
-  cells: GridCellLocation[],
-  func: (grid: GameGrid, cell: GridCellLocation) => GameGrid
-) {
-  cells.forEach(cell => (grid = func(grid, cell)));
-  return grid;
-}
-
-export function destroyCell(
-  grid: GameGrid,
-  location: GridCellLocation
-): GameGrid {
-  // set grid cell to destroyed
-  return setInGrid(grid, location, makeDestroyed());
-}
-export function destroyCells(
-  grid: GameGrid,
-  cells: GridCellLocation[]
-): GameGrid {
-  return updateCellsWith(grid, cells, destroyCell);
-}
-
-export function removeCell(
-  grid: GameGrid,
-  location: GridCellLocation
-): GameGrid {
-  // set grid cell to empty
-  return setInGrid(grid, location, makeEmpty());
-}
-export function removeCells(
-  grid: GameGrid,
-  cells: GridCellLocation[]
-): GameGrid {
-  return updateCellsWith(grid, cells, removeCell);
-}
-
-export function setPillSegment(
-  grid: GameGrid,
-  location: GridCellLocation
-): GameGrid {
-  // set grid cell to be a rounded pill segment (rather than half pill)
-  const pillPart = getInGrid(grid, location);
-  if (isPillHalf(pillPart)) {
-    return setInGrid(grid, location, setPillPartType(pillPart, GridObjectType.PillSegment));
-  }
-  return grid;
-}
-export function setPillSegments(
-  grid: GameGrid,
-  cells: GridCellLocation[]
-): GameGrid {
-  return updateCellsWith(grid, cells, setPillSegment);
 }
 
 export function destroyLines(grid: GameGrid, lines?: GridCellLocation[][]) {
@@ -293,7 +232,6 @@ export function destroyLines(grid: GameGrid, lines?: GridCellLocation[][]) {
         }
       }
     }
-
     // set cells in lines to destroyed
     grid = destroyCells(grid, flatten(lines));
     // turn widowed pill halves into rounded 1-square pill segments

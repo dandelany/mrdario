@@ -1,4 +1,3 @@
-import { produce } from "immer";
 import { flatten, range } from "lodash";
 
 import {
@@ -10,8 +9,6 @@ import {
   GridCellLocationDelta,
   GridCellNeighbors,
   GridObject,
-  GridObjectPillPart,
-  GridObjectPillPartType,
   MaybeGridObject
 } from "../types";
 
@@ -47,47 +44,6 @@ export function getInGrid(
   return getInRow(grid[rowIndex], colIndex);
 }
 
-export function setInRow(
-  row: GameGridRow,
-  colIndex: number,
-  value: GridObject
-): GameGridRow {
-  if (colIndex >= row.length || colIndex < 0) {
-    return row;
-  }
-  return produce(row, (draftRow: GameGridRow) => {
-    draftRow[colIndex] = value;
-  });
-}
-
-export function setInGrid(
-  grid: GameGrid,
-  location: GridCellLocation,
-  value: GridObject
-): GameGrid {
-  const [rowIndex, colIndex] = location;
-  if (rowIndex >= grid.length || rowIndex < 0) {
-    return grid;
-  }
-  const row = grid[rowIndex];
-  if (colIndex >= row.length || colIndex < 0) {
-    return grid;
-  }
-  return produce(grid, (draftGrid: GameGrid) => {
-    draftGrid[rowIndex][colIndex] = value;
-  });
-}
-
-export function setPillPartType(obj: GridObjectPillPart, type: GridObjectPillPartType) {
-  return produce(obj, draftObj => {
-    draftObj.type = type;
-  });
-}
-export function setPillPartFalling(obj: GridObjectPillPart, isFalling: boolean) {
-  return produce(obj, (draftObj: GridObjectPillPart) => {
-    draftObj.isFalling = isFalling;
-  });
-}
 
 export function hasViruses(grid: GameGrid): boolean {
   return !grid.every(row => row.every(cell => !isVirus(cell)));
