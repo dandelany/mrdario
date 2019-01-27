@@ -7,10 +7,10 @@ import { SCClientSocket } from "socketcluster-client";
 import { DEFAULT_KEYS } from "mrdario-core/lib/constants";
 import { GameControllerMode, GameControllerState, PillColors } from "mrdario-core/src/types";
 
-import KeyManager from "mrdario-core/src/browser/inputs/KeyManager";
+import LocalWebGameController from "mrdario-core/src/web/LocalWebGameController";
+import KeyManager from "mrdario-core/src/web/inputs/KeyManager";
 // import SwipeManager from 'mrdario-core/src/inputs/SwipeManager';
 // import GamepadManager from 'mrdario-core/src/inputs/GamepadManager';
-import SingleGameController from "mrdario-core/src/browser/SingleGameController";
 
 import { GameRouteParams, GameScoreResponse } from "@/types";
 
@@ -102,7 +102,7 @@ class SinglePlayerGame extends React.Component<SinglePlayerGameProps, SinglePlay
 
     // create new game controller that will run the game
     // and update component state whenever game state changes to re-render
-    this.game = new SingleGameController({
+    this.game = new LocalWebGameController({
       level,
       speed,
       // inputManagers: [this.keyManager, this.touchManager, this.gamepadManager],
