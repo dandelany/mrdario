@@ -83,6 +83,18 @@ export const defaultGameOptions: GameOptions = {
 };
 
 export default class Game extends EventEmitter {
+  // game modes, used by the state machine
+  // Loading: pre-ready state, todo: use this to populate viruses slowly?
+  // Ready: ready for a new pill (first or otherwise)
+  // Playing: pill is in play and falling
+  // Reconcile: pill is locked in place, checking for lines to destroy
+  // Cascade: cascading line destruction & debris falling
+  // Destruction: lines are being destroyed
+  // Ended: game has ended
+
+  public static createInitialGrid(width: number, height: number, level: number) {
+    return generateEnemies(makeEmptyGrid(width, height + 1), level, COLORS);
+  }
   public options: GameOptions;
   public fsm: TypeState.FiniteStateMachine<GameMode>;
   public grid: GameGrid;
@@ -98,19 +110,6 @@ export default class Game extends EventEmitter {
   private inputRepeater: InputRepeater;
   private cascadeLineCount: number = 0;
 
-  // game modes, used by the state machine
-  // Loading: pre-ready state, todo: use this to populate viruses slowly?
-  // Ready: ready for a new pill (first or otherwise)
-  // Playing: pill is in play and falling
-  // Reconcile: pill is locked in place, checking for lines to destroy
-  // Cascade: cascading line destruction & debris falling
-  // Destruction: lines are being destroyed
-  // Ended: game has ended
-
-  public static createInitialGrid(width: number, height: number, level: number) {
-    return generateEnemies(makeEmptyGrid(width, height + 1), level, COLORS);
-  }
-
   constructor(passedOptions: Partial<GameOptions> = {}) {
     super();
     const options: GameOptions = defaults({}, passedOptions, defaultGameOptions);
@@ -119,7 +118,7 @@ export default class Game extends EventEmitter {
     this.options = options;
 
     // finite state machine representing game mode
-    this.fsm = this._initStateMachine();
+    this.fsm = this.initStateMachine();
 
     // the player's score
     this.score = 0;
@@ -147,7 +146,44 @@ export default class Game extends EventEmitter {
     this.inputRepeater = new InputRepeater();
   }
 
-  public _initStateMachine(): TypeState.FiniteStateMachine<GameMode> {
+  public tick(inputQueue: MoveInputEvent[]) {
+    // always handle move inputs, key can be released in any mode
+    const moveQueue: GameInputMove[] = this.inputRepeater.tick(inputQueue);
+    // todo fix dropping inputs between modes!!
+
+    // the main game loop, called once per game tick
+    switch (this.fsm.currentState) {
+      case GameMode.Loading:
+        return this.tickLoading();
+      case GameMode.Ready:
+        return this.tickReady();
+      case GameMode.Playing:
+        return this.tickPlaying(moveQueue);
+      case GameMode.Reconcile:
+        return this.tickReconcile();
+      case GameMode.Destruction:
+        return this.tickDestruction();
+      case GameMode.Cascade:
+        return this.tickCascade();
+      case GameMode.Ended:
+        // console.log("ended!");
+        return;
+    }
+  }
+
+  public getState() {
+    const { grid, pill, score, counters } = this;
+    const mode: GameMode = this.fsm.currentState;
+    return {
+      grid,
+      pill,
+      score,
+      counters,
+      mode,
+    };
+  }
+
+  private initStateMachine(): TypeState.FiniteStateMachine<GameMode> {
     // create state machine to keep track of current game mode
     const fsm = new TypeState.FiniteStateMachine<GameMode>(GameMode.Loading);
 
@@ -204,31 +240,72 @@ export default class Game extends EventEmitter {
     return fsm;
   }
 
-  public tick(inputQueue: MoveInputEvent[]) {
-    // always handle move inputs, key can be released in any mode
-    const moveQueue: GameInputMove[] = this.inputRepeater.tick(inputQueue);
+  private tickLoading() {
+    this.fsm.go(GameMode.Ready);
+  }
 
-    // the main game loop, called once per game tick
-    switch (this.fsm.currentState) {
-      case GameMode.Loading:
-        return this._tickLoading();
-      case GameMode.Ready:
-        return this._tickReady();
-      case GameMode.Playing:
-        return this._tickPlaying(moveQueue);
-      case GameMode.Reconcile:
-        return this._tickReconcile();
-      case GameMode.Destruction:
-        return this._tickDestruction();
-      case GameMode.Cascade:
-        return this._tickCascade();
-      case GameMode.Ended:
-        // console.log("ended!");
-        return;
+  private tickReady() {
+    this.cascadeLineCount = 0;
+
+    // try to add a new pill
+    const { pillCount } = this.counters;
+    const pillSequenceIndex = pillCount % this.pillSequence.length;
+    const pillColors = this.pillSequence[pillSequenceIndex];
+    const { grid, pill, didGive } = givePill(this.grid, pillColors);
+    this.grid = grid;
+    this.pill = pill;
+
+    if (didGive) {
+      // got a new pill!
+      this.counters.pillCount++;
+
+      // update speed to match # of given pills
+      const speed =
+        this.options.baseSpeed +
+        Math.floor(this.counters.pillCount / this.options.accelerateInterval);
+      this.playGravity = gravityFrames(speed);
+
+      this.fsm.go(GameMode.Playing);
+    } else {
+      // didn't get a pill, the entrance is blocked and we lose
+      this.fsm.go(GameMode.Ended);
     }
   }
 
-  public _tickReconcile() {
+  private tickPlaying(moveQueue: GameInputMove[]) {
+    // game is playing, pill is falling & under user control
+    // todo speedup
+    this.counters.playTicks++;
+    this.counters.gameTicks++;
+
+    // do the moves created by the inputRepeater
+    let shouldReconcile = this.doMoves(moveQueue);
+
+    // gravity pulling pill down
+    if (
+      this.counters.playTicks > this.playGravity &&
+      !this.inputRepeater.movingDirections[GameInput.Down]
+    ) {
+      // deactivate gravity while moving down
+      this.counters.playTicks = 0;
+      if (isPillLocation(this.pill)) {
+        const moved = movePill(this.grid, this.pill, Direction.Down);
+        if (!moved.didMove) {
+          shouldReconcile = true;
+        } else {
+          this.grid = moved.grid;
+          this.pill = moved.pill;
+        }
+      }
+    }
+
+    // pill can't move any further, reconcile the board
+    if (shouldReconcile) {
+      this.fsm.go(GameMode.Reconcile);
+    }
+  }
+
+  private tickReconcile() {
     // clear the true top row, in case any pills have been rotated up into it and stuck into place
     // do this first to ensure player can't get lines from it
     this.grid = clearTopRow(this.grid);
@@ -267,7 +344,7 @@ export default class Game extends EventEmitter {
     }
   }
 
-  public _tickDestruction() {
+  private tickDestruction() {
     // stay in destruction state a few ticks to animate destruction
     if (this.counters.destroyTicks >= this.options.destroyTicks) {
       // empty the destroyed cells
@@ -277,7 +354,7 @@ export default class Game extends EventEmitter {
     this.counters.destroyTicks++;
   }
 
-  public _tickCascade() {
+  private tickCascade() {
     if (this.counters.cascadeTicks === 0) {
       // check if there is any debris to drop
       const { grid, fallingCells } = flagFallingCells(this.grid);
@@ -303,71 +380,6 @@ export default class Game extends EventEmitter {
       }
     }
     this.counters.cascadeTicks++;
-  }
-
-  private _tickLoading() {
-    this.fsm.go(GameMode.Ready);
-  }
-
-  private _tickReady() {
-    this.cascadeLineCount = 0;
-
-    // try to add a new pill
-    const { pillCount } = this.counters;
-    const pillSequenceIndex = pillCount % this.pillSequence.length;
-    const pillColors = this.pillSequence[pillSequenceIndex];
-    const { grid, pill, didGive } = givePill(this.grid, pillColors);
-    this.grid = grid;
-    this.pill = pill;
-
-    if (didGive) {
-      // got a new pill!
-      this.counters.pillCount++;
-
-      // update speed to match # of given pills
-      const speed =
-        this.options.baseSpeed +
-        Math.floor(this.counters.pillCount / this.options.accelerateInterval);
-      this.playGravity = gravityFrames(speed);
-
-      this.fsm.go(GameMode.Playing);
-    } else {
-      // didn't get a pill, the entrance is blocked and we lose
-      this.fsm.go(GameMode.Ended);
-    }
-  }
-
-  private _tickPlaying(moveQueue: GameInputMove[]) {
-    // game is playing, pill is falling & under user control
-    // todo speedup
-    this.counters.playTicks++;
-    this.counters.gameTicks++;
-
-    // do the moves created by the inputRepeater
-    let shouldReconcile = this.doMoves(moveQueue);
-
-    // gravity pulling pill down
-    if (
-      this.counters.playTicks > this.playGravity &&
-      !this.inputRepeater.movingDirections[GameInput.Down]
-    ) {
-      // deactivate gravity while moving down
-      this.counters.playTicks = 0;
-      if (isPillLocation(this.pill)) {
-        const moved = movePill(this.grid, this.pill, Direction.Down);
-        if (!moved.didMove) {
-          shouldReconcile = true;
-        } else {
-          this.grid = moved.grid;
-          this.pill = moved.pill;
-        }
-      }
-    }
-
-    // pill can't move any further, reconcile the board
-    if (shouldReconcile) {
-      this.fsm.go(GameMode.Reconcile);
-    }
   }
 
   private doMoves(moveQueue: GameInputMove[]) {

@@ -37,11 +37,12 @@ import {
 } from "./guards";
 import {
   destroyCells,
+  removeCell,
   removeCells,
-  setPillSegments,
   setInGrid,
   setPillPartFalling,
-  setPillPartType, removeCell
+  setPillPartType,
+  setPillSegments
 } from "./setters";
 
 // Pure functions which perform updates on the
@@ -62,7 +63,6 @@ export function givePill(grid: GameGrid, pillColors: PillColors) {
 
   grid = setInGrid(grid, pill[0], makePillLeft(pillColors[0].color));
   grid = setInGrid(grid, pill[1], makePillRight(pillColors[1].color));
-
 
   return { grid, pill, didGive: true };
 }

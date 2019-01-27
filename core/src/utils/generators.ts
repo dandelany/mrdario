@@ -41,10 +41,7 @@ export function makePillRight(color: GameColor): GridObjectPillRight {
 export function makeEmptyGridRow(width: number): GameGridRow {
   return times<GridObject>(width, makeEmpty) as GameGridRow;
 }
-export function makeEmptyGrid(
-  width: number,
-  height: number
-): GameGrid {
+export function makeEmptyGrid(width: number, height: number): GameGrid {
   return times<GameGridRow>(height, () => {
     return makeEmptyGridRow(width);
   }) as GameGrid;
@@ -66,11 +63,7 @@ export function getLevelVirusCount(level: number): number {
   return VIRUS_COUNT_TABLE[Math.min(level, VIRUS_COUNT_TABLE.length - 1)];
 }
 
-export function generateEnemies(
-  grid: GameGrid,
-  level: number,
-  colors: OneOrMore<GameColor>
-) {
+export function generateEnemies(grid: GameGrid, level: number, colors: OneOrMore<GameColor>) {
   // generate random enemies in a (empty) grid
   // inspired by http://tetrisconcept.net/wiki/Dr._Mario#Virus_Generation
   let virusCount = getLevelVirusCount(level);

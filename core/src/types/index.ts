@@ -93,7 +93,7 @@ export type PillColors = [{ color: GameColor }, { color: GameColor }];
 
 export type SpeedTable = { [S in SpeedLevel]: number };
 
-export type ModeKeyBindings = {[I in GameInput]?: string | string[] };
+export type ModeKeyBindings = { [I in GameInput]?: string | string[] };
 export type KeyBindings = { [M in GameControllerMode]?: ModeKeyBindings };
 
 export type GameInputMove =

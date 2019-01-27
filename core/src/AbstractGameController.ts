@@ -1,9 +1,9 @@
-import { defaults, noop } from "lodash";
+import { defaults } from "lodash";
 
 import Game from "./Game";
 
 import { TypeState } from "typestate";
-import { PLAYFIELD_HEIGHT, PLAYFIELD_WIDTH } from "./constants";
+import { DEFAULT_GAME_CONTROLLER_OPTIONS } from "./constants";
 import {
   GameControllerMode,
   GameControllerOptions,
@@ -11,7 +11,8 @@ import {
   GameInput,
   GameInputMove,
   InputEventType,
-  InputManager
+  InputManager,
+  MoveInputEvent
 } from "./types";
 
 // game controller class
@@ -19,39 +20,17 @@ import {
 // handles inputs and passes them into the Game
 // controls the high-level game state and must call render() when game state changes
 
-// options that can be passed to control game parameters
-export const defaultOptions: GameControllerOptions = {
-  // list of input managers, eg. of keyboard, touch events
-  // these are event emitters that fire on every user game input (move)
-  // moves are queued and fed into the game to control it
-  inputManagers: [],
-  // render function which is called when game state changes
-  // this should be the main connection between game logic and presentation
-  render: noop,
-  // callback called when state machine mode changes
-  onChangeMode: noop,
-  // current virus level (generally 1-20)
-  level: 0,
-  // pill fall speed
-  speed: 15,
-  // width and height of the playfield grid, in grid units
-  height: PLAYFIELD_HEIGHT,
-  width: PLAYFIELD_WIDTH,
-  // frames (this.tick/render calls) per second
-  fps: 60,
-  // slow motion factor, to simulate faster/slower gameplay for debugging
-  slow: 1
-};
+export const defaultOptions = DEFAULT_GAME_CONTROLLER_OPTIONS;
 
-export default class SingleGameController {
-  public game: Game;
+export default abstract class AbstractGameController {
   public options: GameControllerOptions;
-  public moveInputQueue: any; // todo
   public step: number;
   public slowStep: number;
   public dt: number = 0;
   public last: number = 0;
-  private fsm: TypeState.FiniteStateMachine<GameControllerMode>;
+  protected game: Game;
+  protected moveInputQueue: MoveInputEvent[];
+  protected fsm: TypeState.FiniteStateMachine<GameControllerMode>;
 
   constructor(passedOptions: Partial<GameControllerOptions> = {}) {
     const options: GameControllerOptions = defaults({}, passedOptions, defaultOptions);
@@ -71,10 +50,46 @@ export default class SingleGameController {
     // slow motion factor adjusted step time
     this.slowStep = options.slow * (1 / options.fps);
 
+    // attach events from inputmanagers to the game
     this.attachInputEvents();
   }
 
-  private initStateMachine(): TypeState.FiniteStateMachine<GameControllerMode> {
+  // methods which must be implemented by game controllers which derive from this class
+  public abstract run(): void;
+  public abstract tick(): void;
+
+  public play() {
+    this.fsm.go(GameControllerMode.Playing);
+  }
+
+  public tickGame() {
+    // tick the game, sending current queue of moves
+    // const start = performance.now();
+    this.game.tick(this.moveInputQueue);
+    // const took = performance.now() - start;
+    // if(took > 1) console.log('game tick took ', took);
+    this.moveInputQueue = [];
+  }
+
+  public getState(mode?: GameControllerMode): GameControllerState {
+    // minimal description of game state to render
+    return {
+      mode: mode || this.fsm.currentState,
+      pillCount: this.game.counters.pillCount,
+      grid: this.game.grid,
+      pillSequence: this.game.pillSequence,
+      score: this.game.score,
+      timeBonus: this.game.timeBonus
+    };
+  }
+
+  public cleanup() {
+    // cleanup the game when we're done
+    this.fsm.go(GameControllerMode.Ended);
+    this.options.inputManagers.forEach(manager => manager.removeAllListeners());
+  }
+
+  protected initStateMachine(): TypeState.FiniteStateMachine<GameControllerMode> {
     // a finite state machine representing game mode, & transitions between modes
     const fsm = new TypeState.FiniteStateMachine<GameControllerMode>(GameControllerMode.Ready);
 
@@ -110,13 +125,13 @@ export default class SingleGameController {
     });
 
     fsm.onTransition = (from: GameControllerMode, to: GameControllerMode) => {
-      this._onChangeMode(from, to);
+      this.onChangeMode(from, to);
     };
 
     return fsm;
   }
 
-  private initGame(): Game {
+  protected initGame(): Game {
     const { width, height, level, speed } = this.options;
     return new Game({
       width,
@@ -132,7 +147,7 @@ export default class SingleGameController {
     });
   }
 
-  public attachInputEvents(): void {
+  protected attachInputEvents(): void {
     this.options.inputManagers.forEach((inputManager: InputManager) => {
       inputManager.on(GameInput.Play, () => {
         this.fsm.go(GameControllerMode.Playing);
@@ -160,16 +175,17 @@ export default class SingleGameController {
         GameInput.RotateCW
       ];
       moveInputs.forEach((input: GameInputMove) => {
-        const boundEnqueueInput: (
-          eventType: InputEventType
-        ) => void = this.enqueueMoveInput.bind(this, input);
+        const boundEnqueueInput: (eventType: InputEventType) => void = this.enqueueMoveInput.bind(
+          this,
+          input
+        );
 
         inputManager.on(input, boundEnqueueInput);
       });
     });
   }
 
-  public enqueueMoveInput(input: GameInputMove, eventType: InputEventType) {
+  protected enqueueMoveInput(input: GameInputMove, eventType: InputEventType) {
     // queue a user move, to be sent to the game on the next tick
     if (!this.fsm.is(GameControllerMode.Playing)) {
       return;
@@ -177,69 +193,7 @@ export default class SingleGameController {
     this.moveInputQueue.push({ input, eventType });
   }
 
-  public play() {
-    this.fsm.go(GameControllerMode.Playing);
-  }
-
-  public run() {
-    // called when gameplay starts, to initialize the game loop
-    this.dt = 0;
-    this.last = timestamp();
-    requestAnimationFrame(this.tick.bind(this));
-  }
-
-  public tick() {
-    // called once per frame
-    if (!this.fsm.is(GameControllerMode.Playing)) {
-      return;
-    }
-    const now = timestamp();
-    const { slow } = this.options;
-    const { dt, last, slowStep } = this;
-
-    // allows the number of ticks to stay consistent
-    // even if FPS changes or lags due to performance
-    this.dt = dt + Math.min(1, (now - last) / 1000);
-    while (this.dt > slowStep) {
-      this.dt = this.dt - slowStep;
-      this.tickGame();
-    }
-
-    // render with the current game state
-    this.options.render(this.getState(), this.dt / slow);
-    this.last = now;
-    requestAnimationFrame(this.tick.bind(this));
-  }
-  public tickGame() {
-    // tick the game, sending current queue of moves
-    // const start = performance.now();
-    this.game.tick(this.moveInputQueue);
-    // const took = performance.now() - start;
-    // if(took > 1) console.log('game tick took ', took);
-    this.moveInputQueue = [];
-  }
-
-  public getState(mode?: GameControllerMode): GameControllerState {
-    // minimal description of game state to render
-    return {
-      mode: mode || this.fsm.currentState,
-      pillCount: this.game.counters.pillCount,
-      grid: this.game.grid,
-      pillSequence: this.game.pillSequence,
-      score: this.game.score,
-      timeBonus: this.game.timeBonus
-    };
-  }
-
-  public cleanup() {
-    // cleanup the game when we're done
-    this.fsm.go(GameControllerMode.Ended);
-    this.options.inputManagers.forEach(manager => manager.removeAllListeners());
-  }
-
-
-
-  private _onChangeMode = (fromMode: GameControllerMode, toMode: GameControllerMode): void => {
+  protected onChangeMode = (fromMode: GameControllerMode, toMode: GameControllerMode): void => {
     // update mode of all input managers
     this.options.inputManagers.forEach((inputManager: InputManager) => {
       inputManager.setMode(toMode);
@@ -249,10 +203,4 @@ export default class SingleGameController {
     // call handler
     this.options.onChangeMode(fromMode, toMode);
   }
-}
-
-function timestamp(): number {
-  return window.performance && window.performance.now
-    ? window.performance.now()
-    : new Date().getTime();
 }

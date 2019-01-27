@@ -33,17 +33,13 @@ export function getInRow(row: GameGridRow, colIndex: number): MaybeGridObject {
   return row[colIndex];
 }
 
-export function getInGrid(
-  grid: GameGrid,
-  location: GridCellLocation
-): MaybeGridObject {
+export function getInGrid(grid: GameGrid, location: GridCellLocation): MaybeGridObject {
   const [rowIndex, colIndex] = location;
   if (rowIndex >= grid.length || rowIndex < 0) {
     return null;
   }
   return getInRow(grid[rowIndex], colIndex);
 }
-
 
 export function hasViruses(grid: GameGrid): boolean {
   return !grid.every(row => row.every(cell => !isVirus(cell)));
@@ -69,11 +65,7 @@ export function getCellNeighbors(
   };
 }
 
-export function canMoveCell(
-  grid: GameGrid,
-  location: GridCellLocation,
-  direction: Direction
-) {
+export function canMoveCell(grid: GameGrid, location: GridCellLocation, direction: Direction) {
   return isEmpty(getCellNeighbors(grid, location)[direction]);
 }
 

@@ -13,7 +13,7 @@ export const repeatIntervals: MoveInputNumberMap = INPUT_REPEAT_INTERVALS;
 
 export default class InputRepeater {
   public movingCounters: MoveInputNumberMap;
-  public movingDirections: {[T in GameInputMove]?: true};
+  public movingDirections: { [T in GameInputMove]?: true };
 
   constructor() {
     // the directions we are currently moving, while a move key is held down
