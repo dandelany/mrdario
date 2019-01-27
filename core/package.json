@@ -16,6 +16,7 @@
   "license": "MIT",
   "devDependencies": {
     "@types/events": "^1.2.0",
+    "@types/invariant": "^2.2.29",
     "@types/jest": "^23.3.13",
     "@types/lodash": "^4.14.120",
     "@types/mousetrap": "^1.6.1",
@@ -31,6 +32,7 @@
     "events": "^3.0.0",
     "gamepad-plus": "^1.0.14",
     "immer": "^1.10.5",
+    "invariant": "^2.2.4",
     "lodash": "^4.17.11",
     "mousetrap": "^1.6.2",
     "typestate": "^1.0.6"
