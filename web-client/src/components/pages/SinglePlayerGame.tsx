@@ -19,7 +19,7 @@ import PillPreviewPanel from "@/components/game/PillPreviewPanel";
 import WonOverlay from "@/components/overlays/WonOverlay";
 import LostOverlay from "@/components/overlays/LostOverlay";
 import responsiveGame from "@/components/responsiveGame";
-// import { encodeGrid, encodeGameState } from "mrdario-core/src/api";
+// import { encodeGameState } from "mrdario-core/src/api";
 
 function getName() {
   return window.localStorage ? window.localStorage.getItem("mrdario-name") || "Anonymous" : "Anonymous";

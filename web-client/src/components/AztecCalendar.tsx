@@ -13,7 +13,8 @@ const colorGroups = [undefined, oranges, greens, purples];
 export enum AztecCalendarMode {
   Title = "Title",
   Won = "Won",
-  Lost = "Lost"
+  Lost = "Lost",
+  Other = "Other"
 }
 
 export interface AztecCalendarProps {
@@ -37,18 +38,18 @@ export default class AztecCalendar extends React.Component<AztecCalendarProps> {
     defaults: {
       colorSets: [undefined]
     },
-    title: {
+    [AztecCalendarMode.Title]: {
       colorSets: colorGroups,
       cycleTime: 1500,
       repeat: true
     },
-    won: {
+    [AztecCalendarMode.Won]: {
       colorSets: colorGroups.concat(undefined),
       shapesPerFrame: 10,
       cycleTime: 0,
       repeat: false
     },
-    lost: {
+    [AztecCalendarMode.Lost]: {
       colorSets: [["#000000"]],
       shapesPerFrame: 8
     }
@@ -61,14 +62,9 @@ export default class AztecCalendar extends React.Component<AztecCalendarProps> {
     return (
       <div className="aztec-calendar">
         <SVGShimmerCycler
-          {...{
-            svgPath: aztecCalendar,
-            colorSets: colorGroups,
-            shapesPerFrame: 4,
-            width,
-            height,
-            ...shimmerProps
-          }}
+          svgPath={aztecCalendar}
+          shapesPerFrame={6}
+          {...{ width, height, ...shimmerProps}}
         />
       </div>
     );

@@ -86,7 +86,7 @@ class AppContainer extends React.Component<AppContainerProps, AppContainerState>
           ? AztecCalendarMode.Lost
           : this.state.mode === GameControllerMode.Won
             ? AztecCalendarMode.Won
-            : AztecCalendarMode.Title;
+            : AztecCalendarMode.Other;
 
     return (
       <div id="mrdario" style={{ width: "100%", height: "100%" }}>
