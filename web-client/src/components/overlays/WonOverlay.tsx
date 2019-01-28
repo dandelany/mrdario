@@ -4,32 +4,29 @@ import { Link } from "react-router-dom";
 import MayaNumeral from "@/components/ui/MayaNumeral";
 import { GameRouteParams } from "@/types";
 
-interface GameState {
-  timeBonus: number;
-  score: number;
-}
 type HighScores = Array<[string, number]>;
 
 interface ScoresProps {
-  gameState?: GameState;
+  timeBonus?: number;
+  score?: number;
   highScores?: HighScores;
   rank?: number;
 }
 
 const Scores: React.FunctionComponent<ScoresProps> = props => {
-  const { gameState, highScores, rank } = props;
+  const { timeBonus, score, highScores, rank } = props;
   // const gameState = {timeBonus: 1000, score: 2000};
   // const highScores = [["dan", 100], ["dan", 100], ["dan", 100], ["dan", 100], ["dan", 100], ["dan", 100]];
 
-  return gameState ? (
+  return (timeBonus !== undefined && score !== undefined) ? (
     <div className="won-overlay-score">
       <div>
         <strong>Time Bonus: </strong>
-        {gameState.timeBonus || 0}
+        {timeBonus || 0}
       </div>
       <div>
         <strong>Score: </strong>
-        {gameState.score}
+        {score}
       </div>
 
       {rank !== undefined ? (
@@ -57,7 +54,8 @@ const Scores: React.FunctionComponent<ScoresProps> = props => {
 };
 
 interface WonOverlayProps {
-  gameState?: GameState;
+  score?: number;
+  timeBonus?: number;
   highScores?: HighScores;
   rank?: number;
   style?: object;
@@ -65,7 +63,7 @@ interface WonOverlayProps {
 }
 
 const WonOverlay: React.FunctionComponent<WonOverlayProps> = props => {
-  const { style, params, gameState, highScores, rank } = props;
+  const { style, params, score, timeBonus, highScores, rank } = props;
   const level = parseInt(params.level) || 0;
   const speed = parseInt(params.speed) || 0;
   const nextLevelPath = `/game/level/${level + 1}/speed/${speed}`;
@@ -78,7 +76,7 @@ const WonOverlay: React.FunctionComponent<WonOverlayProps> = props => {
       </div>
 
       <div>
-        <Scores {...{ gameState, highScores, rank }} />
+        <Scores {...{ score, timeBonus, highScores, rank }} />
 
         <Link to={nextLevelPath}>
           <span className="btn-white">

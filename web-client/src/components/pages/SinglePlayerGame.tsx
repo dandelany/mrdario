@@ -5,7 +5,7 @@ import shallowEqual from "@/utils/shallowEqual";
 import { SCClientSocket } from "socketcluster-client";
 
 import { DEFAULT_KEYS } from "mrdario-core/lib/constants";
-import { GameControllerMode, GameControllerState, PillColors } from "mrdario-core/src/types";
+import { GameControllerMode, GameControllerState, GameGrid, PillColors } from "mrdario-core/src/types";
 
 import LocalWebGameController from "mrdario-core/src/web/LocalWebGameController";
 import KeyManager from "mrdario-core/src/web/inputs/KeyManager";
@@ -19,6 +19,7 @@ import PillPreviewPanel from "@/components/game/PillPreviewPanel";
 import WonOverlay from "@/components/overlays/WonOverlay";
 import LostOverlay from "@/components/overlays/LostOverlay";
 import responsiveGame from "@/components/responsiveGame";
+// import { encodeGrid, encodeGameState } from "mrdario-core/src/api";
 
 function getName() {
   return window.localStorage ? window.localStorage.getItem("mrdario-name") || "Anonymous" : "Anonymous";
@@ -33,7 +34,13 @@ export interface SinglePlayerGameProps extends RouteComponentProps<GameRoutePara
 }
 
 export interface SinglePlayerGameState {
-  gameState?: GameControllerState;
+  mode?: GameControllerMode;
+  grid?: GameGrid;
+  pillSequence?: PillColors[];
+  pillCount?: number;
+  score?: number;
+  timeBonus?: number;
+
   highScores?: [string, number][];
   rank?: number;
   pendingMode?: GameControllerMode;
@@ -107,7 +114,19 @@ class SinglePlayerGame extends React.Component<SinglePlayerGameProps, SinglePlay
       speed,
       // inputManagers: [this.keyManager, this.touchManager, this.gamepadManager],
       inputManagers: [this.keyManager],
-      render: (gameState: GameControllerState) => this.setState({ gameState }),
+      render: (gameControllerState: GameControllerState) => {
+        const { gameState } = gameControllerState;
+        const { grid, pillSequence, score, timeBonus, counters } = gameState;
+        // console.log(encodeGameState(gameState));
+        this.setState({
+          mode: gameControllerState.mode,
+          grid,
+          pillSequence,
+          pillCount: counters.pillCount,
+          score,
+          timeBonus
+        });
+      },
       onChangeMode: (fromMode: GameControllerMode, toMode: GameControllerMode) => {
         console.log("onchangemode", fromMode, toMode);
         if (_.includes([GameControllerMode.Lost, GameControllerMode.Won], toMode)) {
@@ -122,8 +141,8 @@ class SinglePlayerGame extends React.Component<SinglePlayerGameProps, SinglePlay
   }
 
   _handleWin = () => {
-    if (this.state.gameState && this.props.socket) {
-      const score = this.state.gameState.score;
+    if (this.state.score !== undefined && this.props.socket) {
+      const score = this.state.score;
       const level = parseInt(this.props.match.params.level);
       const name = getName();
 
@@ -141,17 +160,19 @@ class SinglePlayerGame extends React.Component<SinglePlayerGameProps, SinglePlay
   };
 
   _handleLose() {
-    if (this.state.gameState && this.props.socket) {
+    if (this.state.score !== undefined && this.props.socket) {
       const level = parseInt(this.props.match.params.level);
       const speed = parseInt(this.props.match.params.speed);
-      const score = this.state.gameState.score;
+      const score = this.state.score;
 
       this.props.socket.emit("infoLostGame", [getName(), level, speed, score], _.noop);
     }
   }
 
   render() {
-    const { gameState, highScores, rank, pendingMode } = this.state;
+    const { grid, pillCount, pillSequence, highScores, rank, pendingMode, score, timeBonus } = this.state;
+
+    // if(this.game) console.log(encodeGameState(this.game.getState().gameState));
 
     // if(!hasGrid) return <div>loading</div>;
 
@@ -160,8 +181,8 @@ class SinglePlayerGame extends React.Component<SinglePlayerGameProps, SinglePlay
 
     // pass fractional padding to set padding to a fraction of cell size
     const padding: number = paddingProp > 0 && paddingProp < 1 ? paddingProp * cellSize : paddingProp;
-    const numRows: number = gameState ? gameState.grid.length : 17;
-    const numCols: number = gameState ? gameState.grid[0].length : 8;
+    const numRows: number = grid ? grid.length : 17;
+    const numCols: number = grid ? grid[0].length : 8;
     const width: number = numCols * cellSize + padding * 2;
     // make shorter by one row to account for special unplayable top row
     const height: number = (numRows - 1) * cellSize + padding * 2;
@@ -171,9 +192,9 @@ class SinglePlayerGame extends React.Component<SinglePlayerGameProps, SinglePlay
     const wonOverlayStyle = { ...overlayStyle, top: params.mode === GameControllerMode.Won ? 0 : height };
 
     let nextPill: PillColors | undefined;
-    if (gameState && gameState.pillSequence && _.isFinite(gameState.pillCount)) {
-      const pillIndex = gameState.pillCount % gameState.pillSequence.length;
-      nextPill = gameState.pillSequence[pillIndex];
+    if (pillSequence && pillCount !== undefined) {
+      const pillIndex = pillCount % pillSequence.length;
+      nextPill = pillSequence[pillIndex];
     }
 
     return (
@@ -184,20 +205,21 @@ class SinglePlayerGame extends React.Component<SinglePlayerGameProps, SinglePlay
         ) : null}
         <div style={style} {...{ className: "game-playfield" }}>
           <WonOverlay
-            gameState={gameState}
+            score={score}
+            timeBonus={timeBonus}
             highScores={highScores}
             rank={rank}
             params={params}
             style={wonOverlayStyle}
           />
           <LostOverlay params={params} style={lostOverlayStyle} />
-          {gameState ? <Playfield grid={gameState.grid} cellSize={cellSize} /> : ""}
+          {grid ? <Playfield grid={grid} cellSize={cellSize} /> : ""}
         </div>
 
-        {gameState ? (
+        {score !== undefined ? (
           <div className="score-panel">
             <h5>SCORE</h5>
-            {gameState.score}
+            {score}
           </div>
         ) : null}
 

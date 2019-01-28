@@ -1,12 +1,9 @@
-import { GameControllerMode, GameGrid, InputManager, PillColors } from "./index";
+import { GameControllerMode, InputManager } from "./index";
+import { GameState } from "../Game";
 
 export interface GameControllerState {
   mode: GameControllerMode;
-  pillCount: number;
-  grid: GameGrid;
-  pillSequence: PillColors[];
-  score: number;
-  timeBonus: number;
+  gameState: GameState;
 }
 
 export interface GameControllerOptions {

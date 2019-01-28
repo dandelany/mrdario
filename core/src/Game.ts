@@ -29,12 +29,14 @@ import {
   slamPill
 } from "./utils/moves";
 
-import InputRepeater from "./InputRepeater";
+import InputRepeater, { InputRepeaterState, MovingCounters, MovingDirections } from "./InputRepeater";
 import { isPillLocation } from "./utils/guards";
 
 function gravityFrames(speed: number): number {
   return GRAVITY_TABLE[Math.min(speed, GRAVITY_TABLE.length - 1)];
 }
+
+export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 
 // options that can be passed to control game parameters
 export interface GameOptions {
@@ -46,10 +48,10 @@ export interface GameOptions {
   cascadeSpeed: number;
   destroyTicks: number;
   accelerateInterval: number;
-  onChange: () => void;
   onWin: () => void;
   onLose: () => void;
 }
+type GameStateOptions = Omit<GameOptions, 'onWin' | 'onLose'>;
 
 export interface GameCounters {
   gameTicks: number;
@@ -57,6 +59,19 @@ export interface GameCounters {
   cascadeTicks: number;
   destroyTicks: number;
   pillCount: number;
+}
+
+export interface GameState {
+  mode: GameMode;
+  grid: GameGrid;
+  pill?: PillLocation;
+  score: number;
+  timeBonus: number;
+  pillSequence: PillColors[];
+  counters: GameCounters;
+  movingCounters: MovingCounters;
+  movingDirections: MovingDirections;
+  options: GameStateOptions;
 }
 
 // options that can be passed to control game parameters
@@ -76,8 +91,7 @@ export const defaultGameOptions: GameOptions = {
   destroyTicks: 20,
   // after every accelerateInterval pills, gravity speed is increased by one
   accelerateInterval: 10,
-  // callbacks called when grid changes, game is won, or game is lost
-  onChange: noop,
+  // callbacks called when game is won or game is lost
   onWin: noop,
   onLose: noop
 };
@@ -171,15 +185,25 @@ export default class Game extends EventEmitter {
     }
   }
 
-  public getState() {
-    const { grid, pill, score, counters } = this;
+  public getState(): GameState {
+    const { grid, pill, pillSequence, score, timeBonus, counters, options } = this;
+    const { onWin, onLose, ...stateOptions } = options;
     const mode: GameMode = this.fsm.currentState;
+    const inputRepeaterState: InputRepeaterState = this.inputRepeater.getState();
+    const {movingCounters, movingDirections} = inputRepeaterState
+
     return {
+      mode,
       grid,
       pill,
       score,
+      timeBonus,
+      pillSequence,
       counters,
-      mode,
+      movingCounters,
+      movingDirections,
+      options: stateOptions
+      // todo input queue and input repeater
     };
   }
 

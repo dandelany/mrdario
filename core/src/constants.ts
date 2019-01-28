@@ -70,6 +70,7 @@ export const DEFAULT_KEYS: KeyBindings = {
 
 // the # of frames for which an input must be held down until it repeats.
 // different for each input, based on empirical testing
+// NOTE: DO NOT SET THESE VALUES LARGER THAN 35 OR WILL BREAK ENCODER
 export const INPUT_REPEAT_INTERVALS: MoveInputNumberMap = {
   [GameInput.Up]: 24,
   [GameInput.Down]: 4,

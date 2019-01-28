@@ -55,7 +55,7 @@ export default abstract class AbstractGameController {
   }
 
   // methods which must be implemented by game controllers which derive from this class
-  public abstract run(): void;
+  protected abstract run(): void;
   public abstract tick(): void;
 
   public play() {
@@ -75,11 +75,7 @@ export default abstract class AbstractGameController {
     // minimal description of game state to render
     return {
       mode: mode || this.fsm.currentState,
-      pillCount: this.game.counters.pillCount,
-      grid: this.game.grid,
-      pillSequence: this.game.pillSequence,
-      score: this.game.score,
-      timeBonus: this.game.timeBonus
+      gameState: this.game.getState()
     };
   }
 
