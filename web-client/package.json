@@ -4,6 +4,7 @@
   "author": "Dan Delany <dan.delany@gmail.com>",
   "version": "2.0.0",
   "main": "index.js",
+  "repository": "github:dandelany/mrdario",
   "scripts": {
     "build": "yarn run clean-build && webpack -p --config=configs/webpack/prod.js",
     "clean-build": "rm -f -r -d build",
@@ -46,6 +47,8 @@
     "html-webpack-plugin": "^3.2.0",
     "image-webpack-loader": "^4.6.0",
     "jest": "^23.6.0",
+    "less": "^3.9.0",
+    "less-loader": "^4.1.0",
     "node-sass": "^4.11.0",
     "raw-loader": "^1.0.0",
     "react-addons-test-utils": "^15.6.2",

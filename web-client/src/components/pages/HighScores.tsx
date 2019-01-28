@@ -69,8 +69,6 @@ export default class HighScores extends React.Component<HighScoresProps, HighSco
 
           <h2>Level {level}</h2>
 
-          <MayaNumeral value={13} size={40} />
-
           <Slider
             min={0}
             max={20}
@@ -78,6 +76,10 @@ export default class HighScores extends React.Component<HighScoresProps, HighSco
             onChange={this._onChangeLevel}
             // width={"40vh"}
           />
+          <div style={{marginTop: 15}}>
+            <MayaNumeral value={level} size={40} />
+          </div>
+
 
           <h3>High Scores</h3>
 
