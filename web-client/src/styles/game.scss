@@ -9,6 +9,7 @@ $beige: rgba(210, 207, 202, 0.96);
   @extend %game-panel;
 }
 
+
 .game-playfield-container {
   display: inline-block;
   position: relative;
@@ -17,6 +18,11 @@ $beige: rgba(210, 207, 202, 0.96);
   .game-playfield-container {
     margin-left: -20vw;
   }
+}
+.game-explosions {
+  position: absolute;
+  top: 0;
+  left: 0;
 }
 
 .game-playfield {
