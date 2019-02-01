@@ -20,7 +20,7 @@ import WonOverlay from "@/components/overlays/WonOverlay";
 import LostOverlay from "@/components/overlays/LostOverlay";
 import responsiveGame from "@/components/responsiveGame";
 import { ExplosionField } from "@/components/game/ExplosionField";
-// import { encodeGameState } from "mrdario-core/src/api";
+// import { encodeGameState } from "mrdario-core/src/encoding/game";
 
 function getName() {
   return window.localStorage ? window.localStorage.getItem("mrdario-name") || "Anonymous" : "Anonymous";

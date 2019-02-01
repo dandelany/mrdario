@@ -21,7 +21,7 @@ import {
   clearTopRow,
   destroyLines,
   dropDebris,
-  flagFallingCells,
+  // flagFallingCells,
   givePill,
   movePill,
   removeDestroyed,
@@ -380,9 +380,11 @@ export default class Game extends EventEmitter {
 
   private tickCascade() {
     if (this.counters.cascadeTicks === 0) {
+      // first cascade tick
       // check if there is any debris to drop
-      const { grid, fallingCells } = flagFallingCells(this.grid);
-      this.grid = grid;
+      // const { grid, fallingCells } = flagFallingCells(this.grid);
+      // this.grid = grid;
+      const {fallingCells} = dropDebris(this.grid);
       // nothing to drop, ready for another pill
       if (!fallingCells.length) {
         this.fsm.go(GameMode.Ready);
@@ -394,8 +396,9 @@ export default class Game extends EventEmitter {
       // compute the next cascade
       // flag falling cells for next cascade so they are excluded by reconciler
       // (falling pieces cant make lines)
-      const next = flagFallingCells(this.grid);
-      this.grid = next.grid;
+      // const next = flagFallingCells(this.grid);
+      // this.grid = next.grid;
+      const next = dropDebris(this.grid);
 
       if (next.fallingCells.length < dropped.fallingCells.length) {
         // some of the falling cells from this cascade have stopped

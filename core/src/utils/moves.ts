@@ -141,6 +141,8 @@ export function slamPill(grid: GameGrid, pill: PillLocation) {
   return { grid, pill, didMove };
 }
 
+type PillPartTypePair = [GridObjectPillPartType, GridObjectPillPartType];
+
 export function rotatePill(grid: GameGrid, pill: PillLocation, rotateDirection: RotateDirection) {
   // http://tetrisconcept.net/wiki/Dr._Mario#Rotation_system
   const pillNeighbors = [getCellNeighbors(grid, pill[0]), getCellNeighbors(grid, pill[1])];
@@ -153,7 +155,6 @@ export function rotatePill(grid: GameGrid, pill: PillLocation, rotateDirection: 
     getInGrid(grid, [segRow, segCol])
   ) as GridObjectPillPart[];
 
-  type PillPartTypePair = [GridObjectPillPartType, GridObjectPillPartType];
   const nextPartTypes: PillPartTypePair = isVertical
     ? [GridObjectType.PillLeft, GridObjectType.PillRight]
     : [GridObjectType.PillTop, GridObjectType.PillBottom];
@@ -293,6 +294,7 @@ export function flagFallingCells(grid: GameGrid) {
   // findLines should be able to detect which cells are falling so no need for this?
   const dropped = dropDebris(grid); // check if there is debris to drop
 
+  // set any existing falling flags to false
   for (let rowIndex = 0; rowIndex < grid.length; rowIndex++) {
     const row: GameGridRow = grid[rowIndex];
     for (let colIndex = 0; colIndex < row.length; colIndex++) {

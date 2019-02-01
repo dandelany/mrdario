@@ -9,7 +9,7 @@
     "build": "tsc",
     "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
     "lint": "tslint -p tsconfig.json --fix",
-    "watch-changed": "npm run build; npm run test",
+    "watch-changed": "npm run build",
     "watch": "onchange -i 'src/**/*.ts' 'src/**/*.js' -- npm run watch-changed"
   },
   "author": "Dan Delany <dan.delany@gmail.com>",
