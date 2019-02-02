@@ -38,7 +38,8 @@ export default class Playfield extends React.Component<PlayfieldProps> {
     const height = numRows * cellSize;
 
     // translate svg up by one row to account for out-of-sight true top row
-    const style = { width, height, transform: `translate(0, ${-cellSize}px)` };
+    // const style = { width, height, transform: `translate(0, ${-cellSize}px)` };
+    const style = { width, height };
 
     return (
       <svg style={style}>

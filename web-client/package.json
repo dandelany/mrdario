@@ -12,7 +12,7 @@
     "lint": "tslint './src/**/*.ts*' --format stylish --force --fix",
     "start": "yarn run start-dev",
     "start-dev": "webpack-dev-server --config=configs/webpack/dev.js",
-    "start-prod": "yarn run build && node express.js",
+    "start-prod": "yarn run build && cd build && python -m SimpleHTTPServer 6969",
     "test": "jest --watch --coverage --config=configs/jest.json"
   },
   "dependencies": {

@@ -198,6 +198,8 @@ class ExplosionManager {
     this.started = false;
     this.tickTimes = [];
     this.combinedBounds = [0, 0, 0, 0];
+
+    this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
   }
   public start() {
     if (this.started) return;
@@ -296,17 +298,13 @@ export class ExplosionField extends React.Component<ExplosionFieldProps> {
   componentDidMount() {
     const canvas = this.canvasRef.current;
     if (canvas) {
-      const ctx = canvas.getContext("2d");
-      // const ctx = canvas.getContext("2d", {alpha: false});
+      // const ctx = canvas.getContext("2d");
+      const ctx = canvas.getContext("2d", {alpha: false});
       if (ctx) {
         this.explosions = new ExplosionManager(canvas, ctx);
         this.ctx = ctx;
       }
     }
-  }
-  componentDidUpdate() {
-    console.log("updated");
-    // this.explode();
   }
   componentWillReceiveProps(nextProps: ExplosionFieldProps) {
     const { cellSize } = nextProps;
@@ -318,6 +316,9 @@ export class ExplosionField extends React.Component<ExplosionFieldProps> {
       const nextRow = nextGrid[rowIndex];
       for (let colIndex = 0, colCount = nextRow.length; colIndex < colCount; colIndex++) {
         const nextObj = nextRow[colIndex];
+        // if(nextObj !== lastGrid[rowIndex][colIndex] && this.explosions && Math.random() > .9) {
+        //   this.explosions.explode([[100, 100]], [[[0,189,198]]]);
+        // }
         if (isDestroyed(nextObj) && !isDestroyed(lastGrid[rowIndex][colIndex])) {
           const centerX = colIndex * cellSize + Math.round(cellSize / 2);
           const centerY = rowIndex * cellSize + Math.round(cellSize / 2);
