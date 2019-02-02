@@ -55,9 +55,9 @@ export enum SpeedLevel {
 }
 
 export enum GameColor {
-  Color1,
-  Color2,
-  Color3
+  Color1 = 0,
+  Color2 = 1,
+  Color3 = 2
 }
 
 export enum Direction {

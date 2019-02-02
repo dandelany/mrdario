@@ -6,7 +6,8 @@
   "types": "lib/index.d.ts",
   "scripts": {
     "test": "jest --config jestconfig.json",
-    "build": "tsc",
+    "clean": "rimraf lib/",
+    "build": "npm run clean && tsc",
     "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
     "lint": "tslint -p tsconfig.json --fix",
     "watch-changed": "npm run build && echo 'OK'",
@@ -24,6 +25,7 @@
     "jest": "^23.6.0",
     "onchange": "^5.2.0",
     "prettier": "^1.15.3",
+    "rimraf": "^2.6.3",
     "ts-jest": "^23.10.5",
     "tslint": "^5.12.1",
     "tslint-config-prettier": "^1.17.0",

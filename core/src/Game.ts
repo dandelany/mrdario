@@ -2,7 +2,7 @@ import { EventEmitter } from "events";
 import { defaults, includes, noop } from "lodash";
 import { TypeState } from "typestate";
 
-import { COLORS, GRAVITY_TABLE, PLAYFIELD_HEIGHT, PLAYFIELD_WIDTH } from "./constants";
+import { ACCELERATE_INTERVAL, COLORS, GRAVITY_TABLE, PLAYFIELD_HEIGHT, PLAYFIELD_WIDTH } from "./constants";
 import {
   Direction,
   GameGrid,
@@ -46,7 +46,6 @@ export interface GameOptions {
   height: number;
   cascadeSpeed: number;
   destroyTicks: number;
-  accelerateInterval: number;
   onWin: () => void;
   onLose: () => void;
 }
@@ -88,8 +87,6 @@ export const defaultGameOptions: GameOptions = {
   cascadeSpeed: 20,
   // time delay (in # of ticks) pills being destroyed stay in "destroyed" state before cascading
   destroyTicks: 20,
-  // after every accelerateInterval pills, gravity speed is increased by one
-  accelerateInterval: 10,
   // callbacks called when game is won or game is lost
   onWin: noop,
   onLose: noop
@@ -146,7 +143,7 @@ export default class Game extends EventEmitter {
     this.pillSequence = options.pillSequence || generatePillSequence(COLORS);
 
     // lookup speed in gravityTable to get # of frames it takes to fall 1 row
-    // increases over time due to accelerateInterval
+    // increases over time due to acceleration
     this.playGravity = gravityFrames(options.baseSpeed);
     // # of frames it takes debris to fall 1 row during cascade
     this.cascadeGravity = gravityFrames(options.cascadeSpeed);
@@ -283,9 +280,10 @@ export default class Game extends EventEmitter {
       this.counters.pillCount++;
 
       // update speed to match # of given pills
+      // after every ACCELERATE_INTERVAL pills, gravity speed is increased by one
       const speed =
         this.options.baseSpeed +
-        Math.floor(this.counters.pillCount / this.options.accelerateInterval);
+        Math.floor(this.counters.pillCount / ACCELERATE_INTERVAL);
       this.playGravity = gravityFrames(speed);
 
       this.fsm.go(GameMode.Playing);

@@ -80,6 +80,10 @@ export const INPUT_REPEAT_INTERVALS: MoveInputNumberMap = {
   [GameInput.RotateCW]: 12
 };
 
+
+// Every ACCELERATE_INTERVAL pills, the gravity increases by one
+export const ACCELERATE_INTERVAL = 10;
+
 // http://tetrisconcept.net/wiki/Dr._Mario#Gravity
 // # of frames it takes player pill to drop 1 row at speed [index]
 export const GRAVITY_TABLE: number[] = [
