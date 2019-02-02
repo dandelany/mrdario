@@ -7,16 +7,17 @@ import { hasColor } from "../utils/guards";
 
 export type EncodedGrid = string;
 
-export function encodeGrid(grid: GameGrid): EncodedGrid {
+export function encodeGrid(grid: GameGrid, prettyPrint: boolean = false): EncodedGrid {
   const rowCount = grid.length;
   const colCount = grid[0].length;
   const encodedRowCount = rowCount.toString(36);
   const encodedColCount = colCount.toString(36);
-  let encoded = `g${encodedRowCount},${encodedColCount}:`;
+  let encoded = `g${encodedRowCount},${encodedColCount}:${prettyPrint ? '\n' : ''}`;
   for (let row of grid) {
     for (let gridObj of row) {
       encoded += encodeGridObject(gridObj);
     }
+    if(prettyPrint) encoded += '\n';
   }
   return encoded;
 }

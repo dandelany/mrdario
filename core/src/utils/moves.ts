@@ -1,4 +1,4 @@
-import { flatten } from "lodash";
+import { flatten, uniqBy } from "lodash";
 
 import {
   Direction,
@@ -49,7 +49,38 @@ import {
 // Immutable game grid/cell objects, returning the updated objects.
 // These contain most of the central game logic.
 
-export function givePill(grid: GameGrid, pillColors: PillColors) {
+type PillPartTypePair = [GridObjectPillPartType, GridObjectPillPartType];
+
+interface GridResult {
+  grid: GameGrid;
+}
+export interface GivePillResult extends GridResult {
+  pill: PillLocation;
+  didGive: boolean;
+}
+export interface GridMoveResult extends GridResult {
+  didMove: boolean;
+}
+export interface MoveCellResult extends GridMoveResult {
+  cell: GridCellLocation;
+}
+export interface MoveCellsResult extends GridMoveResult {
+  cells: GridCellLocation[];
+}
+export interface MovePillResult extends GridMoveResult {
+  pill: PillLocation;
+}
+export interface DestroyLinesResult extends GridResult {
+  lines: any;
+  hasLines: boolean;
+  destroyedCount: number;
+  virusCount: number;
+}
+export interface DropDebrisResult extends GridResult {
+  fallingCells: GridCellLocation[];
+}
+
+export function givePill(grid: GameGrid, pillColors: PillColors): GivePillResult {
   // add new pill to grid
   // added to row 1, because 0 is special "true" top row which is cleared every turn
   const rowI = 1;
@@ -67,7 +98,11 @@ export function givePill(grid: GameGrid, pillColors: PillColors) {
   return { grid, pill, didGive: true };
 }
 
-export function moveCell(grid: GameGrid, cell: GridCellLocation, direction: Direction) {
+export function moveCell(
+  grid: GameGrid,
+  cell: GridCellLocation,
+  direction: Direction
+): MoveCellResult {
   if (!canMoveCell(grid, cell, direction)) {
     return { grid, cell, didMove: false };
   }
@@ -87,7 +122,11 @@ export function moveCell(grid: GameGrid, cell: GridCellLocation, direction: Dire
   return { grid, cell: newCell, didMove: false };
 }
 
-export function moveCells(grid: GameGrid, cells: GridCellLocation[], direction: Direction) {
+export function moveCells(
+  grid: GameGrid,
+  cells: GridCellLocation[],
+  direction: Direction
+): MoveCellsResult {
   // move a set of cells (eg. a pill) at once
   // either they ALL move successfully, or none of them move
   const [dRow, dCol]: [number, number] = deltaRowCol(direction);
@@ -119,12 +158,12 @@ export function moveCells(grid: GameGrid, cells: GridCellLocation[], direction: 
   return { grid, cells, didMove: true };
 }
 
-export function movePill(grid: GameGrid, pill: PillLocation, direction: Direction) {
+export function movePill(grid: GameGrid, pill: PillLocation, direction: Direction): MovePillResult {
   const moved = moveCells(grid, pill, direction);
   return { grid: moved.grid, pill: moved.cells as PillLocation, didMove: moved.didMove };
 }
 
-export function slamPill(grid: GameGrid, pill: PillLocation) {
+export function slamPill(grid: GameGrid, pill: PillLocation): MovePillResult {
   // pressing "up" will "slam" the pill down
   // (ie. move it instantly to the lowest legal position directly below it)
   let moving = true;
@@ -141,9 +180,11 @@ export function slamPill(grid: GameGrid, pill: PillLocation) {
   return { grid, pill, didMove };
 }
 
-type PillPartTypePair = [GridObjectPillPartType, GridObjectPillPartType];
-
-export function rotatePill(grid: GameGrid, pill: PillLocation, rotateDirection: RotateDirection) {
+export function rotatePill(
+  grid: GameGrid,
+  pill: PillLocation,
+  rotateDirection: RotateDirection
+): MovePillResult {
   // http://tetrisconcept.net/wiki/Dr._Mario#Rotation_system
   const pillNeighbors = [getCellNeighbors(grid, pill[0]), getCellNeighbors(grid, pill[1])];
   const isVertical = isPillVertical(grid, pill);
@@ -211,30 +252,40 @@ export function rotatePill(grid: GameGrid, pill: PillLocation, rotateDirection: 
     grid = removeCell(grid, [pillRow, pillCol + 1]);
     pill = nextPill;
   }
+  // todo implement kick down?
   return { grid, pill, didMove: true };
 }
 
-export function destroyLines(grid: GameGrid, lines?: GridCellLocation[][]) {
-  // find all valid lines of same color grid objects and set them to destroyed
+export function destroyLines(grid: GameGrid, lines?: GridCellLocation[][]): DestroyLinesResult {
+  // objects which are still falling do not contribute to lines
+  // use dropDebris to find the cells which are falling
+  const { fallingCells } = dropDebris(grid);
+  // make a temp grid with falling objects removed, to exclude them from line checking
+  let tempGrid: GameGrid = grid;
+  if (fallingCells.length) {
+    for (let cell of fallingCells) {
+      tempGrid = removeCell(tempGrid, cell);
+    }
+  }
+  // find all valid lines of same-color objects in the temp grid
   if (lines === undefined) {
-    lines = findLines(grid);
+    lines = findLines(tempGrid);
   }
   const hasLines: boolean = !!(lines && lines.length);
   let destroyedCount: number = 0;
   let virusCount: number = 0;
 
   if (hasLines) {
+    const lineCells: GridCellLocation[] = flatten(lines);
+    // get unique cells, since lines may overlap
+    const uniqLineCells = uniqBy(lineCells, c => `${c[0]},${c[1]}`);
     // count the number of destroyed viruses/cells (for score)
-    for (const line of lines) {
-      destroyedCount += line.length;
-      for (const cell of line) {
-        if (isVirus(getInGrid(grid, cell))) {
-          virusCount++;
-        }
-      }
-    }
+    destroyedCount = uniqLineCells.length;
+    virusCount = uniqLineCells.filter((cell: GridCellLocation) => {
+      return isVirus(getInGrid(grid, cell));
+    }).length;
     // set cells in lines to destroyed
-    grid = destroyCells(grid, flatten(lines));
+    grid = destroyCells(grid, uniqLineCells);
     // turn widowed pill halves into rounded 1-square pill segments
     grid = setPillSegments(grid, findWidows(grid));
   }
@@ -242,7 +293,7 @@ export function destroyLines(grid: GameGrid, lines?: GridCellLocation[][]) {
   return { grid, lines, hasLines, destroyedCount, virusCount };
 }
 
-export function removeDestroyed(grid: GameGrid) {
+export function removeDestroyed(grid: GameGrid): GameGrid {
   // find all "destroyed" objects in grid and set them to empty
   const destroyedCells: GridCellLocation[] = [];
   grid.forEach((row: GameGridRow, rowI: number) =>
@@ -255,8 +306,8 @@ export function removeDestroyed(grid: GameGrid) {
   return removeCells(grid, destroyedCells);
 }
 
-// find pieces in the grid which are unsupported and should fall in cascade
-export function dropDebris(grid: GameGrid) {
+export function dropDebris(grid: GameGrid): DropDebrisResult {
+  // find pieces in the grid which are unsupported and should fall in cascade
   // start at the bottom of the grid and move up,
   // seeing which pieces can fall
   const fallingCells: GridCellLocation[] = [];
@@ -315,7 +366,7 @@ export function flagFallingCells(grid: GameGrid) {
   return { grid, fallingCells: dropped.fallingCells };
 }
 
-export function clearTopRow(grid: GameGrid) {
+export function clearTopRow(grid: GameGrid): GameGrid {
   // clear all cells in the top row
   const cellsInTopRow: GridCellLocation[] = grid[0].map(
     (_col, colI: number): GridCellLocation => [0, colI]

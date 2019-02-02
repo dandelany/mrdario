@@ -16,7 +16,7 @@ export type Tuple<TItem, TLength extends number> = TItem[] & { length: TLength }
 export type OneOrMore<T> = { 0: T } & T[];
 
 export interface GridObjectBase {
-  type: GridObjectType;
+  readonly type: GridObjectType;
 }
 export interface GridObjectWithColor extends GridObjectBase {
   color: GameColor;

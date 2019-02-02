@@ -1,6 +1,17 @@
-import { givePill, moveCell, moveCells, movePill, slamPill } from "../../utils/moves";
+import {
+  clearTopRow,
+  destroyLines,
+  dropDebris,
+  givePill,
+  moveCell,
+  moveCells,
+  movePill,
+  removeDestroyed,
+  rotatePill,
+  slamPill
+} from "../../utils/moves";
 import { decodeGrid } from "../../encoding";
-import { Direction, GameColor } from "../../types";
+import { Direction, GameColor, RotateDirection } from "../../types";
 
 /*
 Y = Destroyed
@@ -60,14 +71,7 @@ describe("Moves", () => {
         { color: GameColor.Color1 }
       ]);
       expect(didGive).toEqual(false);
-      expect(grid).toEqual(
-        decodeGrid(`g4,4:
-        XXXX
-        XXSX
-        NXLR
-        XXVF
-      `)
-      );
+      expect(grid).toEqual(startGrid);
     });
   });
 
@@ -149,13 +153,7 @@ describe("Moves", () => {
       const { didMove, cell, grid } = moveCell(startGrid, [1, 1], Direction.Right);
       expect(didMove).toEqual(false);
       expect(cell).toEqual([1, 1]);
-      expect(grid).toEqual(
-        decodeGrid(`g3,3:
-        XXX
-        XCV
-        XXX
-      `)
-      );
+      expect(grid).toEqual(startGrid);
     });
     test("Doesn't move if location would be outside grid bounds", () => {
       const startGrid = decodeGrid(`g3,3:
@@ -166,13 +164,7 @@ describe("Moves", () => {
       const { didMove, cell, grid } = moveCell(startGrid, [0, 1], Direction.Up);
       expect(didMove).toEqual(false);
       expect(cell).toEqual([0, 1]);
-      expect(grid).toEqual(
-        decodeGrid(`g3,3:
-        XCX
-        XXX
-        XXX
-      `)
-      );
+      expect(grid).toEqual(startGrid);
     });
   });
 
@@ -254,13 +246,7 @@ describe("Moves", () => {
       const { didMove, cells, grid } = moveCells(startGrid, [[0, 0], [1, 0]], Direction.Right);
       expect(didMove).toEqual(false);
       expect(cells).toEqual([[0, 0], [1, 0]]);
-      expect(grid).toEqual(
-        decodeGrid(`g3,3:
-        OXX
-        UFX
-        XXX
-      `)
-      );
+      expect(grid).toEqual(startGrid);
     });
     test("Doesn't move if any of the destinations are outside the grid", () => {
       const startGrid = decodeGrid(`g3,3:
@@ -271,13 +257,7 @@ describe("Moves", () => {
       const { didMove, cells, grid } = moveCells(startGrid, [[0, 0], [1, 0]], Direction.Up);
       expect(didMove).toEqual(false);
       expect(cells).toEqual([[0, 0], [1, 0]]);
-      expect(grid).toEqual(
-        decodeGrid(`g3,3:
-        OXX
-        UXX
-        XXX
-      `)
-      );
+      expect(grid).toEqual(startGrid);
     });
   });
 
@@ -355,24 +335,322 @@ describe("Moves", () => {
       const { didMove, pill, grid } = slamPill(startGrid, [[1, 1], [1, 2]]);
       expect(didMove).toEqual(false);
       expect(pill).toEqual([[1, 1], [1, 2]]);
+      expect(grid).toEqual(startGrid);
+    });
+  });
+
+  describe("rotatePill()", () => {
+    test("Rotates a horizontal pill clockwise", () => {
+      const startGrid = decodeGrid(`g2,2:
+        XX
+        LB`);
+      const { grid, pill, didMove } = rotatePill(
+        startGrid,
+        [[1, 0], [1, 1]],
+        RotateDirection.Clockwise
+      );
+      expect(didMove).toBe(true);
+      expect(pill).toEqual([[0, 0], [1, 0]]);
       expect(grid).toEqual(
-        decodeGrid(`g6,4:
-        XXXX
-        XLRX
-        XFXX
-        XXXX
-        XXFX
-        XXXX`)
+        decodeGrid(`g2,2:
+          OX
+          EX`)
+      );
+    });
+    test("Rotates a horizontal pill counterclockwise", () => {
+      const startGrid = decodeGrid(`g2,2:
+        XX
+        LB`);
+      const { grid, pill, didMove } = rotatePill(
+        startGrid,
+        [[1, 0], [1, 1]],
+        RotateDirection.CounterClockwise
+      );
+      expect(didMove).toBe(true);
+      expect(pill).toEqual([[0, 0], [1, 0]]);
+      expect(grid).toEqual(
+        decodeGrid(`g2,2:
+          GX
+          MX`)
+      );
+    });
+    test("Rotates a vertical pill clockwise", () => {
+      const startGrid = decodeGrid(`g2,2:
+        WX
+        EX`);
+      const { grid, pill, didMove } = rotatePill(
+        startGrid,
+        [[0, 0], [1, 0]],
+        RotateDirection.Clockwise
+      );
+      expect(didMove).toBe(true);
+      expect(pill).toEqual([[1, 0], [1, 1]]);
+      expect(grid).toEqual(
+        decodeGrid(`g2,2:
+          XX
+          DR`)
+      );
+    });
+    test("Rotates a vertical pill counterclockwise", () => {
+      const startGrid = decodeGrid(`g2,2:
+        WX
+        EX`);
+      const { grid, pill, didMove } = rotatePill(
+        startGrid,
+        [[0, 0], [1, 0]],
+        RotateDirection.CounterClockwise
+      );
+      expect(didMove).toBe(true);
+      expect(pill).toEqual([[1, 0], [1, 1]]);
+      expect(grid).toEqual(
+        decodeGrid(`g2,2:
+          XX
+          TB`)
+      );
+    });
+    test("Rotates clockwise + kicks left when vertical pill has right neighbor", () => {
+      const startGrid = decodeGrid(`g2,3:
+        XWX
+        XES`);
+      const { grid, pill, didMove } = rotatePill(
+        startGrid,
+        [[0, 1], [1, 1]],
+        RotateDirection.Clockwise
+      );
+      expect(didMove).toBe(true);
+      expect(pill).toEqual([[1, 0], [1, 1]]);
+      expect(grid).toEqual(
+        decodeGrid(`g2,3:
+          XXX
+          DRS`)
+      );
+    });
+    test("Rotates counterclockwise + kicks left when vertical pill has right neighbor", () => {
+      const startGrid = decodeGrid(`g2,3:
+        XWX
+        XES`);
+      const { grid, pill, didMove } = rotatePill(
+        startGrid,
+        [[0, 1], [1, 1]],
+        RotateDirection.CounterClockwise
+      );
+      expect(didMove).toBe(true);
+      expect(pill).toEqual([[1, 0], [1, 1]]);
+      expect(grid).toEqual(
+        decodeGrid(`g2,3:
+          XXX
+          TBS`)
+      );
+    });
+    test("Vertical pill doesn't rotate if both sides are blocked", () => {
+      const startGrid = decodeGrid(`g2,3:
+        XOX
+        FUN`);
+      const { grid, pill, didMove } = rotatePill(
+        startGrid,
+        [[0, 1], [1, 1]],
+        RotateDirection.Clockwise
+      );
+      expect(didMove).toBe(false);
+      expect(pill).toEqual([[0, 1], [1, 1]]);
+      expect(grid).toEqual(startGrid);
+    });
+    test("Horizontal pill doesn't rotate if above-left space is blocked", () => {
+      const startGrid = decodeGrid(`g3,2:
+        CX
+        LR
+        XX`);
+      const { grid, pill, didMove } = rotatePill(
+        startGrid,
+        [[1, 0], [1, 1]],
+        RotateDirection.Clockwise
+      );
+      expect(didMove).toBe(false);
+      expect(pill).toEqual([[1, 0], [1, 1]]);
+      expect(grid).toEqual(startGrid);
+    });
+  });
+
+  describe("destroyLines()", () => {
+    // todo test destroyLines
+    test("Destroys lines longer than 4 cells, changing pill halves into segments", () => {
+      const startGrid = decodeGrid(`g6,6:
+        TJXXXX
+        NOKLJX
+        XMFFXG
+        XNXXXE
+        XNXXXF
+        XLJXXF
+      `);
+      const { grid, lines, hasLines, destroyedCount, virusCount } = destroyLines(startGrid);
+      expect(hasLines).toBe(true);
+      expect(destroyedCount).toBe(14);
+      expect(virusCount).toBe(5);
+      expect(lines).toEqual([
+        [[1, 0], [1, 1], [1, 2], [1, 3], [1, 4]],
+        [[0, 1], [1, 1], [2, 1], [3, 1], [4, 1], [5, 1]],
+        [[2, 5], [3, 5], [4, 5], [5, 5]]
+      ]);
+      expect(grid).toEqual(
+        decodeGrid(`g6,6:
+        SYXXXX
+        YYYYYX
+        XYFFXY
+        XYXXXY
+        XYXXXY
+        XYKXXY
+      `)
+      );
+    });
+    test("Doesn't destroy anything when no lines exist", () => {
+      const startGrid = decodeGrid(`g4,4:
+        LRSV
+        GNNV
+        MFFV
+        CSSB
+      `);
+      const { grid, lines, hasLines, destroyedCount, virusCount } = destroyLines(startGrid);
+      expect(hasLines).toBe(false);
+      expect(destroyedCount).toBe(0);
+      expect(virusCount).toBe(0);
+      expect(lines).toEqual([]);
+      expect(grid).toEqual(startGrid);
+    });
+    test("Excludes falling objects from being destroyed", () => {
+      const startGrid = decodeGrid(`g3,5:
+        XXGXX
+        FFEFF
+        XXXXX
+      `);
+      const { grid, lines, hasLines, destroyedCount, virusCount } = destroyLines(startGrid);
+      expect(hasLines).toBe(false);
+      expect(destroyedCount).toBe(0);
+      expect(virusCount).toBe(0);
+      expect(lines).toEqual([]);
+      expect(grid).toEqual(startGrid);
+    });
+    test("Destroys lines adjacent to a falling object ", () => {
+      const startGrid = decodeGrid(`g6,9:
+        XXXXGXXGX
+        XFFFEFFEF
+        XXXXXXXFX
+        XXXXWXXXX
+        SVVVUVVVS
+        VXXXXXXXV
+      `);
+      const { grid, lines, hasLines, destroyedCount, virusCount } = destroyLines(startGrid);
+      expect(hasLines).toBe(true);
+      expect(destroyedCount).toBe(12);
+      expect(virusCount).toBe(9);
+      expect(lines).toEqual([
+        [[1, 5], [1, 6], [1, 7], [1, 8]],
+        [[4, 0], [4, 1], [4, 2], [4, 3]],
+        [[4, 5], [4, 6], [4, 7], [4, 8]]
+      ]);
+      expect(grid).toEqual(
+        decodeGrid(`g6,9:
+        XXXXGXXCX
+        XFFFEYYYY
+        XXXXXXXFX
+        XXXXWXXXX
+        YYYYUYYYY
+        VXXXXXXXV
+      `)
       );
     });
   });
 
-  describe("rotatePill()", () => {});
-  describe("destroyLines()", () => {});
-  describe("removeDestroyed()", () => {});
-  describe("dropDebris()", () => {});
-  describe("dropDebris()", () => {});
-  describe("clearTopRow()", () => {});
+  describe("removeDestroyed()", () => {
+    test("Removes all destroyed objects in grid", () => {
+      const startGrid = decodeGrid(`g4,4:
+        YCYX
+        NFYF
+        YYYY
+        LRYS`);
+      const grid = removeDestroyed(startGrid);
+      expect(grid).toEqual(
+        decodeGrid(`g4,4:
+        XCXX
+        NFXF
+        XXXX
+        LRXS`)
+      );
+    });
+  });
 
+  describe("dropDebris()", () => {
+    test("Drops all grid objects that are falling", () => {
+      const startGrid = decodeGrid(`g6,5:
+        CXSLR
+        LRTBN
+        XLRXX
+        XXSXX
+        XFXXX
+        VVXVV
+      `);
+      const { grid, fallingCells } = dropDebris(startGrid);
+      expect(fallingCells.reverse()).toEqual([
+        [0, 2],
+        [0, 0],
+        [1, 3],
+        [1, 2],
+        [1, 1],
+        [1, 0],
+        [2, 2],
+        [2, 1],
+        [3, 2]
+      ]);
+      expect(grid).toEqual(
+        decodeGrid(`g6,5:
+        XXXLR
+        CXSXN
+        LRTBX
+        XLRXX
+        XFSXX
+        VVXVV
+      `)
+      );
+      const { grid: nextGrid, fallingCells: nextFalling } = dropDebris(grid);
+      expect(nextFalling).toEqual([[4, 2]]);
+      expect(nextGrid).toEqual(
+        decodeGrid(`g6,5:
+        XXXLR
+        CXSXN
+        LRTBX
+        XLRXX
+        XFXXX
+        VVSVV
+      `)
+      );
+    });
+    test("Stops when nothing is falling", () => {
+      const startGrid = decodeGrid(`g6,5:
+        XXXLR
+        CXSXN
+        LRTBX
+        XLRXX
+        XFXXX
+        VVSVV
+      `);
+      const { grid, fallingCells } = dropDebris(startGrid);
+      expect(fallingCells).toEqual([]);
+      expect(grid).toEqual(startGrid);
+    });
+  });
 
+  describe("clearTopRow()", () => {
+    test("Clears top row, changing pill halves into segments", () => {
+      const startGrid = decodeGrid(`g2,5:
+        XOXGW
+        XMXUE
+      `);
+      const grid = clearTopRow(startGrid);
+      expect(grid).toEqual(
+        decodeGrid(`g2,5:
+        XXXXX
+        XKXSC
+      `)
+      );
+    });
+  });
 });
