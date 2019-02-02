@@ -83,8 +83,7 @@ export function deltaRowCol(direction: Direction, distance: number = 1): GridCel
 // find same-color lines within a single row or column
 export function findLinesIn(
   row: GameGridRow,
-  lineLength = 4,
-  excludeFlag = "isFalling"
+  lineLength = 4
 ): number[][] {
   let lastColor: GameColor | undefined;
   let curLine: number[] = [];
@@ -95,16 +94,15 @@ export function findLinesIn(
       color = obj.color;
     }
 
-    const shouldExclude = excludeFlag && !!obj[excludeFlag];
-    if (colIndex > 0 && (color !== lastColor || shouldExclude)) {
+    if (colIndex > 0 && color !== lastColor) {
       // different color, end the current line and add to result if long enough
       if (curLine.length >= lineLength) {
         result.push(curLine);
       }
       curLine = [];
     }
-    // add cell to current line if non-empty and non-excluded
-    if (color !== undefined && !shouldExclude) {
+    // add cell to current line if non-empty
+    if (color !== undefined) {
       curLine.push(colIndex);
     }
     // end of row, add last line to result if long enough
@@ -120,12 +118,11 @@ export function findLinesIn(
 // the main reconcile function, looks for lines of 4 or more of the same color in the grid
 export function findLines(
   grid: GameGrid,
-  lineLength: number = 4,
-  excludeFlag: string = "isFalling"
+  lineLength: number = 4
 ): GridCellLocation[][] {
   const horizontalLines: GridCellLocation[][] = flatten(
     grid.map((row: GameGridRow, rowIndex: number) => {
-      const rowLines: number[][] = findLinesIn(row, lineLength, excludeFlag);
+      const rowLines: number[][] = findLinesIn(row, lineLength);
       return rowLines.map(
         (line: number[]): GridCellLocation[] => {
           return line.map((colIndex: number): GridCellLocation => [rowIndex, colIndex]);
@@ -142,7 +139,7 @@ export function findLines(
   );
   const verticalLines: GridCellLocation[][] = flatten(
     gridCols.map((col: GameGridRow, colIndex: number) => {
-      const colLines: number[][] = findLinesIn(col, lineLength, excludeFlag);
+      const colLines: number[][] = findLinesIn(col, lineLength);
       return colLines.map(
         (line: number[]): GridCellLocation[] =>
           line.map((rowIndex: number): GridCellLocation => [rowIndex, colIndex])

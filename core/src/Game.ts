@@ -21,7 +21,6 @@ import {
   clearTopRow,
   destroyLines,
   dropDebris,
-  // flagFallingCells,
   givePill,
   movePill,
   removeDestroyed,
@@ -382,8 +381,6 @@ export default class Game extends EventEmitter {
     if (this.counters.cascadeTicks === 0) {
       // first cascade tick
       // check if there is any debris to drop
-      // const { grid, fallingCells } = flagFallingCells(this.grid);
-      // this.grid = grid;
       const {fallingCells} = dropDebris(this.grid);
       // nothing to drop, ready for another pill
       if (!fallingCells.length) {
@@ -393,11 +390,8 @@ export default class Game extends EventEmitter {
       // drop the cells for the current cascade
       const dropped = dropDebris(this.grid);
       this.grid = dropped.grid;
-      // compute the next cascade
-      // flag falling cells for next cascade so they are excluded by reconciler
-      // (falling pieces cant make lines)
-      // const next = flagFallingCells(this.grid);
-      // this.grid = next.grid;
+      // compute the next cascade to see if we're done
+      // todo faster check?
       const next = dropDebris(this.grid);
 
       if (next.fallingCells.length < dropped.fallingCells.length) {

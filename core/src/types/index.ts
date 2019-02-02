@@ -21,29 +21,25 @@ export interface GridObjectBase {
 export interface GridObjectWithColor extends GridObjectBase {
   color: GameColor;
 }
-export interface GridObjectWithFalling extends GridObjectWithColor {
-  isFalling?: boolean;
-}
-
 export interface GridObjectDestroyed extends GridObjectBase {
   type: GridObjectType.Destroyed;
 }
 export interface GridObjectEmpty extends GridObjectBase {
   type: GridObjectType.Empty;
 }
-export interface GridObjectPillLeft extends GridObjectWithFalling {
+export interface GridObjectPillLeft extends GridObjectWithColor {
   type: GridObjectType.PillLeft;
 }
-export interface GridObjectPillRight extends GridObjectWithFalling {
+export interface GridObjectPillRight extends GridObjectWithColor {
   type: GridObjectType.PillRight;
 }
-export interface GridObjectPillBottom extends GridObjectWithFalling {
+export interface GridObjectPillBottom extends GridObjectWithColor {
   type: GridObjectType.PillBottom;
 }
-export interface GridObjectPillTop extends GridObjectWithFalling {
+export interface GridObjectPillTop extends GridObjectWithColor {
   type: GridObjectType.PillTop;
 }
-export interface GridObjectPillSegment extends GridObjectWithFalling {
+export interface GridObjectPillSegment extends GridObjectWithColor {
   type: GridObjectType.PillSegment;
 }
 export interface GridObjectVirus extends GridObjectWithColor {

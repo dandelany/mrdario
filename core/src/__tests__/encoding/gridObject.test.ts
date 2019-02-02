@@ -1,4 +1,4 @@
-import { colorEncodingMap, gridObjectTypeEncodingMap, isFallingEncodingMap } from "../../encoding";
+import { colorEncodingMap, gridObjectTypeEncodingMap } from "../../encoding";
 import { uniq, values } from "lodash";
 
 
@@ -27,15 +27,5 @@ describe("Grid Object Encoding", () => {
       })
     ).toBeTruthy();
   });
-  test("isFallingEncodingMap", () => {
-    const binaryVals: number[] = values(isFallingEncodingMap);
-    expect(hasDuplicates(binaryVals)).toBeFalsy();
-    expect(
-      binaryVals.every((val: number) => {
-        return val < 0b1000000 && (val === 0 || val > 0b11111);
-      })
-    ).toBeTruthy();
-  });
-
   // todo test encoder & decoder
 });

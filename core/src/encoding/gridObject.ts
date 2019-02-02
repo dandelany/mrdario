@@ -1,7 +1,7 @@
 import { invert } from "lodash";
 
-import { GameColor, GridObject, GridObjectType, GridObjectWithFalling } from "../types";
-import { hasColor, hasFalling } from "../utils/guards";
+import { GameColor, GridObject, GridObjectType } from "../types";
+import { hasColor } from "../utils/guards";
 
 export type EncodedGridObject = string;
 export type GridObjectTypeBinaryEncodingMap = { [T in GridObjectType]: number };
@@ -30,13 +30,6 @@ export const colorEncodingMap: ColorBinaryEncodingMap = {
 };
 export const binaryColorMap = invert(colorEncodingMap);
 
-export const isFallingEncodingMap: BooleanBinaryEncodingMap = {
-  true: 0b100000,
-  false: 0b000000
-};
-export const binaryIsFallingMap = invert(isFallingEncodingMap);
-
-
 // todo validation?
 
 export function encodeGridObject(obj: GridObject): EncodedGridObject {
@@ -47,15 +40,9 @@ export function encodeGridObject(obj: GridObject): EncodedGridObject {
   } else {
     colorCode = colorEncodingMap[""];
   }
-  let fallingCode: number;
-  if (hasFalling(obj)) {
-    fallingCode = isFallingEncodingMap[String(obj.isFalling)];
-  } else {
-    fallingCode = isFallingEncodingMap["false"];
-  }
   // bitwise OR the codes together, then get ascii character
   // 0b1000000 makes output easier to read
-  const encoded: number = 0b1000000 | fallingCode | colorCode | typeCode;
+  const encoded: number = 0b1000000 | colorCode | typeCode;
   return String.fromCharCode(encoded);
 }
 
@@ -63,7 +50,6 @@ export function decodeGridObject(encodedStr: EncodedGridObject): GridObject {
   const encoded: number = encodedStr.charCodeAt(0);
   const typeCode = encoded & 0b000111;
   const colorCode = encoded & 0b011000;
-  const fallingCode = encoded & 0b100000;
 
   const type = binaryGridObjectTypeMap[typeCode + ""] as GridObjectType;
   let obj: object = { type };
@@ -72,9 +58,6 @@ export function decodeGridObject(encodedStr: EncodedGridObject): GridObject {
   if (colorStr !== "") {
     obj["color"] = parseInt(colorStr) as GameColor;
   }
-
-  const isFalling = binaryIsFallingMap[fallingCode + ""] === "true";
-  if (isFalling) (obj as GridObjectWithFalling).isFalling = true;
 
   // todo better typing...
   return obj as GridObject;

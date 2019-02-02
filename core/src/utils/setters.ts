@@ -82,8 +82,3 @@ export function setPillPartType(obj: GridObjectPillPart, type: GridObjectPillPar
     draftObj.type = type;
   });
 }
-export function setPillPartFalling(obj: GridObjectPillPart, isFalling: boolean) {
-  return produce(obj, (draftObj: GridObjectPillPart) => {
-    draftObj.isFalling = isFalling;
-  });
-}

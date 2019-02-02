@@ -11,7 +11,7 @@ import {
   GridObjectPillSegment,
   GridObjectPillTop,
   GridObjectType,
-  GridObjectWithColor, GridObjectWithFalling,
+  GridObjectWithColor,
   MaybeGridObject,
   MaybeGridObjectWithColor,
   PillLocation
@@ -28,9 +28,6 @@ export function hasColor(obj: GridObject | GridObjectWithColor): obj is GridObje
 }
 export function isColor(obj: MaybeGridObjectWithColor, color: GameColor): boolean {
   return !!obj && hasColor(obj) && obj.color === color;
-}
-export function hasFalling(obj: GridObject | GridObjectWithFalling): obj is GridObjectWithFalling {
-  return (obj as GridObjectWithFalling).isFalling !== undefined;
 }
 export function isEmpty(obj: MaybeGridObject): obj is GridObjectEmpty {
   return isObjType(obj, GridObjectType.Empty);

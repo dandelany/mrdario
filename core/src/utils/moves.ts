@@ -9,7 +9,6 @@ import {
   GridObjectPillPart,
   GridObjectPillPartType,
   GridObjectType,
-  MaybeGridObject,
   PillColors,
   PillLocation,
   RotateDirection
@@ -30,7 +29,6 @@ import {
   isEmpty,
   isGridObject,
   isPillLeft,
-  isPillPart,
   isPillSegment,
   isPillTop,
   isVirus
@@ -40,7 +38,6 @@ import {
   removeCell,
   removeCells,
   setInGrid,
-  setPillPartFalling,
   setPillPartType,
   setPillSegments
 } from "./setters";
@@ -337,33 +334,6 @@ export function dropDebris(grid: GameGrid): DropDebrisResult {
     }
   }
   return { grid, fallingCells };
-}
-
-export function flagFallingCells(grid: GameGrid) {
-  // find cells in the grid which are falling and set 'isFalling' flag on them, without actually dropping them
-  // todo refactor, do we really need to do this
-  // findLines should be able to detect which cells are falling so no need for this?
-  const dropped = dropDebris(grid); // check if there is debris to drop
-
-  // set any existing falling flags to false
-  for (let rowIndex = 0; rowIndex < grid.length; rowIndex++) {
-    const row: GameGridRow = grid[rowIndex];
-    for (let colIndex = 0; colIndex < row.length; colIndex++) {
-      const obj: GridObject = row[colIndex];
-      if (isPillPart(obj) && obj.isFalling) {
-        grid = setInGrid(grid, [rowIndex, colIndex], setPillPartFalling(obj, false));
-      }
-    }
-  }
-
-  dropped.fallingCells.forEach((cell: GridCellLocation) => {
-    const gridObject: MaybeGridObject = getInGrid(grid, cell);
-    if (isPillPart(gridObject)) {
-      setInGrid(grid, cell, setPillPartFalling(gridObject, true));
-    }
-  });
-
-  return { grid, fallingCells: dropped.fallingCells };
 }
 
 export function clearTopRow(grid: GameGrid): GameGrid {

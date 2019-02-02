@@ -19,7 +19,7 @@ describe("Grid Encoding", () => {
       [
         { type: GridObjectType.PillSegment, color: GameColor.Color2 },
         { type: GridObjectType.Empty },
-        { type: GridObjectType.PillSegment, color: GameColor.Color1, isFalling: true }
+        { type: GridObjectType.PillSegment, color: GameColor.Color1 }
       ],
       [
         { type: GridObjectType.PillLeft, color: GameColor.Color3 },
@@ -33,8 +33,6 @@ describe("Grid Encoding", () => {
     });
     const encoded = encodeGrid(grid);
     expect(typeof encoded).toBe("string");
-
-    // console.log(encodeGrid(grid));
     expect(decodeGrid(encoded)).toEqual(grid);
   });
 
@@ -52,9 +50,10 @@ describe("Grid Encoding", () => {
 
   test("allows linebreaks + spaces in grid", () => {
     const gridStr = `g4,3:
-      XVON
-      YESX
-      kDRY`;
+      XVO
+      NYE
+      SXK
+      DRY`;
 
     getGridEncodingDictionary();
 
@@ -72,7 +71,7 @@ describe("Grid Encoding", () => {
       [
         { type: GridObjectType.PillSegment, color: GameColor.Color2 },
         { type: GridObjectType.Empty },
-        { type: GridObjectType.PillSegment, color: GameColor.Color1, isFalling: true }
+        { type: GridObjectType.PillSegment, color: GameColor.Color1 }
       ],
       [
         { type: GridObjectType.PillLeft, color: GameColor.Color3 },
