@@ -6,7 +6,6 @@ import { hasColor } from "../utils/guards";
 export type EncodedGridObject = string;
 export type GridObjectTypeBinaryEncodingMap = { [T in GridObjectType]: number };
 export type ColorBinaryEncodingMap = { [C in GameColor | ""]: number };
-export type BooleanBinaryEncodingMap = { true: number; false: number };
 
 // binary encodings for grid objects
 
