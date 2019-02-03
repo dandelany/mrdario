@@ -77,6 +77,7 @@ function getMockGameState(): GameState {
     gameTicks: 34,
     modeTicks: 0,
     pillCount: 3,
+    comboLineCount: 2,
     seed: 'mock-seed',
     nextPill: [{color: GameColor.Color1}, {color: GameColor.Color2}],
     movingCounters: new Map([[GameInput.Left as GameInputMove, 3]]),

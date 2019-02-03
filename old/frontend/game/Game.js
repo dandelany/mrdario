@@ -199,7 +199,7 @@ export default class Game extends EventEmitter {
   }
 
   _tickReady() {
-    this.cascadeLineCount = 0;
+    this.comboLineCount = 0;
 
     // try to add a new pill
     const {pillCount} = this.counters;
@@ -256,10 +256,10 @@ export default class Game extends EventEmitter {
     this.grid = grid;
 
     if(hasLines)  {
-      this.cascadeLineCount += lines.length;
+      this.comboLineCount += lines.length;
       this.score +=
-        (Math.pow(destroyedCount, this.cascadeLineCount) * 5) +
-        (Math.pow(virusCount, this.cascadeLineCount) * 3 * 5);
+        (Math.pow(destroyedCount, this.comboLineCount) * 5) +
+        (Math.pow(virusCount, this.comboLineCount) * 3 * 5);
     }
 
     const gridHasViruses = hasViruses(this.grid);
