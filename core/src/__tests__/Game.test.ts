@@ -1,6 +1,6 @@
 import Game from "../Game";
 import { decodeGrid } from "../encoding";
-import { GameColor, GameInputMove, GameMode } from "../types";
+import { GameColor, GameInput, GameInputMove, GameMode } from "../types";
 
 describe("Game", () => {
   test("can be constructed", () => {
@@ -9,23 +9,27 @@ describe("Game", () => {
   });
 
 
-  test.skip("has correct initial state after construction", () => {
+  test("has correct initial state after construction", () => {
     const game = new Game({
-      level: 3,
+      level: 12,
       baseSpeed: 15,
       width: 8,
       height: 16,
       seed: 'test-seed'
     });
     const state = game.getState();
-    const {mode, grid, ...otherState} = state;
-    console.log(otherState);
-    // expect(state).toEqual({
-    console.log({
+    expect(state).toEqual({
       mode: GameMode.Loading,
       pill: undefined,
-      nextPill: [{ color: GameColor.Color2 }, { color: GameColor.Color3 }],
-      movingCounters: new Map([]),
+      nextPill: [{ color: GameColor.Color3 }, { color: GameColor.Color2 }],
+      movingCounters: new Map([
+        [GameInput.Up, 0],
+        [GameInput.Down, 0],
+        [GameInput.Left, 0],
+        [GameInput.Right, 0],
+        [GameInput.RotateCW, 0],
+        [GameInput.RotateCCW, 0],
+      ]),
       movingDirections: new Map<GameInputMove, true>(),
       seed: 'test-seed',
       frame: 0,
@@ -42,16 +46,16 @@ describe("Game", () => {
         XXXXXXXX
         XXXXXXXX
         XXXXXXXX
-        XXXXXXVF
-        XXXXNXXX
-        NNXVXXNN
-        XXXXXNXX
-        VXXXXNXX
-        XXXXFXXX
-        XXXVXFXX
-        XXXXXXXX
-        XXXXXXXX
-        XXXXXVXF
+        XNFVVXXF
+        XXXFNVFN
+        XFNNXVXX
+        XVVXFXXF
+        VXXFNXVV
+        VNNXXXFX
+        FNVVFXNF
+        FXVVFFNV
+        VVFXVXFV
+        NFFNXXFX
       `)
     })
   })
