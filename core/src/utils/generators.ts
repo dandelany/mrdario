@@ -1,5 +1,4 @@
 import { random, sample, times, values } from "lodash";
-import { alea, prng } from "seedrandom";
 
 import {
   GameColor,
@@ -14,13 +13,15 @@ import {
   GridObjectType,
   GridObjectVirus,
   MaybeGridObject,
-  OneOrMore, PillColors
+  OneOrMore,
+  PillColors
 } from "../types";
 
-import { COLORS, MIN_VIRUS_ROW_TABLE, VIRUS_COUNT_TABLE } from "../constants";
+import { MIN_VIRUS_ROW_TABLE, VIRUS_COUNT_TABLE } from "../constants";
 import { getCellNeighbors, getInGrid } from "./grid";
 import { hasColor, isColor, isEmpty } from "./guards";
 import { setInGrid } from "./setters";
+import { seedRandomColor } from "./random";
 
 export function makeEmpty(): GridObjectEmpty {
   return { type: GridObjectType.Empty };
@@ -47,15 +48,12 @@ export function makeEmptyGrid(width: number, height: number): GameGrid {
   }) as GameGrid;
 }
 
-
 export function getNextPill(seed: string, pillCount: number): PillColors {
   // get seeded random number generators for the two colors
-  const rng1: prng = alea(`"${seed}"-${pillCount}-1-nextPill`);
-  const rng2: prng = alea(`"${seed}"-${pillCount}-2-nextPill`);
+  const color1 = seedRandomColor(`"${seed}"-${pillCount}-0-nextPill`);
+  const color2 = seedRandomColor(`"${seed}"-${pillCount}-1-nextPill`);
 
-  const color1 = Math.floor(rng1() * COLORS.length);
-  const color2 = Math.floor(rng2() * COLORS.length);
-  return [{color: color1}, {color: color2}];
+  return [{ color: color1 }, { color: color2 }];
 }
 
 export function getLevelVirusCount(level: number): number {

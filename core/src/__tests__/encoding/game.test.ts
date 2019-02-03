@@ -55,7 +55,6 @@ describe("Game Encoding", () => {
       const gameState: GameState = getMockGameState();
       const encoded = encodeGameState(gameState);
       expect(typeof encoded).toBe("string");
-      console.log(encoded);
     });
   });
 });
