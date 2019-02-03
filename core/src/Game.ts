@@ -101,9 +101,6 @@ export default class Game extends EventEmitter {
   // Destruction: lines are being destroyed
   // Ended: game has ended
 
-  public static createInitialGrid(width: number, height: number, level: number) {
-    return generateEnemies(makeEmptyGrid(width, height + 1), level, COLORS);
-  }
   public readonly options: GameOptions;
   protected fsm: TypeState.FiniteStateMachine<GameMode>;
   protected inputRepeater: InputRepeater;
@@ -131,7 +128,13 @@ export default class Game extends EventEmitter {
     const options: GameOptions = defaults({}, passedOptions, defaultGameOptions);
     this.options = options;
 
-    this.seed = options.seed || Date.now().toString().split('').reverse().join('');
+    this.seed =
+      options.seed ||
+      Date.now()
+        .toString()
+        .split("")
+        .reverse()
+        .join("");
     // this.seed = "mrdario";
 
     this.nextPill = getNextPill(this.seed, this.pillCount);
@@ -141,7 +144,13 @@ export default class Game extends EventEmitter {
 
     // the grid, single source of truth for game playfield state
     const { width, height, level } = this.options;
-    const { grid, virusCount } = generateEnemies(makeEmptyGrid(width, height + 1), level, COLORS);
+    const { grid, virusCount } = generateEnemies(
+      makeEmptyGrid(width, height + 1),
+      level,
+      COLORS,
+      this.seed + "enemies"
+    );
+
     this.grid = grid;
     this.origVirusCount = virusCount;
 
@@ -150,8 +159,6 @@ export default class Game extends EventEmitter {
     this.playGravity = gravityFrames(options.baseSpeed);
     // # of frames it takes debris to fall 1 row during cascade
     this.cascadeGravity = gravityFrames(CASCADE_TICK_COUNT);
-
-
 
     // input repeater, takes raw inputs and repeats them if they are held down
     // returns the real sequence of moves used by the game
@@ -204,7 +211,7 @@ export default class Game extends EventEmitter {
       timeBonus,
       pillCount,
       gameTicks,
-      modeTicks,
+      modeTicks
       // options: stateOptions
       // todo input queue and input repeater
     };
@@ -285,8 +292,7 @@ export default class Game extends EventEmitter {
 
       // update speed to match # of given pills
       // after every ACCELERATE_INTERVAL pills, gravity speed is increased by one
-      const speed =
-        this.options.baseSpeed + Math.floor(this.pillCount / ACCELERATE_INTERVAL);
+      const speed = this.options.baseSpeed + Math.floor(this.pillCount / ACCELERATE_INTERVAL);
       this.playGravity = gravityFrames(speed);
 
       this.fsm.go(GameMode.Playing);
@@ -306,10 +312,7 @@ export default class Game extends EventEmitter {
     let shouldReconcile = this.doMoves(moveQueue);
 
     // gravity pulling pill down
-    if (
-      this.modeTicks > this.playGravity &&
-      !this.inputRepeater.movingDirections[GameInput.Down]
-    ) {
+    if (this.modeTicks > this.playGravity && !this.inputRepeater.movingDirections[GameInput.Down]) {
       // deactivate gravity while moving down
       this.modeTicks = 0;
       if (isPillLocation(this.pill)) {

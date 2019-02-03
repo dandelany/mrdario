@@ -1,4 +1,4 @@
-import { random, sample, times, values } from "lodash";
+import { times, values } from "lodash";
 
 import {
   GameColor,
@@ -21,7 +21,7 @@ import { MIN_VIRUS_ROW_TABLE, VIRUS_COUNT_TABLE } from "../constants";
 import { getCellNeighbors, getInGrid } from "./grid";
 import { hasColor, isColor, isEmpty } from "./guards";
 import { setInGrid } from "./setters";
-import { seedRandomColor } from "./random";
+import { seedRandomColor, seedRandomInt } from "./random";
 
 export function makeEmpty(): GridObjectEmpty {
   return { type: GridObjectType.Empty };
@@ -60,14 +60,21 @@ export function getLevelVirusCount(level: number): number {
   return VIRUS_COUNT_TABLE[Math.min(level, VIRUS_COUNT_TABLE.length - 1)];
 }
 
-export function generateEnemies(grid: GameGrid, level: number, colors: OneOrMore<GameColor>) {
+export function generateEnemies(
+  grid: GameGrid,
+  level: number,
+  colors: OneOrMore<GameColor>,
+  seed: string
+) {
   // generate random enemies in a (empty) grid
   // inspired by http://tetrisconcept.net/wiki/Dr._Mario#Virus_Generation
   let virusCount = getLevelVirusCount(level);
   const origVirusCount = virusCount;
 
+  let virusSeed = 0;
   while (virusCount) {
-    const { cell, virus } = generateVirus(grid, level, colors, virusCount);
+    const { cell, virus } = generateVirus(grid, level, colors, virusCount, seed + virusSeed);
+    virusSeed++;
     if (!virus || !cell) {
       continue;
     } // bad virus, try again
@@ -82,13 +89,15 @@ export function generateVirus(
   grid: GameGrid,
   level: number,
   colors: OneOrMore<GameColor>,
-  remaining: number
+  remaining: number,
+  seed: string
 ) {
   const numRows = grid.length;
   const numCols = grid[0].length;
   // initial candidate row and column for our virus
-  let vRow = random(minVirusRow(level), numRows - 1);
-  let vCol = random(0, numCols - 1);
+  const baseSeed = `genVirus-${seed}-${level}-${remaining}`;
+  let vRow = seedRandomInt(baseSeed + "row", minVirusRow(level), numRows - 1);
+  let vCol = seedRandomInt(baseSeed + "col", 0, numCols - 1);
 
   // while not a valid location, step through the grid until we find one
   while (!isValidNewVirusLocation(grid, [vRow, vCol], colors)) {
@@ -102,10 +111,13 @@ export function generateVirus(
 
   // generate a color for the virus that is not in the nearby neighbors
   let colorSeed = remaining % (colors.length + 1);
-  let color = colorSeed === colors.length ? (sample(colors) as GameColor) : colors[colorSeed];
+  let color = colorSeed === colors.length ? seedRandomColor(baseSeed + "color") : colors[colorSeed];
   while (!isValidNewVirusColor(grid, [vRow, vCol], color)) {
-    colorSeed = (colorSeed + 1) % (colors.length + 1);
-    color = colorSeed === colors.length ? (sample(colors) as GameColor) : colors[colorSeed];
+    colorSeed = colorSeed + 1;
+    color =
+      (colorSeed % colors.length) + 1 === colors.length
+        ? seedRandomColor(baseSeed + "color" + colorSeed)
+        : colors[(colorSeed % colors.length) + 1];
   }
 
   // done, return the virus and its location
