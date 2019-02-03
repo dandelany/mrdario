@@ -9,9 +9,9 @@ import {
   removeDestroyed,
   rotatePill,
   slamPill
-} from "../../utils/moves";
-import { decodeGrid } from "../../encoding";
-import { Direction, GameColor, RotateDirection } from "../../types";
+} from "@/game/utils/moves";
+import { GridDirection, GameColor, RotateDirection } from "@/game/enums";
+import { decodeGrid } from "@/encoding";
 
 /*
 Y = Destroyed
@@ -82,7 +82,7 @@ describe("Moves", () => {
         XCX
         XXX
       `);
-      const { didMove, cell, grid } = moveCell(startGrid, [1, 1], Direction.Up);
+      const { didMove, cell, grid } = moveCell(startGrid, [1, 1], GridDirection.Up);
       expect(didMove).toEqual(true);
       expect(cell).toEqual([0, 1]);
       expect(grid).toEqual(
@@ -99,7 +99,7 @@ describe("Moves", () => {
         XCX
         XXX
       `);
-      const { didMove, cell, grid } = moveCell(startGrid, [1, 1], Direction.Down);
+      const { didMove, cell, grid } = moveCell(startGrid, [1, 1], GridDirection.Down);
       expect(didMove).toEqual(true);
       expect(cell).toEqual([2, 1]);
       expect(grid).toEqual(
@@ -116,7 +116,7 @@ describe("Moves", () => {
         XCX
         XXX
       `);
-      const { didMove, cell, grid } = moveCell(startGrid, [1, 1], Direction.Left);
+      const { didMove, cell, grid } = moveCell(startGrid, [1, 1], GridDirection.Left);
       expect(didMove).toEqual(true);
       expect(cell).toEqual([1, 0]);
       expect(grid).toEqual(
@@ -133,7 +133,7 @@ describe("Moves", () => {
         XCX
         XXX
       `);
-      const { didMove, cell, grid } = moveCell(startGrid, [1, 1], Direction.Right);
+      const { didMove, cell, grid } = moveCell(startGrid, [1, 1], GridDirection.Right);
       expect(didMove).toEqual(true);
       expect(cell).toEqual([1, 2]);
       expect(grid).toEqual(
@@ -150,7 +150,7 @@ describe("Moves", () => {
         XCV
         XXX
       `);
-      const { didMove, cell, grid } = moveCell(startGrid, [1, 1], Direction.Right);
+      const { didMove, cell, grid } = moveCell(startGrid, [1, 1], GridDirection.Right);
       expect(didMove).toEqual(false);
       expect(cell).toEqual([1, 1]);
       expect(grid).toEqual(startGrid);
@@ -161,7 +161,7 @@ describe("Moves", () => {
         XXX
         XXX
       `);
-      const { didMove, cell, grid } = moveCell(startGrid, [0, 1], Direction.Up);
+      const { didMove, cell, grid } = moveCell(startGrid, [0, 1], GridDirection.Up);
       expect(didMove).toEqual(false);
       expect(cell).toEqual([0, 1]);
       expect(grid).toEqual(startGrid);
@@ -175,7 +175,7 @@ describe("Moves", () => {
         XOX
         XUX
       `);
-      const { didMove, cells, grid } = moveCells(startGrid, [[1, 1], [2, 1]], Direction.Up);
+      const { didMove, cells, grid } = moveCells(startGrid, [[1, 1], [2, 1]], GridDirection.Up);
       expect(didMove).toEqual(true);
       expect(cells).toEqual([[0, 1], [1, 1]]);
       expect(grid).toEqual(
@@ -192,7 +192,7 @@ describe("Moves", () => {
         XLB
         XXX
       `);
-      const { didMove, cells, grid } = moveCells(startGrid, [[1, 1], [1, 2]], Direction.Down);
+      const { didMove, cells, grid } = moveCells(startGrid, [[1, 1], [1, 2]], GridDirection.Down);
       expect(didMove).toEqual(true);
       expect(cells).toEqual([[2, 1], [2, 2]]);
       expect(grid).toEqual(
@@ -209,7 +209,7 @@ describe("Moves", () => {
         XLB
         XXX
       `);
-      const { didMove, cells, grid } = moveCells(startGrid, [[1, 1], [1, 2]], Direction.Left);
+      const { didMove, cells, grid } = moveCells(startGrid, [[1, 1], [1, 2]], GridDirection.Left);
       expect(didMove).toEqual(true);
       expect(cells).toEqual([[1, 0], [1, 1]]);
       expect(grid).toEqual(
@@ -226,7 +226,7 @@ describe("Moves", () => {
         UXX
         XXX
       `);
-      const { didMove, cells, grid } = moveCells(startGrid, [[0, 0], [1, 0]], Direction.Right);
+      const { didMove, cells, grid } = moveCells(startGrid, [[0, 0], [1, 0]], GridDirection.Right);
       expect(didMove).toEqual(true);
       expect(cells).toEqual([[0, 1], [1, 1]]);
       expect(grid).toEqual(
@@ -243,7 +243,7 @@ describe("Moves", () => {
         UFX
         XXX
       `);
-      const { didMove, cells, grid } = moveCells(startGrid, [[0, 0], [1, 0]], Direction.Right);
+      const { didMove, cells, grid } = moveCells(startGrid, [[0, 0], [1, 0]], GridDirection.Right);
       expect(didMove).toEqual(false);
       expect(cells).toEqual([[0, 0], [1, 0]]);
       expect(grid).toEqual(startGrid);
@@ -254,7 +254,7 @@ describe("Moves", () => {
         UXX
         XXX
       `);
-      const { didMove, cells, grid } = moveCells(startGrid, [[0, 0], [1, 0]], Direction.Up);
+      const { didMove, cells, grid } = moveCells(startGrid, [[0, 0], [1, 0]], GridDirection.Up);
       expect(didMove).toEqual(false);
       expect(cells).toEqual([[0, 0], [1, 0]]);
       expect(grid).toEqual(startGrid);
@@ -268,7 +268,7 @@ describe("Moves", () => {
         XTR
         XXX
       `);
-      const { didMove, pill, grid } = movePill(startGrid, [[1, 1], [1, 2]], Direction.Left);
+      const { didMove, pill, grid } = movePill(startGrid, [[1, 1], [1, 2]], GridDirection.Left);
       expect(didMove).toEqual(true);
       expect(pill).toEqual([[1, 0], [1, 1]]);
       expect(grid).toEqual(

@@ -3,6 +3,13 @@ import { defaults, includes, noop } from "lodash";
 import { TypeState } from "typestate";
 
 import {
+  InputRepeater,
+  InputRepeaterState,
+  MovingCounters,
+  MovingDirections
+} from "./InputRepeater";
+
+import {
   ACCELERATE_INTERVAL,
   CASCADE_TICK_COUNT,
   COLORS,
@@ -12,7 +19,7 @@ import {
   PLAYFIELD_WIDTH
 } from "./constants";
 import {
-  Direction,
+  GridDirection,
   GameGrid,
   GameInput,
   GameInputMove,
@@ -22,10 +29,13 @@ import {
   PillLocation,
   RotateDirection
 } from "./types";
-
-import { generateEnemies, getLevelVirusCount, getNextPill, makeEmptyGrid } from "./utils/generators";
-import { hasViruses } from "./utils/grid";
 import {
+  isPillLocation,
+  hasViruses,
+  generateEnemies,
+  getLevelVirusCount,
+  getNextPill,
+  makeEmptyGrid,
   clearTopRow,
   destroyLines,
   dropDebris,
@@ -34,14 +44,7 @@ import {
   removeDestroyed,
   rotatePill,
   slamPill
-} from "./utils/moves";
-
-import InputRepeater, {
-  InputRepeaterState,
-  MovingCounters,
-  MovingDirections
-} from "./InputRepeater";
-import { isPillLocation } from "./utils/guards";
+} from "./utils";
 
 function gravityFrames(speed: number): number {
   return GRAVITY_TABLE[Math.min(speed, GRAVITY_TABLE.length - 1)];
@@ -76,7 +79,6 @@ export interface GameState {
   comboLineCount: number;
   score: number;
   timeBonus: number;
-
 }
 
 // options that can be passed to control game parameters
@@ -93,10 +95,9 @@ export const defaultGameOptions: GameOptions = {
   onLose: noop
 };
 
-export default class Game extends EventEmitter {
+export class Game extends EventEmitter {
   // game modes, used by the state machine
-  // Loading: pre-ready state, todo: use this to populate viruses slowly?
-  // Ready: ready for a new pill (first or otherwise)
+  // Ready: pre-playing state, todo: use this to populate viruses slowly?
   // Playing: pill is in play and falling
   // Reconcile: pill is locked in place, checking for lines to destroy
   // Cascade: cascading line destruction & debris falling
@@ -164,8 +165,6 @@ export default class Game extends EventEmitter {
 
     // the main game loop, called once per game tick
     switch (this.fsm.currentState) {
-      case GameMode.Loading:
-        return this.tickLoading();
       case GameMode.Ready:
         return this.tickReady();
       case GameMode.Playing:
@@ -212,19 +211,16 @@ export default class Game extends EventEmitter {
 
   protected initStateMachine(): TypeState.FiniteStateMachine<GameMode> {
     // create state machine to keep track of current game mode
-    const fsm = new TypeState.FiniteStateMachine<GameMode>(GameMode.Loading);
+    const fsm = new TypeState.FiniteStateMachine<GameMode>(GameMode.Ready);
 
     // game modes, used by the state machine
-    // Loading: pre-ready state, todo: use this to populate viruses slowly?
-    // Ready: ready for a new pill (first or otherwise)
+    // Ready: pre-playing state, todo: use this to populate viruses slowly?
     // Playing: pill is in play and falling
     // Reconcile: pill is locked in place, checking for lines to destroy
     // Cascade: cascading line destruction & debris falling
     // Destruction: lines are being destroyed
     // Ended: game has ended
 
-    // Loaded
-    fsm.from(GameMode.Loading).to(GameMode.Ready);
     // Play
     fsm.from(GameMode.Ready).to(GameMode.Playing);
     // Reconcile
@@ -234,13 +230,13 @@ export default class Game extends EventEmitter {
     // Cascade
     fsm.from(GameMode.Reconcile, GameMode.Destruction).to(GameMode.Cascade);
     // Ready
-    fsm.from(GameMode.Cascade).to(GameMode.Ready);
+    fsm.from(GameMode.Cascade).to(GameMode.Playing);
     // Win
     fsm.from(GameMode.Reconcile).to(GameMode.Ended);
     // Lose
-    fsm.from(GameMode.Ready).to(GameMode.Ended);
+    fsm.from(GameMode.Playing).to(GameMode.Ended);
     // Reset
-    fsm.fromAny(GameMode).to(GameMode.Loading);
+    fsm.fromAny(GameMode).to(GameMode.Ready);
 
     // onPlay
     fsm.on(GameMode.Playing, this.resetModeTicks);
@@ -252,7 +248,7 @@ export default class Game extends EventEmitter {
       if (from === GameMode.Reconcile) {
         // onWin
         this.options.onWin();
-      } else if (from === GameMode.Ready) {
+      } else if (from === GameMode.Playing) {
         // onLose
         this.options.onLose();
       }
@@ -271,37 +267,33 @@ export default class Game extends EventEmitter {
     return gravityFrames(speed);
   };
 
-  protected tickLoading(): void {
-    this.fsm.go(GameMode.Ready);
-  }
-
   protected tickReady(): void {
-    this.comboLineCount = 0;
-
-    // try to add a new pill
-    const pillColors = this.nextPill;
-    const { grid, pill, didGive } = givePill(this.grid, pillColors);
-    this.grid = grid;
-    this.pill = pill;
-
-    if (didGive) {
-      // got a new pill!
-      this.pillCount++;
-      // generate the next pill
-      this.nextPill = getNextPill(this.seed, this.pillCount);
-
-      this.fsm.go(GameMode.Playing);
-    } else {
-      // didn't get a pill, the entrance is blocked and we lose
-      this.fsm.go(GameMode.Ended);
-    }
+    this.fsm.go(GameMode.Playing);
   }
 
   private tickPlaying(moveQueue: GameInputMove[]) {
-    // game is playing, pill is falling & under user control
-    // todo speedup
+    this.comboLineCount = 0;
     this.modeTicks++;
     this.gameTicks++;
+
+    if (this.pill === undefined) {
+      // try to add a new pill
+      const pillColors = this.nextPill;
+      const { grid, pill, didGive } = givePill(this.grid, pillColors);
+      this.grid = grid;
+      this.pill = pill;
+
+      if (didGive) {
+        // got a new pill!
+        this.pillCount++;
+        // generate the next pill
+        this.nextPill = getNextPill(this.seed, this.pillCount);
+      } else {
+        // didn't get a pill, the entrance is blocked and we lose
+        this.fsm.go(GameMode.Ended);
+        return;
+      }
+    }
 
     // do the moves created by the inputRepeater
     let shouldReconcile = this.doMoves(moveQueue);
@@ -312,7 +304,7 @@ export default class Game extends EventEmitter {
       // deactivate gravity while moving down
       this.modeTicks = 0;
       if (isPillLocation(this.pill)) {
-        const moved = movePill(this.grid, this.pill, Direction.Down);
+        const moved = movePill(this.grid, this.pill, GridDirection.Down);
         if (!moved.didMove) {
           shouldReconcile = true;
         } else {
@@ -324,6 +316,8 @@ export default class Game extends EventEmitter {
 
     // pill can't move any further, reconcile the board
     if (shouldReconcile) {
+      // pill is no longer under user control
+      this.pill = undefined;
       this.fsm.go(GameMode.Reconcile);
     }
   }
@@ -389,7 +383,7 @@ export default class Game extends EventEmitter {
       const { fallingCells } = dropDebris(this.grid);
       // nothing to drop, ready for another pill
       if (!fallingCells.length) {
-        this.fsm.go(GameMode.Ready);
+        this.fsm.go(GameMode.Playing);
         return;
       }
     } else if (this.modeTicks % cascadeGravity === 0) {
@@ -433,10 +427,10 @@ export default class Game extends EventEmitter {
       } else if (includes([GameInput.Left, GameInput.Right, GameInput.Down], input)) {
         const direction =
           input === GameInput.Down
-            ? Direction.Down
+            ? GridDirection.Down
             : input === GameInput.Left
-              ? Direction.Left
-              : Direction.Right;
+              ? GridDirection.Left
+              : GridDirection.Right;
 
         const moved = movePill(this.grid, this.pill, direction);
         grid = moved.grid;

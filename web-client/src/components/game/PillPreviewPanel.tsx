@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { GridObjectType, PillColors } from "mrdario-core/src/types";
+import { GridObjectType, PillColors } from "../../../../core/src/game/types";
 import PillPart from "./PillPart";
 
 export interface PillPreviewPanelProps {

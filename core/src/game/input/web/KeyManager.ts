@@ -5,11 +5,9 @@ import {
   GameControllerMode,
   GameInput,
   InputEventType,
-  InputManager,
-  KeyBindings
-} from "../../types";
+  InputManager, KeyBindings} from "../../types";
 
-export default class KeyManager extends EventEmitter implements InputManager {
+export class KeyManager extends EventEmitter implements InputManager {
   public mode?: GameControllerMode;
   public keyBindings?: KeyBindings;
 

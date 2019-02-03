@@ -8,7 +8,7 @@ import {
 import { inRange } from "lodash";
 // import Gamepads from "gamepad-plus/src";
 
-import { GameControllerMode, GameInput, InputEventType } from "../../types/index";
+import { GameControllerMode, GameInput, InputEventType } from "../../types";
 
 const gamepadConfig = {
   axisThreshold: 0,
@@ -58,7 +58,7 @@ const gamepadConfig = {
   }
 };
 
-export default class GamepadManager extends EventEmitter {
+export class GamepadManager extends EventEmitter {
   public mode?: GameControllerMode;
   // todo fix gamepads typing
   public gamepads: any;

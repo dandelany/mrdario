@@ -1,7 +1,7 @@
 import * as invariant from "invariant";
 import { invert } from "lodash";
 
-import { GameInput, GameInputMove, InputEventType, MoveInputEvent } from "../types";
+import { GameInput, GameInputMove, InputEventType, MoveInputEvent } from "@/game/types";
 
 // binary encodings for move inputs
 

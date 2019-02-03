@@ -1,7 +1,7 @@
 import { flatten, range } from "lodash";
 
 import {
-  Direction,
+  GridDirection,
   GameColor,
   GameGrid,
   GameGridRow,
@@ -58,22 +58,22 @@ export function getCellNeighbors(
   // returns the neighbors of the grid cell at [rowIndex, colIndex]
   // some may be undefined if out of bounds
   return {
-    [Direction.Up]: getInGrid(grid, [rowIndex - distance, colIndex]),
-    [Direction.Down]: getInGrid(grid, [rowIndex + distance, colIndex]),
-    [Direction.Left]: getInGrid(grid, [rowIndex, colIndex - distance]),
-    [Direction.Right]: getInGrid(grid, [rowIndex, colIndex + distance])
+    [GridDirection.Up]: getInGrid(grid, [rowIndex - distance, colIndex]),
+    [GridDirection.Down]: getInGrid(grid, [rowIndex + distance, colIndex]),
+    [GridDirection.Left]: getInGrid(grid, [rowIndex, colIndex - distance]),
+    [GridDirection.Right]: getInGrid(grid, [rowIndex, colIndex + distance])
   };
 }
 
-export function canMoveCell(grid: GameGrid, location: GridCellLocation, direction: Direction) {
+export function canMoveCell(grid: GameGrid, location: GridCellLocation, direction: GridDirection) {
   return isEmpty(getCellNeighbors(grid, location)[direction]);
 }
 
-export function deltaRowCol(direction: Direction, distance: number = 1): GridCellLocationDelta {
+export function deltaRowCol(direction: GridDirection, distance: number = 1): GridCellLocationDelta {
   // create the [dRow, dCol] needed for a move in given direction and distance eg. up 1 is [-1, 0]
-  const dRow = direction === Direction.Down ? distance : direction === Direction.Up ? -distance : 0;
+  const dRow = direction === GridDirection.Down ? distance : direction === GridDirection.Up ? -distance : 0;
   const dCol =
-    direction === Direction.Right ? distance : direction === Direction.Left ? -distance : 0;
+    direction === GridDirection.Right ? distance : direction === GridDirection.Left ? -distance : 0;
   if (Math.abs(dRow) + Math.abs(dCol) === 0) {
     throw new Error("invalid direction " + direction);
   }
@@ -164,10 +164,10 @@ export function findWidows(grid: GameGrid): GridCellLocation[] {
           const cell: GridCellLocation = [rowIndex, colIndex];
           const neighbors: GridCellNeighbors = getCellNeighbors(grid, cell);
           const isWidow: boolean =
-            (isPillLeft(obj) && !isPillRight(neighbors[Direction.Right])) ||
-            (isPillRight(obj) && !isPillLeft(neighbors[Direction.Left])) ||
-            (isPillTop(obj) && !isPillBottom(neighbors[Direction.Down])) ||
-            (isPillBottom(obj) && !isPillTop(neighbors[Direction.Up]));
+            (isPillLeft(obj) && !isPillRight(neighbors[GridDirection.Right])) ||
+            (isPillRight(obj) && !isPillLeft(neighbors[GridDirection.Left])) ||
+            (isPillTop(obj) && !isPillBottom(neighbors[GridDirection.Down])) ||
+            (isPillBottom(obj) && !isPillTop(neighbors[GridDirection.Up]));
 
           if (isWidow) {
             rowWidows.push(cell);

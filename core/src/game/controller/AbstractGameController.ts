@@ -1,19 +1,24 @@
 import { defaults } from "lodash";
-
-import Game from "./Game";
-
 import { TypeState } from "typestate";
+
+import {Game} from "@/game";
+
 import { DEFAULT_GAME_CONTROLLER_OPTIONS } from "./constants";
+import {
+  GameInput,
+  GameInputMove,
+  InputEventType,
+  MoveInputEvent
+} from "@/game/types";
+
 import {
   GameControllerMode,
   GameControllerOptions,
   GameControllerState,
-  GameInput,
-  GameInputMove,
-  InputEventType,
   InputManager,
-  MoveInputEvent
-} from "./types";
+} from "@/game/controller/types";
+
+
 
 // game controller class
 // controls the frame timing and must tick the Game object once per frame
@@ -22,7 +27,7 @@ import {
 
 export const defaultOptions = DEFAULT_GAME_CONTROLLER_OPTIONS;
 
-export default abstract class AbstractGameController {
+export abstract class AbstractGameController {
   public options: GameControllerOptions;
   public step: number;
   public slowStep: number;

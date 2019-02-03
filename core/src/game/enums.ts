@@ -1,16 +1,5 @@
-export enum GameControllerMode {
-  Ready = "Ready",
-  Playing = "Playing",
-  Paused = "Paused",
-  Won = "Won",
-  Lost = "Lost",
-  Ended = "Ended"
-}
-
 export enum GameMode {
-  // Loading: pre-ready state, todo: use this to populate viruses slowly?
-  Loading = "Loading",
-  // Ready: ready for a new pill (first or otherwise)
+  // Ready: pre-play state
   Ready = "Ready",
   // Playing: pill is in play and falling
   Playing = "Playing",
@@ -25,13 +14,13 @@ export enum GameMode {
 }
 
 export enum GameInput {
-  Play = "Play",
   Left = "Left",
   Right = "Right",
   Up = "Up",
   Down = "Down",
   RotateCCW = "RotateCCW",
   RotateCW = "RotateCW",
+  Play = "Play",
   Pause = "Pause",
   Resume = "Resume",
   Reset = "Reset"
@@ -48,19 +37,13 @@ export enum GridObjectType {
   Virus = "Virus"
 }
 
-export enum SpeedLevel {
-  Low = "Low",
-  Medium = "Medium",
-  High = "High"
-}
-
 export enum GameColor {
   Color1 = 0,
   Color2 = 1,
   Color3 = 2
 }
 
-export enum Direction {
+export enum GridDirection {
   Up = "DirUp",
   Down = "DirDown",
   Left = "DirLeft",
@@ -74,4 +57,10 @@ export enum RotateDirection {
 export enum InputEventType {
   KeyUp = "keyup",
   KeyDown = "keydown"
+}
+
+export enum SpeedLevel {
+  Low = "Low",
+  Medium = "Medium",
+  High = "High"
 }

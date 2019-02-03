@@ -1,6 +1,6 @@
 import * as blessed from "blessed";
 
-import Game from "mrdario-core/lib/Game";
+import {Game} from "mrdario-core/lib/Game";
 import {
   GameControllerMode,
   GameInput,
@@ -75,7 +75,7 @@ export default class CLIGameController {
     // minimal description of game state to render
     return {
       mode: mode || GameControllerMode.Playing,
-      pillCount: this.game.counters.pillCount,
+      pillCount: this.game.pillCount,
       grid: this.game.grid,
       pillSequence: this.game.pillSequence,
       score: this.game.score,

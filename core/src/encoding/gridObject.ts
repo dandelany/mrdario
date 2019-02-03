@@ -1,7 +1,7 @@
 import { invert } from "lodash";
 
-import { GameColor, GridObject, GridObjectType } from "../types";
-import { hasColor } from "../utils/guards";
+import { GameColor, GridObject, GridObjectType } from "../game/types";
+import { hasColor } from "@/game/utils/guards";
 
 export type EncodedGridObject = string;
 export type GridObjectTypeBinaryEncodingMap = { [T in GridObjectType]: number };

@@ -1,6 +1,6 @@
-import Game, { GameState, GameOptions } from "../Game";
-import { decodeGrid } from "../encoding";
-import { GameColor, GameInput, GameInputMove, GameMode } from "../types";
+import { decodeGrid } from "@/encoding";
+import { Game, GameState, GameOptions } from "@/game";
+import { GameColor, GameInput, GameInputMove, GameMode } from "@/game/types";
 
 /*
 Y = Destroyed
@@ -72,7 +72,7 @@ describe("Game", () => {
     const state = game.getState();
     expect(state).toEqual({
       ...getMockGameState(),
-      mode: GameMode.Loading,
+      mode: GameMode.Ready,
       nextPill: [{ color: GameColor.Color3 }, { color: GameColor.Color2 }],
       grid: decodeGrid(`gh,8:
         XXXXXXXX
@@ -96,13 +96,13 @@ describe("Game", () => {
     });
   });
 
-  test("Moves to Ready state after first tick", () => {
+  test("Moves to Playing state after first tick", () => {
     const game = new Game(getMockGameOptions());
     game.tick();
     const state = game.getState();
     expect(state).toEqual({
       ...getMockGameState(),
-      mode: GameMode.Ready,
+      mode: GameMode.Playing,
       frame: 1,
       nextPill: [{ color: GameColor.Color3 }, { color: GameColor.Color2 }],
       grid: decodeGrid(`gh,8:
@@ -127,7 +127,42 @@ describe("Game", () => {
     });
   });
 
-  // todo: gets pill in Ready state
+  test("Gets pill on second tick", () => {
+    const game = new Game(getMockGameOptions());
+    game.tick();
+    game.tick();
+    const state = game.getState();
+    expect(state).toEqual({
+      ...getMockGameState(),
+      mode: GameMode.Playing,
+      frame: 2,
+      gameTicks: 1,
+      modeTicks: 1,
+      pillCount: 1,
+      pill: [[1, 3], [1, 4]],
+      grid: decodeGrid(`gh,8:
+        XXXXXXXX
+        XXXDRXXX
+        XXXXXXXX
+        XXXXXXXX
+        XXXXXXXX
+        XXXXXXXX
+        XXXXXXXX
+        XNFVVXXF
+        XXXFNVFN
+        XFNNXVXX
+        XVVXFXXF
+        VXXFNXVV
+        VNNXXXFX
+        FNVVFXNF
+        FXVVFFNV
+        VVFXVXFV
+        NFFNXXFX
+      `),
+      nextPill: [{ color: GameColor.Color1 }, { color: GameColor.Color2 }],
+    });
+  });
+
   // todo: loses when entrance is blocked
   // todo: moveInputQueue
   // todo setState

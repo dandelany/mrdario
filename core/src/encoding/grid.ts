@@ -1,9 +1,9 @@
 import * as invariant from "invariant";
 
-import { GameGrid, GameGridRow, GridObject, GridObjectType } from "../types";
+import { GameGrid, GameGridRow, GridObject, GridObjectType } from "@/game/types";
 import { decodeGridObject, EncodedGridObject, encodeGridObject } from "./gridObject";
-import { COLORS } from "../constants";
-import { hasColor } from "../utils/guards";
+import { COLORS } from "@/game/constants";
+import { hasColor } from "@/game/utils";
 
 export type EncodedGrid = string;
 

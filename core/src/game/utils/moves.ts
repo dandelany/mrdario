@@ -1,7 +1,7 @@
 import { flatten, uniqBy } from "lodash";
 
 import {
-  Direction,
+  GridDirection,
   GameGrid,
   GameGridRow,
   GridCellLocation,
@@ -98,7 +98,7 @@ export function givePill(grid: GameGrid, pillColors: PillColors): GivePillResult
 export function moveCell(
   grid: GameGrid,
   cell: GridCellLocation,
-  direction: Direction
+  direction: GridDirection
 ): MoveCellResult {
   if (!canMoveCell(grid, cell, direction)) {
     return { grid, cell, didMove: false };
@@ -122,7 +122,7 @@ export function moveCell(
 export function moveCells(
   grid: GameGrid,
   cells: GridCellLocation[],
-  direction: Direction
+  direction: GridDirection
 ): MoveCellsResult {
   // move a set of cells (eg. a pill) at once
   // either they ALL move successfully, or none of them move
@@ -155,7 +155,7 @@ export function moveCells(
   return { grid, cells, didMove: true };
 }
 
-export function movePill(grid: GameGrid, pill: PillLocation, direction: Direction): MovePillResult {
+export function movePill(grid: GameGrid, pill: PillLocation, direction: GridDirection): MovePillResult {
   const moved = moveCells(grid, pill, direction);
   return { grid: moved.grid, pill: moved.cells as PillLocation, didMove: moved.didMove };
 }
@@ -166,7 +166,7 @@ export function slamPill(grid: GameGrid, pill: PillLocation): MovePillResult {
   let moving = true;
   let didMove = false;
   while (moving) {
-    const moved = movePill(grid, pill, Direction.Down);
+    const moved = movePill(grid, pill, GridDirection.Down);
     grid = moved.grid;
     pill = moved.pill;
     moving = moved.didMove;
@@ -199,7 +199,7 @@ export function rotatePill(
 
   if (isVertical) {
     // rotate vertical to horizontal
-    if (isEmpty(pillNeighbors[1][Direction.Right])) {
+    if (isEmpty(pillNeighbors[1][GridDirection.Right])) {
       // empty space to the right
       const nextPill: PillLocation = [[pillRow + 1, pillCol], [pillRow + 1, pillCol + 1]];
       if (rotateDirection === RotateDirection.Clockwise) {
@@ -213,7 +213,7 @@ export function rotatePill(
       pill = nextPill;
     } else {
       // no room on the right for normal rotate
-      if (!isEmpty(pillNeighbors[1][Direction.Left])) {
+      if (!isEmpty(pillNeighbors[1][GridDirection.Left])) {
         // no rotate, stuck between blocks
         return noMove;
       }
@@ -234,7 +234,7 @@ export function rotatePill(
   } else {
     // rotate horizontal to vertical
 
-    if (!isEmpty(pillNeighbors[0][Direction.Up]) || pill[0][0] === 0) {
+    if (!isEmpty(pillNeighbors[0][GridDirection.Up]) || pill[0][0] === 0) {
       return noMove;
     } // no kick here
 
@@ -316,17 +316,17 @@ export function dropDebris(grid: GameGrid): DropDebrisResult {
       let didMove = false;
 
       if (isPillSegment(obj)) {
-        ({ grid, didMove } = moveCell(grid, [rowI, colI], Direction.Down));
+        ({ grid, didMove } = moveCell(grid, [rowI, colI], GridDirection.Down));
         if (didMove) {
           fallingCells.push([rowI, colI]);
         }
       } else if (isPillLeft(obj)) {
-        ({ grid, didMove } = moveCells(grid, [[rowI, colI], [rowI, colI + 1]], Direction.Down));
+        ({ grid, didMove } = moveCells(grid, [[rowI, colI], [rowI, colI + 1]], GridDirection.Down));
         if (didMove) {
           fallingCells.push([rowI, colI], [rowI, colI + 1]);
         }
       } else if (isPillTop(obj)) {
-        ({ grid, didMove } = moveCells(grid, [[rowI, colI], [rowI + 1, colI]], Direction.Down));
+        ({ grid, didMove } = moveCells(grid, [[rowI, colI], [rowI + 1, colI]], GridDirection.Down));
         if (didMove) {
           fallingCells.push([rowI, colI], [rowI + 1, colI]);
         }

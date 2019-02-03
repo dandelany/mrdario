@@ -5,7 +5,7 @@ import makeReactSvg from "@/utils/makeReactSvg";
 
 import PillPart from "./PillPart";
 
-import { GameGrid, GridObjectType } from "mrdario-core/src/types";
+import { GameGrid, GridObjectType } from "../../../../core/src/game/types";
 
 import * as virusOrange from "!raw-loader!@/svg/virus_orange.svg";
 import * as virusPurple from "!raw-loader!@/svg/virus_purple.svg";

@@ -1,7 +1,8 @@
-import { seedRandom, seedRandomColor, seedRandomInt } from "../../utils/random";
 import { mean, includes, countBy } from "lodash";
-import { GameColor } from "../../types";
-import { COLORS } from "../../constants";
+
+import { seedRandom, seedRandomColor, seedRandomInt } from "@/game/utils/random";
+import { GameColor } from "@/game/types";
+import { COLORS } from "@/game/constants";
 
 describe("Seeded Pseudo-Random Number Generators", () => {
   describe("seedRandom()", () => {

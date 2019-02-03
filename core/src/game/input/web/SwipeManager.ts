@@ -3,7 +3,7 @@ import * as Hammer from "hammerjs";
 
 import { GameControllerMode, GameInput, InputEventType, InputManager } from "../../types";
 
-export default class SwipeManager extends EventEmitter implements InputManager {
+export class SwipeManager extends EventEmitter implements InputManager {
   public mode?: GameControllerMode;
   private mc: HammerManager;
   private downInputs: Set<GameInput>;

@@ -1,29 +1,32 @@
 import * as React from "react";
 import { RouteComponentProps, withRouter } from "react-router-dom";
+import {  SCClientSocket } from "socketcluster-client";
 
-import { GameControllerMode } from "mrdario-core/src/types";
+import { GameAPIClient } from "mrdario-core/src/api/client";
+import { GameControllerMode } from "../../../core/src/game/types";
+
 import AztecCalendar, { AztecCalendarMode } from "./AztecCalendar";
-import { create as createSocket, SCClientSocket } from "socketcluster-client";
+
 
 function getWindowSize() {
   return { windowWidth: window.innerWidth, windowHeight: window.innerHeight };
 }
 
-function initSocketClient() {
-  let socket: SCClientSocket = createSocket({ port: 8000 });
-
-  socket.on("error", err => {
-    console.error("Socket error - " + err);
-  });
-
-  socket.on("connect", function() {
-    console.log("Socket connected - OK");
-
-    // socket.emit('sampleClientEvent', 0);
-  });
-
-  return socket;
-}
+// function initSocketClient() {
+//   let socket: SCClientSocket = createSocket({ port: 8000 });
+//
+//   socket.on("error", err => {
+//     console.error("Socket error - " + err);
+//   });
+//
+//   socket.on("connect", function() {
+//     console.log("Socket connected - OK");
+//
+//     // socket.emit('sampleClientEvent', 0);
+//   });
+//
+//   return socket;
+// }
 
 interface AppContainerProps extends RouteComponentProps {}
 
@@ -40,11 +43,14 @@ class AppContainer extends React.Component<AppContainerProps, AppContainerState>
     mode: null
   };
   socket: SCClientSocket;
+  apiClient: GameAPIClient;
   _throttledResizeHandler: () => void;
 
   constructor(props: AppContainerProps) {
     super(props);
-    this.socket = initSocketClient();
+    this.apiClient = new GameAPIClient();
+    // this.socket = initSocketClient();
+    this.socket = this.apiClient.socket;
     // todo test throttling this
     this._throttledResizeHandler = this._onResize;
   }
@@ -65,13 +71,12 @@ class AppContainer extends React.Component<AppContainerProps, AppContainerState>
   render() {
     const { windowWidth, windowHeight } = this.state;
 
-    console.log(this.props, this.state);
-
     const shouldAnimate = window.location.pathname === "/";
     const gridCols = 8;
     const gridRows = 16;
     const childProps = {
       socket: this.socket,
+      apiClient: this.apiClient,
       windowWidth,
       windowHeight,
       gridCols,

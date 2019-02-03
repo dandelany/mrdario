@@ -1,7 +1,7 @@
 import * as React from "react";
 import makeReactSvg from "@/utils/makeReactSvg";
 
-import { GridObjectType, GameColor, GridObjectPillPartType, GridObjectPillHalfType } from "mrdario-core/src/types";
+import { GridObjectType, GameColor, GridObjectPillPartType, GridObjectPillHalfType } from "../../../../core/src/game/types";
 
 import * as pillHalfOrange from "!raw-loader!@/svg/pill_half_orange.svg";
 import * as pillHalfPurple from "!raw-loader!@/svg/pill_half_purple.svg";

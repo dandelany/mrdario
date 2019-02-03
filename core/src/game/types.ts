@@ -1,17 +1,8 @@
-import {
-  Direction,
-  GameColor,
-  GameControllerMode,
-  GameInput,
-  GridObjectType,
-  InputEventType,
-  SpeedLevel
-} from "./enums";
+import { GameColor, GameInput, GridDirection, GridObjectType, InputEventType, SpeedLevel } from "./enums";
+
 export * from "./enums";
 
-export * from "./GameController";
-
-export type Tuple<TItem, TLength extends number> = TItem[] & { length: TLength };
+export * from "@/game/controller/types";
 
 export type OneOrMore<T> = { 0: T } & T[];
 
@@ -82,7 +73,7 @@ export type GridCellLocation = [number, number];
 
 export type GridCellLocationDelta = [number, number];
 
-export type GridCellNeighbors = { [D in Direction]: MaybeGridObject };
+export type GridCellNeighbors = { [D in GridDirection]: MaybeGridObject };
 
 export type PillLocation = [GridCellLocation, GridCellLocation];
 export type PillColors = [{ color: GameColor }, { color: GameColor }];
@@ -90,7 +81,6 @@ export type PillColors = [{ color: GameColor }, { color: GameColor }];
 export type SpeedTable = { [S in SpeedLevel]: number };
 
 export type ModeKeyBindings = { [I in GameInput]?: string | string[] };
-export type KeyBindings = { [M in GameControllerMode]?: ModeKeyBindings };
 
 export type GameInputMove =
   | GameInput.Up
@@ -105,13 +95,4 @@ export type MoveInputNumberMap = { [I in GameInputMove]: number };
 export interface MoveInputEvent {
   input: GameInputMove;
   eventType: InputEventType;
-}
-
-// todo figure out eventemitter
-// interface InputManager extends EventEmitter {
-export interface InputManager {
-  setMode: (mode: GameControllerMode) => any;
-  // on: (input: GameInput, callback: (inputType: GameInput, keyType: InputEventType, event: Event) => any) => any;
-  on: (input: GameInput, callback: (keyType: InputEventType) => any) => any;
-  removeAllListeners: () => any;
 }

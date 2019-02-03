@@ -6,9 +6,9 @@ import {
   encodeInt,
   encodePillColors
 } from "../../encoding";
-import { GameColor, GameInput, GameInputMove, GameMode, PillColors } from "../../types";
-import { COLORS } from "../../constants";
-import { GameState } from "../../Game";
+import { GameColor, GameInput, GameInputMove, GameMode, PillColors } from "../../game/types";
+import { COLORS } from "../../game/constants";
+import { GameState } from "../../game/Game";
 
 describe("Game Encoding", () => {
   describe("Integer Encoding", () => {

@@ -1,8 +1,8 @@
 import * as React from "react";
 import { clamp, sample } from "lodash";
-import { GameColor, GameGrid } from "mrdario-core/src/types";
+import { GameColor, GameGrid } from "../../../../core/src/game/types";
 import { randomLogNormal, randomNormal } from "d3-random";
-import { hasColor, isDestroyed } from "mrdario-core/src/utils/guards";
+import { hasColor, isDestroyed } from "../../../../core/src/game/utils/guards";
 
 type GridLocation = [number, number];
 type Particle = [number, number, number, number, number];

@@ -1,7 +1,7 @@
-import { GameState, EncodableGameOptions } from "../Game";
+import { GameState, EncodableGameOptions } from "@/game/Game";
 import { encodeGrid } from "./grid";
-import { MovingCounters, MovingDirections } from "../InputRepeater";
-import { PillColors } from "../types";
+import { MovingCounters, MovingDirections } from "@/game/InputRepeater";
+import { PillColors } from "@/game/types";
 import invariant = require("invariant");
 
 export type EncodedGameState = string;

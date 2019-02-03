@@ -4,13 +4,16 @@ import { withRouter, Redirect, RouteComponentProps } from "react-router-dom";
 import shallowEqual from "@/utils/shallowEqual";
 import { SCClientSocket } from "socketcluster-client";
 
-import { DEFAULT_KEYS } from "mrdario-core/lib/constants";
-import { GameControllerMode, GameControllerState, GameGrid, PillColors } from "mrdario-core/src/types";
+import { DEFAULT_KEYS } from "mrdario-core/src/game/controller/constants";
+import { GameControllerMode, GameControllerState } from "mrdario-core/src/game/controller/types";
+import { GameGrid, PillColors } from "mrdario-core/src/game/types";
 
-import LocalWebGameController from "mrdario-core/src/web/LocalWebGameController";
-import KeyManager from "mrdario-core/src/web/inputs/KeyManager";
-import SwipeManager from 'mrdario-core/src/web/inputs/SwipeManager';
-import GamepadManager from 'mrdario-core/src/web/inputs/GamepadManager';
+import { encodeGameState } from "mrdario-core/src/encoding/game";
+import { GameClient } from "mrdario-core/src/api/GameClient";
+import { LocalWebGameController } from "mrdario-core/src/game/controller/web";
+import {KeyManager} from "mrdario-core/src/game/input/web/KeyManager";
+import {SwipeManager} from "mrdario-core/src/game/input/web/SwipeManager";
+import {GamepadManager} from "mrdario-core/src/game/input/web/GamepadManager";
 
 import { GameRouteParams, GameScoreResponse } from "@/types";
 
@@ -20,7 +23,7 @@ import WonOverlay from "@/components/overlays/WonOverlay";
 import LostOverlay from "@/components/overlays/LostOverlay";
 import responsiveGame from "@/components/responsiveGame";
 import { ExplosionField } from "@/components/game/ExplosionField";
-import { encodeGameState } from "mrdario-core/src/encoding/game";
+
 
 function getName() {
   return window.localStorage ? window.localStorage.getItem("mrdario-name") || "Anonymous" : "Anonymous";
@@ -31,6 +34,7 @@ export interface SinglePlayerGameProps extends RouteComponentProps<GameRoutePara
   heightPercent: number;
   padding: number;
   socket?: SCClientSocket;
+  apiClient: GameClient;
   onChangeMode?: (mode: GameControllerMode) => any;
 }
 
@@ -95,14 +99,12 @@ class SinglePlayerGame extends React.Component<SinglePlayerGameProps, SinglePlay
   _initGame(props: SinglePlayerGameProps) {
     if (this.game && this.game.cleanup) this.game.cleanup();
 
-    const { socket } = props;
+    const { apiClient } = props;
     const { params } = props.match;
     const level = parseInt(params.level) || 0;
     const speed = parseInt(params.speed) || 15;
 
-    if (socket) {
-      socket.emit("infoStartGame", [getName(), level, speed], _.noop);
-    }
+    apiClient.sendInfoStartGame(getName(), level, speed);
 
     // input managers controlling keyboard and touch events
     this.keyManager = new KeyManager(DEFAULT_KEYS);
