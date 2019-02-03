@@ -84,6 +84,12 @@ export const INPUT_REPEAT_INTERVALS: MoveInputNumberMap = {
 // Every ACCELERATE_INTERVAL pills, the gravity increases by one
 export const ACCELERATE_INTERVAL = 10;
 
+// debris fall speed - # of ticks it takes for debris to fall by one cell
+export const CASCADE_TICK_COUNT = 20;
+
+// time delay (in # of ticks) pills being destroyed stay in "destroyed" state before cascading
+export const DESTROY_TICK_COUNT = 20;
+
 // http://tetrisconcept.net/wiki/Dr._Mario#Gravity
 // # of frames it takes player pill to drop 1 row at speed [index]
 export const GRAVITY_TABLE: number[] = [

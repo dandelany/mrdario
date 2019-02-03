@@ -56,7 +56,6 @@ describe("Game Encoding", () => {
         [{ color: GameColor.Color3 }, { color: GameColor.Color3 }]
       ];
       const encoded = encodePillSequence(sequence);
-      console.log(encoded);
       expect(typeof encoded).toBe("string");
       expect(encoded).toHaveLength(sequence.length);
       expect(decodePillSequence(encoded)).toEqual(sequence);
@@ -67,6 +66,7 @@ describe("Game Encoding", () => {
     test("encodeGameState encodes game state into a string", () => {
       const gameState: GameState = getMockGameState();
       const encoded = encodeGameState(gameState);
+      expect(typeof encoded).toBe("string");
       console.log(encoded);
     });
   });
@@ -76,6 +76,7 @@ describe("Game Encoding", () => {
 function getMockGameState(): GameState {
   return {
     mode: GameMode.Playing,
+    frame: 123,
     grid: decodeGrid(`g5,6:
       XXXXXX
       XXDBXX
@@ -89,20 +90,16 @@ function getMockGameState(): GameState {
     pillSequence: decodePillSequence('123456789a'),
     counters: {
       gameTicks: 34,
-      playTicks: 10,
-      cascadeTicks: 2,
-      destroyTicks: 0,
+      modeTicks: 0,
       pillCount: 3
     },
     movingCounters: new Map([[GameInput.Left as GameInputMove, 3]]),
     movingDirections: new Map<GameInputMove, true>([[GameInput.Left, true]]),
-    options: {
-      level: 1,
-      baseSpeed: 12,
-      width: 8,
-      height: 17,
-      cascadeSpeed: 10,
-      destroyTicks: 5
-    }
+    // options: {
+    //   level: 1,
+    //   baseSpeed: 12,
+    //   width: 8,
+    //   height: 17
+    // }
   }
 }

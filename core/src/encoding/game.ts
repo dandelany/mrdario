@@ -1,4 +1,4 @@
-import { GameState, GameCounters } from "../Game";
+import { GameState, GameCounters, EncodableGameOptions } from "../Game";
 import { encodeGrid } from "./grid";
 import { MovingCounters, MovingDirections } from "../InputRepeater";
 import { PillColors } from "../types";
@@ -21,8 +21,6 @@ export function encodePillColors(pillColors: PillColors): string {
   // there are only 3 colors (0, 1, 2), so we can cheaply fit 2 in 1 character by bit shifting them
   const combined: number = (color0 << 2) + color1;
   return encodeInt(combined);
-
-  // return encodeInt(parseInt(String(color0) + String(color1), 10));
 }
 export function decodePillColors(encodedColors: string): PillColors {
   // todo validate pill colors string
@@ -33,11 +31,6 @@ export function decodePillColors(encodedColors: string): PillColors {
   return [{color: color0}, {color: color1}];
 }
 
-// todo decodePillColors
-// export function decodePillColors(): string {
-//
-// }
-
 export function encodePillSequence(pillSequence: PillColors[]): string {
   return pillSequence.map(encodePillColors).join("");
 }
@@ -45,7 +38,6 @@ export function decodePillSequence(encodedSequence: string): PillColors[] {
   const encodedArr = encodedSequence.split("");
   return encodedArr.map(encoded => decodePillColors(encoded));
 }
-// todo decodePillSequence
 
 export function encodeMovingCounters(movingCounters: MovingCounters): string {
   return Array.from(movingCounters.values()).join(",");
@@ -57,25 +49,35 @@ export function encodeMovingDirections(movingDirections: MovingDirections): stri
 }
 
 export function encodeGameCounters(gameCounters: GameCounters) {
-  const { gameTicks, playTicks, cascadeTicks, destroyTicks, pillCount } = gameCounters;
+  const { gameTicks, modeTicks, pillCount } = gameCounters;
   return [
     encodeInt(gameTicks),
-    encodeInt(playTicks),
-    encodeInt(cascadeTicks),
-    encodeInt(destroyTicks),
+    encodeInt(modeTicks),
     encodeInt(pillCount)
   ].join(",");
 }
 
-export function encodeGameState(gameState: GameState): EncodedGameState {
+export function encodeGameOptions(options: EncodableGameOptions) {
+  const {width, height, level, baseSpeed} = options;
+  return [
+    encodeInt(width),
+    encodeInt(height),
+    encodeInt(level),
+    encodeInt(baseSpeed)
+  ]
+}
+
+export function encodeGameState(state: GameState): EncodedGameState {
   return JSON.stringify({
-    ...gameState,
-    grid: encodeGrid(gameState.grid),
-    score: encodeInt(gameState.score),
-    timeBonus: encodeInt(gameState.timeBonus),
-    counters: encodeGameCounters(gameState.counters),
-    movingCounters: encodeMovingCounters(gameState.movingCounters),
-    movingDirections: encodeMovingDirections(gameState.movingDirections),
-    pillSequence: encodePillSequence(gameState.pillSequence)
+    ...state,
+    grid: encodeGrid(state.grid),
+    frame: encodeInt(state.frame),
+    // options: encodeGameStateOptions(state.options),
+    score: encodeInt(state.score),
+    timeBonus: encodeInt(state.timeBonus),
+    counters: encodeGameCounters(state.counters),
+    movingCounters: encodeMovingCounters(state.movingCounters),
+    movingDirections: encodeMovingDirections(state.movingDirections),
+    pillSequence: encodePillSequence(state.pillSequence)
   });
 }
