@@ -5,7 +5,8 @@ import { TypeState } from "typestate";
 import {
   ACCELERATE_INTERVAL,
   CASCADE_TICK_COUNT,
-  COLORS, DESTROY_TICK_COUNT,
+  COLORS,
+  DESTROY_TICK_COUNT,
   GRAVITY_TABLE,
   PLAYFIELD_HEIGHT,
   PLAYFIELD_WIDTH
@@ -35,7 +36,11 @@ import {
   slamPill
 } from "./utils/moves";
 
-import InputRepeater, { InputRepeaterState, MovingCounters, MovingDirections } from "./InputRepeater";
+import InputRepeater, {
+  InputRepeaterState,
+  MovingCounters,
+  MovingDirections
+} from "./InputRepeater";
 import { isPillLocation } from "./utils/guards";
 
 function gravityFrames(speed: number): number {
@@ -51,29 +56,26 @@ export interface GameOptions {
   pillSequence?: PillColors[];
   width: number;
   height: number;
+  seed?: string;
   onWin: () => void;
   onLose: () => void;
 }
-export type EncodableGameOptions = Omit<GameOptions, 'onWin' | 'onLose'>;
-
-export interface GameCounters {
-  gameTicks: number;
-  modeTicks: number;
-  pillCount: number;
-}
+export type EncodableGameOptions = Omit<GameOptions, "onWin" | "onLose">;
 
 export interface GameState {
   mode: GameMode;
-  frame: number;
   grid: GameGrid;
   pill?: PillLocation;
-  score: number;
-  timeBonus: number;
   pillSequence: PillColors[];
-  counters: GameCounters;
   movingCounters: MovingCounters;
   movingDirections: MovingDirections;
-  // options: GameStateOptions;
+  seed: string;
+  frame: number;
+  score: number;
+  timeBonus: number;
+  gameTicks: number;
+  modeTicks: number;
+  pillCount: number;
 }
 
 // options that can be passed to control game parameters
@@ -106,18 +108,20 @@ export default class Game extends EventEmitter {
     return generateEnemies(makeEmptyGrid(width, height + 1), level, COLORS);
   }
   public readonly options: GameOptions;
-  public readonly counters: GameCounters;
   protected fsm: TypeState.FiniteStateMachine<GameMode>;
+  protected inputRepeater: InputRepeater;
   protected grid: GameGrid;
-  protected frame: number;
   protected pill?: PillLocation;
-  protected origVirusCount: number;
   protected pillSequence: PillColors[];
+  protected origVirusCount: number;
   protected playGravity: number;
   protected cascadeGravity: number;
   protected score: number;
+  protected frame: number;
+  protected gameTicks: number;
+  protected modeTicks: number;
+  protected pillCount: number;
   protected timeBonus: number = 0;
-  protected inputRepeater: InputRepeater;
   protected cascadeLineCount: number = 0;
 
   constructor(passedOptions: Partial<GameOptions> = {}) {
@@ -147,8 +151,11 @@ export default class Game extends EventEmitter {
     // # of frames it takes debris to fall 1 row during cascade
     this.cascadeGravity = gravityFrames(CASCADE_TICK_COUNT);
 
-    // counters, mostly used to count # of frames we've been in a particular state
-    this.counters = { gameTicks: 0, modeTicks: 0, pillCount: 0 };
+    // counters, used to count # of frames we've been in a particular state
+    this.gameTicks = 0;
+    this.modeTicks = 0;
+    // # of pills given since beginning of game
+    this.pillCount = 0;
 
     // input repeater, takes raw inputs and repeats them if they are held down
     // returns the real sequence of moves used by the game
@@ -159,7 +166,6 @@ export default class Game extends EventEmitter {
     this.frame++;
     // always handle move inputs, key can be released in any mode
     const moveQueue: GameInputMove[] = this.inputRepeater.tick(inputQueue);
-    // todo fix dropping inputs between modes!!
 
     // the main game loop, called once per game tick
     switch (this.fsm.currentState) {
@@ -182,23 +188,27 @@ export default class Game extends EventEmitter {
   }
 
   public getState(): GameState {
-    const { grid, frame, pill, pillSequence, score, timeBonus, counters } = this;
+    const { grid, frame, pill, pillSequence, score, timeBonus } = this;
+    const { pillCount, gameTicks, modeTicks } = this;
     // const { onWin, onLose, ...stateOptions } = options;
     const mode: GameMode = this.fsm.currentState;
     const inputRepeaterState: InputRepeaterState = this.inputRepeater.getState();
-    const {movingCounters, movingDirections} = inputRepeaterState;
+    const { movingCounters, movingDirections } = inputRepeaterState;
 
     return {
       mode,
+      seed: 'a',
       frame,
       grid,
       pill,
+      pillSequence,
       score,
       timeBonus,
-      pillSequence,
-      counters,
+      pillCount,
+      gameTicks,
+      modeTicks,
       movingCounters,
-      movingDirections,
+      movingDirections
       // options: stateOptions
       // todo input queue and input repeater
     };
@@ -237,17 +247,11 @@ export default class Game extends EventEmitter {
     fsm.fromAny(GameMode).to(GameMode.Loading);
 
     // onPlay
-    fsm.on(GameMode.Playing, () => {
-      this.counters.modeTicks = 0;
-    });
+    fsm.on(GameMode.Playing, this.resetModeTicks);
     // onDestroy
-    fsm.on(GameMode.Destruction, () => {
-      this.counters.modeTicks = 0;
-    });
+    fsm.on(GameMode.Destruction, this.resetModeTicks);
     // onCascade
-    fsm.on(GameMode.Cascade, () => {
-      this.counters.modeTicks = 0;
-    });
+    fsm.on(GameMode.Cascade, this.resetModeTicks);
     fsm.on(GameMode.Ended, (from: GameMode | undefined) => {
       if (from === GameMode.Reconcile) {
         // onWin
@@ -260,6 +264,9 @@ export default class Game extends EventEmitter {
 
     return fsm;
   }
+  private resetModeTicks = () => {
+    this.modeTicks = 0;
+  };
 
   private tickLoading() {
     this.fsm.go(GameMode.Ready);
@@ -269,7 +276,7 @@ export default class Game extends EventEmitter {
     this.cascadeLineCount = 0;
 
     // try to add a new pill
-    const { pillCount } = this.counters;
+    const { pillCount } = this;
     const pillSequenceIndex = pillCount % this.pillSequence.length;
     const pillColors = this.pillSequence[pillSequenceIndex];
     const { grid, pill, didGive } = givePill(this.grid, pillColors);
@@ -278,13 +285,12 @@ export default class Game extends EventEmitter {
 
     if (didGive) {
       // got a new pill!
-      this.counters.pillCount++;
+      this.pillCount++;
 
       // update speed to match # of given pills
       // after every ACCELERATE_INTERVAL pills, gravity speed is increased by one
       const speed =
-        this.options.baseSpeed +
-        Math.floor(this.counters.pillCount / ACCELERATE_INTERVAL);
+        this.options.baseSpeed + Math.floor(this.pillCount / ACCELERATE_INTERVAL);
       this.playGravity = gravityFrames(speed);
 
       this.fsm.go(GameMode.Playing);
@@ -297,19 +303,19 @@ export default class Game extends EventEmitter {
   private tickPlaying(moveQueue: GameInputMove[]) {
     // game is playing, pill is falling & under user control
     // todo speedup
-    this.counters.modeTicks++;
-    this.counters.gameTicks++;
+    this.modeTicks++;
+    this.gameTicks++;
 
     // do the moves created by the inputRepeater
     let shouldReconcile = this.doMoves(moveQueue);
 
     // gravity pulling pill down
     if (
-      this.counters.modeTicks > this.playGravity &&
+      this.modeTicks > this.playGravity &&
       !this.inputRepeater.movingDirections[GameInput.Down]
     ) {
       // deactivate gravity while moving down
-      this.counters.modeTicks = 0;
+      this.modeTicks = 0;
       if (isPillLocation(this.pill)) {
         const moved = movePill(this.grid, this.pill, Direction.Down);
         if (!moved.didMove) {
@@ -352,7 +358,7 @@ export default class Game extends EventEmitter {
       // because viruses are far apart, bonus is harder to get
       const expectedTicksPerVirus = 320 + Math.max(0, 40 - this.origVirusCount) * 3;
       const expectedTicks = this.origVirusCount * expectedTicksPerVirus;
-      this.timeBonus = Math.max(0, expectedTicks - this.counters.gameTicks);
+      this.timeBonus = Math.max(0, expectedTicks - this.gameTicks);
       this.score += this.timeBonus;
       this.fsm.go(GameMode.Ended);
     }
@@ -368,28 +374,26 @@ export default class Game extends EventEmitter {
 
   private tickDestruction() {
     // stay in destruction state a few ticks to animate destruction
-    if (this.counters.modeTicks >= DESTROY_TICK_COUNT) {
+    if (this.modeTicks >= DESTROY_TICK_COUNT) {
       // empty the destroyed cells
       this.grid = removeDestroyed(this.grid);
       this.fsm.go(GameMode.Cascade);
       return;
     }
-    this.counters.modeTicks++;
+    this.modeTicks++;
   }
 
   private tickCascade() {
-    console.log("CASCADE: ", this.counters.modeTicks);
-    if (this.counters.modeTicks === 0) {
-      console.log("FIRST CASCADE")
+    if (this.modeTicks === 0) {
       // first cascade tick
       // check if there is any debris to drop
-      const {fallingCells} = dropDebris(this.grid);
+      const { fallingCells } = dropDebris(this.grid);
       // nothing to drop, ready for another pill
       if (!fallingCells.length) {
         this.fsm.go(GameMode.Ready);
         return;
       }
-    } else if (this.counters.modeTicks % this.cascadeGravity === 0) {
+    } else if (this.modeTicks % this.cascadeGravity === 0) {
       // drop the cells for the current cascade
       const dropped = dropDebris(this.grid);
       this.grid = dropped.grid;
@@ -404,7 +408,7 @@ export default class Game extends EventEmitter {
         return;
       }
     }
-    this.counters.modeTicks++;
+    this.modeTicks++;
   }
 
   private doMoves(moveQueue: GameInputMove[]) {

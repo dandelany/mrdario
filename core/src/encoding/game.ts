@@ -1,4 +1,4 @@
-import { GameState, GameCounters, EncodableGameOptions } from "../Game";
+import { GameState, EncodableGameOptions } from "../Game";
 import { encodeGrid } from "./grid";
 import { MovingCounters, MovingDirections } from "../InputRepeater";
 import { PillColors } from "../types";
@@ -48,15 +48,6 @@ export function encodeMovingDirections(movingDirections: MovingDirections): stri
   return Array.from(movingDirections.keys()).join(",");
 }
 
-export function encodeGameCounters(gameCounters: GameCounters) {
-  const { gameTicks, modeTicks, pillCount } = gameCounters;
-  return [
-    encodeInt(gameTicks),
-    encodeInt(modeTicks),
-    encodeInt(pillCount)
-  ].join(",");
-}
-
 export function encodeGameOptions(options: EncodableGameOptions) {
   const {width, height, level, baseSpeed} = options;
   return [
@@ -67,6 +58,7 @@ export function encodeGameOptions(options: EncodableGameOptions) {
   ]
 }
 
+
 export function encodeGameState(state: GameState): EncodedGameState {
   return JSON.stringify({
     ...state,
@@ -75,7 +67,9 @@ export function encodeGameState(state: GameState): EncodedGameState {
     // options: encodeGameStateOptions(state.options),
     score: encodeInt(state.score),
     timeBonus: encodeInt(state.timeBonus),
-    counters: encodeGameCounters(state.counters),
+    gameTicks: encodeInt(state.gameTicks),
+    modeTicks: encodeInt(state.modeTicks),
+    pillCount: encodeInt(state.pillCount),
     movingCounters: encodeMovingCounters(state.movingCounters),
     movingDirections: encodeMovingDirections(state.movingDirections),
     pillSequence: encodePillSequence(state.pillSequence)

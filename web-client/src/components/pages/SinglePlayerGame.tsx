@@ -20,7 +20,7 @@ import WonOverlay from "@/components/overlays/WonOverlay";
 import LostOverlay from "@/components/overlays/LostOverlay";
 import responsiveGame from "@/components/responsiveGame";
 import { ExplosionField } from "@/components/game/ExplosionField";
-// import { encodeGameState } from "mrdario-core/src/encoding/game";
+import { encodeGameState } from "mrdario-core/src/encoding/game";
 
 function getName() {
   return window.localStorage ? window.localStorage.getItem("mrdario-name") || "Anonymous" : "Anonymous";
@@ -117,13 +117,13 @@ class SinglePlayerGame extends React.Component<SinglePlayerGameProps, SinglePlay
       inputManagers: [this.keyManager],
       render: (gameControllerState: GameControllerState) => {
         const { gameState } = gameControllerState;
-        const { grid, pillSequence, score, timeBonus, counters } = gameState;
-        // console.log(encodeGameState(gameState));
+        const { grid, pillSequence, score, timeBonus, pillCount } = gameState;
+        console.log(encodeGameState(gameState));
         this.setState({
           mode: gameControllerState.mode,
           grid,
           pillSequence,
-          pillCount: counters.pillCount,
+          pillCount,
           score,
           timeBonus
         });

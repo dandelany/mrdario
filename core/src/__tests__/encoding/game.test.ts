@@ -87,12 +87,11 @@ function getMockGameState(): GameState {
     pill: [[1, 2], [1, 3]],
     score: 900,
     timeBonus: 2000,
+    gameTicks: 34,
+    modeTicks: 0,
+    pillCount: 3,
+    seed: 'mock-seed',
     pillSequence: decodePillSequence('123456789a'),
-    counters: {
-      gameTicks: 34,
-      modeTicks: 0,
-      pillCount: 3
-    },
     movingCounters: new Map([[GameInput.Left as GameInputMove, 3]]),
     movingDirections: new Map<GameInputMove, true>([[GameInput.Left, true]]),
     // options: {

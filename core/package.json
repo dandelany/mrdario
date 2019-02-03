@@ -39,6 +39,7 @@
     "invariant": "^2.2.4",
     "lodash": "^4.17.11",
     "mousetrap": "^1.6.2",
+    "seedrandom": "^2.4.4",
     "typestate": "^1.0.6"
   }
 }
