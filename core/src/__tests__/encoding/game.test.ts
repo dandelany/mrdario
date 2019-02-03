@@ -2,10 +2,9 @@ import {
   decodeGrid,
   decodeInt,
   decodePillColors,
-  decodePillSequence, encodeGameState,
+  encodeGameState,
   encodeInt,
-  encodePillColors,
-  encodePillSequence
+  encodePillColors
 } from "../../encoding";
 import { GameColor, GameInput, GameInputMove, GameMode, PillColors } from "../../types";
 import { COLORS } from "../../constants";
@@ -49,17 +48,6 @@ describe("Game Encoding", () => {
         }
       }
     });
-    test("encode/decodePillSequence encodes/decodes an array of PillColors", () => {
-      const sequence: PillColors[] = [
-        [{ color: GameColor.Color1 }, { color: GameColor.Color2 }],
-        [{ color: GameColor.Color2 }, { color: GameColor.Color3 }],
-        [{ color: GameColor.Color3 }, { color: GameColor.Color3 }]
-      ];
-      const encoded = encodePillSequence(sequence);
-      expect(typeof encoded).toBe("string");
-      expect(encoded).toHaveLength(sequence.length);
-      expect(decodePillSequence(encoded)).toEqual(sequence);
-    });
   });
 
   describe("Game State Encoding", () => {
@@ -91,14 +79,8 @@ function getMockGameState(): GameState {
     modeTicks: 0,
     pillCount: 3,
     seed: 'mock-seed',
-    pillSequence: decodePillSequence('123456789a'),
+    nextPill: [{color: GameColor.Color1}, {color: GameColor.Color2}],
     movingCounters: new Map([[GameInput.Left as GameInputMove, 3]]),
-    movingDirections: new Map<GameInputMove, true>([[GameInput.Left, true]]),
-    // options: {
-    //   level: 1,
-    //   baseSpeed: 12,
-    //   width: 8,
-    //   height: 17
-    // }
+    movingDirections: new Map<GameInputMove, true>([[GameInput.Left, true]])
   }
 }

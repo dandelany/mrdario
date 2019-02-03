@@ -23,7 +23,7 @@ import {
   RotateDirection
 } from "./types";
 
-import { generateEnemies, generatePillSequence, makeEmptyGrid } from "./utils/generators";
+import { generateEnemies, getNextPill, makeEmptyGrid } from "./utils/generators";
 import { hasViruses } from "./utils/grid";
 import {
   clearTopRow,
@@ -53,7 +53,6 @@ export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
 export interface GameOptions {
   level: number;
   baseSpeed: number;
-  pillSequence?: PillColors[];
   width: number;
   height: number;
   seed?: string;
@@ -66,7 +65,7 @@ export interface GameState {
   mode: GameMode;
   grid: GameGrid;
   pill?: PillLocation;
-  pillSequence: PillColors[];
+  nextPill: PillColors;
   movingCounters: MovingCounters;
   movingDirections: MovingDirections;
   seed: string;
@@ -84,8 +83,6 @@ export const defaultGameOptions: GameOptions = {
   level: 0,
   // value representing pill fall speed, increases over time
   baseSpeed: 15,
-  // sequence of pill colors to use, will be generated if not passed
-  pillSequence: undefined,
   // width and height of grid (# of grid squares)
   width: PLAYFIELD_WIDTH,
   height: PLAYFIELD_HEIGHT,
@@ -112,15 +109,20 @@ export default class Game extends EventEmitter {
   protected inputRepeater: InputRepeater;
   protected grid: GameGrid;
   protected pill?: PillLocation;
-  protected pillSequence: PillColors[];
+  protected nextPill: PillColors;
+  protected seed: string;
   protected origVirusCount: number;
   protected playGravity: number;
   protected cascadeGravity: number;
-  protected score: number;
-  protected frame: number;
-  protected gameTicks: number;
-  protected modeTicks: number;
-  protected pillCount: number;
+  // the player's score
+  protected score: number = 0;
+  // current frame #
+  protected frame: number = 0;
+  // counters, used to count # of frames we've been in a particular state
+  protected gameTicks: number = 0;
+  protected modeTicks: number = 0;
+  // # of pills given since beginning of game
+  protected pillCount: number = 0;
   protected timeBonus: number = 0;
   protected cascadeLineCount: number = 0;
 
@@ -129,10 +131,11 @@ export default class Game extends EventEmitter {
     const options: GameOptions = defaults({}, passedOptions, defaultGameOptions);
     this.options = options;
 
-    // current frame #
-    this.frame = 0;
-    // the player's score
-    this.score = 0;
+    this.seed = options.seed || Date.now().toString().split('').reverse().join('');
+    // this.seed = "mrdario";
+
+    this.nextPill = getNextPill(this.seed, this.pillCount);
+
     // finite state machine representing game mode
     this.fsm = this.initStateMachine();
 
@@ -142,20 +145,13 @@ export default class Game extends EventEmitter {
     this.grid = grid;
     this.origVirusCount = virusCount;
 
-    // sequence of pill colors to use in the game, will be generated if not passed
-    this.pillSequence = options.pillSequence || generatePillSequence(COLORS);
-
     // lookup speed in gravityTable to get # of frames it takes to fall 1 row
     // increases over time due to acceleration
     this.playGravity = gravityFrames(options.baseSpeed);
     // # of frames it takes debris to fall 1 row during cascade
     this.cascadeGravity = gravityFrames(CASCADE_TICK_COUNT);
 
-    // counters, used to count # of frames we've been in a particular state
-    this.gameTicks = 0;
-    this.modeTicks = 0;
-    // # of pills given since beginning of game
-    this.pillCount = 0;
+
 
     // input repeater, takes raw inputs and repeats them if they are held down
     // returns the real sequence of moves used by the game
@@ -188,7 +184,7 @@ export default class Game extends EventEmitter {
   }
 
   public getState(): GameState {
-    const { grid, frame, pill, pillSequence, score, timeBonus } = this;
+    const { grid, pill, nextPill, frame, seed, score, timeBonus } = this;
     const { pillCount, gameTicks, modeTicks } = this;
     // const { onWin, onLose, ...stateOptions } = options;
     const mode: GameMode = this.fsm.currentState;
@@ -197,18 +193,18 @@ export default class Game extends EventEmitter {
 
     return {
       mode,
-      seed: 'a',
-      frame,
       grid,
       pill,
-      pillSequence,
+      nextPill,
+      movingCounters,
+      movingDirections,
+      seed,
+      frame,
       score,
       timeBonus,
       pillCount,
       gameTicks,
       modeTicks,
-      movingCounters,
-      movingDirections
       // options: stateOptions
       // todo input queue and input repeater
     };
@@ -276,9 +272,7 @@ export default class Game extends EventEmitter {
     this.cascadeLineCount = 0;
 
     // try to add a new pill
-    const { pillCount } = this;
-    const pillSequenceIndex = pillCount % this.pillSequence.length;
-    const pillColors = this.pillSequence[pillSequenceIndex];
+    const pillColors = this.nextPill;
     const { grid, pill, didGive } = givePill(this.grid, pillColors);
     this.grid = grid;
     this.pill = pill;
@@ -286,6 +280,8 @@ export default class Game extends EventEmitter {
     if (didGive) {
       // got a new pill!
       this.pillCount++;
+      // generate the next pill
+      this.nextPill = getNextPill(this.seed, this.pillCount);
 
       // update speed to match # of given pills
       // after every ACCELERATE_INTERVAL pills, gravity speed is increased by one

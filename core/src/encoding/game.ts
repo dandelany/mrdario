@@ -31,14 +31,6 @@ export function decodePillColors(encodedColors: string): PillColors {
   return [{color: color0}, {color: color1}];
 }
 
-export function encodePillSequence(pillSequence: PillColors[]): string {
-  return pillSequence.map(encodePillColors).join("");
-}
-export function decodePillSequence(encodedSequence: string): PillColors[] {
-  const encodedArr = encodedSequence.split("");
-  return encodedArr.map(encoded => decodePillColors(encoded));
-}
-
 export function encodeMovingCounters(movingCounters: MovingCounters): string {
   return Array.from(movingCounters.values()).join(",");
 }
@@ -48,30 +40,35 @@ export function encodeMovingDirections(movingDirections: MovingDirections): stri
   return Array.from(movingDirections.keys()).join(",");
 }
 
-export function encodeGameOptions(options: EncodableGameOptions) {
+export function encodeGameOptions(options: EncodableGameOptions): string {
   const {width, height, level, baseSpeed} = options;
   return [
     encodeInt(width),
     encodeInt(height),
     encodeInt(level),
     encodeInt(baseSpeed)
-  ]
+  ].join(',')
 }
-
+export function decodeGameOptions(encoded: string): EncodableGameOptions {
+  const optionStrs = encoded.split(',');
+  invariant(optionStrs.length === 4, "Invalid game options");
+  const optionsArr = optionStrs.map(decodeInt);
+  const [width, height, level, baseSpeed] = optionsArr;
+  return {width, height, level, baseSpeed};
+}
 
 export function encodeGameState(state: GameState): EncodedGameState {
   return JSON.stringify({
     ...state,
     grid: encodeGrid(state.grid),
+    nextPill: encodePillColors(state.nextPill),
     frame: encodeInt(state.frame),
-    // options: encodeGameStateOptions(state.options),
     score: encodeInt(state.score),
     timeBonus: encodeInt(state.timeBonus),
     gameTicks: encodeInt(state.gameTicks),
     modeTicks: encodeInt(state.modeTicks),
     pillCount: encodeInt(state.pillCount),
     movingCounters: encodeMovingCounters(state.movingCounters),
-    movingDirections: encodeMovingDirections(state.movingDirections),
-    pillSequence: encodePillSequence(state.pillSequence)
+    movingDirections: encodeMovingDirections(state.movingDirections)
   });
 }

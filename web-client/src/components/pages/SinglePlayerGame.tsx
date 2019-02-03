@@ -9,8 +9,8 @@ import { GameControllerMode, GameControllerState, GameGrid, PillColors } from "m
 
 import LocalWebGameController from "mrdario-core/src/web/LocalWebGameController";
 import KeyManager from "mrdario-core/src/web/inputs/KeyManager";
-// import SwipeManager from 'mrdario-core/src/inputs/SwipeManager';
-// import GamepadManager from 'mrdario-core/src/inputs/GamepadManager';
+import SwipeManager from 'mrdario-core/src/web/inputs/SwipeManager';
+import GamepadManager from 'mrdario-core/src/web/inputs/GamepadManager';
 
 import { GameRouteParams, GameScoreResponse } from "@/types";
 
@@ -37,8 +37,7 @@ export interface SinglePlayerGameProps extends RouteComponentProps<GameRoutePara
 export interface SinglePlayerGameState {
   mode?: GameControllerMode;
   grid?: GameGrid;
-  pillSequence?: PillColors[];
-  pillCount?: number;
+  nextPill?: PillColors;
   score?: number;
   timeBonus?: number;
 
@@ -58,6 +57,8 @@ class SinglePlayerGame extends React.Component<SinglePlayerGameProps, SinglePlay
 
   game?: any;
   keyManager?: KeyManager;
+  gamepadManager?: GamepadManager;
+  touchManager?: SwipeManager;
 
   componentDidMount() {
     // mode means won or lost, no mode = playing
@@ -105,7 +106,7 @@ class SinglePlayerGame extends React.Component<SinglePlayerGameProps, SinglePlay
 
     // input managers controlling keyboard and touch events
     this.keyManager = new KeyManager(DEFAULT_KEYS);
-    // this.touchManager = new SwipeManager();
+    this.touchManager = new SwipeManager();
     // this.gamepadManager = new GamepadManager();
 
     // create new game controller that will run the game
@@ -114,16 +115,16 @@ class SinglePlayerGame extends React.Component<SinglePlayerGameProps, SinglePlay
       level,
       speed,
       // inputManagers: [this.keyManager, this.touchManager, this.gamepadManager],
-      inputManagers: [this.keyManager],
+      inputManagers: [this.keyManager, this.touchManager],
       render: (gameControllerState: GameControllerState) => {
         const { gameState } = gameControllerState;
-        const { grid, pillSequence, score, timeBonus, pillCount } = gameState;
+        const { grid, nextPill, score, timeBonus } = gameState;
+        // if(Math.PI == 1) console.log(encodeGameState(gameState));
         console.log(encodeGameState(gameState));
         this.setState({
           mode: gameControllerState.mode,
           grid,
-          pillSequence,
-          pillCount,
+          nextPill,
           score,
           timeBonus
         });
@@ -171,7 +172,7 @@ class SinglePlayerGame extends React.Component<SinglePlayerGameProps, SinglePlay
   }
 
   render() {
-    const { grid, pillCount, pillSequence, highScores, rank, pendingMode, score, timeBonus } = this.state;
+    const { grid, nextPill, highScores, rank, pendingMode, score, timeBonus } = this.state;
 
     // if(this.game) console.log(encodeGameState(this.game.getState().gameState));
 
@@ -191,12 +192,6 @@ class SinglePlayerGame extends React.Component<SinglePlayerGameProps, SinglePlay
     const overlayStyle = { position: "absolute" as "absolute", width, height, padding, left: 0 };
     const lostOverlayStyle = { ...overlayStyle, top: params.mode === GameControllerMode.Lost ? 0 : height };
     const wonOverlayStyle = { ...overlayStyle, top: params.mode === GameControllerMode.Won ? 0 : height };
-
-    let nextPill: PillColors | undefined;
-    if (pillSequence && pillCount !== undefined) {
-      const pillIndex = pillCount % pillSequence.length;
-      nextPill = pillSequence[pillIndex];
-    }
 
     return (
       <div className="game-playfield-container">
