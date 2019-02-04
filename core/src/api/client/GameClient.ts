@@ -12,6 +12,8 @@ import {
 } from "../types";
 
 import * as t from "io-ts";
+import { GameGrid } from "../../game";
+import { encodeGrid } from "../../encoding";
 
 export interface GameClientOptions {}
 
@@ -93,4 +95,19 @@ export class GameClient {
   ) {
     this.socket.emit("infoLostGame", [name, level, speed, score], callback);
   }
+
+  public createSimpleGame(level: number, speed: number) {
+    return new Promise<string>((resolve, reject) => {
+      this.socket.emit("createSimpleGame", [level, speed], (err: Error, gameId: string) => {
+        if (err) reject(err);
+        resolve(gameId);
+      });
+    });
+  }
+
+  public publishSimpleGameState(gameId: string, grid: GameGrid) {
+    const encodedGrid = encodeGrid(grid);
+    this.socket.publish(`game-${gameId}`, encodedGrid);
+  }
 }
+

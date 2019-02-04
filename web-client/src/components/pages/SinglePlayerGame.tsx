@@ -44,6 +44,8 @@ export interface SinglePlayerGameState {
   highScores?: [string, number][];
   rank?: number;
   pendingMode?: GameControllerMode;
+
+  gameId?: string;
 }
 
 class SinglePlayerGame extends React.Component<SinglePlayerGameProps, SinglePlayerGameState> {
@@ -92,6 +94,14 @@ class SinglePlayerGame extends React.Component<SinglePlayerGameProps, SinglePlay
     return hasChanged;
   }
 
+  componentDidUpdate() {
+    const {grid, gameId} = this.state;
+    if(grid && gameId) {
+      // console.log('send', this.state.gameId, this.state.grid);
+      this.props.gameClient.publishSimpleGameState(gameId, grid);
+    }
+  }
+
   _initGame(props: SinglePlayerGameProps) {
     if (this.game && this.game.cleanup) this.game.cleanup();
 
@@ -109,6 +119,11 @@ class SinglePlayerGame extends React.Component<SinglePlayerGameProps, SinglePlay
       })
       .catch((err: Error) => {
         console.error(err);
+      });
+
+    gameClient.createSimpleGame(level, speed)
+      .then((gameId: string) => {
+        this.setState({gameId})
       });
 
     // input managers controlling keyboard and touch events
@@ -157,6 +172,7 @@ class SinglePlayerGame extends React.Component<SinglePlayerGameProps, SinglePlay
 
       if (_.isFinite(level) && _.isFinite(score) && this.props.gameClient.socket.state) {
         console.log("sending score");
+
 
         this.props.gameClient
           .sendSingleGameHighScore(level, name, score)

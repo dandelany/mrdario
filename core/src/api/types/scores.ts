@@ -1,5 +1,6 @@
 import * as t from "io-ts";
 
+// high scores
 export const THighScoresRow = t.tuple([
   t.string,
   t.number
@@ -26,4 +27,5 @@ export const TGameScoreResponse = t.type({
   scores: t.array(THighScoresRow)
 });
 export type GameScoreResponse = t.TypeOf<typeof TGameScoreResponse>;
+
 
