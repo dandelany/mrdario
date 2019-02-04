@@ -1,7 +1,7 @@
-import { GameState, EncodableGameOptions } from "@/game/Game";
+import { GameState, EncodableGameOptions } from "../game";
 import { encodeGrid } from "./grid";
-import { MovingCounters, MovingDirections } from "@/game/InputRepeater";
-import { PillColors } from "@/game/types";
+import { MovingCounters, MovingDirections } from "../game/InputRepeater";
+import { PillColors } from "../game/types";
 import invariant = require("invariant");
 
 export type EncodedGameState = string;
@@ -16,8 +16,8 @@ export function decodeInt(numStr: string): number {
 }
 
 export function encodePillColors(pillColors: PillColors): string {
-  const color0: number = pillColors[0].color;
-  const color1: number = pillColors[1].color;
+  const color0: number = pillColors[0];
+  const color1: number = pillColors[1];
   // there are only 3 colors (0, 1, 2), so we can cheaply fit 2 in 1 character by bit shifting them
   const combined: number = (color0 << 2) + color1;
   return encodeInt(combined);
@@ -28,7 +28,7 @@ export function decodePillColors(encodedColors: string): PillColors {
   const combinedNum: number = decodeInt(encodedColors);
   const color0 = combinedNum >> 2;
   const color1 = combinedNum & 0b11;
-  return [{color: color0}, {color: color1}];
+  return [color0, color1];
 }
 
 export function encodeMovingCounters(movingCounters: MovingCounters): string {

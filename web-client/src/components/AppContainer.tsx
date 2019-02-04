@@ -2,8 +2,8 @@ import * as React from "react";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 import {  SCClientSocket } from "socketcluster-client";
 
-import { GameAPIClient } from "mrdario-core/src/api/client";
-import { GameControllerMode } from "../../../core/src/game/types";
+import { GameClient } from "mrdario-core/lib/api";
+import { GameControllerMode } from "mrdario-core/lib/game/controller";
 
 import AztecCalendar, { AztecCalendarMode } from "./AztecCalendar";
 
@@ -43,12 +43,12 @@ class AppContainer extends React.Component<AppContainerProps, AppContainerState>
     mode: null
   };
   socket: SCClientSocket;
-  apiClient: GameAPIClient;
+  apiClient: GameClient;
   _throttledResizeHandler: () => void;
 
   constructor(props: AppContainerProps) {
     super(props);
-    this.apiClient = new GameAPIClient();
+    this.apiClient = new GameClient();
     // this.socket = initSocketClient();
     this.socket = this.apiClient.socket;
     // todo test throttling this

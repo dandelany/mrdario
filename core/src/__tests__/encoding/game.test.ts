@@ -6,9 +6,9 @@ import {
   encodeInt,
   encodePillColors
 } from "../../encoding";
-import { GameColor, GameInput, GameInputMove, GameMode, PillColors } from "../../game/types";
-import { COLORS } from "../../game/constants";
-import { GameState } from "../../game/Game";
+import { GameColor, GameInput, GameInputMove, GameMode, PillColors } from "../../game";
+import { COLORS } from "../../game";
+import { GameState } from "../../game";
 
 describe("Game Encoding", () => {
   describe("Integer Encoding", () => {
@@ -31,7 +31,7 @@ describe("Game Encoding", () => {
     test("encodePillColors encodes two pill colors into a single character", () => {
       for (let color1 of COLORS) {
         for (let color2 of COLORS) {
-          const pillColors: PillColors = [{ color: color1 }, { color: color2 }];
+          const pillColors: PillColors = [color1, color2];
           const encoded = encodePillColors(pillColors);
           expect(typeof encoded).toBe("string");
           expect(encoded).toHaveLength(1);
@@ -41,7 +41,7 @@ describe("Game Encoding", () => {
     test("decodePillColors(encoded) returns decoded colors", () => {
       for (let color1 of COLORS) {
         for (let color2 of COLORS) {
-          const pillColors: PillColors = [{ color: color1 }, { color: color2 }];
+          const pillColors: PillColors = [color1 , color2];
           const encoded = encodePillColors(pillColors);
           const decoded: PillColors = decodePillColors(encoded);
           expect(decoded).toEqual(pillColors);
@@ -79,7 +79,7 @@ function getMockGameState(): GameState {
     pillCount: 3,
     comboLineCount: 2,
     seed: 'mock-seed',
-    nextPill: [{color: GameColor.Color1}, {color: GameColor.Color2}],
+    nextPill: [GameColor.Color1, GameColor.Color2],
     movingCounters: new Map([[GameInput.Left as GameInputMove, 3]]),
     movingDirections: new Map<GameInputMove, true>([[GameInput.Left, true]])
   }

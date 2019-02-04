@@ -1,6 +1,6 @@
-import { decodeGrid } from "@/encoding";
-import { Game, GameState, GameOptions } from "@/game";
-import { GameColor, GameInput, GameInputMove, GameMode } from "@/game/types";
+import { decodeGrid } from "../../encoding";
+import { Game, GameState, GameOptions } from "../../game";
+import { GameColor, GameInput, GameInputMove, GameMode } from "../../game";
 
 /*
 Y = Destroyed
@@ -70,10 +70,42 @@ describe("Game", () => {
   test("Has correct initial options & state after construction", () => {
     const game = new Game(getMockGameOptions());
     const state = game.getState();
-    expect(state).toEqual({
+    const expectedState: GameState = {
       ...getMockGameState(),
       mode: GameMode.Ready,
-      nextPill: [{ color: GameColor.Color3 }, { color: GameColor.Color2 }],
+      nextPill: [GameColor.Color3, GameColor.Color2],
+      grid: decodeGrid(`gh,8:
+        XXXXXXXX
+        XXXXXXXX
+        XXXXXXXX
+        XXXXXXXX
+        XXXXXXXX
+        XXXXXXXX
+        XXXXXXXX
+        XNFVVXXF
+        XXXFNVFN
+        XFNNXVXX
+        XVVXFXXF
+        VXXFNXVV
+        VNNXXXFX
+        FNVVFXNF
+        FXVVFFNV
+        VVFXVXFV
+        NFFNXXFX
+      `)
+    } as GameState;
+    expect(state).toEqual(expectedState);
+  });
+
+  test("Moves to Playing state after first tick", () => {
+    const game = new Game(getMockGameOptions());
+    game.tick();
+    const state = game.getState();
+    expect(state).toEqual({
+      ...getMockGameState(),
+      mode: GameMode.Playing,
+      frame: 1,
+      nextPill: [GameColor.Color3, GameColor.Color2],
       grid: decodeGrid(`gh,8:
         XXXXXXXX
         XXXXXXXX
@@ -96,36 +128,6 @@ describe("Game", () => {
     });
   });
 
-  test("Moves to Playing state after first tick", () => {
-    const game = new Game(getMockGameOptions());
-    game.tick();
-    const state = game.getState();
-    expect(state).toEqual({
-      ...getMockGameState(),
-      mode: GameMode.Playing,
-      frame: 1,
-      nextPill: [{ color: GameColor.Color3 }, { color: GameColor.Color2 }],
-      grid: decodeGrid(`gh,8:
-        XXXXXXXX
-        XXXXXXXX
-        XXXXXXXX
-        XXXXXXXX
-        XXXXXXXX
-        XXXXXXXX
-        XXXXXXXX
-        XNFVVXXF
-        XXXFNVFN
-        XFNNXVXX
-        XVVXFXXF
-        VXXFNXVV
-        VNNXXXFX
-        FNVVFXNF
-        FXVVFFNV
-        VVFXVXFV
-        NFFNXXFX
-      `)
-    });
-  });
 
   test("Gets pill on second tick", () => {
     const game = new Game(getMockGameOptions());
@@ -159,13 +161,11 @@ describe("Game", () => {
         VVFXVXFV
         NFFNXXFX
       `),
-      nextPill: [{ color: GameColor.Color1 }, { color: GameColor.Color2 }],
+      nextPill: [GameColor.Color1, GameColor.Color2],
     });
   });
 
   // todo: loses when entrance is blocked
   // todo: moveInputQueue
   // todo setState
-
-
 });

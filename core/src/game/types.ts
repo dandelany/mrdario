@@ -2,7 +2,7 @@ import { GameColor, GameInput, GridDirection, GridObjectType, InputEventType, Sp
 
 export * from "./enums";
 
-export * from "@/game/controller/types";
+export * from "./controller/types";
 
 export type OneOrMore<T> = { 0: T } & T[];
 
@@ -76,7 +76,7 @@ export type GridCellLocationDelta = [number, number];
 export type GridCellNeighbors = { [D in GridDirection]: MaybeGridObject };
 
 export type PillLocation = [GridCellLocation, GridCellLocation];
-export type PillColors = [{ color: GameColor }, { color: GameColor }];
+export type PillColors = [GameColor, GameColor];
 
 export type SpeedTable = { [S in SpeedLevel]: number };
 

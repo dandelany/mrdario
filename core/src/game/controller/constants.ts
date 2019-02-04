@@ -1,8 +1,8 @@
 import { noop } from "lodash";
 // options that can be passed to control game parameters
-import { GameControllerMode, GameControllerOptions, KeyBindings } from "@/game/controller/types";
-import { PLAYFIELD_HEIGHT, PLAYFIELD_WIDTH } from "@/game/constants";
-import { GameInput } from "@/game/enums";
+import { GameControllerMode, GameControllerOptions, KeyBindings } from "./types";
+import { PLAYFIELD_HEIGHT, PLAYFIELD_WIDTH } from "../constants";
+import { GameInput } from "../enums";
 
 export const DEFAULT_GAME_CONTROLLER_OPTIONS: GameControllerOptions = {
   // list of input managers, eg. of keyboard, touch events

@@ -9,9 +9,9 @@ import {
   removeDestroyed,
   rotatePill,
   slamPill
-} from "@/game/utils/moves";
-import { GridDirection, GameColor, RotateDirection } from "@/game/enums";
-import { decodeGrid } from "@/encoding";
+} from "../../../game/utils/moves";
+import { GridDirection, GameColor, RotateDirection } from "../../../game/enums";
+import { decodeGrid } from "../../../encoding";
 
 /*
 Y = Destroyed
@@ -45,10 +45,7 @@ describe("Moves", () => {
         NXXX
         XXVF
       `);
-      const { grid, didGive } = givePill(startGrid, [
-        { color: GameColor.Color3 },
-        { color: GameColor.Color1 }
-      ]);
+      const { grid, didGive } = givePill(startGrid, [GameColor.Color3, GameColor.Color1]);
       expect(didGive).toEqual(true);
       expect(grid).toEqual(
         decodeGrid(`g4,4:
@@ -66,10 +63,7 @@ describe("Moves", () => {
         NXLR
         XXVF
       `);
-      const { grid, didGive } = givePill(startGrid, [
-        { color: GameColor.Color3 },
-        { color: GameColor.Color1 }
-      ]);
+      const { grid, didGive } = givePill(startGrid, [GameColor.Color3, GameColor.Color1]);
       expect(didGive).toEqual(false);
       expect(grid).toEqual(startGrid);
     });

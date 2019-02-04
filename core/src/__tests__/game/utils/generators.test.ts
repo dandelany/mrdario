@@ -6,7 +6,7 @@ import {
   GridObjectPillRight,
   GridObjectType,
   GridObjectVirus
-} from "@/game/types";
+} from "../../../game/types";
 import {
   makeDestroyed,
   makeEmpty,
@@ -15,7 +15,7 @@ import {
   makePillLeft,
   makePillRight,
   makeVirus
-} from "@/game/utils/generators";
+} from "../../../game/utils";
 
 describe("Generators", () => {
   test("makeEmpty", () => {

@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import { GridObjectType, PillColors } from "../../../../core/src/game/types";
+import { GridObjectType, PillColors } from "mrdario-core/src/game/types";
 import PillPart from "./PillPart";
 
 export interface PillPreviewPanelProps {
@@ -21,13 +21,13 @@ export default class PillPreviewPanel extends React.Component<PillPreviewPanelPr
         <svg width={cellSize * 2} height={cellSize}>
           <PillPart
             type={GridObjectType.PillLeft}
-            color={pill[0].color}
+            color={pill[0]}
             cellSize={cellSize}
             svgProps={{ width: cellSize, height: cellSize }}
           />
           <PillPart
             type={GridObjectType.PillRight}
-            color={pill[1].color}
+            color={pill[1]}
             cellSize={cellSize}
             gProps={{ transform: `translate(${cellSize},0)` }}
             svgProps={{ width: cellSize, height: cellSize }}

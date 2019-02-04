@@ -4,16 +4,16 @@ import { withRouter, Redirect, RouteComponentProps } from "react-router-dom";
 import shallowEqual from "@/utils/shallowEqual";
 import { SCClientSocket } from "socketcluster-client";
 
-import { DEFAULT_KEYS } from "mrdario-core/src/game/controller/constants";
-import { GameControllerMode, GameControllerState } from "mrdario-core/src/game/controller/types";
-import { GameGrid, PillColors } from "mrdario-core/src/game/types";
+import { DEFAULT_KEYS } from "mrdario-core/lib/game/controller/constants";
+import { GameControllerMode, GameControllerState } from "mrdario-core/lib/game/controller/types";
+import { GameGrid, PillColors } from "mrdario-core/lib/game/types";
 
-import { encodeGameState } from "mrdario-core/src/encoding/game";
-import { GameClient } from "mrdario-core/src/api/GameClient";
-import { LocalWebGameController } from "mrdario-core/src/game/controller/web";
-import {KeyManager} from "mrdario-core/src/game/input/web/KeyManager";
-import {SwipeManager} from "mrdario-core/src/game/input/web/SwipeManager";
-import {GamepadManager} from "mrdario-core/src/game/input/web/GamepadManager";
+import { encodeGameState } from "mrdario-core/lib/encoding/game";
+import { GameClient } from "mrdario-core/lib/api/GameClient";
+import { LocalWebGameController } from "mrdario-core/lib/game/controller/web";
+import {KeyManager} from "mrdario-core/lib/game/input/web/KeyManager";
+import {SwipeManager} from "mrdario-core/lib/game/input/web/SwipeManager";
+import {GamepadManager} from "mrdario-core/lib/game/input/web/GamepadManager";
 
 import { GameRouteParams, GameScoreResponse } from "@/types";
 

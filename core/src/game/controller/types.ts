@@ -1,6 +1,6 @@
-import { GameInput, InputEventType } from "@/game/enums";
-import { GameState } from "@/game";
-import { ModeKeyBindings } from "@/game/types";
+import { GameInput, InputEventType } from "../enums";
+import { GameState } from "../Game";
+import { ModeKeyBindings } from "../types";
 
 export enum GameControllerMode {
   Ready = "Ready",

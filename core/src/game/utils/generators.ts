@@ -53,7 +53,7 @@ export function getNextPill(seed: string, pillCount: number): PillColors {
   const color1 = seedRandomColor(`"${seed}"-${pillCount}-0-nextPill`);
   const color2 = seedRandomColor(`"${seed}"-${pillCount}-1-nextPill`);
 
-  return [{ color: color1 }, { color: color2 }];
+  return [color1, color2];
 }
 
 export function getLevelVirusCount(level: number): number {

@@ -5,7 +5,7 @@ import {
   InputEventType,
   MoveInputEvent,
   MoveInputNumberMap
-} from "@/game/types";
+} from "./types";
 
 export type MovingDirections = Map<GameInputMove, true>;
 export type MovingCounters = Map<GameInputMove, number>;

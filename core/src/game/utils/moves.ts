@@ -89,8 +89,8 @@ export function givePill(grid: GameGrid, pillColors: PillColors): GivePillResult
     return { grid, pill, didGive: false };
   }
 
-  grid = setInGrid(grid, pill[0], makePillLeft(pillColors[0].color));
-  grid = setInGrid(grid, pill[1], makePillRight(pillColors[1].color));
+  grid = setInGrid(grid, pill[0], makePillLeft(pillColors[0]));
+  grid = setInGrid(grid, pill[1], makePillRight(pillColors[1]));
 
   return { grid, pill, didGive: true };
 }

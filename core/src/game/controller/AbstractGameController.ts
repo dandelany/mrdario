@@ -1,7 +1,7 @@
 import { defaults } from "lodash";
 import { TypeState } from "typestate";
 
-import {Game} from "@/game";
+import {Game} from "../Game";
 
 import { DEFAULT_GAME_CONTROLLER_OPTIONS } from "./constants";
 import {
@@ -9,14 +9,14 @@ import {
   GameInputMove,
   InputEventType,
   MoveInputEvent
-} from "@/game/types";
+} from "../types";
 
 import {
   GameControllerMode,
   GameControllerOptions,
   GameControllerState,
   InputManager,
-} from "@/game/controller/types";
+} from "./types";
 
 
 
