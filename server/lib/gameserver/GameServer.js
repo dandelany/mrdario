@@ -19,6 +19,12 @@ var GameServer = /** @class */ (function () {
                 utils_1.logWithTime("Disconnected: ", utils_1.getClientIpAddress(socket));
                 if (connectionState.game) {
                     delete _this.state.games[connectionState.game];
+                    var channelId = "game-" + connectionState.game;
+                    var channel = _this.state.channels[channelId];
+                    if (channel) {
+                        channel.unwatch();
+                        delete _this.state.channels[channelId];
+                    }
                 }
             });
             socket.on("error", function (err) {
@@ -68,7 +74,13 @@ var GameServer = /** @class */ (function () {
                     var gameId = v4_1.default().slice(-10);
                     _this.state.games[gameId] = gameListItem;
                     connectionState.game = gameId;
-                    console.log('created game', gameId, gameListItem);
+                    console.log("created game", gameId, gameListItem);
+                    var channelId = "game-" + gameId;
+                    var channel = socket.exchange.subscribe(channelId);
+                    _this.state.channels[channelId] = channel;
+                    channel.watch(function (data) {
+                        console.log(data);
+                    });
                     res(null, gameId);
                 }
                 catch (e) {
@@ -97,7 +109,8 @@ var GameServer = /** @class */ (function () {
         this.lobby = [];
         this.state = {
             lobby: [],
-            games: {}
+            games: {},
+            channels: {}
         };
         scServer.on("connection", this.handleConnect);
     }
