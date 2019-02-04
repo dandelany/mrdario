@@ -5,6 +5,7 @@ import uuid from "uuid/v4";
 
 import { getClientIpAddress, logWithTime, socketInfoStr } from "./utils";
 import { handleSingleScore, getSingleHighScores } from "./utils/score";
+import { SCChannel } from "sc-channel";
 
 type LobbyUser = {
   name: string;
@@ -13,16 +14,17 @@ type LobbyUser = {
 };
 
 type GameListItem = {
-  creator: string,
-  level: number,
-  speed: number
-}
+  creator: string;
+  level: number;
+  speed: number;
+};
 
 // in-memory state, for now...
 // todo put this in redis where appropriate?
 interface GameServerState {
-  lobby: LobbyUser[],
-  games: {[K in string]: GameListItem}
+  lobby: LobbyUser[];
+  games: { [K in string]: GameListItem };
+  channels: { [K in string]: SCChannel };
 }
 
 export class GameServer {
@@ -38,14 +40,15 @@ export class GameServer {
     this.lobby = [];
     this.state = {
       lobby: [],
-      games: {}
+      games: {},
+      channels: {}
     };
     scServer.on("connection", this.handleConnect);
   }
 
   protected handleConnect = (socket: SCServerSocket) => {
     interface ConnectionState {
-      game?: string,
+      game?: string;
     }
     const connectionState: ConnectionState = {};
     console.log(connectionState);
@@ -55,8 +58,15 @@ export class GameServer {
 
     socket.on("disconnect", () => {
       logWithTime("Disconnected: ", getClientIpAddress(socket));
-      if(connectionState.game) {
+      if (connectionState.game) {
         delete this.state.games[connectionState.game];
+
+        const channelId = `game-${connectionState.game}`;
+        const channel = this.state.channels[channelId];
+        if (channel) {
+          channel.unwatch();
+          delete this.state.channels[channelId];
+        }
       }
     });
 
@@ -124,14 +134,19 @@ export class GameServer {
         this.state.games[gameId] = gameListItem;
         connectionState.game = gameId;
 
-        console.log('created game', gameId, gameListItem);
+        console.log("created game", gameId, gameListItem);
+
+        const channelId = `game-${gameId}`;
+        const channel = socket.exchange.subscribe(channelId);
+        this.state.channels[channelId] = channel;
+        channel.watch(data => {
+          console.log(data);
+        });
 
         res(null, gameId);
-
       } catch (e) {
         res(e);
       }
-
     });
 
     // socket.on('infoStartGame', ([name, level, speed]) => {
