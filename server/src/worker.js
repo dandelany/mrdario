@@ -1,3 +1,5 @@
+import { GameServer } from "./gameserver/GameServer";
+
 var SCWorker = require('socketcluster/scworker');
 var express = require('express');
 var serveStatic = require('serve-static');
@@ -5,13 +7,15 @@ var path = require('path');
 var morgan = require('morgan');
 var healthChecker = require('sc-framework-health-check');
 
+// var {} = require('mrdario-')
+
 var _ = require('lodash');
 var redis = require('redis');
 var uuid = require('uuid');
 var randomWord = require('random-word-by-length');
 var {format} = require('date-fns');
 
-var scoreUtils = require('./utils/score');
+var scoreUtils = require('./gameserver/utils/score');
 
 function makeGameToken() {
   return Math.round(Math.random() * 1000000).toString(36);
@@ -69,9 +73,12 @@ class Worker extends SCWorker {
       logWithTime("Error " + err);
     });
 
+    const gameServer = new GameServer(scServer, rClient);
+
     /*
       In here we handle our incoming realtime connections and listen for events.
     */
+    /*
     scServer.on('connection', function (socket) {
       // console.log('CONNECT: ', socketInfoStr(socket));
       logWithTime('Connected: ', getClientIpAddress(socket));
@@ -119,6 +126,8 @@ class Worker extends SCWorker {
       //   // socket.emit('newSingleGame', {id, token});
       // });
     });
+
+    */
   }
 }
 

@@ -3,17 +3,6 @@ const _ = require("lodash");
 
 import { RedisClient } from "redis";
 
-function getSingleLevelHighScoresSetKey(level: number): string {
-  return "hiscore_" + Math.floor(level);
-}
-function getHighScoreNameKey(name: string): string {
-  return (
-    (name + "").replace(/__&&__/g, "__&__").substr(0, 100) +
-    "__&&__" +
-    Number(new Date())
-  );
-}
-
 type SingleScoreDataRow = [number, string, number];
 interface SingleScoreDataObj {
   level: number;
@@ -26,7 +15,23 @@ type SingleScoreCallback = (
   scoreObj?: SingleScoreDataObj
 ) => any;
 
-function handleSingleScore(
+type RawDBScores = Array<string | number>;
+type ScoreDBRow = [string, number];
+
+
+function getSingleLevelHighScoresSetKey(level: number): string {
+  return "hiscore_" + Math.floor(level);
+}
+
+function getHighScoreNameKey(name: string): string {
+  return (
+    (name + "").replace(/__&&__/g, "__&__").substr(0, 100) +
+    "__&&__" +
+    Number(new Date())
+  );
+}
+
+export function handleSingleScore(
   rClient: RedisClient,
   data: any,
   callback: SingleScoreCallback
@@ -77,9 +82,6 @@ function getHighScoreNameKeyRank(
   return rClient.zrevrank(setKey, nameKey, callback);
 }
 
-type RawDBScores = Array<string | number>;
-type ScoreDBRow = [string, number];
-
 function parseHighScores(rawScores: RawDBScores) {
   return _.chunk(rawScores, 2)
     .map((scoreArr: ScoreDBRow) => {
@@ -90,7 +92,7 @@ function parseHighScores(rawScores: RawDBScores) {
     .reverse();
 }
 
-function getSingleHighScores(
+export function getSingleHighScores(
   rClient: RedisClient,
   level: number,
   count: number,
@@ -105,14 +107,3 @@ function getSingleHighScores(
     if (callback) callback(err, parseHighScores(topScoreReplies));
   });
 }
-
-// function getScoreRank(rClient, level, score, callback) {}
-
-// function testMultiHighScores(rClient, level, count, callback) {
-//   const client = getSingleHighScores(rClient.multi(), level, count);
-// }
-
-module.exports = {
-  handleSingleScore: handleSingleScore,
-  getSingleHighScores: getSingleHighScores
-};

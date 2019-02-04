@@ -4,7 +4,3 @@ export interface GameRouteParams {
   mode: string;
 }
 
-export interface GameScoreResponse {
-  rank: number;
-  scores: Array<[string, number]>;
-}

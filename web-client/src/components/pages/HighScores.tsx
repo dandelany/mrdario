@@ -3,16 +3,10 @@ import * as _ from "lodash";
 import { debounce } from "lodash";
 import { Link } from "react-router-dom";
 import Slider from "rc-slider";
-import { SCClientSocket } from "socketcluster-client";
 
 import MayaNumeral from "@/components/ui/MayaNumeral";
-
-type HighScoresRow = [string, number];
-
-interface HighScoresResponse {
-  level: number;
-  scores: HighScoresRow[];
-}
+import { HighScoresResponse, HighScoresRow } from "mrdario-core/lib/api/types/scores";
+import { GameClient } from "mrdario-core/lib/api/client";
 
 interface HighScoresState {
   level: number;
@@ -20,7 +14,7 @@ interface HighScoresState {
 }
 
 interface HighScoresProps {
-  socket: SCClientSocket;
+  gameClient: GameClient;
 }
 
 export default class HighScores extends React.Component<HighScoresProps, HighScoresState> {
@@ -40,16 +34,22 @@ export default class HighScores extends React.Component<HighScoresProps, HighSco
   }
 
   _getScoresForLevel(level: number) {
-    const { socket } = this.props;
-    socket.emit("getSingleHighScores", level, (_err, data) => {
-      const { level, scores } = data as HighScoresResponse;
-      this.setState({
-        scoresForLevel: {
-          ...this.state.scoresForLevel,
-          ...{ [level + ""]: scores }
-        }
+    const { gameClient } = this.props;
+
+    gameClient.getHighScores(level)
+      .then((data: HighScoresResponse) => {
+        const { level, scores } = data;
+        console.log('ok', scores);
+        this.setState({
+          scoresForLevel: {
+            ...this.state.scoresForLevel,
+            ...{ [level + ""]: scores }
+          }
+        });
+      })
+      .catch((err: Error) => {
+        console.error(err);
       });
-    });
   }
 
   _onChangeLevel = (level: number) => {

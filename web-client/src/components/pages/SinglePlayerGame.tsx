@@ -2,20 +2,18 @@ import * as React from "react";
 import * as _ from "lodash";
 import { withRouter, Redirect, RouteComponentProps } from "react-router-dom";
 import shallowEqual from "@/utils/shallowEqual";
-import { SCClientSocket } from "socketcluster-client";
 
 import { DEFAULT_KEYS } from "mrdario-core/lib/game/controller/constants";
 import { GameControllerMode, GameControllerState } from "mrdario-core/lib/game/controller/types";
 import { GameGrid, PillColors } from "mrdario-core/lib/game/types";
 
 import { encodeGameState } from "mrdario-core/lib/encoding/game";
-import { GameClient } from "mrdario-core/lib/api/GameClient";
+import { GameClient } from "mrdario-core/lib/api/client/GameClient";
 import { LocalWebGameController } from "mrdario-core/lib/game/controller/web";
-import {KeyManager} from "mrdario-core/lib/game/input/web/KeyManager";
-import {SwipeManager} from "mrdario-core/lib/game/input/web/SwipeManager";
-import {GamepadManager} from "mrdario-core/lib/game/input/web/GamepadManager";
+import { KeyManager, GamepadManager, SwipeManager } from "mrdario-core/lib/game/input/web";
+import { Lobby, GameScoreResponse } from "mrdario-core/lib/api/types";
 
-import { GameRouteParams, GameScoreResponse } from "@/types";
+import { GameRouteParams } from "@/types";
 
 import Playfield from "@/components/game/Playfield";
 import PillPreviewPanel from "@/components/game/PillPreviewPanel";
@@ -23,7 +21,6 @@ import WonOverlay from "@/components/overlays/WonOverlay";
 import LostOverlay from "@/components/overlays/LostOverlay";
 import responsiveGame from "@/components/responsiveGame";
 import { ExplosionField } from "@/components/game/ExplosionField";
-
 
 function getName() {
   return window.localStorage ? window.localStorage.getItem("mrdario-name") || "Anonymous" : "Anonymous";
@@ -33,8 +30,7 @@ export interface SinglePlayerGameProps extends RouteComponentProps<GameRoutePara
   cellSize: number;
   heightPercent: number;
   padding: number;
-  socket?: SCClientSocket;
-  apiClient: GameClient;
+  gameClient: GameClient;
   onChangeMode?: (mode: GameControllerMode) => any;
 }
 
@@ -99,12 +95,21 @@ class SinglePlayerGame extends React.Component<SinglePlayerGameProps, SinglePlay
   _initGame(props: SinglePlayerGameProps) {
     if (this.game && this.game.cleanup) this.game.cleanup();
 
-    const { apiClient } = props;
+    const { gameClient } = props;
     const { params } = props.match;
     const level = parseInt(params.level) || 0;
     const speed = parseInt(params.speed) || 15;
 
-    apiClient.sendInfoStartGame(getName(), level, speed);
+    gameClient.sendInfoStartGame(getName(), level, speed);
+
+    gameClient
+      .joinLobby(getName())
+      .then((data: Lobby) => {
+        console.log("OK", data);
+      })
+      .catch((err: Error) => {
+        console.error(err);
+      });
 
     // input managers controlling keyboard and touch events
     this.keyManager = new KeyManager(DEFAULT_KEYS);
@@ -121,8 +126,8 @@ class SinglePlayerGame extends React.Component<SinglePlayerGameProps, SinglePlay
       render: (gameControllerState: GameControllerState) => {
         const { gameState } = gameControllerState;
         const { grid, nextPill, score, timeBonus } = gameState;
-        // if(Math.PI == 1) console.log(encodeGameState(gameState));
-        console.log(encodeGameState(gameState));
+        if (Math.PI == 1) console.log(encodeGameState(gameState));
+        // console.log(encodeGameState(gameState));
         this.setState({
           mode: gameControllerState.mode,
           grid,
@@ -145,31 +150,36 @@ class SinglePlayerGame extends React.Component<SinglePlayerGameProps, SinglePlay
   }
 
   _handleWin = () => {
-    if (this.state.score !== undefined && this.props.socket) {
+    if (this.state.score !== undefined) {
       const score = this.state.score;
       const level = parseInt(this.props.match.params.level);
       const name = getName();
 
-      if (_.isFinite(level) && _.isFinite(score) && this.props.socket.state) {
-        console.log("socket is open, sending score");
-        this.props.socket.emit("singleGameScore", [level, name, score], (err, data) => {
-          if (err) throw err;
-          const scoreResponse = data as GameScoreResponse;
-          const { scores, rank } = scoreResponse;
-          console.log("high scores received!", scores, rank);
-          this.setState({ highScores: scores, rank: rank });
-        });
+      if (_.isFinite(level) && _.isFinite(score) && this.props.gameClient.socket.state) {
+        console.log("sending score");
+
+        this.props.gameClient
+          .sendSingleGameHighScore(level, name, score)
+          .then((data: GameScoreResponse) => {
+            const scoreResponse = data as GameScoreResponse;
+            const { scores, rank } = scoreResponse;
+            console.log("high scores received!", scores, rank);
+            this.setState({ highScores: scores, rank: rank });
+          })
+          .catch((err: Error) => {
+            console.error(err);
+          });
       }
     }
   };
 
   _handleLose() {
-    if (this.state.score !== undefined && this.props.socket) {
+    if (this.state.score !== undefined) {
       const level = parseInt(this.props.match.params.level);
       const speed = parseInt(this.props.match.params.speed);
       const score = this.state.score;
 
-      this.props.socket.emit("infoLostGame", [getName(), level, speed, score], _.noop);
+      this.props.gameClient.sendInfoLostGame(getName(), level, speed, score);
     }
   }
 

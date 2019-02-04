@@ -1,32 +1,14 @@
 import * as React from "react";
 import { RouteComponentProps, withRouter } from "react-router-dom";
-import {  SCClientSocket } from "socketcluster-client";
 
-import { GameClient } from "mrdario-core/lib/api";
+import { GameClient } from "mrdario-core/lib/api/client";
 import { GameControllerMode } from "mrdario-core/lib/game/controller";
 
 import AztecCalendar, { AztecCalendarMode } from "./AztecCalendar";
 
-
 function getWindowSize() {
   return { windowWidth: window.innerWidth, windowHeight: window.innerHeight };
 }
-
-// function initSocketClient() {
-//   let socket: SCClientSocket = createSocket({ port: 8000 });
-//
-//   socket.on("error", err => {
-//     console.error("Socket error - " + err);
-//   });
-//
-//   socket.on("connect", function() {
-//     console.log("Socket connected - OK");
-//
-//     // socket.emit('sampleClientEvent', 0);
-//   });
-//
-//   return socket;
-// }
 
 interface AppContainerProps extends RouteComponentProps {}
 
@@ -42,15 +24,12 @@ class AppContainer extends React.Component<AppContainerProps, AppContainerState>
     ...getWindowSize(),
     mode: null
   };
-  socket: SCClientSocket;
-  apiClient: GameClient;
+  gameClient: GameClient;
   _throttledResizeHandler: () => void;
 
   constructor(props: AppContainerProps) {
     super(props);
-    this.apiClient = new GameClient();
-    // this.socket = initSocketClient();
-    this.socket = this.apiClient.socket;
+    this.gameClient = new GameClient();
     // todo test throttling this
     this._throttledResizeHandler = this._onResize;
   }
@@ -75,8 +54,7 @@ class AppContainer extends React.Component<AppContainerProps, AppContainerState>
     const gridCols = 8;
     const gridRows = 16;
     const childProps = {
-      socket: this.socket,
-      apiClient: this.apiClient,
+      gameClient: this.gameClient,
       windowWidth,
       windowHeight,
       gridCols,
