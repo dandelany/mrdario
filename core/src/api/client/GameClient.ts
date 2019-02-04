@@ -41,7 +41,8 @@ export class GameClient {
   public socket: SCClientSocket;
 
   constructor() {
-    const socket = createSocket({ port: 8000 });
+    // const socket = createSocket({ port: 8000 });
+    const socket = createSocket({ port: 3000 });
 
     socket.on("error", err => {
       console.error("Socket error - " + err);
