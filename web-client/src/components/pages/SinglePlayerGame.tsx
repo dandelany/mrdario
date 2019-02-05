@@ -110,6 +110,14 @@ class SinglePlayerGame extends React.Component<SinglePlayerGameProps, SinglePlay
     const level = parseInt(params.level) || 0;
     const speed = parseInt(params.speed) || 15;
 
+    //
+    // window.setInterval(() => {
+    //   gameClient.ping()
+    //     .then((delay: number) => {
+    //       console.log('delay:', delay);
+    //     });
+    // }, 1000);
+
     gameClient.sendInfoStartGame(getName(), level, speed);
 
     gameClient

@@ -41,8 +41,8 @@ export class GameClient {
   public socket: SCClientSocket;
 
   constructor() {
-    // const socket = createSocket({ port: 8000 });
-    const socket = createSocket({ port: 3000 });
+    const socket = createSocket({ port: 8000 });
+    // const socket = createSocket({ port: 3000 });
 
     socket.on("error", err => {
       console.error("Socket error - " + err);
@@ -109,6 +109,16 @@ export class GameClient {
   public publishSimpleGameState(gameId: string, grid: GameGrid) {
     const encodedGrid = encodeGrid(grid);
     this.socket.publish(`game-${gameId}`, encodedGrid);
+  }
+
+  public ping(): Promise<number> {
+    const start = performance.now();
+    return new Promise<number>((resolve, reject) => {
+      this.socket.emit("ping", null, (err: Error) => {
+        if (err) reject(err);
+        resolve(performance.now() - start);
+      });
+    });
   }
 }
 
