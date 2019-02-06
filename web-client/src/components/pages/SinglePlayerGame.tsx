@@ -21,7 +21,7 @@ import PillPreviewPanel from "@/components/game/PillPreviewPanel";
 import WonOverlay from "@/components/overlays/WonOverlay";
 import LostOverlay from "@/components/overlays/LostOverlay";
 import responsiveGame from "@/components/responsiveGame";
-// import { ExplosionField } from "@/components/game/ExplosionField";
+import { ExplosionField } from "@/components/game/ExplosionField";
 
 function getName() {
   return window.localStorage ? window.localStorage.getItem("mrdario-name") || "Anonymous" : "Anonymous";
@@ -247,7 +247,7 @@ class SinglePlayerGame extends React.Component<SinglePlayerGameProps, SinglePlay
           />
           <LostOverlay params={params} style={lostOverlayStyle} />
           {grid ? <Playfield grid={grid} cellSize={cellSize} /> : ""}
-          {/*{grid ? <ExplosionField grid={grid} cellSize={cellSize} /> : null}*/}
+          {grid ? <ExplosionField grid={grid} cellSize={cellSize} /> : null}
         </div>
 
         {score !== undefined ? (
