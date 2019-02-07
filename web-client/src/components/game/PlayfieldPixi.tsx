@@ -3,6 +3,7 @@ import * as React from "react";
 import { GameGrid } from "mrdario-core/src/game/types";
 import * as Pixi from "pixi.js";
 import * as particles from "pixi-particles";
+import * as filters from "pixi-filters";
 
 import * as virusOrange from "@/svg2/virus_orange.svg";
 import * as virusPurple from "@/svg2/virus_purple.svg";
@@ -15,6 +16,7 @@ import * as pillSegmentPurple from "@/svg2/pill_segment_purple.svg";
 import * as pillSegmentGreen from "@/svg2/pill_segment_green.svg";
 import * as destroyed from "@/svg2/destroyed.svg";
 import * as particle from "@/img/Pixel25px.png";
+import * as particle2 from "@/img/Pixel50px.png";
 
 import { GameGridRow, GridObjectPillHalfType, GridObjectType, MaybeGridObject } from "mrdario-core";
 import { hasColor, isDestroyed, isPillHalf } from "mrdario-core/lib/game/utils";
@@ -47,9 +49,9 @@ const particlesConfig = {
     "end": 1
   },
   "scale": {
-    "start": 1,
+    "start": 1.3,
     "end": 0.001,
-    "minimumScaleMultiplier": 1
+    "minimumScaleMultiplier": .3
   },
   "color": {
     "start": "#d44646",
@@ -59,7 +61,7 @@ const particlesConfig = {
   "speed": {
     "start": 1800,
     "end": 1200,
-    "minimumSpeedMultiplier": 0.15
+    "minimumSpeedMultiplier": 0.25
   },
   "acceleration": {
     "x": 0,
@@ -76,13 +78,13 @@ const particlesConfig = {
     "max": 0
   },
   "lifetime": {
-    "min": 0.5,
+    "min": 1,
     "max": 1.5
   },
   "blendMode": "normal",
   "frequency": 0.001,
   "emitterLifetime": 0.1,
-  "maxParticles": 50,
+  "maxParticles": 40,
   "pos": {
     "x": 0,
     "y": 0
@@ -199,7 +201,9 @@ export default class Playfield extends React.Component<PlayfieldProps> {
 
             var emitter = new particles.Emitter(
               pixiApp.stage,
-              [PIXI.Texture.fromImage(particle)],
+              [
+                PIXI.Texture.fromImage(particle)
+              ],
               // Emitter configuration, edit this to change the look
               // of the emitter
               {
@@ -255,6 +259,10 @@ export default class Playfield extends React.Component<PlayfieldProps> {
         backgroundColor: 0xD2CFCA
       });
       this.pixiApp = app;
+
+      // app.stage.filters = [
+      //   new filters.ShockwaveFilter()
+      // ];
       app.render();
 
     }
