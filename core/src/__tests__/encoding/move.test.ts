@@ -1,5 +1,5 @@
-import { GameInput, GameInputMove, InputEventType, MoveInputEvent } from "../../game/types";
 import { decodeMoveInputEvent, encodeMoveInputEvent } from "../../encoding";
+import { GameInput, GameInputMove, InputEventType, MoveInputEvent } from "../../game/types";
 
 describe("Move Encoding", () => {
   test("encode and decode move input events", () => {

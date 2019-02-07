@@ -19,27 +19,27 @@ import {
   PLAYFIELD_WIDTH
 } from "./constants";
 import {
-  GridDirection,
   GameGrid,
   GameInput,
   GameInputMove,
   GameMode,
+  GridDirection,
   MoveInputEvent,
   PillColors,
   PillLocation,
   RotateDirection
 } from "./types";
 import {
-  isPillLocation,
-  hasViruses,
-  generateEnemies,
-  getLevelVirusCount,
-  getNextPill,
-  makeEmptyGrid,
   clearTopRow,
   destroyLines,
   dropDebris,
+  generateEnemies,
+  getLevelVirusCount,
+  getNextPill,
   givePill,
+  hasViruses,
+  isPillLocation,
+  makeEmptyGrid,
   movePill,
   removeDestroyed,
   rotatePill,
@@ -429,8 +429,8 @@ export class Game extends EventEmitter {
           input === GameInput.Down
             ? GridDirection.Down
             : input === GameInput.Left
-              ? GridDirection.Left
-              : GridDirection.Right;
+            ? GridDirection.Left
+            : GridDirection.Right;
 
         const moved = movePill(this.grid, this.pill, direction);
         grid = moved.grid;

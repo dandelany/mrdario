@@ -20,6 +20,7 @@
     "comment-format": [true, "check-space"],
     "indent": [true, "spaces"],
     "interface-name": [false, "always-prefix"],
+    "no-bitwise": false,
     "no-console": false,
     "no-eval": true,
     "no-internal-module": true,
@@ -28,7 +29,8 @@
     "no-var-keyword": true,
     "object-literal-sort-keys": false,
     "one-line": [true, "check-open-brace", "check-whitespace"],
-    "semicolon": [true, "always"],
+    "only-arrow-functions": false,
+    "semicolon": [true, "always", "ignore-bound-class-methods"],
     "triple-equals": [true, "allow-null-check"],
     "typedef-whitespace": [
       true,

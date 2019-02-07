@@ -1,14 +1,6 @@
 import { constant, times } from "lodash";
-import {
-  GameColor,
-  GameInput,
-  SpeedLevel,
-} from "../game/enums";
-import {
-  MoveInputNumberMap,
-  OneOrMore,
-  SpeedTable
-} from "../game/types";
+import { GameColor, GameInput, SpeedLevel } from "../game/enums";
+import { MoveInputNumberMap, OneOrMore, SpeedTable } from "../game/types";
 
 // width and height of game grid
 export const PLAYFIELD_WIDTH: number = 8;

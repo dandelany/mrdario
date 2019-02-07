@@ -2,7 +2,6 @@ import * as t from "io-ts";
 
 export * from "./scores";
 
-
 export const TLobby = t.array(
   t.type({
     name: t.string,
@@ -11,4 +10,3 @@ export const TLobby = t.array(
   })
 );
 export type Lobby = t.TypeOf<typeof TLobby>;
-

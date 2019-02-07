@@ -1,9 +1,9 @@
 import * as invariant from "invariant";
 
-import { GameGrid, GameGridRow, GridObject, GridObjectType } from "../game/types";
 import { COLORS } from "../game/constants";
-import { decodeGridObject, EncodedGridObject, encodeGridObject } from "./gridObject";
+import { GameGrid, GameGridRow, GridObject, GridObjectType } from "../game/types";
 import { hasColor } from "../game/utils";
+import { decodeGridObject, EncodedGridObject, encodeGridObject } from "./gridObject";
 
 export type EncodedGrid = string;
 
@@ -12,12 +12,14 @@ export function encodeGrid(grid: GameGrid, prettyPrint: boolean = false): Encode
   const colCount = grid[0].length;
   const encodedRowCount = rowCount.toString(36);
   const encodedColCount = colCount.toString(36);
-  let encoded = `g${encodedRowCount},${encodedColCount}:${prettyPrint ? '\n' : ''}`;
-  for (let row of grid) {
-    for (let gridObj of row) {
+  let encoded = `g${encodedRowCount},${encodedColCount}:${prettyPrint ? "\n" : ""}`;
+  for (const row of grid) {
+    for (const gridObj of row) {
       encoded += encodeGridObject(gridObj);
     }
-    if(prettyPrint) encoded += '\n';
+    if (prettyPrint) {
+      encoded += "\n";
+    }
   }
   return encoded;
 }
@@ -27,7 +29,9 @@ export function decodeGrid(encodedRaw: EncodedGrid): GameGrid {
   const encoded = encodedRaw.replace(/\s/g, "");
   // header looks like `g9x17:`
   const headerEndIndex = encoded.indexOf(":");
-  if (encoded[0] !== "g" || headerEndIndex < 4) throw new Error("invalidGridMessage");
+  if (encoded[0] !== "g" || headerEndIndex < 4) {
+    throw new Error("invalidGridMessage");
+  }
   const headerValStr = encoded.slice(1, headerEndIndex);
   const headerNumStrs = headerValStr.split(",");
   invariant(headerNumStrs.length === 2, "grid header must contain grid size");
@@ -38,10 +42,10 @@ export function decodeGrid(encodedRaw: EncodedGrid): GameGrid {
   const gridStr = encoded.slice(headerEndIndex + 1);
   invariant(gridStr.length === rowCount * colCount, "grid size does not match header");
 
-  let grid: GameGrid = [];
+  const grid: GameGrid = [];
   let gridStrIndex = 0;
   for (let rowIndex = 0; rowIndex < rowCount; rowIndex++) {
-    let row: GameGridRow = [];
+    const row: GameGridRow = [];
     for (let colIndex = 0; colIndex < colCount; colIndex++) {
       const gridObj = decodeGridObject(gridStr[gridStrIndex]);
       row.push(gridObj);

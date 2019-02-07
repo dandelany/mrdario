@@ -1,6 +1,6 @@
 import { invert } from "lodash";
 
-import { GameColor, GridObject, GridObjectType } from "../game";
+import { GameColor, GridObject, GridObjectType, GridObjectWithColor } from "../game";
 import { hasColor } from "../game/utils";
 
 export type EncodedGridObject = string;
@@ -51,11 +51,11 @@ export function decodeGridObject(encodedStr: EncodedGridObject): GridObject {
   const colorCode = encoded & 0b011000;
 
   const type = binaryGridObjectTypeMap[typeCode + ""] as GridObjectType;
-  let obj: object = { type };
+  const obj: object = { type };
 
   const colorStr = binaryColorMap[colorCode + ""];
   if (colorStr !== "") {
-    obj["color"] = parseInt(colorStr) as GameColor;
+    (obj as GridObjectWithColor).color = parseInt(colorStr, 10) as GameColor;
   }
 
   // todo better typing...

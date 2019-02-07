@@ -1,3 +1,5 @@
+import { decodeGrid } from "../../../encoding";
+import { GameColor, GridDirection, RotateDirection } from "../../../game/enums";
 import {
   clearTopRow,
   destroyLines,
@@ -10,8 +12,6 @@ import {
   rotatePill,
   slamPill
 } from "../../../game/utils/moves";
-import { GridDirection, GameColor, RotateDirection } from "../../../game/enums";
-import { decodeGrid } from "../../../encoding";
 
 /*
 Y = Destroyed

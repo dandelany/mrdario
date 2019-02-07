@@ -15,8 +15,7 @@ export class SwipeManager extends EventEmitter implements InputManager {
     this.downInputs = new Set();
   }
 
-
-  registerControls() {
+  public registerControls() {
     this.mc.add([
       // new Hammer.Swipe({direction: Hammer.DIRECTION_ALL}),
       new Hammer.Pan({ direction: Hammer.DIRECTION_ALL, threshold: 35 }),
@@ -67,24 +66,24 @@ export class SwipeManager extends EventEmitter implements InputManager {
 
     this.mc.on("singletap", this.triggerKeyInputs.bind(this, GameInput.RotateCW));
   }
-  endPanInputs = () => {
+  public endPanInputs = () => {
     for (const inputType of this.downInputs) {
       this.handleInput(inputType, InputEventType.KeyUp);
       this.downInputs.delete(inputType);
     }
   };
 
-  triggerKeyInputs(inputType: GameInput) {
+  public triggerKeyInputs(inputType: GameInput) {
     this.handleInput(inputType, InputEventType.KeyDown);
     setTimeout(() => {
       this.handleInput(inputType, InputEventType.KeyUp);
     }, 10);
   }
-  handleInput(input: GameInput, eventType: InputEventType) {
+  public handleInput(input: GameInput, eventType: InputEventType) {
     super.emit(input, eventType);
   }
 
-  setMode(mode: GameControllerMode) {
+  public setMode(mode: GameControllerMode) {
     // todo implement setMode correctly
     this.mode = mode;
   }

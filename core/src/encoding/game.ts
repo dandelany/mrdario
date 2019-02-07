@@ -1,8 +1,8 @@
-import { GameState, EncodableGameOptions } from "../game";
-import { encodeGrid } from "./grid";
+import invariant = require("invariant");
+import { EncodableGameOptions, GameState } from "../game";
 import { MovingCounters, MovingDirections } from "../game/InputRepeater";
 import { PillColors } from "../game/types";
-import invariant = require("invariant");
+import { encodeGrid } from "./grid";
 
 export type EncodedGameState = string;
 
@@ -41,20 +41,15 @@ export function encodeMovingDirections(movingDirections: MovingDirections): stri
 }
 
 export function encodeGameOptions(options: EncodableGameOptions): string {
-  const {width, height, level, baseSpeed} = options;
-  return [
-    encodeInt(width),
-    encodeInt(height),
-    encodeInt(level),
-    encodeInt(baseSpeed)
-  ].join(',')
+  const { width, height, level, baseSpeed } = options;
+  return [encodeInt(width), encodeInt(height), encodeInt(level), encodeInt(baseSpeed)].join(",");
 }
 export function decodeGameOptions(encoded: string): EncodableGameOptions {
-  const optionStrs = encoded.split(',');
+  const optionStrs = encoded.split(",");
   invariant(optionStrs.length === 4, "Invalid game options");
   const optionsArr = optionStrs.map(decodeInt);
   const [width, height, level, baseSpeed] = optionsArr;
-  return {width, height, level, baseSpeed};
+  return { width, height, level, baseSpeed };
 }
 
 export function encodeGameState(state: GameState): EncodedGameState {

@@ -1,10 +1,10 @@
 import { flatten, uniqBy } from "lodash";
 
 import {
-  GridDirection,
   GameGrid,
   GameGridRow,
   GridCellLocation,
+  GridDirection,
   GridObject,
   GridObjectPillPart,
   GridObjectPillPartType,
@@ -155,7 +155,11 @@ export function moveCells(
   return { grid, cells, didMove: true };
 }
 
-export function movePill(grid: GameGrid, pill: PillLocation, direction: GridDirection): MovePillResult {
+export function movePill(
+  grid: GameGrid,
+  pill: PillLocation,
+  direction: GridDirection
+): MovePillResult {
   const moved = moveCells(grid, pill, direction);
   return { grid: moved.grid, pill: moved.cells as PillLocation, didMove: moved.didMove };
 }
@@ -260,7 +264,7 @@ export function destroyLines(grid: GameGrid, lines?: GridCellLocation[][]): Dest
   // make a temp grid with falling objects removed, to exclude them from line checking
   let tempGrid: GameGrid = grid;
   if (fallingCells.length) {
-    for (let cell of fallingCells) {
+    for (const cell of fallingCells) {
       tempGrid = removeCell(tempGrid, cell);
     }
   }

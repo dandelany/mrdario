@@ -1,5 +1,5 @@
-import { AbstractGameController } from "../AbstractGameController";
 import { GameControllerMode } from "../../types";
+import { AbstractGameController } from "../AbstractGameController";
 
 export class LocalWebGameController extends AbstractGameController {
   public run() {

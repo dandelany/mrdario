@@ -1,6 +1,6 @@
 // import { partial } from "lodash";
-import { create as createSocket, SCClientSocket } from "socketcluster-client";
 import { PathReporter } from "io-ts/lib/PathReporter";
+import { create as createSocket, SCClientSocket } from "socketcluster-client";
 import {
   GameScoreRequest,
   GameScoreResponse,
@@ -12,12 +12,12 @@ import {
 } from "../types";
 
 import * as t from "io-ts";
-import { GameGrid } from "../../game";
 import { encodeGrid } from "../../encoding";
+import { GameGrid } from "../../game";
 
-export interface GameClientOptions {}
+// export interface GameClientOptions {}
 
-async function promisifySocketRequest<ResponseType, RequestType=any>(
+async function promisifySocketRequest<ResponseType, RequestType = any>(
   socket: SCClientSocket,
   eventName: string,
   requestData: RequestType,
@@ -25,7 +25,9 @@ async function promisifySocketRequest<ResponseType, RequestType=any>(
 ): Promise<ResponseType> {
   return await new Promise<ResponseType>(function(resolve, reject) {
     socket.emit(eventName, requestData, (err: Error, data: any) => {
-      if (err) reject(err);
+      if (err) {
+        reject(err);
+      }
       const decoded = TResponseType.decode(data);
       if (decoded.isRight()) {
         resolve(decoded.value);
@@ -100,7 +102,9 @@ export class GameClient {
   public createSimpleGame(level: number, speed: number) {
     return new Promise<string>((resolve, reject) => {
       this.socket.emit("createSimpleGame", [level, speed], (err: Error, gameId: string) => {
-        if (err) reject(err);
+        if (err) {
+          reject(err);
+        }
         resolve(gameId);
       });
     });
@@ -115,10 +119,11 @@ export class GameClient {
     const start = performance.now();
     return new Promise<number>((resolve, reject) => {
       this.socket.emit("ping", null, (err: Error) => {
-        if (err) reject(err);
+        if (err) {
+          reject(err);
+        }
         resolve(performance.now() - start);
       });
     });
   }
 }
-

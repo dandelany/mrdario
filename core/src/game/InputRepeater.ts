@@ -42,7 +42,7 @@ export class InputRepeater implements InputRepeaterState {
     const { movingDirections, movingCounters } = this;
     return { movingDirections, movingCounters };
   }
-  public setState() {}
+  // public setState() {}
 
   public tick(inputQueue: MoveInputEvent[] = []): GameInputMove[] {
     const { movingCounters, movingDirections } = this;

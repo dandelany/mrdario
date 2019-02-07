@@ -1,8 +1,7 @@
-import { colorEncodingMap, gridObjectTypeEncodingMap } from "../../encoding";
 import { uniq, values } from "lodash";
+import { colorEncodingMap, gridObjectTypeEncodingMap } from "../../encoding";
 
-
-function hasDuplicates(arr: (string | number)[]): boolean {
+function hasDuplicates(arr: Array<string | number>): boolean {
   const strArr: string[] = arr.map((d: string | number) => d + "");
   return uniq(strArr).length !== strArr.length;
 }

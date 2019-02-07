@@ -1,13 +1,13 @@
 import { flatten, range } from "lodash";
 
 import {
-  GridDirection,
   GameColor,
   GameGrid,
   GameGridRow,
   GridCellLocation,
   GridCellLocationDelta,
   GridCellNeighbors,
+  GridDirection,
   GridObject,
   MaybeGridObject
 } from "../types";
@@ -71,7 +71,8 @@ export function canMoveCell(grid: GameGrid, location: GridCellLocation, directio
 
 export function deltaRowCol(direction: GridDirection, distance: number = 1): GridCellLocationDelta {
   // create the [dRow, dCol] needed for a move in given direction and distance eg. up 1 is [-1, 0]
-  const dRow = direction === GridDirection.Down ? distance : direction === GridDirection.Up ? -distance : 0;
+  const dRow =
+    direction === GridDirection.Down ? distance : direction === GridDirection.Up ? -distance : 0;
   const dCol =
     direction === GridDirection.Right ? distance : direction === GridDirection.Left ? -distance : 0;
   if (Math.abs(dRow) + Math.abs(dCol) === 0) {
@@ -81,10 +82,7 @@ export function deltaRowCol(direction: GridDirection, distance: number = 1): Gri
 }
 
 // find same-color lines within a single row or column
-export function findLinesIn(
-  row: GameGridRow,
-  lineLength = 4
-): number[][] {
+export function findLinesIn(row: GameGridRow, lineLength = 4): number[][] {
   let lastColor: GameColor | undefined;
   let curLine: number[] = [];
 
@@ -116,10 +114,7 @@ export function findLinesIn(
 }
 
 // the main reconcile function, looks for lines of 4 or more of the same color in the grid
-export function findLines(
-  grid: GameGrid,
-  lineLength: number = 4
-): GridCellLocation[][] {
+export function findLines(grid: GameGrid, lineLength: number = 4): GridCellLocation[][] {
   const horizontalLines: GridCellLocation[][] = flatten(
     grid.map((row: GameGridRow, rowIndex: number) => {
       const rowLines: number[][] = findLinesIn(row, lineLength);

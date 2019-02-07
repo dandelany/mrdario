@@ -1,24 +1,17 @@
 import { defaults } from "lodash";
 import { TypeState } from "typestate";
 
-import {Game} from "../Game";
+import { Game } from "../Game";
 
+import { GameInput, GameInputMove, InputEventType, MoveInputEvent } from "../types";
 import { DEFAULT_GAME_CONTROLLER_OPTIONS } from "./constants";
-import {
-  GameInput,
-  GameInputMove,
-  InputEventType,
-  MoveInputEvent
-} from "../types";
 
 import {
   GameControllerMode,
   GameControllerOptions,
   GameControllerState,
-  InputManager,
+  InputManager
 } from "./types";
-
-
 
 // game controller class
 // controls the frame timing and must tick the Game object once per frame
@@ -58,9 +51,6 @@ export abstract class AbstractGameController {
     // attach events from inputmanagers to the game
     this.attachInputEvents();
   }
-
-  // methods which must be implemented by game controllers which derive from this class
-  protected abstract run(): void;
   public abstract tick(): void;
 
   public play() {
@@ -89,6 +79,9 @@ export abstract class AbstractGameController {
     this.fsm.go(GameControllerMode.Ended);
     this.options.inputManagers.forEach(manager => manager.removeAllListeners());
   }
+
+  // methods which must be implemented by game controllers which derive from this class
+  protected abstract run(): void;
 
   protected initStateMachine(): TypeState.FiniteStateMachine<GameControllerMode> {
     // a finite state machine representing game mode, & transitions between modes
@@ -203,5 +196,5 @@ export abstract class AbstractGameController {
     this.options.render(this.getState(toMode));
     // call handler
     this.options.onChangeMode(fromMode, toMode);
-  }
+  };
 }

@@ -1,5 +1,5 @@
 import { decodeGrid } from "../../encoding";
-import { Game, GameState, GameOptions } from "../../game";
+import { Game, GameOptions, GameState } from "../../game";
 import { GameColor, GameInput, GameInputMove, GameMode } from "../../game";
 
 /*
@@ -128,7 +128,6 @@ describe("Game", () => {
     });
   });
 
-
   test("Gets pill on second tick", () => {
     const game = new Game(getMockGameOptions());
     game.tick();
@@ -161,7 +160,7 @@ describe("Game", () => {
         VVFXVXFV
         NFFNXXFX
       `),
-      nextPill: [GameColor.Color1, GameColor.Color2],
+      nextPill: [GameColor.Color1, GameColor.Color2]
     });
   });
 

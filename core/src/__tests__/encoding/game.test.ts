@@ -29,8 +29,8 @@ describe("Game Encoding", () => {
 
   describe("Pill Color/Sequence Encoding", () => {
     test("encodePillColors encodes two pill colors into a single character", () => {
-      for (let color1 of COLORS) {
-        for (let color2 of COLORS) {
+      for (const color1 of COLORS) {
+        for (const color2 of COLORS) {
           const pillColors: PillColors = [color1, color2];
           const encoded = encodePillColors(pillColors);
           expect(typeof encoded).toBe("string");
@@ -39,9 +39,9 @@ describe("Game Encoding", () => {
       }
     });
     test("decodePillColors(encoded) returns decoded colors", () => {
-      for (let color1 of COLORS) {
-        for (let color2 of COLORS) {
-          const pillColors: PillColors = [color1 , color2];
+      for (const color1 of COLORS) {
+        for (const color2 of COLORS) {
+          const pillColors: PillColors = [color1, color2];
           const encoded = encodePillColors(pillColors);
           const decoded: PillColors = decodePillColors(encoded);
           expect(decoded).toEqual(pillColors);
@@ -58,7 +58,6 @@ describe("Game Encoding", () => {
     });
   });
 });
-
 
 function getMockGameState(): GameState {
   return {
@@ -78,9 +77,9 @@ function getMockGameState(): GameState {
     modeTicks: 0,
     pillCount: 3,
     comboLineCount: 2,
-    seed: 'mock-seed',
+    seed: "mock-seed",
     nextPill: [GameColor.Color1, GameColor.Color2],
     movingCounters: new Map([[GameInput.Left as GameInputMove, 3]]),
     movingDirections: new Map<GameInputMove, true>([[GameInput.Left, true]])
-  }
+  };
 }

@@ -1,7 +1,13 @@
 import { flatten, sample, times } from "lodash";
 
+import {
+  decodeGrid,
+  decodeGridObject,
+  encodeGrid,
+  encodeGridObject,
+  getGridEncodingDictionary
+} from "../../encoding";
 import { GameColor, GameGrid, GridObject, GridObjectType } from "../../game/types";
-import { decodeGrid, decodeGridObject, encodeGrid, encodeGridObject, getGridEncodingDictionary } from "../../encoding";
 
 describe("Grid Encoding", () => {
   test("encode and decode grid", () => {
@@ -81,4 +87,3 @@ describe("Grid Encoding", () => {
     ]);
   });
 });
-
