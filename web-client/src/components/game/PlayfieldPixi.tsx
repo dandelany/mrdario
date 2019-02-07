@@ -3,7 +3,7 @@ import * as React from "react";
 import { GameGrid } from "mrdario-core/src/game/types";
 import * as Pixi from "pixi.js";
 import * as particles from "pixi-particles";
-import * as filters from "pixi-filters";
+// import * as filters from "pixi-filters";
 
 import * as virusOrange from "@/svg2/virus_orange.svg";
 import * as virusPurple from "@/svg2/virus_purple.svg";
@@ -16,7 +16,6 @@ import * as pillSegmentPurple from "@/svg2/pill_segment_purple.svg";
 import * as pillSegmentGreen from "@/svg2/pill_segment_green.svg";
 import * as destroyed from "@/svg2/destroyed.svg";
 import * as particle from "@/img/Pixel25px.png";
-import * as particle2 from "@/img/Pixel50px.png";
 
 import { GameGridRow, GridObjectPillHalfType, GridObjectType, MaybeGridObject } from "mrdario-core";
 import { hasColor, isDestroyed, isPillHalf } from "mrdario-core/lib/game/utils";
