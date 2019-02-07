@@ -9,12 +9,7 @@ export function seedRandom(seed: string, double: boolean = false): number {
   return double ? rng.double() : rng();
 }
 
-export function seedRandomInt(
-  seed: string,
-  min: number = 0,
-  max: number = 1,
-  double: boolean = false
-) {
+export function seedRandomInt(seed: string, min: number = 0, max: number = 1, double: boolean = false) {
   return Math.floor(seedRandom(seed, double) * (max - min + 1)) + min;
 }
 

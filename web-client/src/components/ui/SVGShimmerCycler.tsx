@@ -53,19 +53,19 @@ export default class SVGShimmerCycler extends React.Component<SVGShimmerCyclerPr
 
   _stopCycle = () => {
     if (this._cycleInterval) clearTimeout(this._cycleInterval);
-  };
+  }
 
   _initCycle = () => {
     this._stopCycle();
     this._cycleInterval = window.setTimeout(this._cycleColors, this.props.cycleTime);
-  };
+  }
 
   _cycleColors = () => {
     const { colorSets } = this.props;
     const newColorSetIndex = (this.state.colorSetIndex + 1) % colorSets.length;
     this._isTransitioning = true;
     this.setState({ colorSetIndex: newColorSetIndex });
-  };
+  }
 
   _onFinishShimmer = () => {
     this._isTransitioning = false;
@@ -78,7 +78,7 @@ export default class SVGShimmerCycler extends React.Component<SVGShimmerCyclerPr
       const shouldCycle = colorSets.length > 1 && (repeat || this.state.colorSetIndex < colorSets.length - 1);
       if (shouldCycle) this._initCycle();
     }
-  };
+  }
 
   render() {
     const { svgPath, width, height, colorSets, shapesPerFrame } = this.props;

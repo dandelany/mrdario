@@ -71,8 +71,7 @@ export function canMoveCell(grid: GameGrid, location: GridCellLocation, directio
 
 export function deltaRowCol(direction: GridDirection, distance: number = 1): GridCellLocationDelta {
   // create the [dRow, dCol] needed for a move in given direction and distance eg. up 1 is [-1, 0]
-  const dRow =
-    direction === GridDirection.Down ? distance : direction === GridDirection.Up ? -distance : 0;
+  const dRow = direction === GridDirection.Down ? distance : direction === GridDirection.Up ? -distance : 0;
   const dCol =
     direction === GridDirection.Right ? distance : direction === GridDirection.Left ? -distance : 0;
   if (Math.abs(dRow) + Math.abs(dCol) === 0) {

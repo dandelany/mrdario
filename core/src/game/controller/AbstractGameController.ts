@@ -6,12 +6,7 @@ import { Game } from "../Game";
 import { GameInput, GameInputMove, InputEventType, MoveInputEvent } from "../types";
 import { DEFAULT_GAME_CONTROLLER_OPTIONS } from "./constants";
 
-import {
-  GameControllerMode,
-  GameControllerOptions,
-  GameControllerState,
-  InputManager
-} from "./types";
+import { GameControllerMode, GameControllerOptions, GameControllerState, InputManager } from "./types";
 
 // game controller class
 // controls the frame timing and must tick the Game object once per frame

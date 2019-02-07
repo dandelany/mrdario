@@ -1,11 +1,5 @@
 import { INPUT_REPEAT_INTERVALS } from "./constants";
-import {
-  GameInput,
-  GameInputMove,
-  InputEventType,
-  MoveInputEvent,
-  MoveInputNumberMap
-} from "./types";
+import { GameInput, GameInputMove, InputEventType, MoveInputEvent, MoveInputNumberMap } from "./types";
 
 export type MovingDirections = Map<GameInputMove, true>;
 export type MovingCounters = Map<GameInputMove, number>;
@@ -59,10 +53,7 @@ export class InputRepeater implements InputRepeaterState {
 
     for (const inputStr of Array.from(movingDirections.keys())) {
       const input = inputStr as GameInputMove;
-      if (
-        movingCounters.has(input) &&
-        (movingCounters.get(input) as number) >= repeatIntervals[input]
-      ) {
+      if (movingCounters.has(input) && (movingCounters.get(input) as number) >= repeatIntervals[input]) {
         moveQueue.push(input);
         movingCounters.set(input, 0);
       }

@@ -25,13 +25,18 @@ describe("Generators", () => {
     expect(empty).not.toBe(mockEmpty);
   });
   test("makeDestroyed", () => {
-    const mockDestroyed: GridObjectDestroyed = { type: GridObjectType.Destroyed };
+    const mockDestroyed: GridObjectDestroyed = {
+      type: GridObjectType.Destroyed
+    };
     const destroyed = makeDestroyed();
     expect(destroyed).toEqual(mockDestroyed);
     expect(destroyed).not.toBe(mockDestroyed);
   });
   test("makeVirus", () => {
-    const mockVirus: GridObjectVirus = { type: GridObjectType.Virus, color: GameColor.Color2 };
+    const mockVirus: GridObjectVirus = {
+      type: GridObjectType.Virus,
+      color: GameColor.Color2
+    };
     const virus = makeVirus(GameColor.Color2);
     expect(virus).toEqual(mockVirus);
     expect(virus).not.toBe(mockVirus);
@@ -66,16 +71,8 @@ describe("Generators", () => {
   });
   test("makeEmptyGrid", () => {
     const mockEmptyGrid = [
-      [
-        { type: GridObjectType.Empty },
-        { type: GridObjectType.Empty },
-        { type: GridObjectType.Empty }
-      ],
-      [
-        { type: GridObjectType.Empty },
-        { type: GridObjectType.Empty },
-        { type: GridObjectType.Empty }
-      ]
+      [{ type: GridObjectType.Empty }, { type: GridObjectType.Empty }, { type: GridObjectType.Empty }],
+      [{ type: GridObjectType.Empty }, { type: GridObjectType.Empty }, { type: GridObjectType.Empty }]
     ];
     const emptyGrid = makeEmptyGrid(3, 2);
     expect(emptyGrid).toEqual(mockEmptyGrid);

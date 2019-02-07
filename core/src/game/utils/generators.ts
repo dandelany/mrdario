@@ -60,12 +60,7 @@ export function getLevelVirusCount(level: number): number {
   return VIRUS_COUNT_TABLE[Math.min(level, VIRUS_COUNT_TABLE.length - 1)];
 }
 
-export function generateEnemies(
-  grid: GameGrid,
-  level: number,
-  colors: OneOrMore<GameColor>,
-  seed: string
-) {
+export function generateEnemies(grid: GameGrid, level: number, colors: OneOrMore<GameColor>, seed: string) {
   // generate random enemies in a (empty) grid
   // inspired by http://tetrisconcept.net/wiki/Dr._Mario#Virus_Generation
   let virusCount = getLevelVirusCount(level);

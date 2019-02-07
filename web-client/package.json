@@ -13,7 +13,8 @@
     "start": "yarn run start-dev",
     "start-dev": "webpack-dev-server --config=configs/webpack/dev.js",
     "start-prod": "yarn run build && cd build && python -m SimpleHTTPServer 6969",
-    "test": "jest --watch --coverage --config=configs/jest.json"
+    "test": "jest --watch --coverage --config=configs/jest.json",
+    "release": "yarn run format && yarn run lint && yarn run build"
   },
   "dependencies": {
     "d3-random": "^1.1.2",

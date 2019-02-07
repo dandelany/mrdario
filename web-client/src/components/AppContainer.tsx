@@ -43,7 +43,7 @@ class AppContainer extends React.Component<AppContainerProps, AppContainerState>
 
   _onResize = () => {
     this.setState(getWindowSize());
-  };
+  }
 
   _onChangeMode = (mode: GameControllerMode) => this.setState({ mode });
 

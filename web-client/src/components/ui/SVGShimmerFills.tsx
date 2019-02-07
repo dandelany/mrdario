@@ -74,14 +74,14 @@ export default class SVGShimmerFills extends React.Component<SVGShimmerFillsProp
   _setShapeTransitions = () => {
     if (!this._hasLoaded || !this._fillShapes) return;
     this._fillShapes.forEach(shape => (shape.style.transition = this.props.transition));
-  };
+  }
 
   _stopAnimation = () => {
     if (this._animation) {
       clearInterval(this._animation);
       delete this._animation;
     }
-  };
+  }
 
   _startAnimation = (props: SVGShimmerFillsProps) => {
     const { colors, shapesPerFrame, interval } = props;
@@ -113,7 +113,7 @@ export default class SVGShimmerFills extends React.Component<SVGShimmerFillsProp
       }
       this._animIndex += 1;
     }, interval);
-  };
+  }
 
   render() {
     return (

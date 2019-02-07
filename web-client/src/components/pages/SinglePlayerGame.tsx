@@ -150,7 +150,7 @@ class SinglePlayerGame extends React.Component<SinglePlayerGameProps, SinglePlay
       render: (gameControllerState: GameControllerState) => {
         const { gameState } = gameControllerState;
         const { grid, nextPill, score, timeBonus } = gameState;
-        if (Math.PI == 1) console.log(encodeGameState(gameState));
+        if (Math.PI === 1) console.log(encodeGameState(gameState));
         // console.log(encodeGameState(gameState));
         this.setState({
           mode: gameControllerState.mode,
@@ -195,7 +195,7 @@ class SinglePlayerGame extends React.Component<SinglePlayerGameProps, SinglePlay
           });
       }
     }
-  };
+  }
 
   _handleLose() {
     if (this.state.score !== undefined) {

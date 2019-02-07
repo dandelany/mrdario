@@ -2,12 +2,7 @@ import { EventEmitter } from "events";
 import { defaults, includes, noop } from "lodash";
 import { TypeState } from "typestate";
 
-import {
-  InputRepeater,
-  InputRepeaterState,
-  MovingCounters,
-  MovingDirections
-} from "./InputRepeater";
+import { InputRepeater, InputRepeaterState, MovingCounters, MovingDirections } from "./InputRepeater";
 
 import {
   ACCELERATE_INTERVAL,
@@ -144,12 +139,7 @@ export class Game extends EventEmitter {
 
     // the grid, single source of truth for game playfield state
     const { width, height, level } = this.options;
-    const { grid } = generateEnemies(
-      makeEmptyGrid(width, height + 1),
-      level,
-      COLORS,
-      this.seed + "enemies"
-    );
+    const { grid } = generateEnemies(makeEmptyGrid(width, height + 1), level, COLORS, this.seed + "enemies");
 
     this.grid = grid;
 
@@ -335,8 +325,7 @@ export class Game extends EventEmitter {
     if (hasLines) {
       this.comboLineCount += lines.length;
       this.score +=
-        Math.pow(destroyedCount, this.comboLineCount) * 5 +
-        Math.pow(virusCount, this.comboLineCount) * 3 * 5;
+        Math.pow(destroyedCount, this.comboLineCount) * 5 + Math.pow(virusCount, this.comboLineCount) * 3 * 5;
     }
 
     const gridHasViruses = hasViruses(this.grid);
@@ -442,9 +431,7 @@ export class Game extends EventEmitter {
         }
       } else if (includes([GameInput.RotateCCW, GameInput.RotateCW], input)) {
         const direction: RotateDirection =
-          input === GameInput.RotateCCW
-            ? RotateDirection.CounterClockwise
-            : RotateDirection.Clockwise;
+          input === GameInput.RotateCCW ? RotateDirection.CounterClockwise : RotateDirection.Clockwise;
 
         const rotated = rotatePill(this.grid, this.pill, direction);
         grid = rotated.grid;

@@ -34,7 +34,5 @@ export class LocalWebGameController extends AbstractGameController {
 }
 
 function timestamp(): number {
-  return window.performance && window.performance.now
-    ? window.performance.now()
-    : new Date().getTime();
+  return window.performance && window.performance.now ? window.performance.now() : new Date().getTime();
 }

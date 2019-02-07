@@ -72,11 +72,7 @@ export class GameClient {
     );
   }
 
-  public sendSingleGameHighScore(
-    level: number,
-    name: string,
-    score: number
-  ): Promise<GameScoreResponse> {
+  public sendSingleGameHighScore(level: number, name: string, score: number): Promise<GameScoreResponse> {
     const request: GameScoreRequest = [level, name, score];
     return promisifySocketRequest<GameScoreResponse>(
       this.socket,
@@ -89,13 +85,7 @@ export class GameClient {
   public sendInfoStartGame(name: string, level: number, speed: number, callback?: any) {
     this.socket.emit("infoStartGame", [name, level, speed], callback);
   }
-  public sendInfoLostGame(
-    name: string,
-    level: number,
-    speed: number,
-    score: number,
-    callback?: any
-  ) {
+  public sendInfoLostGame(name: string, level: number, speed: number, score: number, callback?: any) {
     this.socket.emit("infoLostGame", [name, level, speed, score], callback);
   }
 

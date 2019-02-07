@@ -73,8 +73,8 @@ class ExplosionParticleSim {
     this.colorDataSets = colors.map(
       (color: RGBColor): ImageData => {
         const imgData: ImageData = context.createImageData(swatchSize, swatchSize);
-        var data = imgData.data;
-        for (var i = 0, len = swatchSize * swatchSize * 4; i < len; i += 4) {
+        let data = imgData.data;
+        for (let i = 0, len = swatchSize * swatchSize * 4; i < len; i += 4) {
           data[i] = color[0];
           data[i + 1] = color[1];
           data[i + 2] = color[2];
@@ -123,8 +123,8 @@ class ExplosionParticleSim {
     let colorIndex = -1;
     let killParticles: number[] = [];
 
-    for (var j = 0; j < count; j++) {
-      var particle = this.particles[j];
+    for (let j = 0; j < count; j++) {
+      let particle = this.particles[j];
       const [x, y, size, vx, vy] = particle;
 
       const nextX = clamp(x + vx / 1500, 0, width);
@@ -175,7 +175,7 @@ class ExplosionParticleSim {
     context.fill();
     // context.fillRect(minX, minY, maxX - minX, maxY - minY);
 
-    for (var i = killParticles.length - 1; i >= 0; i--) {
+    for (let i = killParticles.length - 1; i >= 0; i--) {
       this.particles.splice(killParticles[i], 1);
     }
 
@@ -217,7 +217,7 @@ class ExplosionManager {
   public clear = () => {
     let [minX, maxX, minY, maxY] = this.combinedBounds;
     this.context.clearRect(minX, minY, maxX - minX, maxY - minY);
-  };
+  }
   public tickAndDraw = () => {
     // const start = performance.now();
     // this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -245,7 +245,7 @@ class ExplosionManager {
     // }
 
     this.frameRequestId = requestAnimationFrame(this.tickAndDraw);
-  };
+  }
   explode(locations: GridLocation[], colorSets: RGBColor[][]) {
     for (let i = 0; i < locations.length; i++) {
       const sim = new ExplosionParticleSim({
@@ -342,7 +342,7 @@ export class ExplosionField extends React.Component<ExplosionFieldProps> {
     //   this.particleSim.tickAndDraw();
     // }
     // requestAnimationFrame(this.animate);
-  };
+  }
 
   render() {
     const { grid, cellSize } = this.props;

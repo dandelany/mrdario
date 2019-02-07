@@ -38,9 +38,13 @@ export const DEFAULT_KEYS: KeyBindings = {
     [GameInput.RotateCW]: "s",
     [GameInput.Pause]: "escape"
   },
-  [GameControllerMode.Paused]: { [GameInput.Resume]: ["enter", "space", "escape"] },
+  [GameControllerMode.Paused]: {
+    [GameInput.Resume]: ["enter", "space", "escape"]
+  },
   [GameControllerMode.Won]: { [GameInput.Reset]: ["enter", "space", "escape"] },
-  [GameControllerMode.Lost]: { [GameInput.Reset]: ["enter", "space", "escape"] },
+  [GameControllerMode.Lost]: {
+    [GameInput.Reset]: ["enter", "space", "escape"]
+  },
   [GameControllerMode.Ready]: {},
   [GameControllerMode.Ended]: {}
 };

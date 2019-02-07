@@ -338,11 +338,7 @@ describe("Moves", () => {
       const startGrid = decodeGrid(`g2,2:
         XX
         LB`);
-      const { grid, pill, didMove } = rotatePill(
-        startGrid,
-        [[1, 0], [1, 1]],
-        RotateDirection.Clockwise
-      );
+      const { grid, pill, didMove } = rotatePill(startGrid, [[1, 0], [1, 1]], RotateDirection.Clockwise);
       expect(didMove).toBe(true);
       expect(pill).toEqual([[0, 0], [1, 0]]);
       expect(grid).toEqual(
@@ -372,11 +368,7 @@ describe("Moves", () => {
       const startGrid = decodeGrid(`g2,2:
         WX
         EX`);
-      const { grid, pill, didMove } = rotatePill(
-        startGrid,
-        [[0, 0], [1, 0]],
-        RotateDirection.Clockwise
-      );
+      const { grid, pill, didMove } = rotatePill(startGrid, [[0, 0], [1, 0]], RotateDirection.Clockwise);
       expect(didMove).toBe(true);
       expect(pill).toEqual([[1, 0], [1, 1]]);
       expect(grid).toEqual(
@@ -406,11 +398,7 @@ describe("Moves", () => {
       const startGrid = decodeGrid(`g2,3:
         XWX
         XES`);
-      const { grid, pill, didMove } = rotatePill(
-        startGrid,
-        [[0, 1], [1, 1]],
-        RotateDirection.Clockwise
-      );
+      const { grid, pill, didMove } = rotatePill(startGrid, [[0, 1], [1, 1]], RotateDirection.Clockwise);
       expect(didMove).toBe(true);
       expect(pill).toEqual([[1, 0], [1, 1]]);
       expect(grid).toEqual(
@@ -440,11 +428,7 @@ describe("Moves", () => {
       const startGrid = decodeGrid(`g2,3:
         XOX
         FUN`);
-      const { grid, pill, didMove } = rotatePill(
-        startGrid,
-        [[0, 1], [1, 1]],
-        RotateDirection.Clockwise
-      );
+      const { grid, pill, didMove } = rotatePill(startGrid, [[0, 1], [1, 1]], RotateDirection.Clockwise);
       expect(didMove).toBe(false);
       expect(pill).toEqual([[0, 1], [1, 1]]);
       expect(grid).toEqual(startGrid);
@@ -454,11 +438,7 @@ describe("Moves", () => {
         CX
         LR
         XX`);
-      const { grid, pill, didMove } = rotatePill(
-        startGrid,
-        [[1, 0], [1, 1]],
-        RotateDirection.Clockwise
-      );
+      const { grid, pill, didMove } = rotatePill(startGrid, [[1, 0], [1, 1]], RotateDirection.Clockwise);
       expect(didMove).toBe(false);
       expect(pill).toEqual([[1, 0], [1, 1]]);
       expect(grid).toEqual(startGrid);

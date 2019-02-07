@@ -201,7 +201,7 @@ export default class Playfield extends React.Component<PlayfieldProps> {
 
             colorGroupIndex += 1;
 
-            var emitter = new particles.Emitter(
+            let emitter = new particles.Emitter(
               pixiApp.stage,
               [PIXI.Texture.fromImage(particle)],
               // Emitter configuration, edit this to change the look
@@ -268,7 +268,7 @@ export default class Playfield extends React.Component<PlayfieldProps> {
   }
   updateEmitter = () => {
     requestAnimationFrame(this.updateEmitter);
-  };
+  }
 
   _getSize = () => {
     const grid = this.props.grid;
@@ -280,7 +280,7 @@ export default class Playfield extends React.Component<PlayfieldProps> {
     const width = numCols * cellSize;
     const height = numRows * cellSize;
     return { width, height };
-  };
+  }
 
   render() {
     const grid = this.props.grid;

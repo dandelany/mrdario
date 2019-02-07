@@ -66,10 +66,7 @@ export function getGridEncodingDictionary() {
   const dict: string[] = [];
   Object.keys(GridObjectType).map((gridObjTypeValue: string) => {
     const obj = { type: gridObjTypeValue } as GridObject;
-    if (
-      gridObjTypeValue === GridObjectType.Empty ||
-      gridObjTypeValue === GridObjectType.Destroyed
-    ) {
+    if (gridObjTypeValue === GridObjectType.Empty || gridObjTypeValue === GridObjectType.Destroyed) {
       dict.push(makeGridDictLine(obj));
     } else {
       COLORS.forEach(color => {

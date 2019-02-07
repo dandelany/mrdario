@@ -1,10 +1,5 @@
 import { EventEmitter } from "events";
-import {
-  GamepadPlusAxisEvent,
-  GamepadPlusButtonEvent,
-  GamepadPlusEvent,
-  Gamepads
-} from "gamepad-plus";
+import { GamepadPlusAxisEvent, GamepadPlusButtonEvent, GamepadPlusEvent, Gamepads } from "gamepad-plus";
 import { inRange } from "lodash";
 // import Gamepads from "gamepad-plus/src";
 
@@ -105,11 +100,7 @@ export class GamepadManager extends EventEmitter {
 
       window.addEventListener("gamepaddisconnected", (e: Event) => {
         const gamepadEvent = e as GamepadPlusEvent;
-        console.log(
-          "Gamepad removed at index %d: %s.",
-          gamepadEvent.gamepad.index,
-          gamepadEvent.gamepad.id
-        );
+        console.log("Gamepad removed at index %d: %s.", gamepadEvent.gamepad.index, gamepadEvent.gamepad.id);
       });
 
       if (gamepads.nonstandardEventsEnabled) {

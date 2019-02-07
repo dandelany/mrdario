@@ -58,7 +58,7 @@ export default class HighScores extends React.Component<HighScoresProps, HighSco
     if (!_.has(this.state.scoresForLevel, level + "")) {
       this._debouncedGetScoresForLevel(level);
     }
-  };
+  }
 
   render() {
     const { level, scoresForLevel } = this.state;

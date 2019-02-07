@@ -24,15 +24,7 @@ import {
   getInGrid,
   isPillVertical
 } from "./grid";
-import {
-  isDestroyed,
-  isEmpty,
-  isGridObject,
-  isPillLeft,
-  isPillSegment,
-  isPillTop,
-  isVirus
-} from "./guards";
+import { isDestroyed, isEmpty, isGridObject, isPillLeft, isPillSegment, isPillTop, isVirus } from "./guards";
 import {
   destroyCells,
   removeCell,
@@ -95,11 +87,7 @@ export function givePill(grid: GameGrid, pillColors: PillColors): GivePillResult
   return { grid, pill, didGive: true };
 }
 
-export function moveCell(
-  grid: GameGrid,
-  cell: GridCellLocation,
-  direction: GridDirection
-): MoveCellResult {
+export function moveCell(grid: GameGrid, cell: GridCellLocation, direction: GridDirection): MoveCellResult {
   if (!canMoveCell(grid, cell, direction)) {
     return { grid, cell, didMove: false };
   }
@@ -128,13 +116,11 @@ export function moveCells(
   // either they ALL move successfully, or none of them move
   const [dRow, dCol]: [number, number] = deltaRowCol(direction);
 
-  const sortedCells: GridCellLocation[] = cells
-    .slice()
-    .sort((a: GridCellLocation, b: GridCellLocation) => {
-      // sort the cells, so when moving eg. down, the furthest cell down moves first
-      // this way we don't overwrite newly moved elements
-      return Math.abs(dRow) > 0 ? (b[0] - a[0]) * dRow : (b[1] - a[1]) * dCol;
-    });
+  const sortedCells: GridCellLocation[] = cells.slice().sort((a: GridCellLocation, b: GridCellLocation) => {
+    // sort the cells, so when moving eg. down, the furthest cell down moves first
+    // this way we don't overwrite newly moved elements
+    return Math.abs(dRow) > 0 ? (b[0] - a[0]) * dRow : (b[1] - a[1]) * dCol;
+  });
   const oldGrid = grid;
 
   for (const cell of sortedCells) {
@@ -155,13 +141,13 @@ export function moveCells(
   return { grid, cells, didMove: true };
 }
 
-export function movePill(
-  grid: GameGrid,
-  pill: PillLocation,
-  direction: GridDirection
-): MovePillResult {
+export function movePill(grid: GameGrid, pill: PillLocation, direction: GridDirection): MovePillResult {
   const moved = moveCells(grid, pill, direction);
-  return { grid: moved.grid, pill: moved.cells as PillLocation, didMove: moved.didMove };
+  return {
+    grid: moved.grid,
+    pill: moved.cells as PillLocation,
+    didMove: moved.didMove
+  };
 }
 
 export function slamPill(grid: GameGrid, pill: PillLocation): MovePillResult {
@@ -193,9 +179,7 @@ export function rotatePill(
   const noMove = { grid, pill, didMove: false };
 
   // todo: guard to check these are really pill parts
-  const pillParts = pill.map(([segRow, segCol]) =>
-    getInGrid(grid, [segRow, segCol])
-  ) as GridObjectPillPart[];
+  const pillParts = pill.map(([segRow, segCol]) => getInGrid(grid, [segRow, segCol])) as GridObjectPillPart[];
 
   const nextPartTypes: PillPartTypePair = isVertical
     ? [GridObjectType.PillLeft, GridObjectType.PillRight]
@@ -342,9 +326,7 @@ export function dropDebris(grid: GameGrid): DropDebrisResult {
 
 export function clearTopRow(grid: GameGrid): GameGrid {
   // clear all cells in the top row
-  const cellsInTopRow: GridCellLocation[] = grid[0].map(
-    (_col, colI: number): GridCellLocation => [0, colI]
-  );
+  const cellsInTopRow: GridCellLocation[] = grid[0].map((_col, colI: number): GridCellLocation => [0, colI]);
   grid = removeCells(grid, cellsInTopRow);
 
   // turn remaining widowed pill halves into rounded 1-square pill segments

@@ -1,11 +1,4 @@
-import {
-  GameColor,
-  GameInput,
-  GridDirection,
-  GridObjectType,
-  InputEventType,
-  SpeedLevel
-} from "./enums";
+import { GameColor, GameInput, GridDirection, GridObjectType, InputEventType, SpeedLevel } from "./enums";
 
 export * from "./enums";
 
