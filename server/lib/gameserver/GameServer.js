@@ -87,6 +87,10 @@ var GameServer = /** @class */ (function () {
                     res(e);
                 }
             });
+            //@ts-ignore
+            socket.on('ping', function (data, res) {
+                res(null, "pong");
+            });
             // socket.on('infoStartGame', ([name, level, speed]) => {
             //   logWithTime(`${name} started level ${level} at speed ${speed}`);
             // })
