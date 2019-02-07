@@ -1,8 +1,10 @@
 // import * as _ from "lodash";
 import * as React from "react";
 import { GameGrid } from "mrdario-core/src/game/types";
+import * as Pixi from "pixi.js";
+import * as particles from "pixi-particles";
 
-import * as virusOrange from "../../svg2/virus_orange.svg";
+import * as virusOrange from "@/svg2/virus_orange.svg";
 import * as virusPurple from "@/svg2/virus_purple.svg";
 import * as virusGreen from "@/svg2/virus_green.svg";
 import * as pillHalfOrange from "@/svg2/pill_half_orange.svg";
@@ -11,9 +13,11 @@ import * as pillHalfGreen from "@/svg2/pill_half_green.svg";
 import * as pillSegmentOrange from "@/svg2/pill_segment_orange.svg";
 import * as pillSegmentPurple from "@/svg2/pill_segment_purple.svg";
 import * as pillSegmentGreen from "@/svg2/pill_segment_green.svg";
-import * as Pixi from "pixi.js";
+import * as destroyed from "@/svg2/destroyed.svg";
+import * as particle from "@/img/Pixel25px.png";
+
 import { GameGridRow, GridObjectPillHalfType, GridObjectType, MaybeGridObject } from "mrdario-core";
-import { hasColor, isPillHalf, isPillHalf } from "mrdario-core/lib/game/utils";
+import { hasColor, isDestroyed, isPillHalf } from "mrdario-core/lib/game/utils";
 // import makeReactSvg from "@/utils/makeReactSvg";
 
 // import PillPart from "./PillPart";
@@ -25,11 +29,69 @@ const pillHalves = [pillHalfOrange, pillHalfPurple, pillHalfGreen];
 const pillSegments = [pillSegmentOrange, pillSegmentPurple, pillSegmentGreen];
 const viruses = [virusOrange, virusPurple, virusGreen];
 
+const oranges = ["#BE1E2D", "#F05A28", "#F6921E"];
+const greens = ["#009345", "#006838", "#8BC53F", "#37B34A"];
+const purples = ["#5251A1", "#A376CD", "#744B9D", "#7A6ED4"];
+const colorGroups = [oranges, purples, greens];
+
 const pillHalfRotations: { [P in GridObjectPillHalfType]: number } = {
   [GridObjectType.PillTop]: 0,
   [GridObjectType.PillRight]: Math.PI / 2,
   [GridObjectType.PillBottom]: Math.PI,
   [GridObjectType.PillLeft]: (3 * Math.PI) / 2
+};
+
+const particlesConfig = {
+  "alpha": {
+    "start": 1,
+    "end": 1
+  },
+  "scale": {
+    "start": 1,
+    "end": 0.001,
+    "minimumScaleMultiplier": 1
+  },
+  "color": {
+    "start": "#d44646",
+    "end": "#d44646"
+    // "end": "#ffffff"
+  },
+  "speed": {
+    "start": 1800,
+    "end": 1200,
+    "minimumSpeedMultiplier": 0.15
+  },
+  "acceleration": {
+    "x": 0,
+    "y": 1000
+  },
+  "maxSpeed": 3000,
+  "startRotation": {
+    "min": 0,
+    "max": 360
+  },
+  "noRotation": true,
+  "rotationSpeed": {
+    "min": 0,
+    "max": 0
+  },
+  "lifetime": {
+    "min": 0.5,
+    "max": 1.5
+  },
+  "blendMode": "normal",
+  "frequency": 0.001,
+  "emitterLifetime": 0.1,
+  "maxParticles": 50,
+  "pos": {
+    "x": 0,
+    "y": 0
+  },
+  "addAtBack": true,
+  "spawnType": "burst",
+  "particlesPerWave": 5,
+  "particleSpacing": 0,
+  "angleStart": 0
 };
 
 export interface PlayfieldProps {
@@ -45,6 +107,7 @@ export default class Playfield extends React.Component<PlayfieldProps> {
   protected virusTextures: Pixi.Texture[];
   protected pillHalfTextures: Pixi.Texture[];
   protected pillSegmentTextures: Pixi.Texture[];
+  protected destroyedTexture: Pixi.Texture;
   protected pixiApp?: Pixi.Application;
   protected lastGrid?: GameGrid;
   protected spriteGrid?: SpriteGrid;
@@ -55,11 +118,12 @@ export default class Playfield extends React.Component<PlayfieldProps> {
     this.virusTextures = viruses.map(v => Pixi.Texture.from(v));
     this.pillHalfTextures = pillHalves.map(v => Pixi.Texture.from(v));
     this.pillSegmentTextures = pillSegments.map(v => Pixi.Texture.from(v));
+    this.destroyedTexture = Pixi.Texture.from(destroyed);
   }
 
   protected getSpriteForGridObject(obj: MaybeGridObject, rowIndex: number, colIndex: number): Pixi.Sprite | null {
     if (!obj || obj.type === GridObjectType.Empty) return null;
-    const {cellSize} = this.props;
+    const { cellSize } = this.props;
     let sprite = null;
     if (hasColor) {
       if (obj.type === GridObjectType.Virus) {
@@ -68,7 +132,8 @@ export default class Playfield extends React.Component<PlayfieldProps> {
         sprite = new Pixi.Sprite(this.pillSegmentTextures[obj.color]);
       } else if (isPillHalf(obj)) {
         sprite = new Pixi.Sprite(this.pillHalfTextures[obj.color]);
-
+      } else if(isDestroyed(obj)) {
+        sprite = new Pixi.Sprite(this.destroyedTexture);
       }
     }
     if (sprite) {
@@ -76,10 +141,10 @@ export default class Playfield extends React.Component<PlayfieldProps> {
       sprite.height = cellSize;
       sprite.anchor.x = 0.5;
       sprite.anchor.y = 0.5;
-      sprite.position.x = Math.floor((colIndex * this.props.cellSize) + (cellSize * 0.5));
-      sprite.position.y = Math.floor((rowIndex * this.props.cellSize) + (cellSize * 0.5));
+      sprite.position.x = Math.floor(colIndex * this.props.cellSize + cellSize * 0.5);
+      sprite.position.y = Math.floor(rowIndex * this.props.cellSize + cellSize * 0.5);
 
-      if(isPillHalf(obj)) {
+      if (isPillHalf(obj)) {
         sprite.rotation = pillHalfRotations[obj.type];
       }
     }
@@ -87,8 +152,8 @@ export default class Playfield extends React.Component<PlayfieldProps> {
   }
 
   componentWillReceiveProps(nextProps: PlayfieldProps) {
-    const { pixiApp, lastGrid } = this;
-    const { grid, cellSize } = nextProps;
+    const { pixiApp } = this;
+    const { grid } = nextProps;
     // let spriteGrid: Pixi.Sprite[][];
 
     if (!pixiApp) return;
@@ -107,12 +172,14 @@ export default class Playfield extends React.Component<PlayfieldProps> {
       });
       pixiApp.render();
     } else if (grid !== this.lastGrid) {
+      let colorGroupIndex = 0;
       for (let rowIndex = 0, gridLen = grid.length; rowIndex < gridLen; rowIndex++) {
         const row = grid[rowIndex];
         const lastGridRow = this.lastGrid[rowIndex];
         if (row === lastGridRow) continue;
         for (let colIndex = 0, rowLen = row.length; colIndex < rowLen; colIndex++) {
           const gridObj = row[colIndex];
+          const lastGridObj = lastGridRow[colIndex];
           if (gridObj === lastGridRow[colIndex]) continue;
           const lastSprite = this.spriteGrid[rowIndex][colIndex];
           if (lastSprite) lastSprite.destroy();
@@ -121,6 +188,34 @@ export default class Playfield extends React.Component<PlayfieldProps> {
             pixiApp.stage.addChild(sprite);
           }
           this.spriteGrid[rowIndex][colIndex] = sprite;
+
+
+          if(isDestroyed(gridObj) && sprite) {
+            const colorCode = hasColor(lastGridObj) ? lastGridObj.color : 0;
+            const colorGroup = colorGroups[colorCode];
+            const color = colorGroup[colorGroupIndex % colorGroup.length];
+
+            colorGroupIndex += 1;
+
+            var emitter = new particles.Emitter(
+              pixiApp.stage,
+              [PIXI.Texture.fromImage(particle)],
+              // Emitter configuration, edit this to change the look
+              // of the emitter
+              {
+                ...particlesConfig,
+                pos: {
+                  x: sprite.position.x,
+                  y: sprite.position.y
+                },
+                color: {
+                  start: color,
+                  end: color,
+                }
+              }
+            );
+            emitter.playOnceAndDestroy();
+          }
         }
       }
       this.lastGrid = grid;
@@ -138,6 +233,7 @@ export default class Playfield extends React.Component<PlayfieldProps> {
     // }
   }
   componentDidUpdate() {}
+
   shouldComponentUpdate() {
     return false;
   }
@@ -154,44 +250,18 @@ export default class Playfield extends React.Component<PlayfieldProps> {
         view: canvas,
         width,
         height,
-        transparent: true,
-        resolution: 2
+        // transparent: true,
+        resolution: 2,
+        backgroundColor: 0xD2CFCA
       });
       this.pixiApp = app;
-
-      const makeSVGTexture = (svgStr: string): PIXI.Texture => {
-        return PIXI.Texture.fromImage("data:image/svg+xml;charset=utf8," + svgStr);
-      };
-
-      const renderSprite = (s: PIXI.Sprite) => {
-        s.position.x = Math.random() * 300;
-        s.position.y = Math.random() * 300;
-        app.stage.addChild(s);
-      };
-
-      // const virusTextures = viruses.map(makeSVGTexture);
-
-      var texture = PIXI.Texture.from(virusOrange);
-
-      // var tVirusOrange = PIXI.Texture.fromImage('data:image/svg+xml;charset=utf8,' + virusOrange);
-      // var texture = PIXI.Texture.fromImage('data:image/svg+xml;charset=utf8,' + virusGreen);
-
-      // var bunny = new PIXI.Sprite(texture);
-
-      let circle = new Pixi.Graphics();
-      circle.beginFill(0x996600);
-      circle.drawCircle(0, 0, 32);
-      circle.endFill();
-      circle.x = 64;
-      circle.y = 130;
-      app.stage.addChild(circle);
-
-      // app.stage.addChild(Pixi.)
       app.render();
 
-      // console.log(app, bunny, texture);
     }
   }
+  updateEmitter = () => {
+    requestAnimationFrame(this.updateEmitter);
+  };
 
   _getSize = () => {
     const grid = this.props.grid;
@@ -219,13 +289,9 @@ export default class Playfield extends React.Component<PlayfieldProps> {
     // const style = { width, height, transform: `translate(0, ${-cellSize}px)` };
     const style = {
       width,
-      height,
-      position: "absolute",
-      top: "-32px",
-      left: "15px",
-      zIndex: 10000
-    };
+      height
+    } as React.CSSProperties;
 
-    return <canvas width={width} height={height} style={style} ref={this.canvasRef} />;
+    return <canvas className="playfield-pixi" width={width} height={height} style={style} ref={this.canvasRef} />;
   }
 }

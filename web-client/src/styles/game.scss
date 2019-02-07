@@ -30,6 +30,13 @@ $beige: rgb(210, 207, 202);
   }
 }
 
+.playfield-pixi {
+  position: absolute;
+  top: -32px;
+  left: 15px;
+  z-index: 10;
+}
+
 .game-playfield {
   margin: 6.75vh auto 0;
   background: $beige;

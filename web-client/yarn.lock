@@ -7173,6 +7173,11 @@ pixi-gl-core@^1.1.4:
   resolved "https://registry.yarnpkg.com/pixi-gl-core/-/pixi-gl-core-1.1.4.tgz#8b4b5c433b31e419bc379dc565ce1b835a91b372"
   integrity sha1-i0tcQzsx5Bm8N53FZc4bg1qRs3I=
 
+pixi-particles@^3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/pixi-particles/-/pixi-particles-3.1.0.tgz#102b5fc1191a7aceeeeb6171b8d88cbc46f2903b"
+  integrity sha512-W7eq58djIPgjT1a3amzaZ2ZNKr8u5BzhDfeQymOgUM7zbN1eOn2JuH7jwo0Qie4BYj7C9P32iQCTTyMdKNnXpA==
+
 pixi.js@^4.8.5:
   version "4.8.5"
   resolved "https://registry.yarnpkg.com/pixi.js/-/pixi.js-4.8.5.tgz#33eef7d1440f38b0057908121c28f93ea7c5b405"

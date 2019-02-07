@@ -20,6 +20,7 @@
     "deep-diff": "^1.0.2",
     "lodash": "^4.17.11",
     "mrdario-core": "file:../core",
+    "pixi-particles": "^3.1.0",
     "pixi.js": "^4.8.5",
     "random": "^2.0.13",
     "rc-slider": "^8.6.4",
