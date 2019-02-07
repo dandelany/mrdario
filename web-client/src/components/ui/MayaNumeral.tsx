@@ -100,7 +100,9 @@ const MayaNumeralDigit: React.FunctionComponent<MayaNumeralDigitProps> = props =
       <MayaNumeralZero {...{ symbol: zeroSymbol, size, color, style: styles.zero }} />
     ) : (
       [
-        <MayaNumeralDots {...{ count: dots, symbol: dotSymbol, size, color, style: styles.dots, key: "dots" }} />,
+        <MayaNumeralDots
+          {...{ count: dots, symbol: dotSymbol, size, color, style: styles.dots, key: "dots" }}
+        />,
         _.times(bars, i => <MayaNumeralBar {...{ size, color, style: styles.bar, key: `bar-${i}` }} />)
       ]
     );

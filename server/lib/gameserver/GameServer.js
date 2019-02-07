@@ -88,7 +88,7 @@ var GameServer = /** @class */ (function () {
                 }
             });
             //@ts-ignore
-            socket.on('ping', function (data, res) {
+            socket.on("ping", function (data, res) {
                 res(null, "pong");
             });
             // socket.on('infoStartGame', ([name, level, speed]) => {

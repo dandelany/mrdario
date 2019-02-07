@@ -80,7 +80,9 @@ export default class Playfield extends React.Component<PlayfieldProps> {
                   );
               }
 
-              return svgString ? makeReactSvg(svgString, { transform }, { width: cellSize, height: cellSize }) : null;
+              return svgString
+                ? makeReactSvg(svgString, { transform }, { width: cellSize, height: cellSize })
+                : null;
             })
           );
         })}

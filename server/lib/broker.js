@@ -12,15 +12,15 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
-var SCBroker = require('socketcluster/scbroker');
-var scClusterBrokerClient = require('scc-broker-client');
+var SCBroker = require("socketcluster/scbroker");
+var scClusterBrokerClient = require("scc-broker-client");
 var Broker = /** @class */ (function (_super) {
     __extends(Broker, _super);
     function Broker() {
         return _super !== null && _super.apply(this, arguments) || this;
     }
     Broker.prototype.run = function () {
-        console.log('   >> Broker PID:', process.pid);
+        console.log("   >> Broker PID:", process.pid);
         // This is defined in server.js (taken from environment variable SC_CLUSTER_STATE_SERVER_HOST).
         // If this property is defined, the broker will try to attach itself to the SC cluster for
         // automatic horizontal scalability.

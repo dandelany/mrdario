@@ -3,4 +3,3 @@ export interface GameRouteParams {
   speed: string;
   mode: string;
 }
-

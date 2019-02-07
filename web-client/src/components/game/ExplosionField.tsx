@@ -70,17 +70,19 @@ class ExplosionParticleSim {
     const { colors, context, maxSize } = this.options;
     const swatchSize = maxSize + 2;
 
-    this.colorDataSets = colors.map((color: RGBColor): ImageData => {
-      const imgData: ImageData = context.createImageData(swatchSize, swatchSize);
-      var data = imgData.data;
-      for (var i = 0, len = swatchSize * swatchSize * 4; i < len; i += 4) {
-        data[i] = color[0];
-        data[i + 1] = color[1];
-        data[i + 2] = color[2];
-        data[i + 3] = 255;
+    this.colorDataSets = colors.map(
+      (color: RGBColor): ImageData => {
+        const imgData: ImageData = context.createImageData(swatchSize, swatchSize);
+        var data = imgData.data;
+        for (var i = 0, len = swatchSize * swatchSize * 4; i < len; i += 4) {
+          data[i] = color[0];
+          data[i + 1] = color[1];
+          data[i + 2] = color[2];
+          data[i + 3] = 255;
+        }
+        return imgData;
       }
-      return imgData;
-    });
+    );
   }
   private initParticles(): Particle[] {
     const { maxPerExplosion, locations, minSize, maxSize } = this.options;
@@ -148,7 +150,7 @@ class ExplosionParticleSim {
         colorIndex = nextColorIndex;
       }
 
-        // const imageData = ctx.createImageData(diameter, diameter);
+      // const imageData = ctx.createImageData(diameter, diameter);
       //
       // const colorData = this.colorDataSets[nextColorIndex];
       // context.putImageData(colorData, x, y, 0, 0, size, size);
@@ -156,7 +158,7 @@ class ExplosionParticleSim {
       // context.beginPath();
       // todo draw all rectangles of each color before filling
       // context.fillStyle = "rgb(" + r + ", " + g + ", " + b + ")";
-      context.rect(~~(nextX - size/2), ~~(nextY - size/2), size, size);
+      context.rect(~~(nextX - size / 2), ~~(nextY - size / 2), size, size);
       // context.fill();
 
       let nextVX = vx;
@@ -167,14 +169,13 @@ class ExplosionParticleSim {
         nextVY = 0;
         killParticles.push(j);
       }
-      if (nextY === 0 || nextY === height)
-      particle[3] = ~~nextVX;
+      if (nextY === 0 || nextY === height) particle[3] = ~~nextVX;
       particle[4] = ~~nextVY;
     }
     context.fill();
     // context.fillRect(minX, minY, maxX - minX, maxY - minY);
 
-    for(var i = killParticles.length - 1; i >= 0; i--) {
+    for (var i = killParticles.length - 1; i >= 0; i--) {
       this.particles.splice(killParticles[i], 1);
     }
 
@@ -227,7 +228,7 @@ class ExplosionManager {
     }
 
     let combinedBounds = simBounds[0].slice();
-    for(let bounds of simBounds) {
+    for (let bounds of simBounds) {
       let [simMinX, simMaxX, simMinY, simMaxY] = bounds;
       combinedBounds[0] = Math.min(combinedBounds[0], simMinX);
       combinedBounds[1] = Math.max(combinedBounds[1], simMaxX);
@@ -299,7 +300,7 @@ export class ExplosionField extends React.Component<ExplosionFieldProps> {
     const canvas = this.canvasRef.current;
     if (canvas) {
       // const ctx = canvas.getContext("2d");
-      const ctx = canvas.getContext("2d", {alpha: false});
+      const ctx = canvas.getContext("2d", { alpha: false });
       if (ctx) {
         this.explosions = new ExplosionManager(canvas, ctx);
         this.ctx = ctx;
@@ -342,7 +343,6 @@ export class ExplosionField extends React.Component<ExplosionFieldProps> {
     // }
     // requestAnimationFrame(this.animate);
   };
-
 
   render() {
     const { grid, cellSize } = this.props;

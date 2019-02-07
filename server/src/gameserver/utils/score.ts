@@ -18,24 +18,15 @@ type SingleScoreCallback = (
 type RawDBScores = Array<string | number>;
 type ScoreDBRow = [string, number];
 
-
 function getSingleLevelHighScoresSetKey(level: number): string {
   return "hiscore_" + Math.floor(level);
 }
 
 function getHighScoreNameKey(name: string): string {
-  return (
-    (name + "").replace(/__&&__/g, "__&__").substr(0, 100) +
-    "__&&__" +
-    Number(new Date())
-  );
+  return (name + "").replace(/__&&__/g, "__&__").substr(0, 100) + "__&&__" + Number(new Date());
 }
 
-export function handleSingleScore(
-  rClient: RedisClient,
-  data: any,
-  callback: SingleScoreCallback
-) {
+export function handleSingleScore(rClient: RedisClient, data: any, callback: SingleScoreCallback) {
   if (!_.isArray(data) || data.length != 3) return;
   const row = data as SingleScoreDataRow;
   const level = row[0];
@@ -99,10 +90,7 @@ export function getSingleHighScores(
   callback: (err: Error | null, data: any) => any
 ) {
   const setKey = getSingleLevelHighScoresSetKey(level);
-  return rClient.zrange(setKey, -count, -1, "withscores", function(
-    err,
-    topScoreReplies
-  ) {
+  return rClient.zrange(setKey, -count, -1, "withscores", function(err, topScoreReplies) {
     // console.log("topScoreReplies", parseTopScores(topScoreReplies));
     if (callback) callback(err, parseHighScores(topScoreReplies));
   });

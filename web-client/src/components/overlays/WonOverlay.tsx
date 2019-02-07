@@ -18,7 +18,7 @@ const Scores: React.FunctionComponent<ScoresProps> = props => {
   // const gameState = {timeBonus: 1000, score: 2000};
   // const highScores = [["dan", 100], ["dan", 100], ["dan", 100], ["dan", 100], ["dan", 100], ["dan", 100]];
 
-  return (timeBonus !== undefined && score !== undefined) ? (
+  return timeBonus !== undefined && score !== undefined ? (
     <div className="won-overlay-score">
       <div>
         <strong>Time Bonus: </strong>

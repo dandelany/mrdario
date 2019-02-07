@@ -43,56 +43,56 @@ const pillHalfRotations: { [P in GridObjectPillHalfType]: number } = {
 };
 
 const particlesConfig = {
-  "alpha": {
-    "start": 1,
-    "end": 1
+  alpha: {
+    start: 1,
+    end: 1
   },
-  "scale": {
-    "start": 1.3,
-    "end": 0.001,
-    "minimumScaleMultiplier": .3
+  scale: {
+    start: 1.3,
+    end: 0.001,
+    minimumScaleMultiplier: 0.3
   },
-  "color": {
-    "start": "#d44646",
-    "end": "#d44646"
+  color: {
+    start: "#d44646",
+    end: "#d44646"
     // "end": "#ffffff"
   },
-  "speed": {
-    "start": 1800,
-    "end": 1200,
-    "minimumSpeedMultiplier": 0.25
+  speed: {
+    start: 1800,
+    end: 1200,
+    minimumSpeedMultiplier: 0.25
   },
-  "acceleration": {
-    "x": 0,
-    "y": 1000
+  acceleration: {
+    x: 0,
+    y: 1000
   },
-  "maxSpeed": 3000,
-  "startRotation": {
-    "min": 0,
-    "max": 360
+  maxSpeed: 3000,
+  startRotation: {
+    min: 0,
+    max: 360
   },
-  "noRotation": true,
-  "rotationSpeed": {
-    "min": 0,
-    "max": 0
+  noRotation: true,
+  rotationSpeed: {
+    min: 0,
+    max: 0
   },
-  "lifetime": {
-    "min": 1,
-    "max": 1.5
+  lifetime: {
+    min: 1,
+    max: 1.5
   },
-  "blendMode": "normal",
-  "frequency": 0.001,
-  "emitterLifetime": 0.1,
-  "maxParticles": 40,
-  "pos": {
-    "x": 0,
-    "y": 0
+  blendMode: "normal",
+  frequency: 0.001,
+  emitterLifetime: 0.1,
+  maxParticles: 40,
+  pos: {
+    x: 0,
+    y: 0
   },
-  "addAtBack": true,
-  "spawnType": "burst",
-  "particlesPerWave": 5,
-  "particleSpacing": 0,
-  "angleStart": 0
+  addAtBack: true,
+  spawnType: "burst",
+  particlesPerWave: 5,
+  particleSpacing: 0,
+  angleStart: 0
 };
 
 export interface PlayfieldProps {
@@ -122,7 +122,11 @@ export default class Playfield extends React.Component<PlayfieldProps> {
     this.destroyedTexture = Pixi.Texture.from(destroyed);
   }
 
-  protected getSpriteForGridObject(obj: MaybeGridObject, rowIndex: number, colIndex: number): Pixi.Sprite | null {
+  protected getSpriteForGridObject(
+    obj: MaybeGridObject,
+    rowIndex: number,
+    colIndex: number
+  ): Pixi.Sprite | null {
     if (!obj || obj.type === GridObjectType.Empty) return null;
     const { cellSize } = this.props;
     let sprite = null;
@@ -133,7 +137,7 @@ export default class Playfield extends React.Component<PlayfieldProps> {
         sprite = new Pixi.Sprite(this.pillSegmentTextures[obj.color]);
       } else if (isPillHalf(obj)) {
         sprite = new Pixi.Sprite(this.pillHalfTextures[obj.color]);
-      } else if(isDestroyed(obj)) {
+      } else if (isDestroyed(obj)) {
         sprite = new Pixi.Sprite(this.destroyedTexture);
       }
     }
@@ -190,8 +194,7 @@ export default class Playfield extends React.Component<PlayfieldProps> {
           }
           this.spriteGrid[rowIndex][colIndex] = sprite;
 
-
-          if(isDestroyed(gridObj) && sprite) {
+          if (isDestroyed(gridObj) && sprite) {
             const colorCode = hasColor(lastGridObj) ? lastGridObj.color : 0;
             const colorGroup = colorGroups[colorCode];
             const color = colorGroup[colorGroupIndex % colorGroup.length];
@@ -200,9 +203,7 @@ export default class Playfield extends React.Component<PlayfieldProps> {
 
             var emitter = new particles.Emitter(
               pixiApp.stage,
-              [
-                PIXI.Texture.fromImage(particle)
-              ],
+              [PIXI.Texture.fromImage(particle)],
               // Emitter configuration, edit this to change the look
               // of the emitter
               {
@@ -213,7 +214,7 @@ export default class Playfield extends React.Component<PlayfieldProps> {
                 },
                 color: {
                   start: color,
-                  end: color,
+                  end: color
                 }
               }
             );
@@ -255,7 +256,7 @@ export default class Playfield extends React.Component<PlayfieldProps> {
         height,
         // transparent: true,
         resolution: 2,
-        backgroundColor: 0xD2CFCA
+        backgroundColor: 0xd2cfca
       });
       this.pixiApp = app;
 
@@ -263,7 +264,6 @@ export default class Playfield extends React.Component<PlayfieldProps> {
       //   new filters.ShockwaveFilter()
       // ];
       app.render();
-
     }
   }
   updateEmitter = () => {
@@ -299,6 +299,8 @@ export default class Playfield extends React.Component<PlayfieldProps> {
       height
     } as React.CSSProperties;
 
-    return <canvas className="playfield-pixi" width={width} height={height} style={style} ref={this.canvasRef} />;
+    return (
+      <canvas className="playfield-pixi" width={width} height={height} style={style} ref={this.canvasRef} />
+    );
   }
 }

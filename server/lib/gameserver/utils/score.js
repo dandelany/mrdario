@@ -5,9 +5,7 @@ function getSingleLevelHighScoresSetKey(level) {
     return "hiscore_" + Math.floor(level);
 }
 function getHighScoreNameKey(name) {
-    return ((name + "").replace(/__&&__/g, "__&__").substr(0, 100) +
-        "__&&__" +
-        Number(new Date()));
+    return (name + "").replace(/__&&__/g, "__&__").substr(0, 100) + "__&&__" + Number(new Date());
 }
 function handleSingleScore(rClient, data, callback) {
     if (!_.isArray(data) || data.length != 3)

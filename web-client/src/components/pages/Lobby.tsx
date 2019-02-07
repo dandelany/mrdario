@@ -4,7 +4,4 @@ import { GameClient } from "mrdario-core/lib/api/client";
 
 export interface LobbyProps extends RouteComponentProps<GameRouteParams> {
   gameClient: GameClient;
-
 }
-
-

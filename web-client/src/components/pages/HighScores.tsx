@@ -36,10 +36,11 @@ export default class HighScores extends React.Component<HighScoresProps, HighSco
   _getScoresForLevel(level: number) {
     const { gameClient } = this.props;
 
-    gameClient.getHighScores(level)
+    gameClient
+      .getHighScores(level)
       .then((data: HighScoresResponse) => {
         const { level, scores } = data;
-        console.log('ok', scores);
+        console.log("ok", scores);
         this.setState({
           scoresForLevel: {
             ...this.state.scoresForLevel,
@@ -76,10 +77,9 @@ export default class HighScores extends React.Component<HighScoresProps, HighSco
             onChange={this._onChangeLevel}
             // width={"40vh"}
           />
-          <div style={{marginTop: 15}}>
+          <div style={{ marginTop: 15 }}>
             <MayaNumeral value={level} size={40} />
           </div>
-
 
           <h3>High Scores</h3>
 

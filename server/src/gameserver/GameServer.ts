@@ -82,21 +82,16 @@ export class GameServer {
           return;
         }
         if (scoreInfo) {
-          getSingleHighScores(
-            this.rClient,
-            scoreInfo.level,
-            15,
-            (err, scores) => {
-              // logWithTime('SCORE:', JSON.stringify({rank, scoreInfo, socket: getSocketInfo(socket)}), '\u0007');
-              logWithTime(
-                `${scoreInfo.name} won on level ${scoreInfo.level}! Score: ${
-                  scoreInfo.score
-                } (high score #${rank + 1})`,
-                "\u0007"
-              );
-              res(err, { rank: rank, scores: scores });
-            }
-          );
+          getSingleHighScores(this.rClient, scoreInfo.level, 15, (err, scores) => {
+            // logWithTime('SCORE:', JSON.stringify({rank, scoreInfo, socket: getSocketInfo(socket)}), '\u0007');
+            logWithTime(
+              `${scoreInfo.name} won on level ${scoreInfo.level}! Score: ${
+                scoreInfo.score
+              } (high score #${rank + 1})`,
+              "\u0007"
+            );
+            res(err, { rank: rank, scores: scores });
+          });
         }
       });
     });
@@ -149,11 +144,9 @@ export class GameServer {
       }
     });
     //@ts-ignore
-    socket.on('ping', (data, res) => {
-        res(null, "pong");
-    })
-
-
+    socket.on("ping", (data, res) => {
+      res(null, "pong");
+    });
 
     // socket.on('infoStartGame', ([name, level, speed]) => {
     //   logWithTime(`${name} started level ${level} at speed ${speed}`);

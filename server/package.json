@@ -8,8 +8,10 @@
   "scripts": {
     "build": "tsc -p .",
     "build:live": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/server.js",
+    "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
     "start": "npm run build:live",
-    "start:docker": "node dockerwait.js && node ${SOCKETCLUSTER_MASTER_CONTROLLER:-server.js}"
+    "start:docker": "node dockerwait.js && node ${SOCKETCLUSTER_MASTER_CONTROLLER:-server.js}",
+    "release": "npm run format && npm run build"
   },
   "dependencies": {
     "connect": "3.6.6",

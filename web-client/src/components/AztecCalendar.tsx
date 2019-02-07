@@ -64,7 +64,7 @@ export default class AztecCalendar extends React.Component<AztecCalendarProps> {
         <SVGShimmerCycler
           svgPath={aztecCalendar}
           shapesPerFrame={6}
-          {...{ width, height, ...shimmerProps}}
+          {...{ width, height, ...shimmerProps }}
         />
       </div>
     );

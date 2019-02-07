@@ -44,7 +44,12 @@ export default class GameSettings extends React.Component<GameSettingsProps, Gam
           <div>
             <h3>
               Name:
-              <input type="text" value={this.state.name} onChange={this.onChangeName} placeholder="Anonymous" />
+              <input
+                type="text"
+                value={this.state.name}
+                onChange={this.onChangeName}
+                placeholder="Anonymous"
+              />
             </h3>
             <div />
 

@@ -1,7 +1,12 @@
 import * as React from "react";
 import makeReactSvg from "@/utils/makeReactSvg";
 
-import { GridObjectType, GameColor, GridObjectPillPartType, GridObjectPillHalfType } from "mrdario-core/lib/game/types";
+import {
+  GridObjectType,
+  GameColor,
+  GridObjectPillPartType,
+  GridObjectPillHalfType
+} from "mrdario-core/lib/game/types";
 
 import * as pillHalfOrange from "!raw-loader!@/svg/pill_half_orange.svg";
 import * as pillHalfPurple from "!raw-loader!@/svg/pill_half_purple.svg";
@@ -60,7 +65,8 @@ export default class PillPart extends React.Component<PillPartProps> {
       svgString = pillHalves[color];
       gProps = {
         ...gProps,
-        transform: `${gProps.transform || ""} rotate(${pillHalfRotations[type] || 0} ${cellSize / 2} ${cellSize / 2})`
+        transform: `${gProps.transform || ""} rotate(${pillHalfRotations[type] || 0} ${cellSize /
+          2} ${cellSize / 2})`
       };
     }
 

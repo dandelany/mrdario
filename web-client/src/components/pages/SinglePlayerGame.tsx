@@ -90,14 +90,15 @@ class SinglePlayerGame extends React.Component<SinglePlayerGameProps, SinglePlay
 
   shouldComponentUpdate(newProps: SinglePlayerGameProps, newState: SinglePlayerGameState) {
     const hasChanged =
-      !_.every(newState, (value, key) => shallowEqual(value, this.state[key])) || !shallowEqual(newProps, this.props);
+      !_.every(newState, (value, key) => shallowEqual(value, this.state[key])) ||
+      !shallowEqual(newProps, this.props);
 
     return hasChanged;
   }
 
   componentDidUpdate() {
-    const {grid, gameId} = this.state;
-    if(grid && gameId) {
+    const { grid, gameId } = this.state;
+    if (grid && gameId) {
       // console.log('send', this.state.gameId, this.state.grid);
       this.props.gameClient.publishSimpleGameState(gameId, grid);
     }
@@ -130,10 +131,9 @@ class SinglePlayerGame extends React.Component<SinglePlayerGameProps, SinglePlay
         console.error(err);
       });
 
-    gameClient.createSimpleGame(level, speed)
-      .then((gameId: string) => {
-        this.setState({gameId})
-      });
+    gameClient.createSimpleGame(level, speed).then((gameId: string) => {
+      this.setState({ gameId });
+    });
 
     // input managers controlling keyboard and touch events
     this.keyManager = new KeyManager(DEFAULT_KEYS);
@@ -181,7 +181,6 @@ class SinglePlayerGame extends React.Component<SinglePlayerGameProps, SinglePlay
 
       if (_.isFinite(level) && _.isFinite(score) && this.props.gameClient.socket.state) {
         console.log("sending score");
-
 
         this.props.gameClient
           .sendSingleGameHighScore(level, name, score)

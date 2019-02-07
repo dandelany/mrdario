@@ -12,7 +12,9 @@ export default class PillPreviewPanel extends React.Component<PillPreviewPanelPr
   render() {
     const { pill, cellSize } = this.props;
 
-    const name = window.localStorage ? window.localStorage.getItem("mrdario-name") || "Anonymous" : "Anonymous";
+    const name = window.localStorage
+      ? window.localStorage.getItem("mrdario-name") || "Anonymous"
+      : "Anonymous";
 
     return (
       <div className="pill-preview-panel" style={{ padding: cellSize / 2 }}>

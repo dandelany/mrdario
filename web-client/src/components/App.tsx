@@ -3,7 +3,6 @@ import * as React from "react";
 require("@/styles/main.scss");
 require("@/styles/rc-slider.less");
 
-
 import AppContainer from "./AppContainer";
 import { HashRouter as Router } from "react-router-dom";
 

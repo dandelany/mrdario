@@ -32,7 +32,11 @@ const PropsRoute = (props: any) => {
 export default [
   <PropsRoute exact path="/" name="title" key="title" component={TitlePage} />,
   <PropsRoute path="/highscores" key="highscores" component={HighScores} />,
-  <PropsRoute path="/game/level/:level/speed/:speed/:mode?" key="single-player-game" component={SinglePlayerGame} />,
+  <PropsRoute
+    path="/game/level/:level/speed/:speed/:mode?"
+    key="single-player-game"
+    component={SinglePlayerGame}
+  />,
 
   <PropsRoute path="/settings" key="settings" component={GameSettings} />
   /*

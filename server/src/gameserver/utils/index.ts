@@ -1,5 +1,5 @@
 import { SCServerSocket } from "socketcluster-server";
-import {get} from "lodash";
+import { get } from "lodash";
 
 export function getClientIpAddress(socket: SCServerSocket) {
   return get(socket, "request.headers.x-forwarded-for", socket.remoteAddress);
