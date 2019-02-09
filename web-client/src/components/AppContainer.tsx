@@ -1,16 +1,29 @@
 import * as React from "react";
 import { RouteComponentProps, withRouter } from "react-router-dom";
+import {connect} from "react-redux";
 
-import { GameClient } from "mrdario-core/lib/api/client";
+import { GameClient, GameClientOptions } from "mrdario-core/lib/api/client";
 import { GameControllerMode } from "mrdario-core/lib/game/controller";
 
 import AztecCalendar, { AztecCalendarMode } from "./AztecCalendar";
+
+import { AppThunkDispatch, getHighScores, initGameClient } from "@/store/actions/creators";
+import { RequestStatus } from "@/store/actions/types";
+
+
 
 function getWindowSize() {
   return { windowWidth: window.innerWidth, windowHeight: window.innerHeight };
 }
 
-interface AppContainerProps extends RouteComponentProps {}
+interface AppContainerOwnProps extends RouteComponentProps {}
+
+interface AppContainerDispatchProps {
+  getHighScores: () => void,
+  initGameClient: (options: Partial<GameClientOptions>) => GameClient
+}
+
+type AppContainerProps = AppContainerOwnProps & AppContainerDispatchProps;
 
 interface AppContainerState {
   windowWidth: number;
@@ -29,9 +42,13 @@ class AppContainer extends React.Component<AppContainerProps, AppContainerState>
 
   constructor(props: AppContainerProps) {
     super(props);
-    this.gameClient = new GameClient();
+    // this.gameClient = new GameClient({});
     // todo test throttling this
     this._throttledResizeHandler = this._onResize;
+
+    this.props.getHighScores();
+    this.gameClient = this.props.initGameClient({socketOptions: {port: 8000}});
+    this.gameClient.connect();
   }
 
   componentDidMount() {
@@ -92,4 +109,13 @@ class AppContainer extends React.Component<AppContainerProps, AppContainerState>
   }
 }
 
-export default withRouter(AppContainer);
+const mapDispatchToProps = (dispatch: AppThunkDispatch) => ({
+  getHighScores: () => dispatch(getHighScores(RequestStatus.Loading)),
+  initGameClient: (options: Partial<GameClientOptions> = {}) => dispatch(initGameClient(options))
+});
+
+export default withRouter(connect(
+  () => ({}),
+  mapDispatchToProps
+)(AppContainer));
+

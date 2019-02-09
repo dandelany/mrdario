@@ -49,6 +49,7 @@
     "seedrandom": "^2.4.4",
     "socketcluster": "^14.3.3",
     "socketcluster-server": "^14.4.0",
-    "typestate": "^1.0.6"
+    "typestate": "^1.0.6",
+    "ws": "^6.1.3"
   }
 }

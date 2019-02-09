@@ -14,49 +14,76 @@ import {
 import * as t from "io-ts";
 import { encodeGrid } from "../../encoding";
 import { GameGrid } from "../../game";
+import { SCChannelOptions } from "sc-channel";
 
-// export interface GameClientOptions {}
+export interface GameClientOptions {
+  socketOptions?: SCClientSocket.ClientOptions;
 
-async function promisifySocketRequest<ResponseType, RequestType = any>(
-  socket: SCClientSocket,
-  eventName: string,
-  requestData: RequestType,
-  TResponseType: t.Any
-): Promise<ResponseType> {
-  return await new Promise<ResponseType>(function(resolve, reject) {
-    socket.emit(eventName, requestData, (err: Error, data: any) => {
-      if (err) {
-        reject(err);
-      }
-      const decoded = TResponseType.decode(data);
-      if (decoded.isRight()) {
-        resolve(decoded.value);
-      } else if (decoded.isLeft()) {
-        reject(new Error(PathReporter.report(decoded)[0]));
-      }
-      resolve(data);
-    });
-  });
+  onConnecting?: () => void;
+  onConnect?: (status: SCClientSocket.ConnectStatus, processSubscriptions: () => void) => void;
+  onConnectAbort?: (code: number, data: string | object) => void;
+  onDisconnect?: (code: number, data: string | object) => void;
+  onClose?: (code: number, data: string | object) => void;
+  onError?: (err: Error) => void;
+
+  // onKickOut?: (message: string, channelName: string) => void;
+  // onAuthenticate?: (signedAuthToken: string | null) => void;
+  // onDeauthenticate?: (oldSignedToken: string | null) => void;
+  // onAuthStateChange?: (stateChangeData: SCClientSocket.AuthStateChangeData) => void;
+  // onRemoveAuthToken?: (oldToken: object | null) => void;
+  // onSubscribe?: (channelName: string, subscriptionOptions: SCChannelOptions) => void;
+  // onSubscribeRequest?: (channelName: string, subscriptionOptions: SCChannelOptions) => void;
+  // onSubscribeStateChange?: (stateChangeData: SCClientSocket.SubscribeStateChangeData) => void;
+  // onSubscribeFail?: (err: Error, channelName: string, subscriptionOptions: SCChannelOptions) => void;
+  // onUnsubscribe?: (channelName: string) => void;
+  // onRaw?: (data: any) => void;
+  // onMessage?: (message: WebSocket.Data) => void;
 }
 
 export class GameClient {
   public socket: SCClientSocket;
 
-  constructor() {
-    const socket = createSocket({ port: 8000 });
+  constructor(options: GameClientOptions = {}) {
+    const socket = createSocket({
+      port: 8000,
+      ...(options.socketOptions || {}),
+      autoConnect: false
+    });
+
+    if (options.onConnecting) socket.on("connecting", options.onConnecting);
+    if (options.onConnect) socket.on("connect", options.onConnect);
+    if (options.onConnectAbort) socket.on("connectAbort", options.onConnectAbort);
+    if (options.onDisconnect) socket.on("disconnect", options.onDisconnect);
+    if (options.onClose) socket.on("close", options.onClose);
+    if (options.onError) socket.on("error", options.onError);
+
     // const socket = createSocket({ port: 3000 });
-
-    socket.on("error", err => {
-      console.error("Socket error - " + err);
-      // todo call callback passed in options
-    });
-
-    socket.on("connect", function() {
-      console.log("Socket connected - OK");
-      // todo call callback passed in options
-    });
+    //
+    // socket.on("error", err => {
+    //   console.error("Socket error - " + err);
+    //   // todo call callback passed in options
+    // });
+    //
+    // socket.on("connect", function() {
+    //   console.log("Socket connected - OK");
+    //   // todo call callback passed in options
+    // });
 
     this.socket = socket;
+  }
+  public connect() {
+    return new Promise<SCClientSocket>((resolve, reject) => {
+      this.socket.connect();
+      this.socket.on("connect", () => {
+        console.log("Socket connected - OK");
+        // todo call callback passed in options
+        resolve(this.socket);
+      });
+      this.socket.on("error", (err: Error) => {
+        console.error("Socket error - " + err);
+        reject(err);
+      });
+    });
   }
 
   public async joinLobby(name: string): Promise<Lobby> {
@@ -116,4 +143,26 @@ export class GameClient {
       });
     });
   }
+}
+
+async function promisifySocketRequest<ResponseType, RequestType = any>(
+  socket: SCClientSocket,
+  eventName: string,
+  requestData: RequestType,
+  TResponseType: t.Any
+): Promise<ResponseType> {
+  return await new Promise<ResponseType>(function(resolve, reject) {
+    socket.emit(eventName, requestData, (err: Error, data: any) => {
+      if (err) {
+        reject(err);
+      }
+      const decoded = TResponseType.decode(data);
+      if (decoded.isRight()) {
+        resolve(decoded.value);
+      } else if (decoded.isLeft()) {
+        reject(new Error(PathReporter.report(decoded)[0]));
+      }
+      resolve(data);
+    });
+  });
 }

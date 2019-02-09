@@ -35,6 +35,25 @@ module.exports = {
         ],
       },
       {
+        test: /\.module\.scss$/,
+        loaders : [
+          {
+            loader: "style-loader"
+          },
+          {
+            loader: "css-loader",
+            options: {
+              sourceMap: true,
+              modules: true,
+              localIdentName: "[local]___[hash:base64:5]"
+            }
+          },
+          {
+            loader: "sass-loader"
+          }
+        ]
+      },
+      {
         test: /\.less/,
         loaders: [
           'style-loader',

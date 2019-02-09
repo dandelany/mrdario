@@ -1,4 +1,6 @@
 import * as React from "react";
+import {Provider} from "react-redux";
+import {store} from "@/store/store";
 
 require("@/styles/main.scss");
 require("@/styles/rc-slider.less");
@@ -14,11 +16,13 @@ export interface AppProps {}
 export default class App extends React.Component<AppProps> {
   render() {
     return (
-      <Router>
-        <div>
-          <AppContainer>{routes}</AppContainer>
-        </div>
-      </Router>
+      <Provider store={store}>
+        <Router>
+          <div>
+            <AppContainer>{routes}</AppContainer>
+          </div>
+        </Router>
+      </Provider>
     );
   }
 }
