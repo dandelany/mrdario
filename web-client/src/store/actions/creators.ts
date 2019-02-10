@@ -5,17 +5,20 @@ import { GameClient, GameClientOptions } from "mrdario-core/lib/api/client";
 import {
   AppAction,
   AppActionType,
-  SocketConnectingAction,
-  SocketConnectAction,
-  SocketConnectAbortAction,
   GetHighScoresAction,
+  GetHighScoresFailedAction,
+  GetHighScoresSuccessAction,
   RequestStatus,
-  SocketDisconnectAction,
   SocketCloseAction,
+  SocketConnectAbortAction,
+  SocketConnectAction,
+  SocketConnectingAction,
+  SocketDisconnectAction,
   SocketErrorAction
 } from "./types";
-import { AppState } from "../state";
+import { AppState } from "../state/types";
 import { SCClientSocket } from "socketcluster-client";
+import { HighScoresResponse } from "mrdario-core/lib/api/types";
 
 export type AppThunkAction<R> = ThunkAction<R, AppState, null, AppAction>;
 
@@ -23,48 +26,85 @@ export type AppThunkDispatch = ThunkDispatch<AppState, null, AppAction>;
 
 export type AsyncActionCreator<A = AppAction> = ActionCreator<AppThunkAction<Promise<A>>>;
 
-export const socketConnecting: ActionCreator<SocketConnectingAction> = () => ({
-  type: AppActionType.SocketConnecting
+// simple action creators
+export const socketConnecting: ActionCreator<SocketConnectingAction> = (socket: SCClientSocket) => ({
+  type: AppActionType.SocketConnecting,
+  payload: { socketState: socket.state }
 });
 
-export const socketConnect: ActionCreator<SocketConnectAction> = (status: SCClientSocket.ConnectStatus) => ({
+export const socketConnect: ActionCreator<SocketConnectAction> = (
+  status: SCClientSocket.ConnectStatus,
+  _processSubscriptions: any,
+  socket: SCClientSocket
+) => ({
   type: AppActionType.SocketConnect,
-  payload: { status }
+  payload: { status, socketState: socket.state }
 });
 
 export const socketConnectAbort: ActionCreator<SocketConnectAbortAction> = (
   code: number,
-  data: string | object
+  data: string | object,
+  socket: SCClientSocket
 ) => ({
   type: AppActionType.SocketConnectAbort,
-  payload: { code, data }
+  payload: { code, data, socketState: socket.state }
 });
 
 export const socketDisconnect: ActionCreator<SocketDisconnectAction> = (
   code: number,
-  data: string | object
+  data: string | object,
+  socket: SCClientSocket
 ) => ({
   type: AppActionType.SocketDisconnect,
-  payload: { code, data }
+  payload: { code, data, socketState: socket.state }
 });
 
-export const socketClose: ActionCreator<SocketCloseAction> = (code: number, data: string | object) => ({
+export const socketClose: ActionCreator<SocketCloseAction> = (
+  code: number,
+  data: string | object,
+  socket: SCClientSocket
+) => ({
   type: AppActionType.SocketClose,
-  payload: { code, data }
+  payload: { code, data, socketState: socket.state }
 });
 
-export const socketError: ActionCreator<SocketErrorAction> = (err: Error) => ({
+export const socketError: ActionCreator<SocketErrorAction> = (error: Error, socket: SCClientSocket) => ({
   type: AppActionType.SocketError,
-  payload: { err }
+  error,
+  payload: { socketState: socket.state }
 });
 
+export const getHighScoresLoading: ActionCreator<GetHighScoresAction> = (level: number) => ({
+  type: AppActionType.GetHighScores,
+  status: RequestStatus.Loading,
+  payload: { level }
+});
+export const getHighScoresSuccess: ActionCreator<GetHighScoresSuccessAction> = (
+  level: number,
+  response: HighScoresResponse
+) => ({
+  type: AppActionType.GetHighScores,
+  status: RequestStatus.Success,
+  payload: { level, response }
+});
+export const getHighScoresFailed: ActionCreator<GetHighScoresFailedAction> = (
+  level: number,
+  error: Error
+) => ({
+  type: AppActionType.GetHighScores,
+  status: RequestStatus.Failed,
+  payload: { level },
+  error
+});
+
+// thunk actions
 
 export const initGameClient: ActionCreator<AppThunkAction<GameClient>> = (
   options: Partial<GameClientOptions> = {}
 ) => {
   return (dispatch: Dispatch) => {
     const wrapDispatch = (func: ActionCreator<AppAction>) => {
-      return (...args: any) => dispatch(func(...args))
+      return (...args: any) => dispatch(func(...args));
     };
     const gameClient = new GameClient({
       ...options,
@@ -73,10 +113,25 @@ export const initGameClient: ActionCreator<AppThunkAction<GameClient>> = (
       onConnectAbort: wrapDispatch(socketConnectAbort),
       onDisconnect: wrapDispatch(socketDisconnect),
       onClose: wrapDispatch(socketClose),
-      onError: wrapDispatch(socketError),
+      onError: wrapDispatch(socketError)
     });
     console.log(gameClient);
     return gameClient;
+  };
+};
+
+// async actions
+
+export const getHighScores: AsyncActionCreator<GetHighScoresAction> = (level: number, gameClient: GameClient) => {
+  return (dispatch: Dispatch<GetHighScoresAction>) => {
+    dispatch(getHighScoresLoading(level));
+    return gameClient.getHighScores(level)
+      .then((response: HighScoresResponse) => {
+        return dispatch(getHighScoresSuccess(level, response));
+      })
+      .catch((error: Error) => {
+        return dispatch(getHighScoresFailed(level, error))
+      })
   };
 };
 
@@ -97,9 +152,9 @@ export const initGameClient: ActionCreator<AppThunkAction<GameClient>> = (
 //   };
 // };
 
-export const getHighScores: ActionCreator<GetHighScoresAction> = () => {
-  return {
-    type: AppActionType.GetHighScores,
-    status: RequestStatus.Loading
-  };
-};
+// export const getHighScores: ActionCreator<GetHighScoresAction> = () => {
+//   return {
+//     type: AppActionType.GetHighScores,
+//     status: RequestStatus.Loading
+//   };
+// };

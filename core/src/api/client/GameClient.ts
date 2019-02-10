@@ -14,7 +14,9 @@ import {
 import * as t from "io-ts";
 import { encodeGrid } from "../../encoding";
 import { GameGrid } from "../../game";
-import { SCChannelOptions } from "sc-channel";
+import { partialRight } from "lodash";
+
+// import { SCChannelOptions } from "sc-channel";
 
 export interface GameClientOptions {
   socketOptions?: SCClientSocket.ClientOptions;
@@ -50,12 +52,12 @@ export class GameClient {
       autoConnect: false
     });
 
-    if (options.onConnecting) socket.on("connecting", options.onConnecting);
-    if (options.onConnect) socket.on("connect", options.onConnect);
-    if (options.onConnectAbort) socket.on("connectAbort", options.onConnectAbort);
-    if (options.onDisconnect) socket.on("disconnect", options.onDisconnect);
-    if (options.onClose) socket.on("close", options.onClose);
-    if (options.onError) socket.on("error", options.onError);
+    if (options.onConnecting) socket.on("connecting", partialRight(options.onConnecting, socket));
+    if (options.onConnect) socket.on("connect", partialRight(options.onConnect, socket));
+    if (options.onConnectAbort) socket.on("connectAbort", partialRight(options.onConnectAbort, socket));
+    if (options.onDisconnect) socket.on("disconnect", partialRight(options.onDisconnect, socket));
+    if (options.onClose) socket.on("close", partialRight(options.onClose, socket));
+    if (options.onError) socket.on("error", partialRight(options.onError, socket));
 
     // const socket = createSocket({ port: 3000 });
     //

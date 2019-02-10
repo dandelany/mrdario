@@ -1,6 +1,7 @@
 import * as t from "io-ts";
 
 // high scores
+
 export const THighScoresRow = t.tuple([t.string, t.number]);
 export type HighScoresRow = t.TypeOf<typeof THighScoresRow>;
 
@@ -11,6 +12,7 @@ export const THighScoresResponse = t.type({
 export type HighScoresResponse = t.TypeOf<typeof THighScoresResponse>;
 
 // game score - when user wins and sends score for high score
+
 export const TGameScoreRequest = t.tuple([
   t.number, // level
   t.string, // name

@@ -1,15 +1,13 @@
 import * as React from "react";
 import { RouteComponentProps, withRouter } from "react-router-dom";
-import {connect} from "react-redux";
+import { connect } from "react-redux";
 
 import { GameClient, GameClientOptions } from "mrdario-core/lib/api/client";
-import { GameControllerMode } from "mrdario-core/lib/game/controller";
+import { GameControllerMode } from "mrdario-core/lib/game/controller/types";
 
 import AztecCalendar, { AztecCalendarMode } from "./AztecCalendar";
 
-import { AppThunkDispatch, getHighScores, initGameClient } from "@/store/actions/creators";
-import { RequestStatus } from "@/store/actions/types";
-
+import { AppThunkDispatch, initGameClient } from "@/store/actions/creators";
 
 
 function getWindowSize() {
@@ -19,7 +17,6 @@ function getWindowSize() {
 interface AppContainerOwnProps extends RouteComponentProps {}
 
 interface AppContainerDispatchProps {
-  getHighScores: () => void,
   initGameClient: (options: Partial<GameClientOptions>) => GameClient
 }
 
@@ -42,11 +39,12 @@ class AppContainer extends React.Component<AppContainerProps, AppContainerState>
 
   constructor(props: AppContainerProps) {
     super(props);
+    console.log('CONSTRUCTED');
     // this.gameClient = new GameClient({});
     // todo test throttling this
     this._throttledResizeHandler = this._onResize;
 
-    this.props.getHighScores();
+
     this.gameClient = this.props.initGameClient({socketOptions: {port: 8000}});
     this.gameClient.connect();
   }
@@ -60,7 +58,7 @@ class AppContainer extends React.Component<AppContainerProps, AppContainerState>
 
   _onResize = () => {
     this.setState(getWindowSize());
-  }
+  };
 
   _onChangeMode = (mode: GameControllerMode) => this.setState({ mode });
 
@@ -110,7 +108,6 @@ class AppContainer extends React.Component<AppContainerProps, AppContainerState>
 }
 
 const mapDispatchToProps = (dispatch: AppThunkDispatch) => ({
-  getHighScores: () => dispatch(getHighScores(RequestStatus.Loading)),
   initGameClient: (options: Partial<GameClientOptions> = {}) => dispatch(initGameClient(options))
 });
 
@@ -118,4 +115,3 @@ export default withRouter(connect(
   () => ({}),
   mapDispatchToProps
 )(AppContainer));
-
