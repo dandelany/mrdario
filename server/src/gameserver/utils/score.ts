@@ -4,7 +4,7 @@ const _ = require("lodash");
 import { RedisClient } from "redis";
 
 type SingleScoreDataRow = [number, string, number];
-interface SingleScoreDataObj {
+export interface SingleScoreDataObj {
   level: number;
   name: string;
   score: number;

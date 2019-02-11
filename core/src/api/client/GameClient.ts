@@ -2,21 +2,48 @@
 import { PathReporter } from "io-ts/lib/PathReporter";
 import { create as createSocket, SCClientSocket } from "socketcluster-client";
 import {
+  ClientAuthenticatedUser,
   GameScoreRequest,
   GameScoreResponse,
   HighScoresResponse,
-  Lobby,
+  LobbyMessage,
+  LobbyMessageType,
+  LobbyResponse,
+  LobbyUser,
+  LoginRequest,
+  TClientAuthenticatedUser,
   TGameScoreResponse,
   THighScoresResponse,
-  TLobby
+  TLobbyMessage,
+  TLobbyResponse
 } from "../types";
 
 import * as t from "io-ts";
 import { encodeGrid } from "../../encoding";
 import { GameGrid } from "../../game";
-import { partialRight } from "lodash";
+import { partialRight, remove } from "lodash";
 
 // import { SCChannelOptions } from "sc-channel";
+
+type AuthToken = {
+  id: string;
+  name: string;
+};
+interface ClientSocketWithValidAuthToken extends SCClientSocket {
+  authToken: AuthToken;
+}
+function isAuthToken(authToken?: { [K in string]: any }): authToken is AuthToken {
+  return (
+    !!authToken &&
+    typeof authToken.id === "string" &&
+    !!authToken.id.length &&
+    typeof authToken.name === "string"
+  );
+}
+
+export function hasValidAuthToken(socket: SCClientSocket): socket is ClientSocketWithValidAuthToken {
+  return !!socket.authToken && isAuthToken(socket.authToken);
+}
 
 export interface GameClientOptions {
   socketOptions?: SCClientSocket.ClientOptions;
@@ -44,6 +71,7 @@ export interface GameClientOptions {
 
 export class GameClient {
   public socket: SCClientSocket;
+  private lobbyUsers: LobbyResponse;
 
   constructor(options: GameClientOptions = {}) {
     const socket = createSocket({
@@ -59,26 +87,14 @@ export class GameClient {
     if (options.onClose) socket.on("close", partialRight(options.onClose, socket));
     if (options.onError) socket.on("error", partialRight(options.onError, socket));
 
-    // const socket = createSocket({ port: 3000 });
-    //
-    // socket.on("error", err => {
-    //   console.error("Socket error - " + err);
-    //   // todo call callback passed in options
-    // });
-    //
-    // socket.on("connect", function() {
-    //   console.log("Socket connected - OK");
-    //   // todo call callback passed in options
-    // });
-
     this.socket = socket;
+    this.lobbyUsers = [];
   }
   public connect() {
     return new Promise<SCClientSocket>((resolve, reject) => {
       this.socket.connect();
       this.socket.on("connect", () => {
         console.log("Socket connected - OK");
-        // todo call callback passed in options
         resolve(this.socket);
       });
       this.socket.on("error", (err: Error) => {
@@ -88,8 +104,47 @@ export class GameClient {
     });
   }
 
-  public async joinLobby(name: string): Promise<Lobby> {
-    return await promisifySocketRequest<Lobby>(this.socket, "joinLobby", name, TLobby);
+  public async login(name: string, id?: string, token?: string): Promise<ClientAuthenticatedUser> {
+    return await promisifySocketRequest<ClientAuthenticatedUser, LoginRequest>(
+      this.socket,
+      "login",
+      { name, id, token },
+      TClientAuthenticatedUser
+    );
+  }
+
+  public async joinLobby(
+    options: { onChangeLobbyUsers?: (lobbyUsers: LobbyResponse) => any } = {}
+  ): Promise<LobbyResponse> {
+    return await promisifySocketRequest<LobbyResponse>(this.socket, "joinLobby", null, TLobbyResponse).then(
+      (lobby: LobbyResponse) => {
+        const lobbyChannel = this.socket.subscribe("mrdario-lobby");
+        lobbyChannel.watch((data: any) => {
+          const decoded = TLobbyMessage.decode(data);
+          if (decoded.isRight()) {
+            const message: LobbyMessage = decoded.value;
+            console.log("lobby channel:", message);
+            console.log(this.lobbyUsers);
+            if (message.type === LobbyMessageType.Join) {
+              this.lobbyUsers.push(message.payload);
+            } else if (message.type === LobbyMessageType.Leave) {
+              remove(this.lobbyUsers, (user: LobbyUser) => user.id === message.payload.id);
+            }
+            if(options.onChangeLobbyUsers) {
+              options.onChangeLobbyUsers(this.lobbyUsers.slice());
+            }
+          }
+          console.log(this.lobbyUsers);
+        });
+        return lobby;
+      }
+    );
+  }
+
+  public async leaveLobby(): Promise<null> {
+    //todo have to unwatch also?
+    this.socket.unsubscribe("mrdario-lobby");
+    return await promisifySocketRequest<null>(this.socket, "leaveLobby", null, t.null);
   }
 
   public async getHighScores(level: number): Promise<HighScoresResponse> {

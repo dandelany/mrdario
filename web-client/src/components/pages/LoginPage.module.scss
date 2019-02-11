@@ -1,0 +1,20 @@
+$beige: rgb(210, 207, 202);
+
+.loginPage {
+  display: block;
+  background-color: $beige;
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+  padding: 3em;
+  border-radius: 1em;
+
+  input[type="text"] {
+    font-size: 16pt;
+    text-align: center;
+    margin-bottom: 1em;
+  }
+}

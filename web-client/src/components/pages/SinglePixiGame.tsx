@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as _ from "lodash";
-import { withRouter, Redirect, RouteComponentProps } from "react-router-dom";
+import { Redirect, RouteComponentProps, withRouter } from "react-router-dom";
 import shallowEqual from "@/utils/shallowEqual";
 
 import { DEFAULT_KEYS } from "mrdario-core/lib/game/controller/constants";
@@ -10,8 +10,8 @@ import { GameGrid, PillColors } from "mrdario-core/lib/game/types";
 import { encodeGameState } from "mrdario-core/lib/encoding/game";
 import { GameClient } from "mrdario-core/lib/api/client/GameClient";
 import { LocalWebGameController } from "mrdario-core/lib/game/controller/web";
-import { KeyManager, GamepadManager, SwipeManager } from "mrdario-core/lib/game/input/web";
-import { Lobby, GameScoreResponse } from "mrdario-core/lib/api/types";
+import { GamepadManager, KeyManager, SwipeManager } from "mrdario-core/lib/game/input/web";
+import { GameScoreResponse } from "mrdario-core/lib/api/types";
 
 import { GameRouteParams } from "@/types";
 
@@ -120,15 +120,6 @@ class SinglePlayerGame extends React.Component<SinglePlayerGameProps, SinglePlay
     // }, 1000);
 
     gameClient.sendInfoStartGame(getName(), level, speed);
-
-    gameClient
-      .joinLobby(getName())
-      .then((data: Lobby) => {
-        console.log("OK", data);
-      })
-      .catch((err: Error) => {
-        console.error(err);
-      });
 
     gameClient.createSimpleGame(level, speed).then((gameId: string) => {
       this.setState({ gameId });

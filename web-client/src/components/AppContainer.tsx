@@ -39,8 +39,7 @@ class AppContainer extends React.Component<AppContainerProps, AppContainerState>
 
   constructor(props: AppContainerProps) {
     super(props);
-    console.log('CONSTRUCTED');
-    // this.gameClient = new GameClient({});
+
     // todo test throttling this
     this._throttledResizeHandler = this._onResize;
 

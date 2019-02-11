@@ -2,6 +2,7 @@ import { Action } from "redux";
 import { SCClientSocket } from "socketcluster-client";
 
 import { HighScoresResponse } from "mrdario-core/lib/api/types/scores";
+import { ClientAuthenticatedUser, LoginRequest } from "mrdario-core/lib/api/types";
 
 // master list of app action type strings
 export enum AppActionType {
@@ -11,7 +12,9 @@ export enum AppActionType {
   SocketDisconnect = "GameClient:SocketDisconnect",
   SocketClose = "GameClient:SocketClose",
   SocketError = "GameClient:SocketError",
-  GetHighScores = "GameClient:GetHighScores"
+  GetHighScores = "GameClient:GetHighScores",
+  Login = "GameClient:Login"
+
 }
 
 // base action types
@@ -80,6 +83,7 @@ export interface SocketErrorAction extends IActionWithPayload {
   }
 }
 
+// high scores
 export interface GetHighScoresAction extends IRequestAction {
   type: AppActionType.GetHighScores;
   payload: {
@@ -98,6 +102,23 @@ export interface GetHighScoresFailedAction extends GetHighScoresAction {
   error: Error
 }
 
+// login
+export interface LoginAction extends IRequestAction {
+  type: AppActionType.Login
+}
+export interface LoginLoadingAction extends LoginAction {
+  status: RequestStatus.Loading,
+  payload: LoginRequest
+}
+export interface LoginSuccessAction extends LoginAction {
+  status: RequestStatus.Success,
+  payload: ClientAuthenticatedUser
+}
+export interface LoginFailedAction extends LoginAction {
+  status: RequestStatus.Failed,
+  error: Error
+}
+
 export type AppAction =
   | SocketConnectingAction
   | SocketConnectAction
@@ -106,4 +127,5 @@ export type AppAction =
   | SocketCloseAction
   | SocketErrorAction
   | SocketDisconnectAction
-  | GetHighScoresAction;
+  | GetHighScoresAction
+  | LoginAction;

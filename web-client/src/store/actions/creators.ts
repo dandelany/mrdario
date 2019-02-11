@@ -1,6 +1,9 @@
 import { ActionCreator, Dispatch } from "redux";
 import { ThunkAction, ThunkDispatch } from "redux-thunk";
+import { SCClientSocket } from "socketcluster-client"
+
 import { GameClient, GameClientOptions } from "mrdario-core/lib/api/client";
+import { ClientAuthenticatedUser, HighScoresResponse } from "mrdario-core/lib/api/types";
 
 import {
   AppAction,
@@ -8,6 +11,10 @@ import {
   GetHighScoresAction,
   GetHighScoresFailedAction,
   GetHighScoresSuccessAction,
+  LoginAction,
+  LoginFailedAction,
+  LoginLoadingAction,
+  LoginSuccessAction,
   RequestStatus,
   SocketCloseAction,
   SocketConnectAbortAction,
@@ -17,8 +24,8 @@ import {
   SocketErrorAction
 } from "./types";
 import { AppState } from "../state/types";
-import { SCClientSocket } from "socketcluster-client";
-import { HighScoresResponse } from "mrdario-core/lib/api/types";
+;
+
 
 export type AppThunkAction<R> = ThunkAction<R, AppState, null, AppAction>;
 
@@ -97,6 +104,22 @@ export const getHighScoresFailed: ActionCreator<GetHighScoresFailedAction> = (
   error
 });
 
+export const loginLoading = (name: string, id?: string, token?: string): LoginLoadingAction => ({
+  type: AppActionType.Login,
+  status: RequestStatus.Loading,
+  payload: { name, id, token }
+});
+export const loginSuccess = (clientUser: ClientAuthenticatedUser): LoginSuccessAction => ({
+  type: AppActionType.Login,
+  status: RequestStatus.Success,
+  payload: clientUser
+});
+export const loginFailed = (error: Error): LoginFailedAction => ({
+  type: AppActionType.Login,
+  status: RequestStatus.Failed,
+  error
+});
+
 // thunk actions
 
 export const initGameClient: ActionCreator<AppThunkAction<GameClient>> = (
@@ -122,19 +145,40 @@ export const initGameClient: ActionCreator<AppThunkAction<GameClient>> = (
 
 // async actions
 
-export const getHighScores: AsyncActionCreator<GetHighScoresAction> = (level: number, gameClient: GameClient) => {
+export const getHighScores: AsyncActionCreator<GetHighScoresAction> = (
+  gameClient,
+  level
+) => {
   return (dispatch: Dispatch<GetHighScoresAction>) => {
     dispatch(getHighScoresLoading(level));
-    return gameClient.getHighScores(level)
+    return gameClient
+      .getHighScores(level)
       .then((response: HighScoresResponse) => {
         return dispatch(getHighScoresSuccess(level, response));
       })
       .catch((error: Error) => {
-        return dispatch(getHighScoresFailed(level, error))
-      })
+        return dispatch(getHighScoresFailed(level, error));
+      });
   };
 };
 
+export const login: AsyncActionCreator<LoginAction> = (
+  gameClient: GameClient,
+  name: string,
+  id?: string,
+  token?: string,
+) => {
+  return (dispatch: Dispatch<LoginAction>) => {
+    dispatch(loginLoading(name, id, token));
+    return gameClient.login(name, id, token)
+      .then((clientUser: ClientAuthenticatedUser) => {
+        return dispatch(loginSuccess(clientUser));
+      })
+      .catch((error: Error) => {
+        return dispatch(loginFailed(error));
+      });
+  };
+};
 
 // export const connectGameServer: ActionCreator<
 //   ThunkAction<void, AppState, null, SocketConnectAction | SocketConnectedAction | SocketConnectAbortAction>

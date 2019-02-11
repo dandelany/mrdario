@@ -28,6 +28,7 @@ module.exports = {
       },
       {
         test: /\.scss$/,
+        exclude: /\.module\.scss$/,
         loaders: [
           'style-loader',
           { loader: 'css-loader', options: { importLoaders: 1 } },

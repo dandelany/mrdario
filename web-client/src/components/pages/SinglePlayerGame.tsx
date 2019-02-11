@@ -11,7 +11,7 @@ import { encodeGameState } from "mrdario-core/lib/encoding/game";
 import { GameClient } from "mrdario-core/lib/api/client/GameClient";
 import { LocalWebGameController } from "mrdario-core/lib/game/controller/web";
 import { KeyManager, GamepadManager, SwipeManager } from "mrdario-core/lib/game/input/web";
-import { Lobby, GameScoreResponse } from "mrdario-core/lib/api/types";
+import { LobbyResponse, GameScoreResponse } from "mrdario-core/lib/api/types";
 
 import { GameRouteParams } from "@/types";
 
@@ -123,13 +123,14 @@ class SinglePlayerGame extends React.Component<SinglePlayerGameProps, SinglePlay
     gameClient.sendInfoStartGame(getName(), level, speed);
 
     gameClient
-      .joinLobby(getName())
-      .then((data: Lobby) => {
+      .joinLobby()
+      .then((data: LobbyResponse) => {
         console.log("OK", data);
       })
       .catch((err: Error) => {
         console.error(err);
       });
+
 
     gameClient.createSimpleGame(level, speed).then((gameId: string) => {
       this.setState({ gameId });
