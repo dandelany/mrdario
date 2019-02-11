@@ -1,9 +1,6 @@
 import { GameClient } from "mrdario-core/lib/api/client";
 import * as React from "react";
-import { LobbyResponse } from "mrdario-core/lib/api/types";
-import { LobbyUser } from "mrdario-core/lib/api/types";
-import { hasValidAuthToken } from "mrdario-core/lib/api/client";
-import { Redirect } from "react-router";
+import { LobbyResponse, LobbyUser } from "mrdario-core/lib/api/types";
 
 const styles = require("./LoginPage.module.scss");
 
