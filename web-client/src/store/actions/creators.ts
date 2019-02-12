@@ -1,6 +1,6 @@
 import { ActionCreator, Dispatch } from "redux";
 import { ThunkAction, ThunkDispatch } from "redux-thunk";
-import { SCClientSocket } from "socketcluster-client"
+import { SCClientSocket } from "socketcluster-client";
 
 import { GameClient, GameClientOptions } from "mrdario-core/lib/api/client";
 import { ClientAuthenticatedUser, HighScoresResponse } from "mrdario-core/lib/api/types";
@@ -16,16 +16,18 @@ import {
   LoginLoadingAction,
   LoginSuccessAction,
   RequestStatus,
+  SocketAuthenticateAction,
+  SocketAuthStateChangeAction,
   SocketCloseAction,
   SocketConnectAbortAction,
   SocketConnectAction,
   SocketConnectingAction,
+  SocketDeauthenticateAction,
   SocketDisconnectAction,
   SocketErrorAction
 } from "./types";
 import { AppState } from "../state/types";
-;
-
+import { AppAuthToken } from "mrdario-core/lib/api/types/auth";
 
 export type AppThunkAction<R> = ThunkAction<R, AppState, null, AppAction>;
 
@@ -34,70 +36,104 @@ export type AppThunkDispatch = ThunkDispatch<AppState, null, AppAction>;
 export type AsyncActionCreator<A = AppAction> = ActionCreator<AppThunkAction<Promise<A>>>;
 
 // simple action creators
-export const socketConnecting: ActionCreator<SocketConnectingAction> = (socket: SCClientSocket) => ({
+export const socketConnecting = (socket: SCClientSocket): SocketConnectingAction => ({
   type: AppActionType.SocketConnecting,
   payload: { socketState: socket.state }
 });
 
-export const socketConnect: ActionCreator<SocketConnectAction> = (
+export const socketConnect = (
   status: SCClientSocket.ConnectStatus,
   _processSubscriptions: any,
   socket: SCClientSocket
-) => ({
+): SocketConnectAction => ({
   type: AppActionType.SocketConnect,
   payload: { status, socketState: socket.state }
 });
 
-export const socketConnectAbort: ActionCreator<SocketConnectAbortAction> = (
+export const socketConnectAbort = (
   code: number,
   data: string | object,
   socket: SCClientSocket
-) => ({
+): SocketConnectAbortAction => ({
   type: AppActionType.SocketConnectAbort,
   payload: { code, data, socketState: socket.state }
 });
 
-export const socketDisconnect: ActionCreator<SocketDisconnectAction> = (
+export const socketDisconnect = (
   code: number,
   data: string | object,
   socket: SCClientSocket
-) => ({
+): SocketDisconnectAction => ({
   type: AppActionType.SocketDisconnect,
   payload: { code, data, socketState: socket.state }
 });
 
-export const socketClose: ActionCreator<SocketCloseAction> = (
+export const socketClose = (
   code: number,
   data: string | object,
   socket: SCClientSocket
-) => ({
+): SocketCloseAction => ({
   type: AppActionType.SocketClose,
   payload: { code, data, socketState: socket.state }
 });
 
-export const socketError: ActionCreator<SocketErrorAction> = (error: Error, socket: SCClientSocket) => ({
+export const socketError = (error: Error, socket: SCClientSocket): SocketErrorAction => ({
   type: AppActionType.SocketError,
   error,
   payload: { socketState: socket.state }
 });
 
-export const getHighScoresLoading: ActionCreator<GetHighScoresAction> = (level: number) => ({
+export const socketAuthenticate = (
+  _signedAuthToken: string | null,
+  socket: SCClientSocket
+): SocketAuthenticateAction => ({
+  type: AppActionType.SocketAuthenticate,
+  payload: {
+    authToken: socket.authToken as (AppAuthToken | null),
+    authState: socket.authState,
+    socketState: socket.state
+  }
+});
+
+export const socketDeauthenticate = (
+  _oldSignedToken: string | null,
+  socket: SCClientSocket
+): SocketDeauthenticateAction => ({
+  type: AppActionType.SocketDeauthenticate,
+  payload: {
+    authToken: socket.authToken as (AppAuthToken | null),
+    authState: socket.authState,
+    socketState: socket.state
+  }
+});
+
+export const socketAuthStateChange = (
+  stateChangeData: SCClientSocket.AuthStateChangeData,
+  socket: SCClientSocket
+): SocketAuthStateChangeAction => ({
+  type: AppActionType.SocketAuthStateChange,
+  payload: {
+    authToken: socket.authToken as (AppAuthToken | null),
+    authState: socket.authState,
+    stateChangeData: stateChangeData,
+    socketState: socket.state
+  }
+});
+
+export const getHighScoresLoading = (level: number): GetHighScoresAction => ({
   type: AppActionType.GetHighScores,
   status: RequestStatus.Loading,
   payload: { level }
 });
-export const getHighScoresSuccess: ActionCreator<GetHighScoresSuccessAction> = (
+export const getHighScoresSuccess = (
   level: number,
   response: HighScoresResponse
-) => ({
+): GetHighScoresSuccessAction => ({
   type: AppActionType.GetHighScores,
   status: RequestStatus.Success,
   payload: { level, response }
 });
-export const getHighScoresFailed: ActionCreator<GetHighScoresFailedAction> = (
-  level: number,
-  error: Error
-) => ({
+export const getHighScoresFailed = (level: number, error: Error): GetHighScoresFailedAction => ({
   type: AppActionType.GetHighScores,
   status: RequestStatus.Failed,
   payload: { level },
@@ -126,17 +162,45 @@ export const initGameClient: ActionCreator<AppThunkAction<GameClient>> = (
   options: Partial<GameClientOptions> = {}
 ) => {
   return (dispatch: Dispatch) => {
-    const wrapDispatch = (func: ActionCreator<AppAction>) => {
-      return (...args: any) => dispatch(func(...args));
-    };
+    // ugh... it would be nice to use this, but doing so causes all the action creators to lose
+    // their typing and become (...args: any) => {} . any way to avoid this??
+    // const wrapDispatch = (func: ActionCreator<AppAction>) => {
+    //   return (...args: any) => dispatch(func(...args));
+    // };
+
     const gameClient = new GameClient({
       ...options,
-      onConnecting: wrapDispatch(socketConnecting),
-      onConnect: wrapDispatch(socketConnect),
-      onConnectAbort: wrapDispatch(socketConnectAbort),
-      onDisconnect: wrapDispatch(socketDisconnect),
-      onClose: wrapDispatch(socketClose),
-      onError: wrapDispatch(socketError)
+      onConnecting: (socket: SCClientSocket) => {
+        dispatch(socketConnecting(socket));
+      },
+      onConnect: (
+        status: SCClientSocket.ConnectStatus,
+        processSubscriptions: () => void,
+        socket: SCClientSocket
+      ) => {
+        dispatch(socketConnect(status, processSubscriptions, socket));
+      },
+      onConnectAbort: (code: number, data: string | object, socket: SCClientSocket) => {
+        dispatch(socketConnectAbort(code, data, socket));
+      },
+      onDisconnect: (code: number, data: string | object, socket: SCClientSocket) => {
+        dispatch(socketDisconnect(code, data, socket));
+      },
+      onClose: (code: number, data: string | object, socket: SCClientSocket) => {
+        dispatch(socketClose(code, data, socket));
+      },
+      onError: (err: Error, socket: SCClientSocket) => {
+        dispatch(socketError(err, socket));
+      },
+      onAuthenticate: (signedAuthToken: string | null, socket: SCClientSocket) => {
+        dispatch(socketAuthenticate(signedAuthToken, socket));
+      },
+      onDeauthenticate: (oldSignedToken: string | null, socket: SCClientSocket) => {
+        dispatch(socketDeauthenticate(oldSignedToken, socket));
+      },
+      onAuthStateChange: (stateChangeData: SCClientSocket.AuthStateChangeData, socket: SCClientSocket) => {
+        dispatch(socketAuthStateChange(stateChangeData, socket));
+      }
     });
     console.log(gameClient);
     return gameClient;
@@ -145,10 +209,7 @@ export const initGameClient: ActionCreator<AppThunkAction<GameClient>> = (
 
 // async actions
 
-export const getHighScores: AsyncActionCreator<GetHighScoresAction> = (
-  gameClient,
-  level
-) => {
+export const getHighScores: AsyncActionCreator<GetHighScoresAction> = (gameClient, level) => {
   return (dispatch: Dispatch<GetHighScoresAction>) => {
     dispatch(getHighScoresLoading(level));
     return gameClient
@@ -166,11 +227,12 @@ export const login: AsyncActionCreator<LoginAction> = (
   gameClient: GameClient,
   name: string,
   id?: string,
-  token?: string,
+  token?: string
 ) => {
   return (dispatch: Dispatch<LoginAction>) => {
     dispatch(loginLoading(name, id, token));
-    return gameClient.login(name, id, token)
+    return gameClient
+      .login(name, id, token)
       .then((clientUser: ClientAuthenticatedUser) => {
         return dispatch(loginSuccess(clientUser));
       })

@@ -3,6 +3,7 @@ import { SCClientSocket } from "socketcluster-client";
 
 import { HighScoresResponse } from "mrdario-core/lib/api/types/scores";
 import { ClientAuthenticatedUser, LoginRequest } from "mrdario-core/lib/api/types";
+import { AuthToken } from "socketcluster-server/scserver";
 
 // master list of app action type strings
 export enum AppActionType {
@@ -12,6 +13,10 @@ export enum AppActionType {
   SocketDisconnect = "GameClient:SocketDisconnect",
   SocketClose = "GameClient:SocketClose",
   SocketError = "GameClient:SocketError",
+  SocketAuthenticate = "GameClient:SocketAuthenticate",
+  SocketDeauthenticate = "GameClient:SocketDeauthenticate",
+  SocketAuthStateChange = "GameClient:SocketAuthStateChange",
+
   GetHighScores = "GameClient:GetHighScores",
   Login = "GameClient:Login"
 
@@ -36,52 +41,67 @@ export enum RequestStatus {
 export interface IRequestAction extends IActionWithStatus {
   status: RequestStatus;
 }
+export interface IPayloadWithSocketState {
+  socketState: SCClientSocket.States
+}
+export interface IPayloadWithAuthState {
+  authState: SCClientSocket.AuthStates,
+  authToken: null | AuthToken
+}
 
 // app actions
 export interface SocketConnectingAction extends IAppAction {
   type: AppActionType.SocketConnecting;
-  payload: {
-    socketState: SCClientSocket.States
-  }
+  payload: IPayloadWithSocketState
 }
 export interface SocketConnectAction extends IActionWithPayload {
   type: AppActionType.SocketConnect;
-  payload: {
+
+  payload: IPayloadWithSocketState & {
     status: SCClientSocket.ConnectStatus,
-    socketState: SCClientSocket.States
   }
 }
 export interface SocketConnectAbortAction extends IActionWithPayload {
   type: AppActionType.SocketConnectAbort;
-  payload: {
+  payload: IPayloadWithSocketState & {
     code: number,
-    data: string | object,
-    socketState: SCClientSocket.States
+    data: string | object
   }
 }
 export interface SocketDisconnectAction extends IActionWithPayload {
   type: AppActionType.SocketDisconnect;
-  payload: {
+  payload: IPayloadWithSocketState & {
     code: number,
     data: string | object,
-    socketState: SCClientSocket.States
   }
 }
 export interface SocketCloseAction extends IActionWithPayload {
   type: AppActionType.SocketClose;
-  payload: {
+  payload: IPayloadWithSocketState & {
     code: number,
-    data: string | object,
-    socketState: SCClientSocket.States
+    data: string | object
   }
 }
 export interface SocketErrorAction extends IActionWithPayload {
   type: AppActionType.SocketError;
   error: Error,
-  payload: {
-    socketState: SCClientSocket.States
+  payload: IPayloadWithSocketState
+}
+export interface SocketAuthenticateAction extends IActionWithPayload {
+  type: AppActionType.SocketAuthenticate;
+  payload: IPayloadWithSocketState & IPayloadWithAuthState
+}
+export interface SocketDeauthenticateAction extends IActionWithPayload {
+  type: AppActionType.SocketDeauthenticate;
+  payload: IPayloadWithSocketState & IPayloadWithAuthState
+}
+export interface SocketAuthStateChangeAction extends IActionWithPayload {
+  type: AppActionType.SocketAuthStateChange;
+  payload: IPayloadWithSocketState & IPayloadWithAuthState & {
+    stateChangeData: SCClientSocket.AuthStateChangeData
   }
 }
+
 
 // high scores
 export interface GetHighScoresAction extends IRequestAction {
@@ -127,5 +147,8 @@ export type AppAction =
   | SocketCloseAction
   | SocketErrorAction
   | SocketDisconnectAction
+  | SocketAuthenticateAction
+  | SocketDeauthenticateAction
+  | SocketAuthStateChangeAction
   | GetHighScoresAction
   | LoginAction;

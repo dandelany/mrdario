@@ -48,18 +48,23 @@ export function hasValidAuthToken(socket: SCClientSocket): socket is ClientSocke
 export interface GameClientOptions {
   socketOptions?: SCClientSocket.ClientOptions;
 
-  onConnecting?: () => void;
-  onConnect?: (status: SCClientSocket.ConnectStatus, processSubscriptions: () => void) => void;
-  onConnectAbort?: (code: number, data: string | object) => void;
-  onDisconnect?: (code: number, data: string | object) => void;
-  onClose?: (code: number, data: string | object) => void;
-  onError?: (err: Error) => void;
+  onConnecting?: (socket: SCClientSocket) => void;
+  onConnect?: (
+    status: SCClientSocket.ConnectStatus,
+    processSubscriptions: () => void,
+    socket: SCClientSocket
+  ) => void;
+  onConnectAbort?: (code: number, data: string | object, socket: SCClientSocket) => void;
+  onDisconnect?: (code: number, data: string | object, socket: SCClientSocket) => void;
+  onClose?: (code: number, data: string | object, socket: SCClientSocket) => void;
+  onError?: (err: Error, socket: SCClientSocket) => void;
+
+  onAuthenticate?: (signedAuthToken: string | null, socket: SCClientSocket) => void;
+  onDeauthenticate?: (oldSignedToken: string | null, socket: SCClientSocket) => void;
+  onAuthStateChange?: (stateChangeData: SCClientSocket.AuthStateChangeData, socket: SCClientSocket) => void;
+  // onRemoveAuthToken?: (oldToken: object | null, socket: SCClientSocket) => void;
 
   // onKickOut?: (message: string, channelName: string) => void;
-  // onAuthenticate?: (signedAuthToken: string | null) => void;
-  // onDeauthenticate?: (oldSignedToken: string | null) => void;
-  // onAuthStateChange?: (stateChangeData: SCClientSocket.AuthStateChangeData) => void;
-  // onRemoveAuthToken?: (oldToken: object | null) => void;
   // onSubscribe?: (channelName: string, subscriptionOptions: SCChannelOptions) => void;
   // onSubscribeRequest?: (channelName: string, subscriptionOptions: SCChannelOptions) => void;
   // onSubscribeStateChange?: (stateChangeData: SCClientSocket.SubscribeStateChangeData) => void;
@@ -86,6 +91,10 @@ export class GameClient {
     if (options.onDisconnect) socket.on("disconnect", partialRight(options.onDisconnect, socket));
     if (options.onClose) socket.on("close", partialRight(options.onClose, socket));
     if (options.onError) socket.on("error", partialRight(options.onError, socket));
+    if (options.onAuthenticate) socket.on("authenticate", partialRight(options.onAuthenticate, socket));
+    if (options.onDeauthenticate) socket.on("deauthenticate", partialRight(options.onDeauthenticate, socket));
+    if (options.onAuthStateChange) socket.on("authStateChange", partialRight(options.onAuthStateChange, socket));
+    if (options.onAuthStateChange) socket.on("authStateChange", partialRight(options.onAuthStateChange, socket));
 
     this.socket = socket;
     this.lobbyUsers = [];
@@ -130,7 +139,7 @@ export class GameClient {
             } else if (message.type === LobbyMessageType.Leave) {
               remove(this.lobbyUsers, (user: LobbyUser) => user.id === message.payload.id);
             }
-            if(options.onChangeLobbyUsers) {
+            if (options.onChangeLobbyUsers) {
               options.onChangeLobbyUsers(this.lobbyUsers.slice());
             }
           }

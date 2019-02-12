@@ -28,6 +28,30 @@ export const gameClientReducer: Reducer<GameClientState, AppAction> = (
         socketState: action.payload.socketState
       };
 
+    case AppActionType.SocketAuthenticate:
+      return {
+        ...state,
+        authState: action.payload.authState,
+        authToken: action.payload.authToken,
+        socketState: action.payload.socketState
+      };
+
+    case AppActionType.SocketDeauthenticate:
+      return {
+        ...state,
+        authState: action.payload.authState,
+        authToken: action.payload.authToken,
+        socketState: action.payload.socketState
+      };
+
+    case AppActionType.SocketAuthStateChange:
+      return {
+        ...state,
+        authState: action.payload.authState,
+        authToken: action.payload.authToken,
+        socketState: action.payload.socketState
+      };
+
     default:
       return state;
   }

@@ -7,20 +7,16 @@ import hashUtil from "tweetnacl-util";
 
 import { getClientIpAddress, socketInfoStr } from "./utils";
 import { SCChannel } from "sc-channel";
-import { ClientAuthenticatedUser, LoginRequest, ServerUser } from "mrdario-core/src/api/types";
+import { ClientAuthenticatedUser, LoginRequest, ServerUser } from "mrdario-core/lib/api/types";
 import { LobbyJoinMessage, LobbyLeaveMessage, LobbyMessageType, LobbyResponse } from "mrdario-core/lib/api/types";
 import { logWithTime } from "./utils/log";
 import { HighScoresModule } from "./modules/HighScoresModule";
+import { AppAuthToken, hasAuthToken, hasValidAuthToken, isAuthToken } from "mrdario-core/lib/api/types/auth";
 
 type GameListItem = {
   creator: string;
   level: number;
   speed: number;
-};
-
-type AuthToken = {
-  id: string;
-  name: string;
 };
 
 // in-memory state, for now...
@@ -59,29 +55,6 @@ function authenticateUser(id: string, token: string, users: ServerUsers) {
   const serverUser: ServerUser = users[id];
   const tokenHash = hashUtil.encodeBase64(hash(hashUtil.decodeUTF8(token)));
   return tokenHash === serverUser.tokenHash;
-}
-
-interface SocketWithAuth extends SCServerSocket {
-  authToken: any;
-}
-interface SocketWithValidAuthToken extends SCServerSocket {
-  authToken: AuthToken;
-}
-
-function hasAuthToken(socket: SCServerSocket): socket is SocketWithAuth {
-  return socket.authState === socket.AUTHENTICATED && !!socket.authToken;
-}
-function hasValidAuthToken(socket: SCServerSocket): socket is SocketWithValidAuthToken {
-  return hasAuthToken(socket) && isAuthToken(socket.authToken);
-}
-
-function isAuthToken(authToken?: { [K in string]: any }): authToken is AuthToken {
-  return (
-    !!authToken &&
-    typeof authToken.id === "string" &&
-    !!authToken.id.length &&
-    typeof authToken.name === "string"
-  );
 }
 
 // const LOBBY_NAME = 'mrdario-lobby';
@@ -218,7 +191,7 @@ export class GameServer {
           this.state.users[serverUser.id].socketId = socket.id;
         }
         respond(null, clientUser);
-        const authToken: AuthToken = { id: clientUser.id, name: clientUser.name };
+        const authToken: AppAuthToken = { id: clientUser.id, name: clientUser.name };
         socket.setAuthToken(authToken);
         logWithTime(`${clientUser.name} logged in. (${clientUser.id})`);
         console.table(Object.values(this.state.users));
