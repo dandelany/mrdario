@@ -234,6 +234,10 @@ export const login: AsyncActionCreator<LoginAction> = (
     return gameClient
       .login(name, id, token)
       .then((clientUser: ClientAuthenticatedUser) => {
+        if (window.localStorage) {
+          window.localStorage.setItem("mrdario-userId", clientUser.id);
+          window.localStorage.setItem("mrdario-token", clientUser.token);
+        }
         return dispatch(loginSuccess(clientUser));
       })
       .catch((error: Error) => {

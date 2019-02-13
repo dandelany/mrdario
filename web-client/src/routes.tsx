@@ -13,7 +13,7 @@ import { LobbyPage } from "@/components/pages/LobbyPage";
 type ComponentClassOrFunction = React.ComponentClass<any> | React.FunctionComponent<any>;
 
 // utils for passing props through to Route components
-// todo do we still need this???
+// allows AppContainer to pass props to routes
 const renderMergedProps = (component: ComponentClassOrFunction, ...rest: any[]) => {
   const finalProps = Object.assign({}, ...rest);
   return React.createElement(component, finalProps);

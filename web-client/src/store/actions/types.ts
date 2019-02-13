@@ -3,7 +3,7 @@ import { SCClientSocket } from "socketcluster-client";
 
 import { HighScoresResponse } from "mrdario-core/lib/api/types/scores";
 import { ClientAuthenticatedUser, LoginRequest } from "mrdario-core/lib/api/types";
-import { AuthToken } from "socketcluster-server/scserver";
+import { AppAuthToken } from "mrdario-core/lib/api/types/auth";
 
 // master list of app action type strings
 export enum AppActionType {
@@ -46,7 +46,7 @@ export interface IPayloadWithSocketState {
 }
 export interface IPayloadWithAuthState {
   authState: SCClientSocket.AuthStates,
-  authToken: null | AuthToken
+  authToken: null | AppAuthToken
 }
 
 // app actions

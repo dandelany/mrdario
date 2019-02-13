@@ -6,7 +6,7 @@ require("@/styles/main.scss");
 require("@/styles/rc-slider.less");
 
 import AppContainer from "./AppContainer";
-import { HashRouter as Router } from "react-router-dom";
+import { BrowserRouter as Router } from "react-router-dom";
 
 import routes from "@/routes";
 // import AppContainer from './components/AppContainer';

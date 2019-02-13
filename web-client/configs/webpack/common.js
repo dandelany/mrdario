@@ -4,13 +4,36 @@ const {CheckerPlugin, TsConfigPathsPlugin} = require('awesome-typescript-loader'
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
+  mode: 'development',
+  context: resolve(__dirname, '../../src'),
+  entry: './index.tsx',
+
   resolve: {
     extensions: ['.ts', '.tsx', '.js', '.jsx'],
     plugins: [
       new TsConfigPathsPlugin()
     ]
   },
-  context: resolve(__dirname, '../../src'),
+
+  output: {
+    path: resolve(__dirname, '../../build'),
+    publicPath: '/',
+  },
+  devServer: {
+    // hot: true, // enable HMR on the server
+    port: 6868,
+
+    historyApiFallback: true,
+    clientLogLevel: "info",
+    // proxy: {
+    //   'ws://localhost:3000': {
+    //     target: 'ws://localhost:8000',
+    //     ws: true,
+    //     secure: false,
+    //   },
+    // }
+  },
+  devtool: 'cheap-module-eval-source-map',
   module: {
     rules: [
       {

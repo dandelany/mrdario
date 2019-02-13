@@ -21,7 +21,7 @@ import {
 import * as t from "io-ts";
 import { encodeGrid } from "../../encoding";
 import { GameGrid } from "../../game";
-import { partialRight, remove } from "lodash";
+import { partialRight, remove, uniqBy } from "lodash";
 
 // import { SCChannelOptions } from "sc-channel";
 
@@ -126,16 +126,17 @@ export class GameClient {
     options: { onChangeLobbyUsers?: (lobbyUsers: LobbyResponse) => any } = {}
   ): Promise<LobbyResponse> {
     return await promisifySocketRequest<LobbyResponse>(this.socket, "joinLobby", null, TLobbyResponse).then(
-      (lobby: LobbyResponse) => {
+      (lobbyResponse: LobbyResponse) => {
+        this.lobbyUsers = lobbyResponse;
         const lobbyChannel = this.socket.subscribe("mrdario-lobby");
         lobbyChannel.watch((data: any) => {
           const decoded = TLobbyMessage.decode(data);
           if (decoded.isRight()) {
             const message: LobbyMessage = decoded.value;
             console.log("lobby channel:", message);
-            console.log(this.lobbyUsers);
             if (message.type === LobbyMessageType.Join) {
               this.lobbyUsers.push(message.payload);
+              this.lobbyUsers = uniqBy(this.lobbyUsers, (user: LobbyUser) => user.id);
             } else if (message.type === LobbyMessageType.Leave) {
               remove(this.lobbyUsers, (user: LobbyUser) => user.id === message.payload.id);
             }
@@ -143,9 +144,9 @@ export class GameClient {
               options.onChangeLobbyUsers(this.lobbyUsers.slice());
             }
           }
-          console.log(this.lobbyUsers);
         });
-        return lobby;
+        console.table(lobbyResponse);
+        return lobbyResponse;
       }
     );
   }

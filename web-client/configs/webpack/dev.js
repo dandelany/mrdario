@@ -2,6 +2,7 @@
 const merge = require('webpack-merge');
 const webpack = require('webpack');
 const commonConfig = require('./common');
+const {resolve} = require('path');
 
 module.exports = merge(commonConfig, {
   mode: 'development',
@@ -13,7 +14,16 @@ module.exports = merge(commonConfig, {
   ],
   devServer: {
     // hot: true, // enable HMR on the server
-    port: 6868,
+    port: 6869,
+
+    historyApiFallback: {
+      rewrites: [
+        { from: /^\/$/, to: '/views/landing.html' },
+        { from: /^\/subpage/, to: '/views/subpage.html' },
+        { from: /./, to: '/views/404.html' }
+      ]
+    },
+    clientLogLevel: "info",
     proxy: {
       'ws://localhost:3000': {
         target: 'ws://localhost:8000',
@@ -21,6 +31,10 @@ module.exports = merge(commonConfig, {
         secure: false,
       },
     }
+  },
+  output: {
+    path: resolve(__dirname, '../../build'),
+    publicPath: '/',
   },
   devtool: 'cheap-module-eval-source-map',
   plugins: [
