@@ -5,7 +5,7 @@ import {
   ClientAuthenticatedUser,
   GameScoreRequest,
   GameScoreResponse,
-  HighScoresResponse,
+  HighScoresResponse, LobbyChatMessageIn, LobbyChatMessageOut,
   LobbyMessage,
   LobbyMessageType,
   LobbyResponse,
@@ -123,7 +123,10 @@ export class GameClient {
   }
 
   public async joinLobby(
-    options: { onChangeLobbyUsers?: (lobbyUsers: LobbyResponse) => any } = {}
+    options: {
+      onChangeLobbyUsers?: (lobbyUsers: LobbyResponse) => any,
+      onChatMessage?: (message: LobbyChatMessageOut) => any
+    } = {}
   ): Promise<LobbyResponse> {
     return await promisifySocketRequest<LobbyResponse>(this.socket, "joinLobby", null, TLobbyResponse).then(
       (lobbyResponse: LobbyResponse) => {
@@ -139,6 +142,8 @@ export class GameClient {
               this.lobbyUsers = uniqBy(this.lobbyUsers, (user: LobbyUser) => user.id);
             } else if (message.type === LobbyMessageType.Leave) {
               remove(this.lobbyUsers, (user: LobbyUser) => user.id === message.payload.id);
+            } else if (message.type === LobbyMessageType.ChatOut && options.onChatMessage) {
+              options.onChatMessage(message);
             }
             if (options.onChangeLobbyUsers) {
               options.onChangeLobbyUsers(this.lobbyUsers.slice());
@@ -154,8 +159,18 @@ export class GameClient {
   public async leaveLobby(): Promise<null> {
     //todo have to unwatch also?
     this.socket.unsubscribe("mrdario-lobby");
+    this.socket.unwatch("mrdario-lobby");
     return await promisifySocketRequest<null>(this.socket, "leaveLobby", null, t.null);
   }
+
+  public sendLobbyChat(message: string): void {
+    const chatMessage: LobbyChatMessageIn = {
+      type: LobbyMessageType.ChatIn,
+      payload: message
+    };
+    this.socket.publish("mrdario-lobby", chatMessage);
+  }
+
 
   public async getHighScores(level: number): Promise<HighScoresResponse> {
     return await promisifySocketRequest<HighScoresResponse>(

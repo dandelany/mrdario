@@ -7,8 +7,17 @@ import hashUtil from "tweetnacl-util";
 
 import { getClientIpAddress, socketInfoStr } from "./utils";
 import { SCChannel } from "sc-channel";
-import { ClientAuthenticatedUser, LoginRequest, ServerUser } from "mrdario-core/lib/api/types";
-import { LobbyJoinMessage, LobbyLeaveMessage, LobbyMessageType, LobbyResponse } from "mrdario-core/lib/api/types";
+import {
+  ClientAuthenticatedUser,
+  LobbyChatMessageOut,
+  LobbyJoinMessage,
+  LobbyLeaveMessage,
+  LobbyMessageType,
+  LobbyResponse,
+  LoginRequest,
+  ServerUser,
+  TLobbyMessage
+} from "mrdario-core/lib/api/types";
 import { logWithTime } from "./utils/log";
 import { HighScoresModule } from "./modules/HighScoresModule";
 import { AppAuthToken, hasAuthToken, hasValidAuthToken, isAuthToken } from "mrdario-core/lib/api/types/auth";
@@ -95,6 +104,37 @@ export class GameServer {
       users: {}
     };
     this.highScores = new HighScoresModule(rClient);
+
+    scServer.addMiddleware(
+      scServer.MIDDLEWARE_PUBLISH_IN,
+      (req: SCServer.PublishInRequest, next: SCServer.nextMiddlewareFunction) => {
+        if(req.channel === 'mrdario-lobby') {
+          if(!hasAuthToken(req.socket)) {
+            next(new Error("Invalid LobbyMessage"));
+            return;
+          }
+          const decoded = TLobbyMessage.decode(req.data);
+          if(decoded.isRight()) {
+            console.log('it was a good message');
+            const value = decoded.value;
+            if(value.type === LobbyMessageType.ChatIn) {
+              const outMessage: LobbyChatMessageOut = {
+                ...value,
+                type: LobbyMessageType.ChatOut,
+                userName: (req.socket.authToken as AppAuthToken).name
+              };
+              req.data = outMessage;
+            }
+            next();
+          } else {
+            next(new Error("Invalid LobbyMessage"))
+          }
+        } else {
+          next();
+        }
+      }
+    );
+
     scServer.on("connection", this.handleConnect);
   }
 

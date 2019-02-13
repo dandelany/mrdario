@@ -1,7 +1,6 @@
 import { connect } from "react-redux";
 
-
-import { LobbyResponse, LobbyUser } from "mrdario-core/lib/api/types";
+import { LobbyChatMessageOut, LobbyResponse, LobbyUser } from "mrdario-core/lib/api/types";
 import { AppAuthToken } from "mrdario-core/lib/api/types/auth";
 import { GameClient } from "mrdario-core/lib/api/client";
 
@@ -11,7 +10,7 @@ import { AppState } from "@/store/state";
 import { SCClientSocket } from "socketcluster-client";
 import { Redirect } from "react-router";
 
-const styles = require("./LoginPage.module.scss");
+const styles = require("./LobbyPage.module.scss");
 
 export interface LobbyPageStateProps {
   authToken: AppAuthToken | null;
@@ -25,43 +24,99 @@ export interface LobbyPageProps extends LobbyPageStateProps {
 
 export interface LobbyPageState {
   lobbyUsers: LobbyResponse;
+  pendingMessage: string;
+  chatMessages: LobbyChatMessageOut[];
 }
 
 export class UnconnectedLobbyPage extends React.Component<LobbyPageProps, LobbyPageState> {
   state: LobbyPageState = {
-    lobbyUsers: []
+    lobbyUsers: [],
+    pendingMessage: "",
+    chatMessages: []
   };
+  messagesEndRef: React.RefObject<HTMLDivElement>;
+
+  constructor(props: LobbyPageProps) {
+    super(props);
+    this.messagesEndRef = React.createRef();
+  }
+
   componentDidMount() {
     this.props.gameClient
       .joinLobby({
-        onChangeLobbyUsers: (lobbyUsers: LobbyResponse) => this.setState({ lobbyUsers })
+        onChangeLobbyUsers: (lobbyUsers: LobbyResponse) => this.setState({ lobbyUsers }),
+        onChatMessage: (chatMessage: LobbyChatMessageOut) => {
+          this.setState({ chatMessages: this.state.chatMessages.concat(chatMessage) });
+          if(this.messagesEndRef && this.messagesEndRef.current) {
+            this.messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+            // const node = this.messagesRef.current;
+            // node.scroll
+          }
+        }
       })
       .then((lobbyUsers: LobbyResponse) => this.setState({ lobbyUsers }));
   }
   componentWillUnmount() {
     this.props.gameClient.leaveLobby();
   }
+  handleChangeMessage = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const pendingMessage = e.currentTarget.value;
+    this.setState({ pendingMessage });
+  };
+  handleSubmit = (e?: React.SyntheticEvent) => {
+    if (e) e.preventDefault();
+    this.props.gameClient.sendLobbyChat(this.state.pendingMessage);
+    this.setState({pendingMessage: ''});
+  };
   render() {
     // todo do this in a wrapper component?
-    if(this.props.socketState !== "open") {
-      return <div className={styles.loginPage}>
-        <h2>Connecting...</h2>
-      </div>
+    if (this.props.socketState !== "open") {
+      return (
+        <div className={styles.loginPage}>
+          <h2>Connecting...</h2>
+        </div>
+      );
     }
     if (this.props.authState !== "authenticated" || !this.props.authToken || !this.props.authToken.id) {
       return <Redirect to="/login" />;
     }
 
     return (
-      <div className={styles.loginPage}>
-        <h2>Lobby</h2>
-        {this.state.lobbyUsers.length ? (
-          <div>
-            {this.state.lobbyUsers.map((lobbyUser: LobbyUser) => {
-              return <div key={lobbyUser.id}>{lobbyUser.name}</div>;
-            })}
+      <div className={styles.lobbyPage}>
+        <h2>Game Lobby</h2>
+
+        <div className={styles.lobbyContainer}>
+          <div className={styles.lobbyUsers}>
+            <h4>Users</h4>
+            {this.state.lobbyUsers.length ? (
+              <div>
+                {this.state.lobbyUsers.map((lobbyUser: LobbyUser) => {
+                  return <div key={lobbyUser.id}>{lobbyUser.name}</div>;
+                })}
+              </div>
+            ) : null}
           </div>
-        ) : null}
+          <div className={styles.lobbyChat}>
+            <div className={styles.chatMessages}>
+              {this.state.chatMessages.map((message: LobbyChatMessageOut, index: number): React.ReactNode => {
+                return <div key={index + ""}>
+                  <span className={styles.userName}>{message.userName}:</span>
+                  <span>{message.payload}</span>
+                </div>
+              })}
+              <div ref={this.messagesEndRef} />
+            </div>
+            <form onSubmit={this.handleSubmit}>
+              <div>
+                <input type="text" value={this.state.pendingMessage} onChange={this.handleChangeMessage} />
+                <span className="btn-white" onClick={this.handleSubmit}>
+                  Send
+                </span>
+              </div>
+              <div />
+            </form>
+          </div>
+        </div>
       </div>
     );
   }
@@ -73,7 +128,4 @@ const mapStateToProps = (state: AppState): LobbyPageStateProps => ({
   socketState: state.gameClient.socketState
 });
 
-export const LobbyPage = connect(
-  mapStateToProps
-)(UnconnectedLobbyPage);
-
+export const LobbyPage = connect(mapStateToProps)(UnconnectedLobbyPage);

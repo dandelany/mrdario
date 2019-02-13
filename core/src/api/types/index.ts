@@ -30,12 +30,6 @@ export const TLoginRequest = t.type({
 export type LoginRequest = t.TypeOf<typeof TLoginRequest>;
 
 // lobby
-
-export enum LobbyMessageType {
-  Join = "join",
-  Leave = "leave"
-}
-
 export const TLobbyUser = t.type({
   name: t.string,
   id: t.string,
@@ -46,6 +40,12 @@ export type LobbyUser = t.TypeOf<typeof TLobbyUser>;
 export const TLobbyResponse = t.array(TLobbyUser);
 export type LobbyResponse = t.TypeOf<typeof TLobbyResponse>;
 
+export enum LobbyMessageType {
+  Join = "join",
+  Leave = "leave",
+  ChatIn = "chatIn",
+  ChatOut = "chatOut"
+}
 export const TLobbyJoinMessage = t.type({
   type: t.literal(LobbyMessageType.Join),
   payload: TLobbyUser
@@ -58,5 +58,18 @@ export const TLobbyLeaveMessage = t.type({
 });
 export type LobbyLeaveMessage = t.TypeOf<typeof TLobbyLeaveMessage>;
 
-export const TLobbyMessage = t.taggedUnion("type", [TLobbyJoinMessage, TLobbyLeaveMessage]);
+export const TLobbyChatMessageIn = t.type({
+  type: t.literal(LobbyMessageType.ChatIn),
+  payload: t.string
+});
+export type LobbyChatMessageIn = t.TypeOf<typeof TLobbyChatMessageIn>;
+
+export const TLobbyChatMessageOut = t.type({
+  type: t.literal(LobbyMessageType.ChatOut),
+  payload: t.string,
+  userName: t.string
+});
+export type LobbyChatMessageOut = t.TypeOf<typeof TLobbyChatMessageOut>;
+
+export const TLobbyMessage = t.taggedUnion("type", [TLobbyJoinMessage, TLobbyLeaveMessage, TLobbyChatMessageIn, TLobbyChatMessageOut]);
 export type LobbyMessage = t.TypeOf<typeof TLobbyMessage>;

@@ -1,0 +1,48 @@
+$beige: rgb(210, 207, 202);
+
+.lobbyPage {
+  display: block;
+  background-color: $beige;
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+  padding: 3em;
+  border-radius: 1em;
+
+  .lobbyContainer {
+    width: 700px;
+    position: relative;
+    overflow: auto;
+
+    .lobbyUsers {
+      float: right;
+      width: 240px;
+    }
+    .lobbyChat {
+      float: left;
+      width: 450px;
+
+      .chatMessages {
+        text-align: left;
+        height: 350px;
+        overflow-y: scroll;
+        .userName {
+          font-weight: bold;
+          display: inline-block;
+          margin-right: 8px;
+        }
+      }
+    }
+
+  }
+
+
+  input[type="text"] {
+    font-size: 16pt;
+    text-align: center;
+    margin-bottom: 1em;
+  }
+}
