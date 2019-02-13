@@ -87,14 +87,30 @@ export class GameClient {
       autoConnect: false
     });
 
-    if (options.onConnecting) { socket.on("connecting", partialRight(options.onConnecting, socket)); }
-    if (options.onConnect) { socket.on("connect", partialRight(options.onConnect, socket)); }
-    if (options.onConnectAbort) { socket.on("connectAbort", partialRight(options.onConnectAbort, socket)); }
-    if (options.onDisconnect) { socket.on("disconnect", partialRight(options.onDisconnect, socket)); }
-    if (options.onClose) { socket.on("close", partialRight(options.onClose, socket)); }
-    if (options.onError) { socket.on("error", partialRight(options.onError, socket)); }
-    if (options.onAuthenticate) { socket.on("authenticate", partialRight(options.onAuthenticate, socket)); }
-    if (options.onDeauthenticate) { socket.on("deauthenticate", partialRight(options.onDeauthenticate, socket)); }
+    if (options.onConnecting) {
+      socket.on("connecting", partialRight(options.onConnecting, socket));
+    }
+    if (options.onConnect) {
+      socket.on("connect", partialRight(options.onConnect, socket));
+    }
+    if (options.onConnectAbort) {
+      socket.on("connectAbort", partialRight(options.onConnectAbort, socket));
+    }
+    if (options.onDisconnect) {
+      socket.on("disconnect", partialRight(options.onDisconnect, socket));
+    }
+    if (options.onClose) {
+      socket.on("close", partialRight(options.onClose, socket));
+    }
+    if (options.onError) {
+      socket.on("error", partialRight(options.onError, socket));
+    }
+    if (options.onAuthenticate) {
+      socket.on("authenticate", partialRight(options.onAuthenticate, socket));
+    }
+    if (options.onDeauthenticate) {
+      socket.on("deauthenticate", partialRight(options.onDeauthenticate, socket));
+    }
     if (options.onAuthStateChange) {
       socket.on("authStateChange", partialRight(options.onAuthStateChange, socket));
     }
