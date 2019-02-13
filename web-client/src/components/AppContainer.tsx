@@ -42,7 +42,9 @@ class AppContainer extends React.Component<AppContainerProps, AppContainerState>
     // todo test throttling this
     this._throttledResizeHandler = this._onResize;
 
-    this.gameClient = this.props.initGameClient({ socketOptions: { port: 8000 } });
+    // todo local ws proxy
+    const port = window.location.hostname === "localhost" ? 8000 : 3000;
+    this.gameClient = this.props.initGameClient({ socketOptions: { port } });
     this.gameClient.connect();
   }
 
@@ -55,7 +57,7 @@ class AppContainer extends React.Component<AppContainerProps, AppContainerState>
 
   _onResize = () => {
     this.setState(getWindowSize());
-  }
+  };
 
   _onChangeMode = (mode: GameControllerMode) => this.setState({ mode });
 
