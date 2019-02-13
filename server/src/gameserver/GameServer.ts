@@ -108,16 +108,16 @@ export class GameServer {
     scServer.addMiddleware(
       scServer.MIDDLEWARE_PUBLISH_IN,
       (req: SCServer.PublishInRequest, next: SCServer.nextMiddlewareFunction) => {
-        if(req.channel === 'mrdario-lobby') {
-          if(!hasAuthToken(req.socket)) {
+        if (req.channel === "mrdario-lobby") {
+          if (!hasAuthToken(req.socket)) {
             next(new Error("Invalid LobbyMessage"));
             return;
           }
           const decoded = TLobbyMessage.decode(req.data);
-          if(decoded.isRight()) {
-            console.log('it was a good message');
+          if (decoded.isRight()) {
+            console.log("it was a good message");
             const value = decoded.value;
-            if(value.type === LobbyMessageType.ChatIn) {
+            if (value.type === LobbyMessageType.ChatIn) {
               const outMessage: LobbyChatMessageOut = {
                 ...value,
                 type: LobbyMessageType.ChatOut,
@@ -127,7 +127,7 @@ export class GameServer {
             }
             next();
           } else {
-            next(new Error("Invalid LobbyMessage"))
+            next(new Error("Invalid LobbyMessage"));
           }
         } else {
           next();

@@ -17,4 +17,3 @@ export function getSocketInfo(socket: SCServerSocket) {
 export function socketInfoStr(socket: SCServerSocket) {
   return JSON.stringify(getSocketInfo(socket));
 }
-

@@ -5,7 +5,9 @@ import {
   ClientAuthenticatedUser,
   GameScoreRequest,
   GameScoreResponse,
-  HighScoresResponse, LobbyChatMessageIn, LobbyChatMessageOut,
+  HighScoresResponse,
+  LobbyChatMessageIn,
+  LobbyChatMessageOut,
   LobbyMessage,
   LobbyMessageType,
   LobbyResponse,
@@ -19,16 +21,16 @@ import {
 } from "../types";
 
 import * as t from "io-ts";
+import { partialRight, remove, uniqBy } from "lodash";
 import { encodeGrid } from "../../encoding";
 import { GameGrid } from "../../game";
-import { partialRight, remove, uniqBy } from "lodash";
 
 // import { SCChannelOptions } from "sc-channel";
 
-type AuthToken = {
+interface AuthToken {
   id: string;
   name: string;
-};
+}
 interface ClientSocketWithValidAuthToken extends SCClientSocket {
   authToken: AuthToken;
 }
@@ -85,16 +87,20 @@ export class GameClient {
       autoConnect: false
     });
 
-    if (options.onConnecting) socket.on("connecting", partialRight(options.onConnecting, socket));
-    if (options.onConnect) socket.on("connect", partialRight(options.onConnect, socket));
-    if (options.onConnectAbort) socket.on("connectAbort", partialRight(options.onConnectAbort, socket));
-    if (options.onDisconnect) socket.on("disconnect", partialRight(options.onDisconnect, socket));
-    if (options.onClose) socket.on("close", partialRight(options.onClose, socket));
-    if (options.onError) socket.on("error", partialRight(options.onError, socket));
-    if (options.onAuthenticate) socket.on("authenticate", partialRight(options.onAuthenticate, socket));
-    if (options.onDeauthenticate) socket.on("deauthenticate", partialRight(options.onDeauthenticate, socket));
-    if (options.onAuthStateChange) socket.on("authStateChange", partialRight(options.onAuthStateChange, socket));
-    if (options.onAuthStateChange) socket.on("authStateChange", partialRight(options.onAuthStateChange, socket));
+    if (options.onConnecting) { socket.on("connecting", partialRight(options.onConnecting, socket)); }
+    if (options.onConnect) { socket.on("connect", partialRight(options.onConnect, socket)); }
+    if (options.onConnectAbort) { socket.on("connectAbort", partialRight(options.onConnectAbort, socket)); }
+    if (options.onDisconnect) { socket.on("disconnect", partialRight(options.onDisconnect, socket)); }
+    if (options.onClose) { socket.on("close", partialRight(options.onClose, socket)); }
+    if (options.onError) { socket.on("error", partialRight(options.onError, socket)); }
+    if (options.onAuthenticate) { socket.on("authenticate", partialRight(options.onAuthenticate, socket)); }
+    if (options.onDeauthenticate) { socket.on("deauthenticate", partialRight(options.onDeauthenticate, socket)); }
+    if (options.onAuthStateChange) {
+      socket.on("authStateChange", partialRight(options.onAuthStateChange, socket));
+    }
+    if (options.onAuthStateChange) {
+      socket.on("authStateChange", partialRight(options.onAuthStateChange, socket));
+    }
 
     this.socket = socket;
     this.lobbyUsers = [];
@@ -124,8 +130,8 @@ export class GameClient {
 
   public async joinLobby(
     options: {
-      onChangeLobbyUsers?: (lobbyUsers: LobbyResponse) => any,
-      onChatMessage?: (message: LobbyChatMessageOut) => any
+      onChangeLobbyUsers?: (lobbyUsers: LobbyResponse) => any;
+      onChatMessage?: (message: LobbyChatMessageOut) => any;
     } = {}
   ): Promise<LobbyResponse> {
     return await promisifySocketRequest<LobbyResponse>(this.socket, "joinLobby", null, TLobbyResponse).then(
@@ -157,7 +163,7 @@ export class GameClient {
   }
 
   public async leaveLobby(): Promise<null> {
-    //todo have to unwatch also?
+    // todo have to unwatch also?
     this.socket.unsubscribe("mrdario-lobby");
     this.socket.unwatch("mrdario-lobby");
     return await promisifySocketRequest<null>(this.socket, "leaveLobby", null, t.null);
@@ -170,7 +176,6 @@ export class GameClient {
     };
     this.socket.publish("mrdario-lobby", chatMessage);
   }
-
 
   public async getHighScores(level: number): Promise<HighScoresResponse> {
     return await promisifySocketRequest<HighScoresResponse>(

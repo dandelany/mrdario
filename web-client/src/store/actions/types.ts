@@ -19,7 +19,6 @@ export enum AppActionType {
 
   GetHighScores = "GameClient:GetHighScores",
   Login = "GameClient:Login"
-
 }
 
 // base action types
@@ -31,7 +30,7 @@ export interface IActionWithStatus extends IAppAction {
   status: string;
 }
 export interface IActionWithPayload extends IAppAction {
-  payload: {[K in string]: any};
+  payload: { [K in string]: any };
 }
 export enum RequestStatus {
   Loading = "Loading",
@@ -42,101 +41,101 @@ export interface IRequestAction extends IActionWithStatus {
   status: RequestStatus;
 }
 export interface IPayloadWithSocketState {
-  socketState: SCClientSocket.States
+  socketState: SCClientSocket.States;
 }
 export interface IPayloadWithAuthState {
-  authState: SCClientSocket.AuthStates,
-  authToken: null | AppAuthToken
+  authState: SCClientSocket.AuthStates;
+  authToken: null | AppAuthToken;
 }
 
 // app actions
 export interface SocketConnectingAction extends IAppAction {
   type: AppActionType.SocketConnecting;
-  payload: IPayloadWithSocketState
+  payload: IPayloadWithSocketState;
 }
 export interface SocketConnectAction extends IActionWithPayload {
   type: AppActionType.SocketConnect;
 
   payload: IPayloadWithSocketState & {
-    status: SCClientSocket.ConnectStatus,
-  }
+    status: SCClientSocket.ConnectStatus;
+  };
 }
 export interface SocketConnectAbortAction extends IActionWithPayload {
   type: AppActionType.SocketConnectAbort;
   payload: IPayloadWithSocketState & {
-    code: number,
-    data: string | object
-  }
+    code: number;
+    data: string | object;
+  };
 }
 export interface SocketDisconnectAction extends IActionWithPayload {
   type: AppActionType.SocketDisconnect;
   payload: IPayloadWithSocketState & {
-    code: number,
-    data: string | object,
-  }
+    code: number;
+    data: string | object;
+  };
 }
 export interface SocketCloseAction extends IActionWithPayload {
   type: AppActionType.SocketClose;
   payload: IPayloadWithSocketState & {
-    code: number,
-    data: string | object
-  }
+    code: number;
+    data: string | object;
+  };
 }
 export interface SocketErrorAction extends IActionWithPayload {
   type: AppActionType.SocketError;
-  error: Error,
-  payload: IPayloadWithSocketState
+  error: Error;
+  payload: IPayloadWithSocketState;
 }
 export interface SocketAuthenticateAction extends IActionWithPayload {
   type: AppActionType.SocketAuthenticate;
-  payload: IPayloadWithSocketState & IPayloadWithAuthState
+  payload: IPayloadWithSocketState & IPayloadWithAuthState;
 }
 export interface SocketDeauthenticateAction extends IActionWithPayload {
   type: AppActionType.SocketDeauthenticate;
-  payload: IPayloadWithSocketState & IPayloadWithAuthState
+  payload: IPayloadWithSocketState & IPayloadWithAuthState;
 }
 export interface SocketAuthStateChangeAction extends IActionWithPayload {
   type: AppActionType.SocketAuthStateChange;
-  payload: IPayloadWithSocketState & IPayloadWithAuthState & {
-    stateChangeData: SCClientSocket.AuthStateChangeData
-  }
+  payload: IPayloadWithSocketState &
+    IPayloadWithAuthState & {
+      stateChangeData: SCClientSocket.AuthStateChangeData;
+    };
 }
-
 
 // high scores
 export interface GetHighScoresAction extends IRequestAction {
   type: AppActionType.GetHighScores;
   payload: {
-    level: number
-  }
+    level: number;
+  };
 }
 export interface GetHighScoresSuccessAction extends GetHighScoresAction {
-  status: RequestStatus.Success,
+  status: RequestStatus.Success;
   payload: {
-    level: number,
-    response: HighScoresResponse
-  }
+    level: number;
+    response: HighScoresResponse;
+  };
 }
 export interface GetHighScoresFailedAction extends GetHighScoresAction {
-  status: RequestStatus.Failed,
-  error: Error
+  status: RequestStatus.Failed;
+  error: Error;
 }
 
 // login
 export interface LoginAction extends IRequestAction {
-  type: AppActionType.Login
+  type: AppActionType.Login;
 }
 export interface LoginLoadingAction extends LoginAction {
-  status: RequestStatus.Loading,
-  payload: LoginRequest
+  status: RequestStatus.Loading;
+  payload: LoginRequest;
 }
 export interface LoginSuccessAction extends LoginAction {
-  status: RequestStatus.Success,
-  payload: ClientAuthenticatedUser
+  status: RequestStatus.Success;
+  payload: ClientAuthenticatedUser;
 }
 export interface LoginFailedAction extends LoginAction {
-  status: RequestStatus.Failed,
-  error: Error
+  status: RequestStatus.Failed;
+  error: Error;
 }
 
 export type AppAction =

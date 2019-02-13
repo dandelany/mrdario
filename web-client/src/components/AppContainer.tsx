@@ -9,7 +9,6 @@ import AztecCalendar, { AztecCalendarMode } from "./AztecCalendar";
 
 import { AppThunkDispatch, initGameClient } from "@/store/actions/creators";
 
-
 function getWindowSize() {
   return { windowWidth: window.innerWidth, windowHeight: window.innerHeight };
 }
@@ -17,7 +16,7 @@ function getWindowSize() {
 interface AppContainerOwnProps extends RouteComponentProps {}
 
 interface AppContainerDispatchProps {
-  initGameClient: (options: Partial<GameClientOptions>) => GameClient
+  initGameClient: (options: Partial<GameClientOptions>) => GameClient;
 }
 
 type AppContainerProps = AppContainerOwnProps & AppContainerDispatchProps;
@@ -43,8 +42,7 @@ class AppContainer extends React.Component<AppContainerProps, AppContainerState>
     // todo test throttling this
     this._throttledResizeHandler = this._onResize;
 
-
-    this.gameClient = this.props.initGameClient({socketOptions: {port: 8000}});
+    this.gameClient = this.props.initGameClient({ socketOptions: { port: 8000 } });
     this.gameClient.connect();
   }
 
@@ -57,7 +55,7 @@ class AppContainer extends React.Component<AppContainerProps, AppContainerState>
 
   _onResize = () => {
     this.setState(getWindowSize());
-  };
+  }
 
   _onChangeMode = (mode: GameControllerMode) => this.setState({ mode });
 
@@ -110,7 +108,9 @@ const mapDispatchToProps = (dispatch: AppThunkDispatch) => ({
   initGameClient: (options: Partial<GameClientOptions> = {}) => dispatch(initGameClient(options))
 });
 
-export default withRouter(connect(
-  () => ({}),
-  mapDispatchToProps
-)(AppContainer));
+export default withRouter(
+  connect(
+    () => ({}),
+    mapDispatchToProps
+  )(AppContainer)
+);

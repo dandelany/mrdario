@@ -33,7 +33,7 @@ export class LoginPage extends React.Component<LoginPageProps, LoginPageState> {
     if (window.localStorage) {
       window.localStorage.setItem("mrdario-name", name);
     }
-  };
+  }
   handleSubmit = (e?: React.SyntheticEvent) => {
     if (e) e.preventDefault();
 
@@ -47,7 +47,7 @@ export class LoginPage extends React.Component<LoginPageProps, LoginPageState> {
     this.props.login(this.props.gameClient, this.state.name, userId, token);
 
     this.setState({ didSubmit: true });
-  };
+  }
   render() {
     if (this.state.didSubmit && this.props.authToken && this.props.authToken.id) {
       return <Redirect to="/lobby" />;

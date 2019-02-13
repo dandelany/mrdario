@@ -47,7 +47,7 @@ export class UnconnectedLobbyPage extends React.Component<LobbyPageProps, LobbyP
         onChangeLobbyUsers: (lobbyUsers: LobbyResponse) => this.setState({ lobbyUsers }),
         onChatMessage: (chatMessage: LobbyChatMessageOut) => {
           this.setState({ chatMessages: this.state.chatMessages.concat(chatMessage) });
-          if(this.messagesEndRef && this.messagesEndRef.current) {
+          if (this.messagesEndRef && this.messagesEndRef.current) {
             this.messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
             // const node = this.messagesRef.current;
             // node.scroll
@@ -62,12 +62,12 @@ export class UnconnectedLobbyPage extends React.Component<LobbyPageProps, LobbyP
   handleChangeMessage = (e: React.ChangeEvent<HTMLInputElement>) => {
     const pendingMessage = e.currentTarget.value;
     this.setState({ pendingMessage });
-  };
+  }
   handleSubmit = (e?: React.SyntheticEvent) => {
     if (e) e.preventDefault();
     this.props.gameClient.sendLobbyChat(this.state.pendingMessage);
-    this.setState({pendingMessage: ''});
-  };
+    this.setState({ pendingMessage: "" });
+  }
   render() {
     // todo do this in a wrapper component?
     if (this.props.socketState !== "open") {
@@ -98,12 +98,16 @@ export class UnconnectedLobbyPage extends React.Component<LobbyPageProps, LobbyP
           </div>
           <div className={styles.lobbyChat}>
             <div className={styles.chatMessages}>
-              {this.state.chatMessages.map((message: LobbyChatMessageOut, index: number): React.ReactNode => {
-                return <div key={index + ""}>
-                  <span className={styles.userName}>{message.userName}:</span>
-                  <span>{message.payload}</span>
-                </div>
-              })}
+              {this.state.chatMessages.map(
+                (message: LobbyChatMessageOut, index: number): React.ReactNode => {
+                  return (
+                    <div key={index + ""}>
+                      <span className={styles.userName}>{message.userName}:</span>
+                      <span>{message.payload}</span>
+                    </div>
+                  );
+                }
+              )}
               <div ref={this.messagesEndRef} />
             </div>
             <form onSubmit={this.handleSubmit}>

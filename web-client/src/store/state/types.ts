@@ -1,4 +1,4 @@
-import {SCClientSocket} from "socketcluster-client";
+import { SCClientSocket } from "socketcluster-client";
 import { AppAuthToken } from "mrdario-core/lib/api/types/auth";
 
 export interface GameClientState {

@@ -25,13 +25,13 @@ export default class GameSettings extends React.Component<GameSettingsProps, Gam
     if (window.localStorage) {
       window.localStorage.setItem("mrdario-name", name);
     }
-  };
+  }
   onChangeLevel = (level: number) => {
     this.setState({ level });
-  };
+  }
   onChangeSpeed = (speed: number) => {
     this.setState({ speed });
-  };
+  }
 
   render() {
     return (

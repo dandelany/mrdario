@@ -18,7 +18,7 @@ export const gameClientReducer: Reducer<GameClientState, AppAction> = (
       return {
         ...state,
         socketState: action.payload.socketState,
-        socketId: action.payload.status.id,
+        socketId: action.payload.status.id
         // error: action.error
       };
 

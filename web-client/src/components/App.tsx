@@ -1,6 +1,6 @@
 import * as React from "react";
-import {Provider} from "react-redux";
-import {store} from "@/store/store";
+import { Provider } from "react-redux";
+import { store } from "@/store/store";
 
 require("@/styles/main.scss");
 require("@/styles/rc-slider.less");

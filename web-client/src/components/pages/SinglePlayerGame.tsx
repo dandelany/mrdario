@@ -131,7 +131,6 @@ class SinglePlayerGame extends React.Component<SinglePlayerGameProps, SinglePlay
         console.error(err);
       });
 
-
     gameClient.createSimpleGame(level, speed).then((gameId: string) => {
       this.setState({ gameId });
     });

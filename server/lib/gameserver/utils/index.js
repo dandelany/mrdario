@@ -19,13 +19,3 @@ function socketInfoStr(socket) {
     return JSON.stringify(getSocketInfo(socket));
 }
 exports.socketInfoStr = socketInfoStr;
-function logWithTime() {
-    var args = [];
-    for (var _i = 0; _i < arguments.length; _i++) {
-        args[_i] = arguments[_i];
-    }
-    // console.log(format(new Date(), 'MM-DD-YYYY HH:mm:ss'), ...args);
-    // todo install date-fns
-    console.log.apply(console, args);
-}
-exports.logWithTime = logWithTime;

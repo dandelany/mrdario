@@ -89,7 +89,7 @@ export const socketAuthenticate = (
 ): SocketAuthenticateAction => ({
   type: AppActionType.SocketAuthenticate,
   payload: {
-    authToken: socket.authToken as (AppAuthToken | null),
+    authToken: socket.authToken as AppAuthToken | null,
     authState: socket.authState,
     socketState: socket.state
   }
@@ -101,7 +101,7 @@ export const socketDeauthenticate = (
 ): SocketDeauthenticateAction => ({
   type: AppActionType.SocketDeauthenticate,
   payload: {
-    authToken: socket.authToken as (AppAuthToken | null),
+    authToken: socket.authToken as AppAuthToken | null,
     authState: socket.authState,
     socketState: socket.state
   }
@@ -113,7 +113,7 @@ export const socketAuthStateChange = (
 ): SocketAuthStateChangeAction => ({
   type: AppActionType.SocketAuthStateChange,
   payload: {
-    authToken: socket.authToken as (AppAuthToken | null),
+    authToken: socket.authToken as AppAuthToken | null,
     authState: socket.authState,
     stateChangeData: stateChangeData,
     socketState: socket.state

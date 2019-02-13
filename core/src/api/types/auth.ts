@@ -7,7 +7,6 @@ export const TAppAuthToken = t.type({
 });
 export type AppAuthToken = t.TypeOf<typeof TAppAuthToken>;
 
-
 interface ServerSocketWithAuth extends SCServerSocket {
   authToken: any;
 }

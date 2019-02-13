@@ -71,5 +71,10 @@ export const TLobbyChatMessageOut = t.type({
 });
 export type LobbyChatMessageOut = t.TypeOf<typeof TLobbyChatMessageOut>;
 
-export const TLobbyMessage = t.taggedUnion("type", [TLobbyJoinMessage, TLobbyLeaveMessage, TLobbyChatMessageIn, TLobbyChatMessageOut]);
+export const TLobbyMessage = t.taggedUnion("type", [
+  TLobbyJoinMessage,
+  TLobbyLeaveMessage,
+  TLobbyChatMessageIn,
+  TLobbyChatMessageOut
+]);
 export type LobbyMessage = t.TypeOf<typeof TLobbyMessage>;
