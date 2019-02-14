@@ -1,0 +1,23 @@
+{
+  "name": "mrdario-bots",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc",
+    "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
+    "start": "ts-node src/index.ts"
+  },
+  "author": "Dan Delany <dan.delany@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "mrdario-core": "file:../core"
+  },
+  "devDependencies": {
+    "band-name": "github:dandelany/band-name",
+    "ts-node": "^8.0.2",
+    "tslint": "^5.12.1",
+    "typescript": "^3.3.3"
+  }
+}
