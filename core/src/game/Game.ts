@@ -2,7 +2,7 @@ import { EventEmitter } from "events";
 import { defaults, includes, noop } from "lodash";
 import { TypeState } from "typestate";
 
-import { InputRepeater, InputRepeaterState, MovingCounters, MovingDirections } from "./InputRepeater";
+import { InputRepeater, InputRepeaterState, MovingCounters } from "./InputRepeater";
 
 import {
   ACCELERATE_INTERVAL,
@@ -62,7 +62,6 @@ export type EncodableGameOptions = Omit<GameOptions, "onWin" | "onLose">;
 export interface GameState {
   mode: GameMode;
   movingCounters: MovingCounters;
-  movingDirections: MovingDirections;
   grid: GameGrid;
   pill?: PillLocation;
   nextPill: PillColors;
@@ -177,7 +176,7 @@ export class Game extends EventEmitter {
     // const { onWin, onLose, ...stateOptions } = options;
     const mode: GameMode = this.fsm.currentState;
     const inputRepeaterState: InputRepeaterState = this.inputRepeater.getState();
-    const { movingCounters, movingDirections } = inputRepeaterState;
+    const { movingCounters } = inputRepeaterState;
 
     return {
       mode,
@@ -185,7 +184,6 @@ export class Game extends EventEmitter {
       pill,
       nextPill,
       movingCounters,
-      movingDirections,
       seed,
       frame,
       score,
@@ -290,7 +288,7 @@ export class Game extends EventEmitter {
 
     // gravity pulling pill down
     const gravity = this.getGravity();
-    if (this.modeTicks > gravity && !this.inputRepeater.movingDirections[GameInput.Down]) {
+    if (this.modeTicks > gravity && !this.inputRepeater.movingCounters.has(GameInput.Down)) {
       // deactivate gravity while moving down
       this.modeTicks = 0;
       if (isPillLocation(this.pill)) {

@@ -1,6 +1,6 @@
 import invariant = require("invariant");
 import { EncodableGameOptions, GameState } from "../game";
-import { MovingCounters, MovingDirections } from "../game/InputRepeater";
+import { MovingCounters } from "../game/InputRepeater";
 import { PillColors } from "../game/types";
 import { encodeGrid } from "./grid";
 
@@ -32,13 +32,10 @@ export function decodePillColors(encodedColors: string): PillColors {
 }
 
 export function encodeMovingCounters(movingCounters: MovingCounters): string {
-  return Array.from(movingCounters.values()).join(",");
+  const entries = Array.from(movingCounters.entries());
+  return JSON.stringify(entries);
 }
 // todo decodeMovingCounters
-
-export function encodeMovingDirections(movingDirections: MovingDirections): string {
-  return Array.from(movingDirections.keys()).join(",");
-}
 
 export function encodeGameOptions(options: EncodableGameOptions): string {
   const { width, height, level, baseSpeed } = options;
@@ -64,6 +61,5 @@ export function encodeGameState(state: GameState): EncodedGameState {
     modeTicks: encodeInt(state.modeTicks),
     pillCount: encodeInt(state.pillCount),
     movingCounters: encodeMovingCounters(state.movingCounters),
-    movingDirections: encodeMovingDirections(state.movingDirections)
   });
 }

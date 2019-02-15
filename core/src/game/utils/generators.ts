@@ -9,7 +9,7 @@ import {
   GridObjectDestroyed,
   GridObjectEmpty,
   GridObjectPillLeft,
-  GridObjectPillRight,
+  GridObjectPillRight, GridObjectPillSegment,
   GridObjectType,
   GridObjectVirus,
   MaybeGridObject,
@@ -37,6 +37,9 @@ export function makePillLeft(color: GameColor): GridObjectPillLeft {
 }
 export function makePillRight(color: GameColor): GridObjectPillRight {
   return { type: GridObjectType.PillRight, color };
+}
+export function makePillSegment(color: GameColor): GridObjectPillSegment {
+  return { type: GridObjectType.PillSegment, color };
 }
 
 export function makeEmptyGridRow(width: number): GameGridRow {

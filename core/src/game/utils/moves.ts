@@ -1,6 +1,7 @@
 import { flatten, uniqBy } from "lodash";
 
 import {
+  GameColor,
   GameGrid,
   GameGridRow,
   GridCellLocation,
@@ -14,7 +15,7 @@ import {
   RotateDirection
 } from "../types";
 
-import { makeEmpty, makePillLeft, makePillRight } from "./generators";
+import { makeEmpty, makePillLeft, makePillRight, makePillSegment } from "./generators";
 import {
   canMoveCell,
   deltaRowCol,
@@ -24,7 +25,16 @@ import {
   getInGrid,
   isPillVertical
 } from "./grid";
-import { isDestroyed, isEmpty, isGridObject, isPillLeft, isPillSegment, isPillTop, isVirus } from "./guards";
+import {
+  hasColor,
+  isDestroyed,
+  isEmpty,
+  isGridObject,
+  isPillLeft,
+  isPillSegment,
+  isPillTop,
+  isVirus
+} from "./guards";
 import {
   destroyCells,
   removeCell,
@@ -61,6 +71,7 @@ export interface MovePillResult extends GridMoveResult {
 }
 export interface DestroyLinesResult extends GridResult {
   lines: any;
+  lineColors: GameColor[];
   hasLines: boolean;
   destroyedCount: number;
   virusCount: number;
@@ -85,6 +96,16 @@ export function givePill(grid: GameGrid, pillColors: PillColors): GivePillResult
   grid = setInGrid(grid, pill[1], makePillRight(pillColors[1]));
 
   return { grid, pill, didGive: true };
+}
+
+export function giveGarbage(grid: GameGrid, colors: GameColor[]) {
+  // add garbage parts to grid
+  colors.slice(0, 4).forEach((color, colorI) => {
+    // todo figure out correct places to drop
+    const colI = Math.min(colorI * 2, grid[0].length);
+    setInGrid(grid, [1, colI], makePillSegment(color));
+  });
+  return { grid };
 }
 
 export function moveCell(grid: GameGrid, cell: GridCellLocation, direction: GridDirection): MoveCellResult {
@@ -259,6 +280,7 @@ export function destroyLines(grid: GameGrid, lines?: GridCellLocation[][]): Dest
   const hasLines: boolean = !!(lines && lines.length);
   let destroyedCount: number = 0;
   let virusCount: number = 0;
+  let lineColors: GameColor[] = [];
 
   if (hasLines) {
     const lineCells: GridCellLocation[] = flatten(lines);
@@ -269,13 +291,18 @@ export function destroyLines(grid: GameGrid, lines?: GridCellLocation[][]): Dest
     virusCount = uniqLineCells.filter((cell: GridCellLocation) => {
       return isVirus(getInGrid(grid, cell));
     }).length;
+    // keep track of colors - if we drop garbage on opponent, it is same color as lines
+    lineColors = lines.map((line: GridCellLocation[]) => {
+      const gridObj = grid[line[0][0]][line[0][1]];
+      return hasColor(gridObj) ? gridObj.color : GameColor.Color1;
+    });
     // set cells in lines to destroyed
     grid = destroyCells(grid, uniqLineCells);
     // turn widowed pill halves into rounded 1-square pill segments
     grid = setPillSegments(grid, findWidows(grid));
   }
 
-  return { grid, lines, hasLines, destroyedCount, virusCount };
+  return { grid, lines, lineColors, hasLines, destroyedCount, virusCount };
 }
 
 export function removeDestroyed(grid: GameGrid): GameGrid {

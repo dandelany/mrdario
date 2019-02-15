@@ -79,7 +79,6 @@ function getMockGameState(): GameState {
     comboLineCount: 2,
     seed: "mock-seed",
     nextPill: [GameColor.Color1, GameColor.Color2],
-    movingCounters: new Map([[GameInput.Left as GameInputMove, 3]]),
-    movingDirections: new Map<GameInputMove, true>([[GameInput.Left, true]])
+    movingCounters: new Map<GameInputMove, number>([[GameInput.Left, 3]]),
   };
 }

@@ -1,6 +1,6 @@
 import { decodeGrid } from "../../encoding";
 import { Game, GameOptions, GameState } from "../../game";
-import { GameColor, GameInput, GameInputMove, GameMode } from "../../game";
+import { GameColor, GameInputMove, GameMode } from "../../game";
 
 /*
 Y = Destroyed
@@ -39,15 +39,7 @@ function getMockGameState(): Partial<GameState> {
     modeTicks: 0,
     pillCount: 0,
     comboLineCount: 0,
-    movingCounters: new Map<GameInputMove, number>([
-      [GameInput.Up, 0],
-      [GameInput.Down, 0],
-      [GameInput.Left, 0],
-      [GameInput.Right, 0],
-      [GameInput.RotateCW, 0],
-      [GameInput.RotateCCW, 0]
-    ]),
-    movingDirections: new Map<GameInputMove, true>()
+    movingCounters: new Map<GameInputMove, number>()
   };
 }
 
