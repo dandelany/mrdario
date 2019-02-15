@@ -5,6 +5,7 @@ import AppContainer from 'app/components/AppContainer';
 import TitlePage from 'app/components/pages/TitlePage';
 import GameSettings from 'app/components/pages/GameSettings';
 import SinglePlayerGame from 'app/components/pages/SinglePlayerGame';
+import MultiPlayerLocalGame from 'app/components/pages/MultiPlayerLocalGame';
 import MirrorGame from 'app/components/pages/MirrorGame';
 import HighScores from 'app/components/pages/HighScores';
 
@@ -44,6 +45,11 @@ export default [
     path="/mirror/level/:level/speed/:speed/:mode?"
     key="mirror-game"
     component={MirrorGame}
+  />,
+  <PropsRoute
+    path="/multi/local/level/:level/speed/:speed/:mode?"
+    key="multi-player-local-game"
+    component={MultiPlayerLocalGame}
   />,
   <PropsRoute
     path="/highscores"

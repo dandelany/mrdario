@@ -5,7 +5,7 @@ import StateMachine from 'javascript-state-machine';
 import Game from 'game/Game';
 
 import {
-  MODES, INPUTS, COLORS, PLAYFIELD_WIDTH, PLAYFIELD_HEIGHT,
+  MODES, INPUTS, PLAYFIELD_WIDTH, PLAYFIELD_HEIGHT,
 } from './constants';
 
 // a game controller class for the basic 1-player game, played entirely on the client (in browser)
@@ -13,19 +13,13 @@ import {
 // handles inputs and passes them into the Game
 // controls the high-level game state and must call render() when game state changes
 
-export default class SingleGameController {
+export default class MultiPlayerLocalGameController {
 
-  // options that can be passed to control game parameters
-  static defaultOptions = {
+  static defaultPlayerOptions = {
     // list of input managers, eg. of keyboard, touch events
     // these are event emitters that fire on every user game input (move)
     // moves are queued and fed into the game to control it
     inputManagers: [],
-    // render function which is called when game state changes
-    // this should be the main connection between game logic and presentation
-    render: _.noop,
-    // callback called when state machine mode changes
-    onChangeMode: _.noop,
     // current virus level (generally 1-20)
     level: 0,
     // pill fall speed
@@ -33,6 +27,16 @@ export default class SingleGameController {
     // width and height of the playfield grid, in grid units
     height: PLAYFIELD_HEIGHT,
     width: PLAYFIELD_WIDTH,
+    render: _.noop
+  };
+  // options that can be passed to control game parameters
+  static defaultOptions = {
+    players: [],
+    // render function which is called when game state changes
+    // this should be the main connection between game logic and presentation
+    render: _.noop,
+    // callback called when state machine mode changes
+    onChangeMode: _.noop,
     // frames (this.tick/render calls) per second
     fps: 60,
     // slow motion factor, to simulate faster/slower gameplay for debugging
@@ -51,29 +55,31 @@ export default class SingleGameController {
   ];
 
   constructor(options = {}) {
-    options = _.defaults({}, options, SingleGameController.defaultOptions);
+    options = _.defaults({}, options, MultiPlayerLocalGameController.defaultOptions);
+    const players = _.map(options.players || [],
+      player => Object.assign({}, MultiPlayerLocalGameController.defaultPlayerOptions, player)
+    );
     // super(options);
     // assign all options to instance variables
-    Object.assign(this, options);
+    Object.assign(this, options, {players});
 
-    this.initGame();
+    this.initGames();
 
     _.assign(this, {
       // a finite state machine representing game mode, & transitions between modes
       modeMachine: new StateMachine({
         init: MODES.READY,
-        transitions: SingleGameController.modeTransitions,
+        transitions: MultiPlayerLocalGameController.modeTransitions,
         methods: {
           onEnterState: this._onChangeMode,
           onPlay: () => this.run(),
-          onReset: () => this.initGame(),
+          onReset: () => this.initGames(),
           // tick to get the game started again after being paused
           onResume: () => this.tick()
         }
       }),
       // queued up move inputs which will processed on the next tick
       moveInputQueue: [],
-
       // time per tick step
       step: 1 / options.fps,
       // slow motion factor adjusted step time
@@ -83,20 +89,34 @@ export default class SingleGameController {
     this.attachInputEvents();
   }
   
-  initGame() {
-    const {width, height, level, speed} = this;
-    this.game = new Game({
-      width, height,
-      level,
-      baseSpeed: speed,
-      onWin: () => this.modeMachine.win(),
-      onLose: () => this.modeMachine.lose()
+  initGames() {
+    const {players} = this;
+    this.games = players.map((player, playerI) => {
+      const {inputManagers, level, speed, height, width, render} = player;
+      return new Game({
+        width, height,
+        level,
+        baseSpeed: speed,
+        onWin: () => this.modeMachine.win(),
+        // todo change to use ended state, since there is no win/lose state in multiplayer
+        onLose: () => this.modeMachine.lose(),
+        onCombo: (lineColors) => this._onCombo(playerI, lineColors)
+      });
     });
   }
 
+  _onCombo(playerI, lineColors) {
+    // playerI got a combo (>2 lines) - drop on other player
+    const victimPlayerI = (playerI + 1) % this.players.length;
+    const victimGame = this.games[victimPlayerI];
+    if(_.isFunction(victimGame.addGarbage)) victimGame.addGarbage(lineColors);
+  }
+
   _onChangeMode = (lifecycle) => {
-    // update mode of all input managers
-    this.inputManagers.forEach(inputManager => inputManager.setMode(lifecycle.to));
+    this.players.forEach(player => {
+      // update mode of all input managers
+      player.inputManagers.forEach(inputManager => inputManager.setMode(lifecycle.to));
+    });
     // re-render on any mode change
     this.render(this.getState(lifecycle.to));
     // call handler
@@ -104,24 +124,26 @@ export default class SingleGameController {
   };
 
   attachInputEvents() {
-    this.inputManagers.forEach(inputManager => {
-      inputManager.on(INPUTS.PLAY, () => this.modeMachine.play());
-      inputManager.on(INPUTS.PAUSE, (type) => {
-        if(type === 'keydown') this.modeMachine.pause();
-      });
-      inputManager.on(INPUTS.RESUME, (type) => {
-        if(type === 'keydown') this.modeMachine.resume();
-      });
-      inputManager.on(INPUTS.RESET, () => this.modeMachine.reset());
+    this.players.forEach((player, playerIndex) => {
+      player.inputManagers.forEach(inputManager => {
+        inputManager.on(INPUTS.PLAY, () => this.modeMachine.play());
+        inputManager.on(INPUTS.PAUSE, (type) => {
+          if(type === 'keydown') this.modeMachine.pause();
+        });
+        inputManager.on(INPUTS.RESUME, (type) => {
+          if(type === 'keydown') this.modeMachine.resume();
+        });
+        inputManager.on(INPUTS.RESET, () => this.modeMachine.reset());
 
-      const moveInputs = [INPUTS.LEFT, INPUTS.RIGHT, INPUTS.DOWN, INPUTS.UP, INPUTS.ROTATE_CCW, INPUTS.ROTATE_CW];
-      moveInputs.forEach(input => inputManager.on(input, this.enqueueMoveInput.bind(this, input)));
+        const moveInputs = [INPUTS.LEFT, INPUTS.RIGHT, INPUTS.DOWN, INPUTS.UP, INPUTS.ROTATE_CCW, INPUTS.ROTATE_CW];
+        moveInputs.forEach(input => inputManager.on(input, this.enqueueMoveInput.bind(this, input, playerIndex)));
+      });
     });
   }
-  enqueueMoveInput(input, eventType, event) {
+  enqueueMoveInput(input, playerIndex, eventType, event) {
     // queue a user move, to be sent to the game on the next tick
     if (this.modeMachine.state !== MODES.PLAYING) return;
-    this.moveInputQueue.push({input, eventType});
+    this.moveInputQueue.push({input, playerIndex, eventType});
     if(event.preventDefault) event.preventDefault();
   }
 
@@ -146,7 +168,7 @@ export default class SingleGameController {
     this.dt = dt + Math.min(1, (now - last) / 1000);
     while(this.dt > slowStep) {
       this.dt = this.dt - slowStep;
-      this.tickGame();
+      this.tickGames();
     }
 
     // render with the current game state
@@ -154,29 +176,41 @@ export default class SingleGameController {
     this.last = now;
     requestAnimationFrame(this.tick.bind(this));
   }
-  tickGame() {
+  tickGames() {
     // tick the game, sending current queue of moves
     // const start = performance.now();
-    this.game.tick(this.moveInputQueue);
+    this.games.forEach((game, gameIndex) => {
+      const [thisGameMoveInputs, otherGamesMoveInputs] = _.partition(this.moveInputQueue, moveInput => {
+        return (moveInput.playerIndex === gameIndex);
+      });
+      game.tick(thisGameMoveInputs);
+      this.moveInputQueue = otherGamesMoveInputs;
+    });
     // const took = performance.now() - start;
     // if(took > 1) console.log('game tick took ', took);
     this.moveInputQueue = [];
   }
 
   getState(mode) {
-    const {grid, pillCount, pillSequence, score, timeBonus} = this.game;
     // minimal description of game state to render
     return {
       mode: mode || this.modeMachine.state,
-      pillCount: this.game.counters.pillCount,
-      grid, pillSequence, score, timeBonus
+      games: this.games.map(game => {
+        const {grid, pillSequence, counters, score, timeBonus} = game;
+        return {
+          grid, pillSequence, score, timeBonus,
+          pillCount: counters.pillCount,
+        }
+      })
     };
   }
 
   cleanup() {
     // cleanup the game when we're done
     this.modeMachine.end();
-    this.inputManagers.forEach(manager => manager.removeAllListeners());
+    this.players.forEach(player => {
+      player.inputManagers.forEach(manager => manager.removeAllListeners());
+    });
   }
 }
 

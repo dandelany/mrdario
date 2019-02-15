@@ -7,7 +7,7 @@ import {
   isEmpty, isDestroyed, isPillLeft, isPillTop, isPillSegment, isVirus, isPillVertical,
   getCellNeighbors, canMoveCell, deltaRowCol, findLines, findWidows
 } from './grid';
-import {makePillLeft, makePillRight, makeDestroyed, emptyObject} from './generators';
+import {makePillLeft, makePillRight, makePillSegment, makeDestroyed, emptyObject} from './generators';
 
 // Pure functions which perform updates on the
 // Immutable game grid/cell objects, returning the updated objects.
@@ -21,6 +21,7 @@ export function givePill(grid, pillColors) {
   const colI = Math.floor(row.size / 2) - 1;
   const pill = [[rowI, colI], [rowI, colI+1]];
 
+  // check if spaces where we want to put the pill are empty, fail if not
   if(!pill.every(cell => isEmpty(grid.getIn(cell))))
     return {grid, pill, didGive: false};
 
@@ -28,6 +29,17 @@ export function givePill(grid, pillColors) {
   grid = grid.setIn(pill[1], makePillRight(get(pillColors, '1.color')));
 
   return {grid, pill, didGive: true};
+}
+
+export function giveGarbage(grid, colors = []) {
+  // add garbage parts to grid
+  const rowI = 1;
+  colors.slice(0,4).forEach((color, colorI) => {
+    // todo figure out correct places to drop
+    const colI = Math.min(colorI * 2, grid.get(0).size);
+    grid = grid.setIn([rowI, colI], makePillSegment(color));
+  });
+  return {grid};
 }
 
 export function moveCell(grid, cell, direction) {
@@ -178,14 +190,17 @@ export function destroyLines(grid, lines) {
   const hasLines = !!(lines && lines.length);
   let destroyedCount = 0;
   let virusCount = 0;
+  let lineColors = [];
 
   if(hasLines) {
     // count the number of destroyed viruses/cells (for score)
+    // & keep track of their colors
     for(const line of lines) {
       destroyedCount += line.length;
       for(const cell of line) {
         if(isVirus(grid.getIn(cell))) virusCount++;
       }
+      lineColors.push(grid.getIn(line[0]).get('color'));
     }
 
     // set cells in lines to destroyed
@@ -194,7 +209,7 @@ export function destroyLines(grid, lines) {
     grid = setPillSegments(grid, findWidows(grid));
   }
   
-  return {grid, lines, hasLines, destroyedCount, virusCount};
+  return {grid, lines, lineColors, hasLines, destroyedCount, virusCount};
 }
 
 export function removeDestroyed(grid) {

@@ -9,7 +9,7 @@ import InputRepeater from './InputRepeater';
 import {generatePillSequence, emptyGrid, generateEnemies} from './utils/generators';
 import {hasViruses} from './utils/grid';
 import
-  {givePill, movePill, slamPill, rotatePill, dropDebris, flagFallingCells, destroyLines, removeDestroyed, clearTopRow}
+  {givePill, movePill, slamPill, rotatePill, dropDebris, flagFallingCells, destroyLines, removeDestroyed, clearTopRow, giveGarbage}
 from './utils/moves';
 
 
@@ -38,7 +38,9 @@ export default class Game extends EventEmitter {
     // callbacks called when grid changes, game is won, or game is lost
     onChange: _.noop,
     onWin: _.noop,
-    onLose: _.noop
+    onLose: _.noop,
+    // called when player gets a combo (2 or more lines at once/in the same cascade)
+    onCombo: _.noop
   };
 
   // game modes, used by the state machine
@@ -63,12 +65,14 @@ export default class Game extends EventEmitter {
   static modeTransitions = [
     {name: 'loaded', from: Game.modes.LOADING, to: Game.modes.READY},
     {name: 'play', from: Game.modes.READY, to: Game.modes.PLAYING},
-    {name: 'reconcile', from: [Game.modes.PLAYING, Game.modes.CASCADE], to: Game.modes.RECONCILE},
+    {name: 'reconcile', from: [Game.modes.PLAYING, Game.modes.CASCADE, Game.modes.READY], to: Game.modes.RECONCILE},
     {name: 'destroy', from: Game.modes.RECONCILE, to: Game.modes.DESTRUCTION},
     {name: 'cascade', from: [Game.modes.RECONCILE, Game.modes.DESTRUCTION], to: Game.modes.CASCADE},
     {name: 'ready', from: Game.modes.CASCADE, to: Game.modes.READY},
-    {name: 'win', from: Game.modes.RECONCILE, to: Game.modes.ENDED},
-    {name: 'lose', from: Game.modes.READY, to: Game.modes.ENDED},
+    // single player games can only win from RECONCILE, but multiplayer games can win at any time (if other player dies)
+    {name: 'win', from: '*', to: Game.modes.ENDED},
+    // single player games can only lose from READY, but multiplayer games can lose at any time (if other player wins)
+    {name: 'lose', from: '*', to: Game.modes.ENDED},
     {name: 'reset', from: '*', to: Game.modes.LOADING}
   ];
   
@@ -112,6 +116,9 @@ export default class Game extends EventEmitter {
     // input repeater, takes raw inputs and repeats them if they are held down
     // returns the real sequence of moves used by the game
     this.inputRepeater = new InputRepeater();
+
+    // queue of "garbage" colors to be added to the game on next READY state (from multiplayer game controller)
+    this.garbageQueue = [];
   }
 
   _initModeMachine() {
@@ -170,6 +177,12 @@ export default class Game extends EventEmitter {
     return shouldReconcile;
   }
 
+  addGarbage(colors) {
+    // game controller can call this method to add "garbage" to the game (aka "drop")
+    // (ie. in response to a combo from another player)
+    this.garbageQueue.push(colors);
+  }
+
   tick(inputQueue) {
     // always handle move inputs, key can be released in any mode
     const moveQueue = this.inputRepeater.tick(inputQueue);
@@ -199,7 +212,23 @@ export default class Game extends EventEmitter {
   }
 
   _tickReady() {
+    // call onCombo if we made at least 2 lines in the last cascade
+    if(this.cascadeLineCount >= 2) {
+      this.onCombo(this.cascadeLineColors);
+    }
     this.cascadeLineCount = 0;
+    this.cascadeLineColors = [];
+
+    // if we have garbage in the queue, it gets added & dropped before we get a new pill
+    if(this.garbageQueue.length) {
+      const garbageColors = this.garbageQueue.shift();
+      const {grid} = giveGarbage(this.grid, garbageColors);
+      Object.assign(this, {grid});
+
+      // reconcile the grid to check for lines & cascade the garbage
+      this.modeMachine.reconcile();
+      return;
+    }
 
     // try to add a new pill
     const {pillCount} = this.counters;
@@ -252,11 +281,12 @@ export default class Game extends EventEmitter {
 
     // playfield is locked, check for same-color lines
     // setting them to destroyed if they are found
-    const {grid, lines, hasLines, destroyedCount, virusCount} = destroyLines(this.grid);
+    const {grid, lines, lineColors, hasLines, destroyedCount, virusCount} = destroyLines(this.grid);
     this.grid = grid;
 
     if(hasLines)  {
       this.cascadeLineCount += lines.length;
+      this.cascadeLineColors = (this.cascadeLineColors || []).concat(lineColors);
       this.score +=
         (Math.pow(destroyedCount, this.cascadeLineCount) * 5) +
         (Math.pow(virusCount, this.cascadeLineCount) * 3 * 5);
