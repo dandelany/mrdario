@@ -37,7 +37,7 @@ class GameBot {
   }
 }
 
-(async function main() {
+async function makeBot() {
   const bot = new GameBot();
   await bot.connect();
   await bot.joinLobby();
@@ -45,4 +45,14 @@ class GameBot {
   setInterval(() => {
     bot.sendChat();
   }, 6000);
+  return bot;
+}
+
+(async function main() {
+  // let bots = [];
+  for(let i = 0; i < 10; i++) {
+    await makeBot();
+    // bots.push(bot);
+  }
+
 })();
