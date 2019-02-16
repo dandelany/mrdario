@@ -2,7 +2,7 @@ import { EventEmitter } from "events";
 import { defaults, includes, noop } from "lodash";
 import { TypeState } from "typestate";
 
-import { InputRepeater, InputRepeaterState, MovingCounters } from "./InputRepeater";
+import { InputRepeater, MovingCounters } from "./InputRepeater";
 
 import {
   ACCELERATE_INTERVAL,
@@ -61,18 +61,18 @@ export type EncodableGameOptions = Omit<GameOptions, "onWin" | "onLose">;
 
 export interface GameState {
   mode: GameMode;
-  movingCounters: MovingCounters;
   grid: GameGrid;
   pill?: PillLocation;
   nextPill: PillColors;
+  movingCounters: MovingCounters;
   seed: string;
   frame: number;
   gameTicks: number;
   modeTicks: number;
   pillCount: number;
-  comboLineCount: number;
   score: number;
   timeBonus: number;
+  comboLineCount: number;
 }
 
 // options that can be passed to control game parameters
@@ -122,13 +122,7 @@ export class Game extends EventEmitter {
     const options: GameOptions = defaults({}, passedOptions, defaultGameOptions);
     this.options = options;
 
-    this.seed =
-      options.initialSeed ||
-      Date.now()
-        .toString()
-        .split("")
-        .reverse()
-        .join("");
+    this.seed = options.initialSeed || Date.now().toString();
     // this.seed = "mrdario";
 
     this.nextPill = getNextPill(this.seed, this.pillCount);
@@ -171,13 +165,10 @@ export class Game extends EventEmitter {
   }
 
   public getState(): GameState {
-    const { grid, pill, nextPill, frame, seed, score, timeBonus } = this;
-    const { pillCount, gameTicks, modeTicks, comboLineCount } = this;
-    // const { onWin, onLose, ...stateOptions } = options;
     const mode: GameMode = this.fsm.currentState;
-    const inputRepeaterState: InputRepeaterState = this.inputRepeater.getState();
-    const { movingCounters } = inputRepeaterState;
-
+    const { movingCounters } = this.inputRepeater.getState();
+    const { grid, pill, nextPill, seed, frame, gameTicks, modeTicks } = this;
+    const { pillCount, score, timeBonus, comboLineCount } = this;
     return {
       mode,
       grid,
@@ -186,20 +177,39 @@ export class Game extends EventEmitter {
       movingCounters,
       seed,
       frame,
-      score,
-      timeBonus,
-      pillCount,
       gameTicks,
       modeTicks,
+      pillCount,
+      score,
+      timeBonus,
       comboLineCount
-      // options: stateOptions
-      // todo input queue and input repeater
     };
   }
+  public setState(state: GameState) {
+    // reset state machine mode
+    delete this.fsm;
+    this.fsm = this.initStateMachine(state.mode);
+    // set input repeater state
+    this.inputRepeater.setState({
+      movingCounters: state.movingCounters
+    });
+    // assign all remaining state values to `this`
+    this.grid = state.grid;
+    this.pill = state.pill;
+    this.nextPill = state.nextPill;
+    this.seed = state.seed;
+    this.frame = state.frame;
+    this.gameTicks = state.gameTicks;
+    this.modeTicks = state.modeTicks;
+    this.pillCount = state.pillCount;
+    this.score = state.score;
+    this.timeBonus = state.timeBonus;
+    this.comboLineCount = state.comboLineCount;
+  }
 
-  protected initStateMachine(): TypeState.FiniteStateMachine<GameMode> {
+  protected initStateMachine(initialMode: GameMode = GameMode.Ready): TypeState.FiniteStateMachine<GameMode> {
     // create state machine to keep track of current game mode
-    const fsm = new TypeState.FiniteStateMachine<GameMode>(GameMode.Ready);
+    const fsm = new TypeState.FiniteStateMachine<GameMode>(initialMode);
 
     // game modes, used by the state machine
     // Ready: pre-playing state, todo: use this to populate viruses slowly?
@@ -416,8 +426,8 @@ export class Game extends EventEmitter {
           input === GameInput.Down
             ? GridDirection.Down
             : input === GameInput.Left
-            ? GridDirection.Left
-            : GridDirection.Right;
+              ? GridDirection.Left
+              : GridDirection.Right;
 
         const moved = movePill(this.grid, this.pill, direction);
         grid = moved.grid;

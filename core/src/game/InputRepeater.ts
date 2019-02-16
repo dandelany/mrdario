@@ -22,7 +22,9 @@ export class InputRepeater implements InputRepeaterState {
     const { movingCounters } = this;
     return { movingCounters };
   }
-  // public setState() {}
+  public setState(state: InputRepeaterState) {
+    this.movingCounters = state.movingCounters;
+  }
 
   public tick(inputQueue: MoveInputEvent[] = []): GameInputMove[] {
     const { movingCounters } = this;

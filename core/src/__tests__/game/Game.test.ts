@@ -1,6 +1,5 @@
-import { decodeGrid } from "../../encoding";
-import { Game, GameOptions, GameState } from "../../game";
-import { GameColor, GameInputMove, GameMode } from "../../game";
+import { decodeGrid, encodeGrid } from "../../encoding";
+import { Game, GameColor, GameInput, GameInputMove, GameMode, GameOptions, GameState } from "../../game";
 
 /*
 Y = Destroyed
@@ -153,6 +152,76 @@ describe("Game", () => {
         NFFNXXFX
       `),
       nextPill: [GameColor.Color1, GameColor.Color2]
+    });
+  });
+
+  test("setState() sets Game state", () => {
+    const game = new Game(getMockGameOptions());
+    game.tick();
+    const nextState: GameState = {
+      mode: GameMode.Playing,
+      movingCounters: new Map<GameInputMove, number>([[GameInput.Right, 7]]),
+      grid: decodeGrid(`gh,8:
+        XXXXXXXX
+        XXXXXXXX
+        XXXXXXXX
+        XXXXXXXX
+        XXXXXXXX
+        XXXXXXXX
+        XXXXXXXX
+        XXXXXXXX
+        XOXXXXXX
+        XUXXXXXX
+        XXXXXXXX
+        XVFXXFVX
+        XXXXXXXX
+        XXXNNXXX
+        VXXXXXXV
+        XVXXXXVX
+        XXFFFFXX
+      `),
+      pill: [[8, 1], [9, 1]],
+      nextPill: [GameColor.Color3, GameColor.Color2],
+      seed: "kerbal",
+      frame: 551,
+      score: 8763,
+      timeBonus: 22,
+      gameTicks: 527,
+      modeTicks: 36,
+      pillCount: 13,
+      comboLineCount: 0
+    };
+    game.setState(nextState);
+    expect(game.getState()).toEqual(nextState);
+    game.tick();
+    game.tick();
+
+    console.log(encodeGrid(game.getState().grid, true));
+    expect(game.getState()).toEqual({
+      ...nextState,
+      frame: 553,
+      gameTicks: 529,
+      pill: [[9, 2], [10, 2]],
+      modeTicks: 0,
+      grid: decodeGrid(`gh,8:
+        XXXXXXXX
+        XXXXXXXX
+        XXXXXXXX
+        XXXXXXXX
+        XXXXXXXX
+        XXXXXXXX
+        XXXXXXXX
+        XXXXXXXX
+        XXXXXXXX
+        XXOXXXXX
+        XXUXXXXX
+        XVFXXFVX
+        XXXXXXXX
+        XXXNNXXX
+        VXXXXXXV
+        XVXXXXVX
+        XXFFFFXX
+      `)
     });
   });
 

@@ -23,8 +23,8 @@ export const BASE_SPEED_TABLE: SpeedTable = {
 export const INPUT_REPEAT_INTERVALS: MoveInputNumberMap = {
   [GameInput.Up]: 24,
   [GameInput.Down]: 4,
-  [GameInput.Left]: 6,
-  [GameInput.Right]: 6,
+  [GameInput.Left]: 8,
+  [GameInput.Right]: 8,
   [GameInput.RotateCCW]: 12,
   [GameInput.RotateCW]: 12
 };
