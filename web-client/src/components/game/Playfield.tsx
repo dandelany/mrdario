@@ -1,9 +1,9 @@
-// import * as _ from "lodash";
 import * as React from "react";
-import { GameGrid } from "mrdario-core/src/game/types";
 import * as Pixi from "pixi.js";
 import * as particles from "pixi-particles";
-// import * as filters from "pixi-filters";
+
+import { GameGrid, GameGridRow, GridObjectPillHalfType, GridObjectType, MaybeGridObject } from "mrdario-core";
+import { hasColor, isDestroyed, isPillHalf } from "mrdario-core/lib/game/utils";
 
 import * as virusOrange from "@/svg2/virus_orange.svg";
 import * as virusPurple from "@/svg2/virus_purple.svg";
@@ -17,12 +17,6 @@ import * as pillSegmentGreen from "@/svg2/pill_segment_green.svg";
 import * as destroyed from "@/svg2/destroyed.svg";
 import * as particle from "@/img/Pixel25px.png";
 
-import { GameGridRow, GridObjectPillHalfType, GridObjectType, MaybeGridObject } from "mrdario-core";
-import { hasColor, isDestroyed, isPillHalf } from "mrdario-core/lib/game/utils";
-// import makeReactSvg from "@/utils/makeReactSvg";
-
-// import PillPart from "./PillPart";
-// import * as destroyed from "!raw-loader!@/svg2/destroyed.svg";
 
 type SpriteGrid = (Pixi.Sprite | null)[][];
 
@@ -54,8 +48,8 @@ const particlesConfig = {
   },
   color: {
     start: "#d44646",
-    end: "#d44646"
-    // "end": "#ffffff"
+    // end: "#d44646"
+    "end": "#ffffff"
   },
   speed: {
     start: 1800,
@@ -82,8 +76,8 @@ const particlesConfig = {
   },
   blendMode: "normal",
   frequency: 0.001,
-  emitterLifetime: 0.1,
-  maxParticles: 40,
+  emitterLifetime: 1,
+  maxParticles: 400,
   pos: {
     x: 0,
     y: 0
@@ -94,6 +88,7 @@ const particlesConfig = {
   particleSpacing: 0,
   angleStart: 0
 };
+
 
 export interface PlayfieldProps {
   cellSize: number;

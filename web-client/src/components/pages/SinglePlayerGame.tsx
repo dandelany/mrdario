@@ -15,17 +15,16 @@ import { LobbyResponse, GameScoreResponse } from "mrdario-core/lib/api/types";
 
 import { GameRouteParams } from "@/types";
 
-// import Playfield from "@/components/game/Playfield";
-import Playfield from "@/components/game/PlayfieldPixi";
+import Playfield from "@/components/game/Playfield";
 import PillPreviewPanel from "@/components/game/PillPreviewPanel";
 import WonOverlay from "@/components/overlays/WonOverlay";
 import LostOverlay from "@/components/overlays/LostOverlay";
 import responsiveGame from "@/components/responsiveGame";
-import { ExplosionField } from "@/components/game/ExplosionField";
 
 function getName() {
   return window.localStorage ? window.localStorage.getItem("mrdario-name") || "Anonymous" : "Anonymous";
 }
+
 
 export interface SinglePlayerGameProps extends RouteComponentProps<GameRouteParams> {
   cellSize: number;
@@ -151,7 +150,7 @@ class SinglePlayerGame extends React.Component<SinglePlayerGameProps, SinglePlay
         const { gameState } = gameControllerState;
         const { grid, nextPill, score, timeBonus } = gameState;
         if (Math.PI === 1) console.log(encodeGameState(gameState));
-        // console.log(encodeGameState(gameState));
+        console.log(encodeGameState(gameState));
         this.setState({
           mode: gameControllerState.mode,
           grid,
@@ -246,7 +245,6 @@ class SinglePlayerGame extends React.Component<SinglePlayerGameProps, SinglePlay
           />
           <LostOverlay params={params} style={lostOverlayStyle} />
           {grid ? <Playfield grid={grid} cellSize={cellSize} /> : ""}
-          {grid ? <ExplosionField grid={grid} cellSize={cellSize} /> : null}
         </div>
 
         {score !== undefined ? (
