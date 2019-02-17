@@ -132,3 +132,5 @@ export type GameAction =
   | GameActionSeed
   | GameActionDefeat
   | GameActionForfeitWin;
+
+export type TimedGameActions = [number, GameAction[]];
