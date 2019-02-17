@@ -142,15 +142,19 @@ class SinglePlayerGame extends React.Component<SinglePlayerGameProps, SinglePlay
     // create new game controller that will run the game
     // and update component state whenever game state changes to re-render
     this.game = new LocalWebGameController({
-      level,
-      speed,
+      gameOptions: {
+        level,
+        baseSpeed: speed,
+        initialSeed: "help"
+
+      },
       // inputManagers: [this.keyManager, this.touchManager, this.gamepadManager],
       inputManagers: [this.keyManager, this.touchManager],
       render: (gameControllerState: GameControllerState) => {
         const { gameState } = gameControllerState;
         const { grid, nextPill, score, timeBonus } = gameState;
         if (Math.PI === 1) console.log(encodeGameState(gameState));
-        console.log(encodeGameState(gameState));
+        // console.log(encodeGameState(gameState));
         this.setState({
           mode: gameControllerState.mode,
           grid,
@@ -158,6 +162,7 @@ class SinglePlayerGame extends React.Component<SinglePlayerGameProps, SinglePlay
           score,
           timeBonus
         });
+        this.game.replayHistory();
       },
       onChangeMode: (fromMode: GameControllerMode, toMode: GameControllerMode) => {
         console.log("onchangemode", fromMode, toMode);
@@ -171,6 +176,7 @@ class SinglePlayerGame extends React.Component<SinglePlayerGameProps, SinglePlay
     });
     this.game.play();
   }
+
 
   _handleWin = () => {
     if (this.state.score !== undefined) {

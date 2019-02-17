@@ -1,5 +1,5 @@
 import { GameInput, InputEventType } from "../enums";
-import { GameState } from "../Game";
+import { GameOptions, GameState } from "../Game";
 import { ModeKeyBindings } from "../types";
 
 export enum GameControllerMode {
@@ -17,13 +17,10 @@ export interface GameControllerState {
 }
 
 export interface GameControllerOptions {
+  gameOptions: Partial<GameOptions>;
   inputManagers: InputManager[];
   render: (state: GameControllerState, dt?: number) => any;
   onChangeMode: (fromMode: GameControllerMode, toMode: GameControllerMode) => any;
-  level: number;
-  speed: number;
-  height: number;
-  width: number;
   fps: number;
   slow: number;
 }

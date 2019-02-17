@@ -5,6 +5,15 @@ import { GameInput } from "../enums";
 import { GameControllerMode, GameControllerOptions, KeyBindings } from "./types";
 
 export const DEFAULT_GAME_CONTROLLER_OPTIONS: GameControllerOptions = {
+  gameOptions: {
+    // current virus level (generally 1-20)
+    level: 0,
+    // pill fall speed
+    baseSpeed: 15,
+    // width and height of the playfield grid, in grid units
+    height: PLAYFIELD_HEIGHT,
+    width: PLAYFIELD_WIDTH,
+  },
   // list of input managers, eg. of keyboard, touch events
   // these are event emitters that fire on every user game input (move)
   // moves are queued and fed into the game to control it
@@ -14,13 +23,6 @@ export const DEFAULT_GAME_CONTROLLER_OPTIONS: GameControllerOptions = {
   render: noop,
   // callback called when state machine mode changes
   onChangeMode: noop,
-  // current virus level (generally 1-20)
-  level: 0,
-  // pill fall speed
-  speed: 15,
-  // width and height of the playfield grid, in grid units
-  height: PLAYFIELD_HEIGHT,
-  width: PLAYFIELD_WIDTH,
   // frames (this.tick/render calls) per second
   fps: 60,
   // slow motion factor, to simulate faster/slower gameplay for debugging

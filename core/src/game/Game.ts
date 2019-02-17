@@ -14,12 +14,13 @@ import {
   PLAYFIELD_WIDTH
 } from "./constants";
 import {
+  GameAction,
+  GameActionMove,
   GameGrid,
   GameInput,
   GameInputMove,
   GameMode,
   GridDirection,
-  MoveInputEvent,
   PillColors,
   PillLocation,
   RotateDirection
@@ -33,6 +34,7 @@ import {
   getNextPill,
   givePill,
   hasViruses,
+  isMoveAction,
   isPillLocation,
   makeEmptyGrid,
   movePill,
@@ -106,7 +108,7 @@ export class Game extends EventEmitter {
   protected nextPill: PillColors;
   protected seed: string;
   // current frame #
-  protected frame: number = 0;
+  public frame: number = 0;
   // counters, used to count # of frames we've been in a particular state
   protected gameTicks: number = 0;
   protected modeTicks: number = 0;
@@ -141,10 +143,10 @@ export class Game extends EventEmitter {
     this.inputRepeater = new InputRepeater();
   }
 
-  public tick(inputQueue: MoveInputEvent[] = []) {
+  public tick(actions: GameAction[] = []) {
     this.frame++;
-    // always handle move inputs, key can be released in any mode
-    const moveQueue: GameInputMove[] = this.inputRepeater.tick(inputQueue);
+    const moveActions: GameActionMove[] = actions.filter(isMoveAction);
+    const moveQueue: GameInputMove[] = this.inputRepeater.tick(moveActions);
 
     // the main game loop, called once per game tick
     switch (this.fsm.currentState) {

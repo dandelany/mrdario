@@ -96,3 +96,39 @@ export interface MoveInputEvent {
   input: GameInputMove;
   eventType: InputEventType;
 }
+
+// game action types
+// GameActions represent events from the "outside world" which affect game state
+// these include our player's move inputs, as well as actions caused by other players
+export enum GameActionType {
+  Move = "Move",
+  Garbage = "Garbage",
+  Seed = "Seed",
+  Defeat = "Defeat",
+  ForfeitWin = "ForfeitWin"
+}
+export interface GameActionMove {
+  type: GameActionType.Move;
+  input: GameInputMove;
+  eventType: InputEventType;
+}
+export interface GameActionGarbage {
+  type: GameActionType.Garbage;
+  colors: GameColor[];
+}
+export interface GameActionSeed {
+  type: GameActionType.Seed;
+  seed: string;
+}
+export interface GameActionDefeat {
+  type: GameActionType.Defeat;
+}
+export interface GameActionForfeitWin {
+  type: GameActionType.ForfeitWin;
+}
+export type GameAction =
+  | GameActionMove
+  | GameActionGarbage
+  | GameActionSeed
+  | GameActionDefeat
+  | GameActionForfeitWin;

@@ -1,7 +1,9 @@
 import { GameControllerMode } from "../../types";
-import { AbstractGameController } from "../AbstractGameController";
+// import { AbstractGameController } from "../AbstractGameController";
+import { GameControllerWithHistory } from "../GameControllerWithHistory";
 
-export class LocalWebGameController extends AbstractGameController {
+// export class LocalWebGameController extends AbstractGameController {
+export class LocalWebGameController extends GameControllerWithHistory {
   public run() {
     // called when gameplay starts, to initialize the game loop
     this.dt = 0;

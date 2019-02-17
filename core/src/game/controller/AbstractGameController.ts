@@ -1,9 +1,9 @@
 import { defaults } from "lodash";
 import { TypeState } from "typestate";
 
-import { Game } from "../Game";
+import { defaultGameOptions, Game, GameOptions } from "../Game";
 
-import { GameInput, GameInputMove, InputEventType, MoveInputEvent } from "../types";
+import { GameActionMove, GameActionType, GameInput, GameInputMove, InputEventType, MoveInputEvent } from "../types";
 import { DEFAULT_GAME_CONTROLLER_OPTIONS } from "./constants";
 
 import { GameControllerMode, GameControllerOptions, GameControllerState, InputManager } from "./types";
@@ -17,6 +17,7 @@ export const defaultOptions = DEFAULT_GAME_CONTROLLER_OPTIONS;
 
 export abstract class AbstractGameController {
   public options: GameControllerOptions;
+  public gameOptions: GameOptions;
   public step: number;
   public slowStep: number;
   public dt: number = 0;
@@ -28,6 +29,12 @@ export abstract class AbstractGameController {
   constructor(passedOptions: Partial<GameControllerOptions> = {}) {
     const options: GameControllerOptions = defaults({}, passedOptions, defaultOptions);
     this.options = options;
+
+    console.log(options.gameOptions);
+    const gameOptions: GameOptions = defaults({}, options.gameOptions, defaultGameOptions);
+    // ensure the game seed is always the same
+    if(!gameOptions.initialSeed) gameOptions.initialSeed = Date.now().toString();
+    this.gameOptions = gameOptions;
 
     // a finite state machine representing game controller mode, & transitions between modes
     this.fsm = this.initStateMachine();
@@ -55,7 +62,11 @@ export abstract class AbstractGameController {
   public tickGame() {
     // tick the game, sending current queue of moves
     // const start = performance.now();
-    this.game.tick(this.moveInputQueue);
+    // todo have inputmanagers return actions instead of MoveInputEvents
+    const actions = this.moveInputQueue.map((inputEvent: MoveInputEvent): GameActionMove => {
+      return {type: GameActionType.Move, ...inputEvent};
+    });
+    this.game.tick(actions);
     // const took = performance.now() - start;
     // if(took > 1) console.log('game tick took ', took);
     this.moveInputQueue = [];
@@ -121,12 +132,8 @@ export abstract class AbstractGameController {
   }
 
   protected initGame(): Game {
-    const { width, height, level, speed } = this.options;
     return new Game({
-      width,
-      height,
-      level,
-      baseSpeed: speed,
+      ...this.gameOptions,
       onWin: () => {
         this.fsm.go(GameControllerMode.Won);
       },

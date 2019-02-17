@@ -1,4 +1,5 @@
 import {
+  GameAction, GameActionMove, GameActionType,
   GameColor,
   GridObject,
   GridObjectDestroyed,
@@ -67,4 +68,8 @@ export function isPillPart(obj: MaybeGridObject): obj is GridObjectPillPart {
 }
 export function isPillLocation(obj: PillLocation | undefined | null): obj is PillLocation {
   return !!obj;
+}
+
+export function isMoveAction(action: GameAction): action is GameActionMove {
+  return action.type === GameActionType.Move;
 }

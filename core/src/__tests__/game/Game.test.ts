@@ -1,4 +1,4 @@
-import { decodeGrid, encodeGrid } from "../../encoding";
+import { decodeGrid } from "../../encoding";
 import { Game, GameColor, GameInput, GameInputMove, GameMode, GameOptions, GameState } from "../../game";
 
 /*
@@ -196,7 +196,6 @@ describe("Game", () => {
     game.tick();
     game.tick();
 
-    console.log(encodeGrid(game.getState().grid, true));
     expect(game.getState()).toEqual({
       ...nextState,
       frame: 553,

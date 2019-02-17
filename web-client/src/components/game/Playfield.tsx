@@ -77,7 +77,7 @@ const particlesConfig = {
   blendMode: "normal",
   frequency: 0.001,
   emitterLifetime: 1,
-  maxParticles: 400,
+  maxParticles: 40,
   pos: {
     x: 0,
     y: 0

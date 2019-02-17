@@ -1,5 +1,5 @@
 import { INPUT_REPEAT_INTERVALS } from "./constants";
-import { GameInputMove, InputEventType, MoveInputEvent, MoveInputNumberMap } from "./types";
+import { GameActionMove, GameInputMove, InputEventType, MoveInputNumberMap } from "./types";
 
 export type MovingCounters = Map<GameInputMove, number>;
 export interface InputRepeaterState {
@@ -20,18 +20,18 @@ export class InputRepeater implements InputRepeaterState {
   }
   public getState(): InputRepeaterState {
     const { movingCounters } = this;
-    return { movingCounters };
+    return { movingCounters: new Map(movingCounters) };
   }
   public setState(state: InputRepeaterState) {
     this.movingCounters = state.movingCounters;
   }
 
-  public tick(inputQueue: MoveInputEvent[] = []): GameInputMove[] {
+  public tick(inputQueue: GameActionMove[] = []): GameInputMove[] {
     const { movingCounters } = this;
     const moveQueue: GameInputMove[] = [];
 
     // increment moving counters (for moves which are being held down)
-    for(let entry of movingCounters.entries()) {
+    for (let entry of movingCounters.entries()) {
       const [key, count] = entry;
       movingCounters.set(key, count + 1);
     }
@@ -49,8 +49,8 @@ export class InputRepeater implements InputRepeaterState {
     }
 
     // find inputs which have been held down long enough to repeat
-    for(const [input, count] of movingCounters.entries()) {
-      if(count >= repeatIntervals[input]) {
+    for (const [input, count] of movingCounters.entries()) {
+      if (count >= repeatIntervals[input]) {
         // push the new move to the moveQueue and reset its counter
         moveQueue.push(input);
         movingCounters.set(input, 0);
