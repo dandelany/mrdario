@@ -1,12 +1,8 @@
-import { getSingleHighScores, handleSingleScore } from "../utils/score";
+import { getSingleHighScores, handleSingleScore, SingleScoreDataObj } from "./highScoresStore";
 import { RedisClient } from "redis";
 import { SCServerSocket } from "socketcluster-server";
-import { logHighScore } from "../utils/log";
+import { logWithTime } from "../../utils/log";
 import { HighScoresResponse } from "mrdario-core/lib/api/types";
-
-// type HighScoresResponder =
-//   | ((error: Error, data: null) => any)
-//   | ((error: null, data: HighScoresResponse) => any);
 
 export class HighScoresModule {
   rClient: RedisClient;
@@ -41,4 +37,12 @@ export class HighScoresModule {
       });
     });
   }
+}
+
+export function logHighScore(scoreInfo: SingleScoreDataObj, rank: number): void {
+  logWithTime(
+    `${scoreInfo.name} won on level ${scoreInfo.level}! Score: ${scoreInfo.score} (high score #${rank + 1})`,
+    // bell character to wake up anyone tailing the logs :)
+    "\u0007"
+  );
 }

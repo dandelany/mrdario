@@ -1,5 +1,6 @@
 import { AbstractGameController } from "./AbstractGameController";
 import {
+  GameAction,
   GameActionMove,
   GameActionType,
   GameControllerOptions,
@@ -25,19 +26,28 @@ export abstract class GameControllerWithHistory extends AbstractGameController {
   }
 
   public tickGame() {
-    // tick the game, sending current queue of moves
+    // tick the game to the next frame, applying any relevant actions from inputs or future queue
+
+    // get actions from moveInputQueue (from inputManagers)
     // todo have inputmanagers return actions instead of MoveInputEvents
-    const actions = this.moveInputQueue.map(
+    let actions: GameAction[] = this.moveInputQueue.map(
       (inputEvent: MoveInputEvent): GameActionMove => {
         return { type: GameActionType.Move, ...inputEvent };
       }
     );
+    // check if there are actions in futureActions that are supposed to happen on next frame
+    if(this.futureActions.length && this.futureActions[0][0] === this.game.frame + 1) {
+      // combine actions from inputs and futureActions for next tick
+      actions = [...actions, ...this.futureActions[0][1]];
+      // remove applied actions from futureActions
+      this.futureActions.shift();
+    }
     this.game.tick(actions);
 
     if (actions.length) {
-      const actionHistoryItem: TimedGameActions = [this.game.frame, actions];
-      console.log("history item", actionHistoryItem);
-      this.actionHistory.push(actionHistoryItem);
+      const frameActions: TimedGameActions = [this.game.frame, actions];
+      console.log("history item", frameActions);
+      this.actionHistory.push(frameActions);
       // todo still need to cloneDeep?
       this.stateHistory.push(cloneDeep(this.game.getState()));
 

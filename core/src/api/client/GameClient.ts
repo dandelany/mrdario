@@ -6,24 +6,23 @@ import {
   GameScoreRequest,
   GameScoreResponse,
   HighScoresResponse,
-  LobbyChatMessageIn,
-  LobbyChatMessageOut,
-  LobbyMessage,
-  LobbyMessageType,
-  LobbyResponse,
-  LobbyUser,
   LoginRequest,
   TClientAuthenticatedUser,
   TGameScoreResponse,
-  THighScoresResponse,
-  TLobbyMessage,
-  TLobbyResponse
-} from "../types";
+  THighScoresResponse} from "../types";
 
 import * as t from "io-ts";
 import { partialRight, remove, uniqBy } from "lodash";
 import { encodeGrid } from "../../encoding";
 import { GameGrid } from "../../game";
+import {
+  LobbyChatMessageIn,
+  LobbyChatMessageOut,
+  LobbyMessage,
+  LobbyMessageType,
+  LobbyResponse, LobbyUser,
+  TLobbyMessage, TLobbyResponse
+} from "../types/lobby";
 
 // import { SCChannelOptions } from "sc-channel";
 

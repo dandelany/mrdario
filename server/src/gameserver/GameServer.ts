@@ -1,26 +1,26 @@
-import { RedisClient } from "redis";
 import { SCServer, SCServerSocket } from "socketcluster-server";
-// import { truncate } from "lodash";
+import { SCChannel } from "sc-channel";
+import { RedisClient } from "redis";
 import uuid from "uuid/v4";
 import { hash } from "tweetnacl";
 import hashUtil from "tweetnacl-util";
 
-import { getClientIpAddress, socketInfoStr } from "./utils";
-import { SCChannel } from "sc-channel";
 import {
+  AppAuthToken,
   ClientAuthenticatedUser,
-  LobbyChatMessageOut,
-  LobbyJoinMessage,
-  LobbyLeaveMessage,
-  LobbyMessageType,
-  LobbyResponse,
+  hasAuthToken,
+  hasValidAuthToken,
+  isAuthToken,
   LoginRequest,
-  ServerUser,
-  TLobbyMessage
+  ServerUser
 } from "mrdario-core/lib/api/types";
+
+import { EventHandlersObj, getClientIpAddress, socketInfoStr } from "./utils";
 import { logWithTime } from "./utils/log";
-import { HighScoresModule } from "./modules/HighScoresModule";
-import { AppAuthToken, hasAuthToken, hasValidAuthToken, isAuthToken } from "mrdario-core/lib/api/types/auth";
+
+import { HighScoresModule } from "./modules/highScores";
+import { LobbyModule } from "./modules/lobby";
+// import {} from "./modules/Lo"
 
 type GameListItem = {
   creator: string;
@@ -32,15 +32,7 @@ type GameListItem = {
 // todo put this in redis where appropriate?
 type ServerUsers = { [K in string]: ServerUser };
 
-type ServerLobbyUser = {
-  name: string;
-  id: string;
-  joined: number;
-  sockets: string[];
-};
-
 interface GameServerState {
-  lobby: { [K in string]: ServerLobbyUser };
   games: { [K in string]: GameListItem };
   channels: { [K in string]: SCChannel };
   users: ServerUsers;
@@ -66,25 +58,9 @@ function authenticateUser(id: string, token: string, users: ServerUsers) {
   return tokenHash === serverUser.tokenHash;
 }
 
-// const LOBBY_NAME = 'mrdario-lobby';
-type SocketEventHandlers = { [K in string]: () => void };
 interface ConnectionState {
   game?: string;
-  lobbyHandlers: SocketEventHandlers;
-}
-
-function bindSocketHandlers(socket: SCServerSocket, handlers: { [k in string]: () => void }) {
-  for (let eventType of Object.keys(handlers)) {
-    //@ts-ignore
-    socket.on(eventType, handlers[eventType]);
-  }
-}
-
-function unbindSocketHandlers(socket: SCServerSocket, handlers: { [k in string]: () => void }) {
-  for (let eventType of Object.keys(handlers)) {
-    socket.off(eventType, handlers[eventType]);
-    delete handlers[eventType];
-  }
+  lobbyHandlers: EventHandlersObj;
 }
 
 export class GameServer {
@@ -93,75 +69,21 @@ export class GameServer {
   // todo store in redis?
   state: GameServerState;
   highScores: HighScoresModule;
+  lobby: LobbyModule;
 
   constructor(scServer: SCServer, rClient: RedisClient) {
     this.scServer = scServer;
     this.rClient = rClient;
     this.state = {
-      lobby: {},
       games: {},
       channels: {},
       users: {}
     };
+    // initialize modules - the parts which actually handle requests and do things
     this.highScores = new HighScoresModule(rClient);
-
-    scServer.addMiddleware(
-      scServer.MIDDLEWARE_PUBLISH_IN,
-      (req: SCServer.PublishInRequest, next: SCServer.nextMiddlewareFunction) => {
-        if (req.channel === "mrdario-lobby") {
-          if (!hasAuthToken(req.socket)) {
-            next(new Error("Invalid LobbyMessage"));
-            return;
-          }
-          const decoded = TLobbyMessage.decode(req.data);
-          if (decoded.isRight()) {
-            console.log("it was a good message");
-            const value = decoded.value;
-            if (value.type === LobbyMessageType.ChatIn) {
-              const outMessage: LobbyChatMessageOut = {
-                ...value,
-                type: LobbyMessageType.ChatOut,
-                userName: (req.socket.authToken as AppAuthToken).name
-              };
-              req.data = outMessage;
-            }
-            next();
-          } else {
-            next(new Error("Invalid LobbyMessage"));
-          }
-        } else {
-          next();
-        }
-      }
-    );
+    this.lobby = new LobbyModule(scServer);
 
     scServer.on("connection", this.handleConnect);
-  }
-
-  protected leaveLobby(socket: SCServerSocket): void {
-    const { lobby } = this.state;
-    if (hasAuthToken(socket)) {
-      const { authToken } = socket;
-      const { id: userId, name } = authToken;
-      if (authToken.id in lobby) {
-        const user: ServerLobbyUser = lobby[userId];
-        const sockets: string[] = user.sockets;
-        const index = sockets.indexOf(socket.id);
-        if (index >= 0) {
-          sockets.splice(index, 1);
-        }
-        if (sockets.length === 0) {
-          delete lobby[userId];
-          const message: LobbyLeaveMessage = {
-            type: LobbyMessageType.Leave,
-            payload: { name: user.name, id: user.id, joined: user.joined }
-          };
-          this.scServer.exchange.publish("mrdario-lobby", message, () => {});
-          logWithTime(`${name} left the lobby`);
-          console.table(lobby);
-        }
-      }
-    }
   }
 
   protected handleConnect = (socket: SCServerSocket) => {
@@ -171,6 +93,7 @@ export class GameServer {
     logWithTime("Connected: ", getClientIpAddress(socket));
 
     this.highScores.handleConnect(socket);
+    this.lobby.handleConnect(socket);
 
     if (hasAuthToken(socket)) {
       // revoke auth token if badly formatted, or if user is not in users collection
@@ -237,83 +160,6 @@ export class GameServer {
         console.table(Object.values(this.state.users));
       }
     );
-
-    // @ts-ignore
-    socket.on("leaveLobby", (_data: null, respond: (err: Error | null, data: null) => any) => {
-      if (hasValidAuthToken(socket)) {
-        let error = null;
-        if (socket.authToken.id in this.state.lobby) {
-          this.leaveLobby(socket);
-        } else {
-          error = new Error("You are not in the lobby");
-        }
-        unbindSocketHandlers(socket, connectionState.lobbyHandlers);
-        respond(error, null);
-      }
-    });
-
-    // @ts-ignore
-    socket.on("joinLobby", (data: null, respond: (err: Error | null, data: Lobby | null) => any) => {
-      if (hasValidAuthToken(socket)) {
-        const userId = socket.authToken.id;
-        const name = socket.authToken.name;
-
-        if (userId in this.state.lobby) {
-          // user already in lobby
-          const lobbyUser = this.state.lobby[userId];
-          if (lobbyUser.sockets.indexOf(socket.id) >= 0) {
-            logWithTime(`${name} tried to re-join the lobby on the same socket`);
-            // todo dont return error?
-            respond(new Error("You are already in the lobby"), null);
-            return;
-          } else {
-            // add socket to existing lobby user
-            lobbyUser.sockets.push(socket.id);
-            logWithTime(`${name} joined the lobby in another socket`);
-          }
-        } else {
-          // user not in lobby - join
-          const lobbyUser: ServerLobbyUser = {
-            name,
-            id: userId,
-            joined: Date.now(),
-            sockets: [socket.id]
-          };
-          this.state.lobby[userId] = lobbyUser;
-          const message: LobbyJoinMessage = {
-            type: LobbyMessageType.Join,
-            payload: { name: name, id: userId, joined: lobbyUser.joined }
-          };
-          this.scServer.exchange.publish("mrdario-lobby", message, () => {});
-          logWithTime(`${socket.authToken.name} joined the lobby`);
-        }
-
-        //shouldn't have any, but unbind old handlers to be safe
-        unbindSocketHandlers(socket, connectionState.lobbyHandlers);
-        connectionState.lobbyHandlers = {
-          disconnect: () => {
-            this.leaveLobby(socket);
-          },
-          authenticate: () => {
-            // if user authenticates as a new user, old user should leave lobby
-            // todo new user should re-enter lobby too?
-            logWithTime(`${name} reauthenticated as ${socket.authToken.name} - removing ${name} from lobby`);
-            this.leaveLobby(socket);
-          }
-        };
-        bindSocketHandlers(socket, connectionState.lobbyHandlers);
-
-        const lobbyUsers: LobbyResponse = Object.values(this.state.lobby).map((user: ServerLobbyUser) => {
-          const { id, name, joined } = user;
-          return { id, name, joined };
-        });
-        console.table(this.state.lobby);
-
-        respond(null, lobbyUsers);
-      } else {
-        respond(new Error("User is not authenticated - login first"), null);
-      }
-    });
 
     type CreateSimpleGameRequest = [number, number];
     // @ts-ignore

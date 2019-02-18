@@ -1,7 +1,7 @@
 const _ = require("lodash");
-// var redis = require('redis');
-
 import { RedisClient } from "redis";
+import {isArray, isFinite} from "lodash";
+
 
 type SingleScoreDataRow = [number, string, number];
 export interface SingleScoreDataObj {
@@ -27,13 +27,13 @@ function getHighScoreNameKey(name: string): string {
 }
 
 export function handleSingleScore(rClient: RedisClient, data: any, callback: SingleScoreCallback) {
-  if (!_.isArray(data) || data.length != 3) return;
+  if (!isArray(data) || data.length != 3) return;
   const row = data as SingleScoreDataRow;
   const level = row[0];
   const name = row[1];
   const score = row[2];
-  if (!_.isFinite(level) || level >= 50 || level < 0) return;
-  if (!_.isFinite(score) || score < 0) return;
+  if (!isFinite(level) || level >= 50 || level < 0) return;
+  if (!isFinite(score) || score < 0) return;
 
   const nameKey: string = getHighScoreNameKey(name);
 
