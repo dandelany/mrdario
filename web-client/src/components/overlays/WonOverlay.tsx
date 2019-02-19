@@ -2,7 +2,7 @@ import * as React from "react";
 import { Link } from "react-router-dom";
 
 import MayaNumeral from "@/components/ui/MayaNumeral";
-import { GameRouteParams } from "@/types";
+import { GameOptions } from "mrdario-core";
 
 type HighScores = Array<[string, number]>;
 
@@ -59,13 +59,14 @@ interface WonOverlayProps {
   highScores?: HighScores;
   rank?: number;
   style?: object;
-  params: GameRouteParams;
+  gameOptions?: Partial<GameOptions>;
 }
 
 const WonOverlay: React.FunctionComponent<WonOverlayProps> = props => {
-  const { style, params, score, timeBonus, highScores, rank } = props;
-  const level = parseInt(params.level) || 0;
-  const speed = parseInt(params.speed) || 0;
+  const { style, score, timeBonus, highScores, rank } = props;
+  const gameOptions = props.gameOptions || {};
+  const level = gameOptions.level || 0;
+  const speed = gameOptions.baseSpeed || 0;
   const nextLevelPath = `/game/level/${level + 1}/speed/${speed}`;
 
   return (
@@ -97,3 +98,4 @@ const WonOverlay: React.FunctionComponent<WonOverlayProps> = props => {
 };
 
 export default WonOverlay;
+

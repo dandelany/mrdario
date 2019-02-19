@@ -1,0 +1,23 @@
+.mirrorGame {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  top: 0;
+  left: 0;
+
+  .gameDisplayContainer {
+    position: absolute;
+    height: 100%;
+    width: 50%;
+    top: 0;
+    &.left {
+      left: 0;
+      background-color: rgba(233,233,4,0.4);
+    }
+    &.right {
+      right: 0;
+      background-color: rgba(233,3,4,0.4);
+    }
+  }
+
+}

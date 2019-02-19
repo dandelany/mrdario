@@ -2,18 +2,20 @@ import * as React from "react";
 import { Link } from "react-router-dom";
 
 import MayaNumeral from "@/components/ui/MayaNumeral";
-import { GameRouteParams } from "@/types";
+import { GameOptions } from "mrdario-core";
 
 interface LostOverlayProps {
   style?: object;
-  params: GameRouteParams;
+  gameOptions?: Partial<GameOptions>
+  onResetGame?: () => void;
 }
 
 const LostOverlay: React.FunctionComponent<LostOverlayProps> = props => {
-  const { style, params } = props;
-  const level = parseInt(params.level) || 0;
-  const speed = parseInt(params.speed) || 0;
-  const thisLevelPath = `/game/level/${level}/speed/${speed}`;
+  const { style } = props;
+  const gameOptions = props.gameOptions || {};
+  const level = gameOptions.level || 0;
+  // const speed = gameOptions.baseSpeed || 0;
+  // const thisLevelPath = `/game/level/${level}/speed/${speed}`;
 
   return (
     <div className="game-overlay" style={style}>
@@ -23,14 +25,12 @@ const LostOverlay: React.FunctionComponent<LostOverlayProps> = props => {
       </div>
 
       <div>
-        <Link to={thisLevelPath}>
-          <span className="btn-white">
+          <span className="btn-white" onClick={props.onResetGame}>
             <div className="btn-maya-numeral" style={{ marginBottom: 10 }}>
               <MayaNumeral value={level} size={20} />
             </div>
             Try Again
           </span>
-        </Link>
       </div>
       <div>
         <Link to="/">

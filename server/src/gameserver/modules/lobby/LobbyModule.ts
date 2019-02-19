@@ -50,7 +50,6 @@ export class LobbyModule {
           }
           const decoded = TLobbyMessage.decode(req.data);
           if (decoded.isRight()) {
-            console.log("it was a good message");
             const value = decoded.value;
             if (value.type === LobbyMessageType.ChatIn) {
               const outMessage: LobbyChatMessageOut = {
@@ -59,6 +58,7 @@ export class LobbyModule {
                 userName: (req.socket.authToken as AppAuthToken).name
               };
               req.data = outMessage;
+              logWithTime(`${outMessage.userName}: ${value.payload}`);
             }
             next();
           } else {

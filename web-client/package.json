@@ -17,6 +17,7 @@
     "release": "yarn run format && yarn run lint && yarn run build"
   },
   "dependencies": {
+    "classnames": "^2.2.6",
     "d3-random": "^1.1.2",
     "es6-promisify": "^6.0.1",
     "lodash": "^4.17.11",
@@ -26,9 +27,11 @@
     "pixi.js": "^4.8.5",
     "rc-slider": "^8.6.4",
     "react": "^16.7.0",
+    "react-container-dimensions": "^1.4.1",
     "react-dom": "^16.7.0",
     "react-redux": "^6.0.0",
     "react-router-dom": "^4.3.1",
+    "react-spring": "^8.0.7",
     "redux": "^4.0.1",
     "redux-thunk": "^2.3.0",
     "socketcluster-client": "^14.2.1"
@@ -38,6 +41,7 @@
     "@babel/core": "^7.2.2",
     "@babel/preset-env": "^7.3.0",
     "@babel/preset-react": "^7.0.0",
+    "@types/classnames": "^2.2.7",
     "@types/d3-random": "^1.1.1",
     "@types/es6-promisify": "^6.0.0",
     "@types/jest": "^24.0.5",

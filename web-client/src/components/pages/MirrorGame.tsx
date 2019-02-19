@@ -1,6 +1,8 @@
 import * as React from "react";
 import * as _ from "lodash";
 import { RouteComponentProps, withRouter } from "react-router-dom";
+import * as cx from "classnames";
+
 import shallowEqual from "@/utils/shallowEqual";
 
 import { DEFAULT_KEYS } from "mrdario-core/lib/game/controller/constants";
@@ -18,11 +20,13 @@ import responsiveGame from "@/components/responsiveGame";
 import { ResponsiveGameDisplay } from "@/components/game/GameDisplay";
 import { GameOptions } from "mrdario-core";
 
+const styles = require("./MirrorGame.module.scss");
+
 function getName() {
   return window.localStorage ? window.localStorage.getItem("mrdario-name") || "Anonymous" : "Anonymous";
 }
 
-export interface SinglePlayerGameProps extends RouteComponentProps<GameRouteParams> {
+export interface MirrorGameProps extends RouteComponentProps<GameRouteParams> {
   cellSize: number;
   heightPercent: number;
   padding: number;
@@ -30,7 +34,7 @@ export interface SinglePlayerGameProps extends RouteComponentProps<GameRoutePara
   onChangeMode?: (mode: GameControllerMode) => any;
 }
 
-export interface SinglePlayerGameState {
+export interface MirrorGameState {
   mode?: GameControllerMode;
   grid?: GameGrid;
   nextPill?: PillColors;
@@ -45,14 +49,14 @@ export interface SinglePlayerGameState {
   gameOptions?: Partial<GameOptions> & { level: number; baseSpeed: number };
 }
 
-class SinglePlayerGame extends React.Component<SinglePlayerGameProps, SinglePlayerGameState> {
+class MirrorGame extends React.Component<MirrorGameProps, MirrorGameState> {
   static defaultProps = {
     cellSize: 32,
     heightPercent: 0.85,
     padding: 15
   };
 
-  state: SinglePlayerGameState = {};
+  state: MirrorGameState = {};
 
   game?: any;
   keyManager?: KeyManager;
@@ -68,7 +72,7 @@ class SinglePlayerGame extends React.Component<SinglePlayerGameProps, SinglePlay
     if (this.game && this.game.cleanup) this.game.cleanup();
   }
 
-  componentWillReceiveProps(newProps: SinglePlayerGameProps) {
+  componentWillReceiveProps(newProps: MirrorGameProps) {
     const params: GameRouteParams = this.props.match.params;
     const nextParams: GameRouteParams = newProps.match.params;
 
@@ -84,7 +88,7 @@ class SinglePlayerGame extends React.Component<SinglePlayerGameProps, SinglePlay
     }
   }
 
-  shouldComponentUpdate(newProps: SinglePlayerGameProps, newState: SinglePlayerGameState) {
+  shouldComponentUpdate(newProps: MirrorGameProps, newState: MirrorGameState) {
     const hasChanged =
       !_.every(newState, (value, key) => shallowEqual(value, this.state[key])) ||
       !shallowEqual(newProps, this.props);
@@ -100,14 +104,15 @@ class SinglePlayerGame extends React.Component<SinglePlayerGameProps, SinglePlay
     }
   }
 
-  protected getGameOptions = (props: SinglePlayerGameProps) => {
+  protected getGameOptions = (props: MirrorGameProps) => {
     const { params } = props.match;
     const level = parseInt(params.level) || 0;
     const baseSpeed = parseInt(params.speed) || 15;
     return { level, baseSpeed };
   };
 
-  _initGame = (props: SinglePlayerGameProps) => {
+  _initGame = (props: MirrorGameProps) => {
+
     if (this.game && this.game.cleanup) this.game.cleanup();
 
     const { gameClient } = props;
@@ -211,23 +216,51 @@ class SinglePlayerGame extends React.Component<SinglePlayerGameProps, SinglePlay
     const { grid, nextPill, score, timeBonus, mode /*pendingMode*/ } = this.state;
 
     return (
-      <div className="game-display-container">
-        {/*{pendingMode && pendingMode !== params.mode ? (*/}
-        {/*// if game has been won or lost, redirect to the proper URL*/}
-        {/*<Redirect push to={`/game/level/${params.level}/speed/${params.speed}/${pendingMode}`} />*/}
-        {/*) : null}*/}
-        <ResponsiveGameDisplay
-          grid={grid}
-          mode={mode}
-          nextPill={nextPill}
-          score={score}
-          timeBonus={timeBonus}
-          gameOptions={this.state.gameOptions}
-          onResetGame={this.resetGame}
-        />
+      <div className={styles.mirrorGame}>
+        <div className={cx(styles.gameDisplayContainer, styles.left)}>
+          <ResponsiveGameDisplay
+            grid={grid}
+            mode={mode}
+            nextPill={nextPill}
+            score={score}
+            timeBonus={timeBonus}
+            gameOptions={this.state.gameOptions}
+            onResetGame={this.resetGame}
+          />
+        </div>
+        <div className={cx(styles.gameDisplayContainer, styles.right)}>
+          <ResponsiveGameDisplay
+            grid={grid}
+            mode={mode}
+            nextPill={nextPill}
+            score={score}
+            timeBonus={timeBonus}
+            gameOptions={this.state.gameOptions}
+            onResetGame={this.resetGame}
+          />
+        </div>
+
       </div>
-    );
+    )
+
+    // return (
+    //   <div className="game-display-container">
+    //     {/*{pendingMode && pendingMode !== params.mode ? (*/}
+    //     {/*// if game has been won or lost, redirect to the proper URL*/}
+    //     {/*<Redirect push to={`/game/level/${params.level}/speed/${params.speed}/${pendingMode}`} />*/}
+    //     {/*) : null}*/}
+    //     <ResponsiveGameDisplay
+    //       grid={grid}
+    //       mode={mode}
+    //       nextPill={nextPill}
+    //       score={score}
+    //       timeBonus={timeBonus}
+    //       gameOptions={this.state.gameOptions}
+    //       onResetGame={this.resetGame}
+    //     />
+    //   </div>
+    // );
   }
 }
 
-export default withRouter(responsiveGame(SinglePlayerGame));
+export default withRouter(responsiveGame(MirrorGame));

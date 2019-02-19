@@ -5,8 +5,6 @@ import * as particles from "pixi-particles";
 import { GameGrid, GameGridRow, GridObjectPillHalfType, GridObjectType, MaybeGridObject } from "mrdario-core";
 import { hasColor, isDestroyed, isPillHalf } from "mrdario-core/lib/game/utils";
 
-const styles = require("./Playfield.module.scss");
-
 import * as virusOrange from "@/svg2/virus_orange.svg";
 import * as virusPurple from "@/svg2/virus_purple.svg";
 import * as virusGreen from "@/svg2/virus_green.svg";
@@ -94,13 +92,12 @@ const particlesConfig = {
 
 export interface PlayfieldProps {
   cellSize: number;
-  padding: number;
   grid: GameGrid;
+
 }
 export default class Playfield extends React.Component<PlayfieldProps> {
   static defaultProps = {
-    cellSize: 36,
-    padding: 0
+    cellSize: 36
   };
 
   protected canvasRef: React.RefObject<HTMLCanvasElement>;
@@ -124,10 +121,10 @@ export default class Playfield extends React.Component<PlayfieldProps> {
   protected getSpriteForGridObject(
     obj: MaybeGridObject,
     rowIndex: number,
-    colIndex: number,
-    cellSize: number
+    colIndex: number
   ): Pixi.Sprite | null {
     if (!obj || obj.type === GridObjectType.Empty) return null;
+    const { cellSize } = this.props;
     let sprite = null;
     if (hasColor) {
       if (obj.type === GridObjectType.Virus) {
@@ -145,8 +142,8 @@ export default class Playfield extends React.Component<PlayfieldProps> {
       sprite.height = cellSize;
       sprite.anchor.x = 0.5;
       sprite.anchor.y = 0.5;
-      sprite.position.x = Math.floor(colIndex * cellSize + cellSize * 0.5);
-      sprite.position.y = Math.floor(rowIndex * cellSize + cellSize * 0.5);
+      sprite.position.x = Math.floor(colIndex * this.props.cellSize + cellSize * 0.5);
+      sprite.position.y = Math.floor(rowIndex * this.props.cellSize + cellSize * 0.5);
 
       if (isPillHalf(obj)) {
         sprite.rotation = pillHalfRotations[obj.type];
@@ -162,19 +159,12 @@ export default class Playfield extends React.Component<PlayfieldProps> {
 
     if (!pixiApp) return;
 
-    if(nextProps.cellSize !== this.props.cellSize) {
-      const { width, height } = this._getSize(nextProps);
-      console.log('resizing to ', width, height);
-      pixiApp.renderer.resize(width, height);
-    }
-
-    if (!this.spriteGrid || !this.lastGrid || nextProps.cellSize !== this.props.cellSize) {
-      console.log('removing children...', nextProps.cellSize);
+    if (!this.spriteGrid || !this.lastGrid) {
       pixiApp.stage.removeChildren();
       this.lastGrid = grid;
       this.spriteGrid = grid.map((row: GameGridRow, rowIndex: number) => {
         return row.map((obj: MaybeGridObject, colIndex) => {
-          const sprite = this.getSpriteForGridObject(obj, rowIndex, colIndex, nextProps.cellSize);
+          const sprite = this.getSpriteForGridObject(obj, rowIndex, colIndex);
           if (sprite) {
             pixiApp.stage.addChild(sprite);
           }
@@ -194,7 +184,7 @@ export default class Playfield extends React.Component<PlayfieldProps> {
           if (gridObj === lastGridRow[colIndex]) continue;
           const lastSprite = this.spriteGrid[rowIndex][colIndex];
           if (lastSprite) lastSprite.destroy();
-          const sprite = this.getSpriteForGridObject(gridObj, rowIndex, colIndex, nextProps.cellSize);
+          const sprite = this.getSpriteForGridObject(gridObj, rowIndex, colIndex);
           if (sprite) {
             pixiApp.stage.addChild(sprite);
           }
@@ -231,12 +221,21 @@ export default class Playfield extends React.Component<PlayfieldProps> {
       this.lastGrid = grid;
       pixiApp.render();
     }
+
+    // if(!this.lastGrid || grid !== this.lastGrid) {
+    //   for(var v of this.virusTextures) {
+    //     const s = new Pixi.Sprite(v);
+    //     s.position.x = Math.random() * 300;
+    //     s.position.y = Math.random() * 300;
+    //     if(this.pixiApp)
+    //       this.pixiApp.stage.addChild(s);
+    //   }
+    // }
   }
   componentDidUpdate() {}
 
-  shouldComponentUpdate(nextProps: PlayfieldProps) {
-    // return false;
-    return nextProps.cellSize !== this.props.cellSize;
+  shouldComponentUpdate() {
+    return false;
   }
   // shouldComponentUpdate(newProps: PlayfieldProps) {
   //   return !shallowEqual(newProps, this.props);
@@ -253,8 +252,7 @@ export default class Playfield extends React.Component<PlayfieldProps> {
         height,
         // transparent: true,
         resolution: 2,
-        backgroundColor: 0xd2cfca,
-        autoResize: true
+        backgroundColor: 0xd2cfca
       });
       this.pixiApp = app;
 
@@ -268,45 +266,37 @@ export default class Playfield extends React.Component<PlayfieldProps> {
     requestAnimationFrame(this.updateEmitter);
   }
 
-  _getSize = (props = this.props) => {
-    const grid = props.grid;
+  _getSize = () => {
+    const grid = this.props.grid;
     // first row of grid is "true" top row which is out of play and should be rendered above the playfield
 
     const numRows = grid.length;
     const numCols = grid[0].length;
-    const cellSize = props.cellSize;
+    const cellSize = this.props.cellSize;
     const width = numCols * cellSize;
     const height = numRows * cellSize;
     return { width, height };
-  };
+  }
 
   render() {
-    const {cellSize} = this.props;
-    const {width, height} = this._getSize();
+    const grid = this.props.grid;
+    // first row of grid is "true" top row which is out of play and should be rendered above the playfield
+
+    const numRows = grid.length;
+    const numCols = grid[0].length;
+    const cellSize = this.props.cellSize;
+    const width = numCols * cellSize;
+    const height = numRows * cellSize;
 
     // translate svg up by one row to account for out-of-sight true top row
-    // const style = { width, height, transform: `translate(0, ${-this.props.cellSize}px)` };
+    // const style = { width, height, transform: `translate(0, ${-cellSize}px)` };
     const style = {
       width,
-      height,
-      transform: `translate(0, ${-this.props.cellSize}px)`
+      height
     } as React.CSSProperties;
 
-    // props.padding is a % of the grid cell size - convert to pixels
-    const padding = Math.floor(cellSize * this.props.padding);
-    const containerStyle = {
-      padding,
-      borderRadius: cellSize * 0.75,
-      width: width + padding * 2,
-      height: (height + padding * 2) - (cellSize)
-    };
-
-    // todo use real device pixel ratio
     return (
-      <div className={styles.playfieldContainer} style={containerStyle}>
-        <canvas width={width * 2} height={height * 2} style={style} ref={this.canvasRef} />
-      </div>
+      <canvas className="playfield-pixi" width={width} height={height} style={style} ref={this.canvasRef} />
     );
   }
 }
-

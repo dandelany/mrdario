@@ -9,6 +9,7 @@ import SinglePlayerGame from "@/components/pages/SinglePlayerGame";
 import HighScores from "@/components/pages/HighScores";
 import LoginPage from "@/components/pages/LoginPage";
 import { LobbyPage } from "@/components/pages/LobbyPage";
+import MirrorGame from "@/components/pages/MirrorGame";
 
 type ComponentClassOrFunction = React.ComponentClass<any> | React.FunctionComponent<any>;
 
@@ -38,6 +39,11 @@ export default [
     path="/game/level/:level/speed/:speed/:mode?"
     key="single-player-game"
     component={SinglePlayerGame}
+  />,
+  <PropsRoute
+    path="/mirror/level/:level/speed/:speed/:mode?"
+    key="mirror-game"
+    component={MirrorGame}
   />,
   <PropsRoute path="/settings" key="settings" component={GameSettings} />,
   <PropsRoute path="/login" key="login" component={LoginPage} />,
