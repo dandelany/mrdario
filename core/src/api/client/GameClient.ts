@@ -3,26 +3,29 @@ import { PathReporter } from "io-ts/lib/PathReporter";
 import { create as createSocket, SCClientSocket } from "socketcluster-client";
 import {
   ClientAuthenticatedUser,
+  GameListItem,
   GameScoreRequest,
   GameScoreResponse,
   HighScoresResponse,
-  LoginRequest,
-  TClientAuthenticatedUser,
-  TGameScoreResponse,
-  THighScoresResponse} from "../types";
-
-import * as t from "io-ts";
-import { partialRight, remove, uniqBy } from "lodash";
-import { encodeGrid } from "../../encoding";
-import { GameGrid } from "../../game";
-import {
   LobbyChatMessageIn,
   LobbyChatMessageOut,
   LobbyMessage,
   LobbyMessageType,
-  LobbyResponse, LobbyUser,
-  TLobbyMessage, TLobbyResponse
-} from "../types/lobby";
+  LobbyResponse,
+  LobbyUser,
+  LoginRequest,
+  TClientAuthenticatedUser,
+  TGameScoreResponse,
+  THighScoresResponse,
+  TLobbyMessage,
+  TLobbyResponse
+} from "../types";
+
+import * as t from "io-ts";
+import { partialRight, remove, uniqBy } from "lodash";
+import { encodeGrid } from "../../encoding";
+import { GameGrid, TimedGameActions } from "../../game";
+import { decodeTimedActions, encodeTimedActions } from "../../encoding/action";
 
 // import { SCChannelOptions } from "sc-channel";
 
@@ -219,12 +222,13 @@ export class GameClient {
   }
 
   public createSimpleGame(level: number, speed: number) {
-    return new Promise<string>((resolve, reject) => {
-      this.socket.emit("createSimpleGame", [level, speed], (err: Error, gameId: string) => {
+    return new Promise<GameListItem>((resolve, reject) => {
+      this.socket.emit("createSimpleGame", [level, speed], (err: Error, game: GameListItem) => {
         if (err) {
           reject(err);
         }
-        resolve(gameId);
+        resolve(game);
+
       });
     });
   }
@@ -233,6 +237,18 @@ export class GameClient {
     const encodedGrid = encodeGrid(grid);
     this.socket.publish(`game-${gameId}`, encodedGrid);
   }
+  public publishSimpleGameActions(gameId: string, timedActions: TimedGameActions) {
+    const encodedActions = encodeTimedActions(timedActions);
+    this.socket.publish(`game-${gameId}`, encodedActions);
+  }
+
+  public watchSimpleGameMoves(gameId: string, handleMoves?: (actions: TimedGameActions) => void) {
+    const gameChannel = this.socket.subscribe(`game-${gameId}`);
+    gameChannel.watch((data: string) => {
+      if(handleMoves) handleMoves(decodeTimedActions(data));
+    })
+  }
+
 
   public ping(): Promise<number> {
     const start = performance.now();

@@ -134,3 +134,4 @@ export type GameAction =
   | GameActionForfeitWin;
 
 export type TimedGameActions = [number, GameAction[]];
+export type TimedMoveActions = [number, GameActionMove[]];

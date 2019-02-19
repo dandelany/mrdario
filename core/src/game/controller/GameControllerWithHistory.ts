@@ -5,24 +5,32 @@ import {
   GameActionType,
   GameControllerOptions,
   MoveInputEvent,
-  TimedGameActions
+  TimedGameActions,
+  TimedMoveActions
 } from "../types";
 import { Game, GameOptions, GameState } from "../Game";
 import { cloneDeep, findIndex, findLast, findLastIndex, isEqual, isFunction, omitBy } from "lodash";
 import { encodeTimedActions } from "../../encoding/action";
 
+type GameControllerWithHistoryOptions = {
+  onMoveActions?: (timedMoveActions: TimedMoveActions) => void;
+} & GameControllerOptions;
+
 export abstract class GameControllerWithHistory extends AbstractGameController {
-  protected actionHistory: TimedGameActions[];
   public futureActions: TimedGameActions[];
+  protected actionHistory: TimedGameActions[];
   protected stateHistory: GameState[];
   protected initialGameState: GameState;
+  protected handleMoveActions?: (moveActions: TimedMoveActions) => void;
 
-  constructor(passedOptions: Partial<GameControllerOptions> = {}) {
+  constructor(passedOptions: Partial<GameControllerWithHistoryOptions> = {}) {
     super(passedOptions);
+    this.handleMoveActions = passedOptions.onMoveActions;
     this.actionHistory = [];
     this.futureActions = [];
-    this.stateHistory = [];
+
     this.initialGameState = this.game.getState();
+    this.stateHistory = [this.initialGameState];
   }
 
   public tickGame() {
@@ -30,13 +38,25 @@ export abstract class GameControllerWithHistory extends AbstractGameController {
 
     // get actions from moveInputQueue (from inputManagers)
     // todo have inputmanagers return actions instead of MoveInputEvents
-    let actions: GameAction[] = this.moveInputQueue.map(
+    // let actions: GameAction[] = this.moveInputQueue.map(
+    //   (inputEvent: MoveInputEvent): GameActionMove => {
+    //     return { type: GameActionType.Move, ...inputEvent };
+    //   }
+    // );
+
+    const moveActions: GameActionMove[] = this.moveInputQueue.map(
       (inputEvent: MoveInputEvent): GameActionMove => {
         return { type: GameActionType.Move, ...inputEvent };
       }
     );
+    // call the handleMoveActions callback - this is what will send the moves to the server
+    if (moveActions.length && this.handleMoveActions) {
+      this.handleMoveActions([this.game.frame + 1, moveActions]);
+    }
+
+    let actions: GameAction[] = moveActions;
     // check if there are actions in futureActions that are supposed to happen on next frame
-    if(this.futureActions.length && this.futureActions[0][0] === this.game.frame + 1) {
+    if (this.futureActions.length && this.futureActions[0][0] === this.game.frame + 1) {
       // combine actions from inputs and futureActions for next tick
       actions = [...actions, ...this.futureActions[0][1]];
       // remove applied actions from futureActions

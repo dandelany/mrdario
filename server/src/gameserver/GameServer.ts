@@ -10,16 +10,8 @@ import { HighScoresModule } from "./modules/highScores";
 import { LobbyModule } from "./modules/lobby";
 import { AuthModule } from "./modules/auth";
 import { hasValidAuthToken } from "mrdario-core/lib/api/types";
+import { GameListItem } from "mrdario-core/lib/api/types";
 
-type GameListItem = {
-  id: string;
-  creator: string;
-  seed: string;
-  level: number;
-  speed: number;
-  // players?
-
-};
 
 // in-memory state, for now...
 // todo put this in redis where appropriate?
@@ -47,7 +39,7 @@ export class GameServer {
     this.rClient = rClient;
     this.state = {
       games: {},
-      channels: {},
+      channels: {}
     };
 
     // modules - the parts which actually handle requests and do things
@@ -66,7 +58,6 @@ export class GameServer {
     this.highScores.handleConnect(socket);
     this.lobby.handleConnect(socket);
     this.auth.handleConnect(socket);
-
 
     socket.on("disconnect", () => {
       // temporary - remove below
@@ -87,47 +78,48 @@ export class GameServer {
     });
 
     type CreateSimpleGameRequest = [number, number];
-    // @ts-ignore
-    socket.on("createSimpleGame", (data: CreateSimpleGameRequest, respond) => {
-      if (hasValidAuthToken(socket)) {
-        const userId = socket.authToken.id;
-        // const name = socket.authToken.name;
 
-        try {
-          // const seed =
-          const gameListItem: GameListItem = {
-            id: uuid().slice(-10),
-            seed: uuid().slice(-10),
-            level: data[0],
-            speed: data[1],
-            creator: userId
-          };
-          const gameId = uuid().slice(-10);
+    socket.on(
+      // @ts-ignore
+      "createSimpleGame",
+      (data: CreateSimpleGameRequest, respond: (err: Error | null, game: GameListItem | null) => void) => {
+        if (hasValidAuthToken(socket)) {
+          const userId = socket.authToken.id;
+          // const name = socket.authToken.name;
 
-          this.state.games[gameId] = gameListItem;
-          connectionState.game = gameId;
+          try {
+            // const seed =
+            const gameListItem: GameListItem = {
+              id: uuid().slice(-10),
+              initialSeed: uuid().slice(-10),
+              level: data[0],
+              speed: data[1],
+              creator: userId
+            };
+            const gameId = uuid().slice(-10);
 
-          console.log("created game", gameId, gameListItem);
+            this.state.games[gameId] = gameListItem;
+            connectionState.game = gameId;
 
-          const channelId = `game-${gameId}`;
-          const channel = socket.exchange.subscribe(channelId);
-          this.state.channels[channelId] = channel;
+            console.log("created game", gameId, gameListItem);
 
-          channel.watch(data => {
-            console.log(data);
-          });
+            const channelId = `game-${gameId}`;
+            const channel = socket.exchange.subscribe(channelId);
+            this.state.channels[channelId] = channel;
 
-          respond(null, gameId);
-        } catch (e) {
-          respond(e);
+            channel.watch(data => {
+              console.log(data);
+            });
+
+            respond(null, gameListItem);
+          } catch (e) {
+            respond(e, null);
+          }
+        } else {
+          respond(new Error("User is not authenticated - login first"), null);
         }
-      } else {
-        respond(new Error("User is not authenticated - login first"), null);
       }
-
-
-
-    });
+    );
 
     //@ts-ignore
     socket.on("ping", (data, res) => {

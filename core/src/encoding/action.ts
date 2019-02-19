@@ -1,11 +1,17 @@
+import * as invariant from "invariant";
+
 import { GameAction, GameActionMove, GameActionType, TimedGameActions } from "../game";
-import { encodeMoveInputEvent } from "./move";
-import { encodeInt } from "./game";
+import { decodeMoveInputEvent, encodeMoveInputEvent } from "./move";
+import { decodeInt, encodeInt } from "./game";
 import { isMoveAction } from "../game/utils";
 
 export type ActionTypeEncodingMap = { [I in GameActionType]: string };
 
-export const actionTypeEncodingMap: ActionTypeEncodingMap = {
+export type EncodedMoveAction = string;
+export type EncodedAction = EncodedMoveAction | string;
+export type EncodedTimedActions = string;
+
+export const actionTypeCodes: ActionTypeEncodingMap = {
   [GameActionType.Move]: "M",
   [GameActionType.Garbage]: "G",
   [GameActionType.Seed]: "S",
@@ -13,10 +19,16 @@ export const actionTypeEncodingMap: ActionTypeEncodingMap = {
   [GameActionType.ForfeitWin]: "W"
 };
 
-export function encodeMoveAction(action: GameActionMove) {
-  const { eventType, input } = action;
-  const encodedEvent = encodeMoveInputEvent({ eventType, input });
-  return `M${encodedEvent}`;
+export function encodeMoveAction(action: GameActionMove): EncodedMoveAction {
+  const { input, eventType } = action;
+  return `${actionTypeCodes[GameActionType.Move]}${encodeMoveInputEvent({ input, eventType })}`;
+}
+export function decodeMoveAction(encodedAction: EncodedMoveAction): GameActionMove {
+  const {input, eventType} = decodeMoveInputEvent(encodedAction.slice(1));
+  return {type: GameActionType.Move, input, eventType};
+}
+function isEncodedMoveAction(encodedAction: EncodedAction): encodedAction is EncodedMoveAction {
+  return !!encodedAction.length && encodedAction[0] === actionTypeCodes[GameActionType.Move];
 }
 
 export function encodeAction(action: GameAction) {
@@ -27,9 +39,24 @@ export function encodeAction(action: GameAction) {
     return JSON.stringify(action);
   }
 }
+export function decodeAction(encodedAction: EncodedAction): GameAction {
+  if (isEncodedMoveAction(encodedAction)) {
+    return decodeMoveAction(encodedAction);
+  } else {
+    return JSON.parse(encodedAction);
+  }
+}
 
-export function encodeTimedActions(timedActions: TimedGameActions) {
+export function encodeTimedActions(timedActions: TimedGameActions): EncodedTimedActions {
   const [frame, actions] = timedActions;
   let encodedActions = actions.map(encodeAction);
-  return `${encodeInt(frame)}:${encodedActions.join(',')}`;
+  return `${encodeInt(frame)}:${encodedActions.join("|")}`;
+}
+export function decodeTimedActions(encodedTimedActions: EncodedTimedActions): TimedGameActions {
+  const splitArr = encodedTimedActions.split(':');
+  invariant(splitArr.length === 2, `Invalid EncodedTimedActions: ${encodedTimedActions}`);
+  const frame: number = decodeInt(splitArr[0]);
+  const actionStrings: EncodedAction[] = splitArr[1].split("|");
+  const actions: GameAction[] = actionStrings.map(decodeAction);
+  return [frame, actions];
 }
