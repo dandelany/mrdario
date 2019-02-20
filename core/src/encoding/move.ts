@@ -1,4 +1,4 @@
-import * as invariant from "invariant";
+import invariant from "invariant";
 import { invert } from "lodash";
 
 import { GameInput, GameInputMove, InputEventType, MoveInputEvent } from "../game";

@@ -140,7 +140,8 @@ class MirrorGame extends React.Component<MirrorGameProps, MirrorGameState> {
     const {gameId} = this.state;
     const { gameClient } = props;
     const gameOptions = this.state.gameOptions;
-    if(!gameOptions) return;
+    if(!gameOptions || !gameClient || !gameId) return;
+
 
     // gameClient.createSimpleGame(level, baseSpeed).then((gameId: string) => {
     //   this.setState({ gameId });
@@ -210,17 +211,16 @@ class MirrorGame extends React.Component<MirrorGameProps, MirrorGameState> {
       }
     });
 
-    this.props.gameClient.watchSimpleGameMoves(this.state.gameId, (actions: TimedGameActions) => {
+    this.props.gameClient.watchSimpleGameMoves(gameId, (actions: TimedGameActions) => {
       console.log('got actions from client', actions);
-      this.mirrorGame.addFrameActions(actions);
-
+      if(this.mirrorGame) this.mirrorGame.addFrameActions(actions);
     });
 
 
     this.mirrorGame.play();
 
     setTimeout(() => {
-      this.game.play();
+      if(this.game) this.game.play();
     }, 800);
   };
   protected resetGame = () => {
@@ -311,3 +311,10 @@ class MirrorGame extends React.Component<MirrorGameProps, MirrorGameState> {
 }
 
 export default withRouter(MirrorGame);
+
+const x = () => {
+  const start = performance.now();
+  setTimeout(() => console.log(performance.now() - start), 3000);
+};
+
+setInterval(x, 1000);

@@ -1,6 +1,8 @@
 // import { partial } from "lodash";
 import { PathReporter } from "io-ts/lib/PathReporter";
 import { create as createSocket, SCClientSocket } from "socketcluster-client";
+import SyncClient from "@ircam/sync/client";
+
 import {
   ClientAuthenticatedUser,
   GameListItem,
@@ -49,6 +51,10 @@ export function hasValidAuthToken(socket: SCClientSocket): socket is ClientSocke
   return !!socket.authToken && isAuthToken(socket.authToken);
 }
 
+const getTimeFunction = () => {
+  return performance.now() / 1000;
+};
+
 export interface GameClientOptions {
   socketOptions?: SCClientSocket.ClientOptions;
 
@@ -81,6 +87,7 @@ export interface GameClientOptions {
 export class GameClient {
   public socket: SCClientSocket;
   private lobbyUsers: LobbyResponse;
+  private syncClient: SyncClient;
 
   constructor(options: GameClientOptions = {}) {
     const socket = createSocket({
@@ -88,6 +95,7 @@ export class GameClient {
       ...(options.socketOptions || {}),
       autoConnect: false
     });
+    this.syncClient = new SyncClient(getTimeFunction);
 
     if (options.onConnecting) {
       socket.on("connecting", partialRight(options.onConnecting, socket));
@@ -128,6 +136,37 @@ export class GameClient {
       this.socket.connect();
       this.socket.on("connect", () => {
         console.log("Socket connected - OK");
+
+        const syncSend = (pingId: number, clientPingTime: number) => {
+          // const request = new Float64Array(3);
+          // request[0] = 0; // this is a ping
+          // request[1] = pingId;
+          // request[2] = clientPingTime;
+          const request = [pingId, clientPingTime];
+          console.log(`[ping] - id: ${pingId}, pingTime: ${clientPingTime}`);
+
+          this.socket.emit('sPing', request);
+        };
+
+        const syncReceive: SyncClient.ReceiveFunction = callback => {
+          this.socket.on('sPong', (response: any) => {
+            if(response) {
+              const [pingId, clientPingTime, serverPingTime, serverPongTime] = response;
+
+              console.log(`[pong] - id: %s, clientPingTime: %s, serverPingTime: %s, serverPongTime: %s`,
+                pingId, clientPingTime, serverPingTime, serverPongTime);
+
+              callback(pingId, clientPingTime, serverPingTime, serverPongTime);
+            }
+          });
+        };
+
+        const syncReport: SyncClient.ReportFunction = (report) => {
+          console.log(report);
+        };
+
+        this.syncClient.start(syncSend, syncReceive, syncReport);
+
         resolve(this.socket);
       });
       this.socket.on("error", (err: Error) => {
@@ -239,6 +278,7 @@ export class GameClient {
   }
   public publishSimpleGameActions(gameId: string, timedActions: TimedGameActions) {
     const encodedActions = encodeTimedActions(timedActions);
+    console.log(this.syncClient.getSyncTime());
     this.socket.publish(`game-${gameId}`, encodedActions);
   }
 

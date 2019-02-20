@@ -17,6 +17,7 @@
     "release": "yarn run format && yarn run lint && yarn run build"
   },
   "dependencies": {
+    "@ircam/sync": "^2.0.0",
     "classnames": "^2.2.6",
     "d3-random": "^1.1.2",
     "es6-promisify": "^6.0.1",

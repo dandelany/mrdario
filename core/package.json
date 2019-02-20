@@ -38,6 +38,7 @@
     "typescript": "^3.3.3"
   },
   "dependencies": {
+    "@ircam/sync": "^2.0.0",
     "events": "^3.0.0",
     "gamepad-plus": "^1.0.14",
     "hammerjs": "^2.0.8",

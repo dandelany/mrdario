@@ -19,3 +19,19 @@ function socketInfoStr(socket) {
     return JSON.stringify(getSocketInfo(socket));
 }
 exports.socketInfoStr = socketInfoStr;
+function bindSocketHandlers(socket, handlers) {
+    for (var _i = 0, _a = Object.keys(handlers); _i < _a.length; _i++) {
+        var eventType = _a[_i];
+        //@ts-ignore
+        socket.on(eventType, handlers[eventType]);
+    }
+}
+exports.bindSocketHandlers = bindSocketHandlers;
+function unbindSocketHandlers(socket, handlers) {
+    for (var _i = 0, _a = Object.keys(handlers); _i < _a.length; _i++) {
+        var eventType = _a[_i];
+        socket.off(eventType, handlers[eventType]);
+        delete handlers[eventType];
+    }
+}
+exports.unbindSocketHandlers = unbindSocketHandlers;

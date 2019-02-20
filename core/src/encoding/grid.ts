@@ -1,4 +1,4 @@
-import * as invariant from "invariant";
+import invariant from "invariant";
 
 import { COLORS } from "../game/constants";
 import { GameGrid, GameGridRow, GridObject, GridObjectType } from "../game/types";
