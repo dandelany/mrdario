@@ -142,11 +142,6 @@ class MirrorGame extends React.Component<MirrorGameProps, MirrorGameState> {
     const gameOptions = this.state.gameOptions;
     if(!gameOptions || !gameClient || !gameId) return;
 
-
-    // gameClient.createSimpleGame(level, baseSpeed).then((gameId: string) => {
-    //   this.setState({ gameId });
-    // });
-
     // input managers controlling keyboard and touch events
     this.keyManager = new KeyManager(DEFAULT_KEYS);
     this.touchManager = new SwipeManager();
@@ -219,9 +214,11 @@ class MirrorGame extends React.Component<MirrorGameProps, MirrorGameState> {
 
     this.mirrorGame.play();
 
+    // if(this.game) this.game.play();
+
     setTimeout(() => {
       if(this.game) this.game.play();
-    }, 800);
+    }, 1);
   };
   protected resetGame = () => {
     this._initGame(this.props);
@@ -311,10 +308,3 @@ class MirrorGame extends React.Component<MirrorGameProps, MirrorGameState> {
 }
 
 export default withRouter(MirrorGame);
-
-const x = () => {
-  const start = performance.now();
-  setTimeout(() => console.log(performance.now() - start), 3000);
-};
-
-setInterval(x, 1000);

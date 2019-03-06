@@ -3,10 +3,21 @@ import { TypeState } from "typestate";
 
 import { defaultGameOptions, Game, GameOptions } from "../Game";
 
-import { GameActionMove, GameActionType, GameInput, GameInputMove, InputEventType, MoveInputEvent } from "../types";
+import {
+  GameActionMove,
+  GameActionType,
+  GameControllerMode,
+  GameInput,
+  GameInputMove,
+  GameTickResult,
+  GameTickResultType,
+  InputEventType,
+  MoveInputEvent,
+  GameControllerOptions,
+  GameControllerState,
+  InputManager
+} from "../types";
 import { DEFAULT_GAME_CONTROLLER_OPTIONS } from "./constants";
-
-import { GameControllerMode, GameControllerOptions, GameControllerState, InputManager } from "./types";
 
 // game controller class
 // controls the frame timing and must tick the Game object once per frame
@@ -18,10 +29,7 @@ export const defaultOptions = DEFAULT_GAME_CONTROLLER_OPTIONS;
 export abstract class AbstractGameController {
   public options: GameControllerOptions;
   public gameOptions: GameOptions;
-  public step: number;
-  public slowStep: number;
-  public dt: number = 0;
-  public last: number = 0;
+  public getTime: () => number;
   protected game: Game;
   protected moveInputQueue: MoveInputEvent[];
   protected fsm: TypeState.FiniteStateMachine<GameControllerMode>;
@@ -30,10 +38,9 @@ export abstract class AbstractGameController {
     const options: GameControllerOptions = defaults({}, passedOptions, defaultOptions);
     this.options = options;
 
-    console.log(options.gameOptions);
     const gameOptions: GameOptions = defaults({}, options.gameOptions, defaultGameOptions);
     // ensure the game seed is always the same
-    if(!gameOptions.initialSeed) gameOptions.initialSeed = Date.now().toString();
+    if (!gameOptions.initialSeed) gameOptions.initialSeed = Date.now().toString();
     this.gameOptions = gameOptions;
 
     // a finite state machine representing game controller mode, & transitions between modes
@@ -45,13 +52,11 @@ export abstract class AbstractGameController {
     // queued up move inputs which will processed on the next tick
     this.moveInputQueue = [];
 
-    // time per tick step
-    this.step = 1 / options.fps;
-    // slow motion factor adjusted step time
-    this.slowStep = options.slow * (1 / options.fps);
-
     // attach events from inputmanagers to the game
     this.attachInputEvents();
+
+    // function which gets the current time, for running game clock
+    this.getTime = options.getTime;
   }
   public abstract tick(): void;
 
@@ -59,17 +64,29 @@ export abstract class AbstractGameController {
     this.fsm.go(GameControllerMode.Playing);
   }
 
-  public tickGame() {
+  public tickGame(): void | GameTickResult {
     // tick the game, sending current queue of moves
     // const start = performance.now();
     // todo have inputmanagers return actions instead of MoveInputEvents
-    const actions = this.moveInputQueue.map((inputEvent: MoveInputEvent): GameActionMove => {
-      return {type: GameActionType.Move, ...inputEvent};
-    });
-    this.game.tick(actions);
+    const actions = this.moveInputQueue.map(
+      (inputEvent: MoveInputEvent): GameActionMove => {
+        return { type: GameActionType.Move, ...inputEvent };
+      }
+    );
+    const tickResult: void | GameTickResult = this.game.tick(actions);
+
+    if (tickResult && tickResult.type === GameTickResultType.Win) {
+      this.fsm.go(GameControllerMode.Won);
+    } else if (tickResult && tickResult.type === GameTickResultType.Lose) {
+      this.fsm.go(GameControllerMode.Lost);
+    }
+
     // const took = performance.now() - start;
     // if(took > 1) console.log('game tick took ', took);
     this.moveInputQueue = [];
+
+    if (tickResult) console.log("RESULT", tickResult);
+    return tickResult;
   }
 
   public getState(mode?: GameControllerMode): GameControllerState {
@@ -133,13 +150,7 @@ export abstract class AbstractGameController {
 
   protected initGame(): Game {
     return new Game({
-      ...this.gameOptions,
-      onWin: () => {
-        this.fsm.go(GameControllerMode.Won);
-      },
-      onLose: () => {
-        this.fsm.go(GameControllerMode.Lost);
-      }
+      ...this.gameOptions
     });
   }
 

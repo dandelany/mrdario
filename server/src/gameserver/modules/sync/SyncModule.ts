@@ -7,7 +7,10 @@ export const getTimeFunction = () => {
   return now[0] + now[1] * 1e-9;
 };
 
-// Module which maintains a synchronized clock between
+// Module which maintains a synchronized clock between the client and server
+// using @ircam/sync library
+// todo - be less aggressive, don't send as many messages.
+
 export class SyncModule {
   public syncServer: SyncServer;
   scServer: SCServer;

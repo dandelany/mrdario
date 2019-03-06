@@ -126,9 +126,7 @@ class SinglePlayerGame extends React.Component<SinglePlayerGameProps, SinglePlay
         console.error(err);
       });
 
-    gameClient.createSimpleGame(level, baseSpeed).then((gameId: string) => {
-      this.setState({ gameId });
-    });
+
 
     // input managers controlling keyboard and touch events
     this.keyManager = new KeyManager(DEFAULT_KEYS);

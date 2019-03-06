@@ -6,6 +6,7 @@
   "types": "lib/index.d.ts",
   "scripts": {
     "test": "jest --config jestconfig.json",
+    "test-watch": "jest --config jestconfig.json --watch",
     "clean": "rimraf lib/",
     "build": "npm run clean && tsc",
     "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
@@ -20,7 +21,7 @@
     "@types/events": "^3.0.0",
     "@types/hammerjs": "^2.0.36",
     "@types/invariant": "^2.2.29",
-    "@types/jest": "^24.0.5",
+    "@types/jest": "^24.0.6",
     "@types/lodash": "^4.14.121",
     "@types/mousetrap": "^1.6.1",
     "@types/seedrandom": "^2.4.27",
@@ -32,13 +33,14 @@
     "prettier": "^1.16.4",
     "rimraf": "^2.6.3",
     "socketcluster-client": "^14.2.1",
-    "ts-jest": "^23.10.5",
+    "ts-jest": "^24.0.0",
     "tslint": "^5.12.1",
     "tslint-config-prettier": "^1.18.0",
-    "typescript": "^3.3.3"
+    "typescript": "^3.3.3333"
   },
   "dependencies": {
-    "@ircam/sync": "^2.0.0",
+    "@ircam/sync": "^2.0.1",
+    "driftless": "^2.0.3",
     "events": "^3.0.0",
     "gamepad-plus": "^1.0.14",
     "hammerjs": "^2.0.8",
@@ -51,6 +53,6 @@
     "socketcluster": "^14.3.3",
     "socketcluster-server": "^14.4.0",
     "typestate": "^1.0.6",
-    "ws": "^6.1.3"
+    "ws": "^6.1.4"
   }
 }

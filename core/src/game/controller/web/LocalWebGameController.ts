@@ -1,37 +1,71 @@
-import { GameControllerMode } from "../../types";
-// import { AbstractGameController } from "../AbstractGameController";
-import { GameControllerWithHistory } from "../GameControllerWithHistory";
+import { GameControllerMode, GameTickResultType, TimedGameTickResult } from "../../types";
 
-// export class LocalWebGameController extends AbstractGameController {
+import { GameControllerWithHistory, GameControllerWithHistoryOptions } from "../GameControllerWithHistory";
+
+
 export class LocalWebGameController extends GameControllerWithHistory {
+  protected refTime: number;
+  protected refFrame: number;
+  constructor(options: GameControllerWithHistoryOptions) {
+    super(options);
+    this.refFrame = 0;
+    this.refTime = timestamp();
+  }
   public run() {
     // called when gameplay starts, to initialize the game loop
-    this.dt = 0;
-    this.last = timestamp();
+    // this.last = timestamp();
+
+    this.refFrame = 0;
+    this.refTime = timestamp();
+    // todo update refFrame/refTime when the game is paused
+
     requestAnimationFrame(this.tick.bind(this));
   }
 
-  public tick() {
+  public tick(): TimedGameTickResult[] {
     // called once per frame
     if (!this.fsm.is(GameControllerMode.Playing)) {
-      return;
+      return [];
     }
     const now = timestamp();
-    const { slow } = this.options;
-    const { dt, last, slowStep } = this;
+    const { refFrame, refTime } = this;
 
-    // allows the number of ticks to stay consistent
+    // calculate the expected game frame we should be at now,
+    // and tick the game until it matches the expected frame
+    // this allows the number of ticks to stay consistent over time
     // even if FPS changes or lags due to performance
-    this.dt = dt + Math.min(1, (now - last) / 1000);
-    while (this.dt > slowStep) {
-      this.dt = this.dt - slowStep;
-      this.tickGame();
+    const frame = this.game.frame;
+    const expectedFrame = Math.floor((now - refTime) / (1000 / 60)) + refFrame;
+    const frameDiff = expectedFrame - frame;
+    if(frameDiff > 60) throw new Error("GameController ticks got out of sync");
+
+    if(Math.abs(frameDiff) > 1) {
+      console.log('frame off by',  expectedFrame - frame);
+    }
+
+    let tickResults: TimedGameTickResult[] = [];
+
+    for(let i = 0; i < frameDiff; i++) {
+      const result = this.tickGame();
+      if(result) {
+        tickResults.push([this.game.frame, result]);
+        if(result.type === GameTickResultType.Win) {
+          this.fsm.go(GameControllerMode.Won);
+          break;
+        } else if(result.type === GameTickResultType.Lose) {
+          this.fsm.go(GameControllerMode.Lost);
+          break;
+        }
+      }
     }
 
     // render with the current game state
-    this.options.render(this.getState(), this.dt / slow);
-    this.last = now;
+    // this.options.render(this.getState(), this.dt / slow);
+    this.options.render(this.getState());
+    // this.last = now;
     requestAnimationFrame(this.tick.bind(this));
+
+    return tickResults;
   }
 }
 

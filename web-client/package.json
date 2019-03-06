@@ -20,6 +20,7 @@
     "@ircam/sync": "^2.0.0",
     "classnames": "^2.2.6",
     "d3-random": "^1.1.2",
+    "driftless": "^2.0.3",
     "es6-promisify": "^6.0.1",
     "lodash": "^4.17.11",
     "mrdario-core": "file:../core",

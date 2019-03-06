@@ -3,6 +3,7 @@ import { PLAYFIELD_HEIGHT, PLAYFIELD_WIDTH } from "../constants";
 import { GameInput } from "../enums";
 // options that can be passed to control game parameters
 import { GameControllerMode, GameControllerOptions, KeyBindings } from "./types";
+import { getGetTime } from "../../utils/time";
 
 export const DEFAULT_GAME_CONTROLLER_OPTIONS: GameControllerOptions = {
   gameOptions: {
@@ -14,6 +15,8 @@ export const DEFAULT_GAME_CONTROLLER_OPTIONS: GameControllerOptions = {
     height: PLAYFIELD_HEIGHT,
     width: PLAYFIELD_WIDTH,
   },
+  hasHistory: true,
+  getTime: getGetTime(),
   // list of input managers, eg. of keyboard, touch events
   // these are event emitters that fire on every user game input (move)
   // moves are queued and fed into the game to control it
@@ -24,9 +27,9 @@ export const DEFAULT_GAME_CONTROLLER_OPTIONS: GameControllerOptions = {
   // callback called when state machine mode changes
   onChangeMode: noop,
   // frames (this.tick/render calls) per second
-  fps: 60,
+  // fps: 60,
   // slow motion factor, to simulate faster/slower gameplay for debugging
-  slow: 1
+  // slow: 1
 };
 
 export const DEFAULT_KEYS: KeyBindings = {

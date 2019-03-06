@@ -4,6 +4,7 @@ export * from "./auth";
 export * from "./game";
 export * from "./scores";
 export * from "./lobby";
+export * from "./match";
 
 // user
 

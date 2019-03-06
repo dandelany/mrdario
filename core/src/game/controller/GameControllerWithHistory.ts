@@ -4,20 +4,21 @@ import {
   GameActionMove,
   GameActionType,
   GameControllerOptions,
+  GameTickResult,
   MoveInputEvent,
   TimedGameActions,
   TimedMoveActions
 } from "../types";
 import { Game, GameOptions, GameState } from "../Game";
-import { cloneDeep, findIndex, findLast, findLastIndex, isEqual, isFunction, omitBy } from "lodash";
-import { encodeTimedActions } from "../../encoding/action";
+import { cloneDeep, findLast, findLastIndex, isFunction, omitBy } from "lodash";
+// import { encodeTimedActions } from "../../encoding/action";
 
-type GameControllerWithHistoryOptions = {
+export type GameControllerWithHistoryOptions = {
   onMoveActions?: (timedMoveActions: TimedMoveActions) => void;
 } & GameControllerOptions;
 
 export abstract class GameControllerWithHistory extends AbstractGameController {
-  public futureActions: TimedGameActions[];
+  protected futureActions: TimedGameActions[];
   protected actionHistory: TimedGameActions[];
   protected stateHistory: GameState[];
   protected initialGameState: GameState;
@@ -33,17 +34,11 @@ export abstract class GameControllerWithHistory extends AbstractGameController {
     this.stateHistory = [this.initialGameState];
   }
 
-  public tickGame() {
+  public tickGame(): void | GameTickResult {
     // tick the game to the next frame, applying any relevant actions from inputs or future queue
 
     // get actions from moveInputQueue (from inputManagers)
     // todo have inputmanagers return actions instead of MoveInputEvents
-    // let actions: GameAction[] = this.moveInputQueue.map(
-    //   (inputEvent: MoveInputEvent): GameActionMove => {
-    //     return { type: GameActionType.Move, ...inputEvent };
-    //   }
-    // );
-
     const moveActions: GameActionMove[] = this.moveInputQueue.map(
       (inputEvent: MoveInputEvent): GameActionMove => {
         return { type: GameActionType.Move, ...inputEvent };
@@ -62,7 +57,7 @@ export abstract class GameControllerWithHistory extends AbstractGameController {
       // remove applied actions from futureActions
       this.futureActions.shift();
     }
-    this.game.tick(actions);
+    const tickResult = this.game.tick(actions);
 
     if (actions.length) {
       const frameActions: TimedGameActions = [this.game.frame, actions];
@@ -71,11 +66,13 @@ export abstract class GameControllerWithHistory extends AbstractGameController {
       // todo still need to cloneDeep?
       this.stateHistory.push(cloneDeep(this.game.getState()));
 
-      console.log(this.actionHistory.map(item => encodeTimedActions(item)).join(";"));
-      // todo
+      // todo limit length of stored stateHistory
+      // console.log(this.actionHistory.map(item => encodeTimedActions(item)).join(";"));
       // console.log(this.actionHistory, this.stateHistory);
     }
     this.moveInputQueue = [];
+
+    return tickResult;
   }
 
   protected makeDummyGame(state?: GameState) {
@@ -87,6 +84,9 @@ export abstract class GameControllerWithHistory extends AbstractGameController {
     return dummyGame;
   }
   protected rewindGameToFrame(game: Game, frame: number) {
+    // use state history to "rewind" the state of the game to a given frame
+    // may not have saved that exact frame, so find the nearest saved frame less tham or equal to the target,
+    // start there, and tick forward through time until reaching the target frame
     const restoreState = findLast(this.stateHistory, gameState => gameState.frame <= frame);
     if (restoreState !== undefined) {
       game.setState(restoreState);
@@ -98,31 +98,31 @@ export abstract class GameControllerWithHistory extends AbstractGameController {
     }
   }
 
-  public replayHistory() {
-    const dummyGame = this.makeDummyGame(cloneDeep(this.initialGameState));
-
-    const currentFrame = this.game.frame;
-
-    // find the first action in actionHistory which happens after the game's current frame
-    let nextActionsItemIndex = findIndex(this.actionHistory, ([frame]) => frame > dummyGame.frame);
-    // tick through the game, applying actions in actionHistory to appropriate frames
-    while (nextActionsItemIndex > -1) {
-      const [nextActionsFrame, nextActions] = this.actionHistory[nextActionsItemIndex];
-      if (nextActionsFrame > currentFrame) break;
-      tickGameToFrame(dummyGame, nextActionsFrame - 1);
-      dummyGame.tick(nextActions);
-      // get the next action in history, or break out of loop if we've done them all
-      nextActionsItemIndex =
-        nextActionsItemIndex >= this.actionHistory.length - 1 ? -1 : nextActionsItemIndex + 1;
-    }
-    // game is now at the frame of the last action in actionHistory before currentFrame
-    // no more actions - tick ahead to target frame
-    tickGameToFrame(dummyGame, currentFrame);
-
-    // todo send error to backend?
-    if (!isEqual(this.game.getState(), dummyGame.getState()))
-      console.error("states not equal: ", this.game.getState(), dummyGame.getState());
-  }
+  // public replayHistory() {
+  //   const dummyGame = this.makeDummyGame(cloneDeep(this.initialGameState));
+  //
+  //   const currentFrame = this.game.frame;
+  //
+  //   // find the first action in actionHistory which happens after the game's current frame
+  //   let nextActionsItemIndex = findIndex(this.actionHistory, ([frame]) => frame > dummyGame.frame);
+  //   // tick through the game, applying actions in actionHistory to appropriate frames
+  //   while (nextActionsItemIndex > -1) {
+  //     const [nextActionsFrame, nextActions] = this.actionHistory[nextActionsItemIndex];
+  //     if (nextActionsFrame > currentFrame) break;
+  //     tickGameToFrame(dummyGame, nextActionsFrame - 1);
+  //     dummyGame.tick(nextActions);
+  //     // get the next action in history, or break out of loop if we've done them all
+  //     nextActionsItemIndex =
+  //       nextActionsItemIndex >= this.actionHistory.length - 1 ? -1 : nextActionsItemIndex + 1;
+  //   }
+  //   // game is now at the frame of the last action in actionHistory before currentFrame
+  //   // no more actions - tick ahead to target frame
+  //   tickGameToFrame(dummyGame, currentFrame);
+  //
+  //   // todo send error to backend?
+  //   if (!isEqual(this.game.getState(), dummyGame.getState()))
+  //     console.error("states not equal: ", this.game.getState(), dummyGame.getState());
+  // }
 
   protected rewriteHistoryWithActions(frameActions: TimedGameActions) {
     const [frame] = frameActions;
@@ -176,6 +176,7 @@ export abstract class GameControllerWithHistory extends AbstractGameController {
 }
 
 function tickGameToFrame(game: Game, frame: number): void {
+  // todo handle result!
   if (frame < game.frame) throw new Error(`Game is at frame ${game.frame} - cannot tick to ${frame}`);
   if (frame === game.frame) return;
   while (frame > game.frame) game.tick();

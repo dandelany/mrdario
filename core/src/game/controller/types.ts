@@ -2,6 +2,7 @@ import { GameInput, InputEventType } from "../enums";
 import { GameOptions, GameState } from "../Game";
 import { ModeKeyBindings } from "../types";
 
+export { GameControllerMode, GameControllerState, GameControllerOptions} from './GameController';
 export enum GameControllerMode {
   Ready = "Ready",
   Playing = "Playing",
@@ -18,11 +19,11 @@ export interface GameControllerState {
 
 export interface GameControllerOptions {
   gameOptions: Partial<GameOptions>;
+  hasHistory: boolean;
+  getTime: () => number;
   inputManagers: InputManager[];
   render: (state: GameControllerState, dt?: number) => any;
   onChangeMode: (fromMode: GameControllerMode, toMode: GameControllerMode) => any;
-  fps: number;
-  slow: number;
 }
 
 // todo figure out eventemitter

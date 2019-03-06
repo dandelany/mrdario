@@ -1,5 +1,5 @@
 import { EventEmitter } from "events";
-import { defaults, includes, noop } from "lodash";
+import { defaults, includes } from "lodash";
 import { TypeState } from "typestate";
 
 import { InputRepeater, MovingCounters } from "./InputRepeater";
@@ -16,10 +16,13 @@ import {
 import {
   GameAction,
   GameActionMove,
+  GameColor,
   GameGrid,
   GameInput,
   GameInputMove,
   GameMode,
+  GameTickResult,
+  GameTickResultType,
   GridDirection,
   PillColors,
   PillLocation,
@@ -56,10 +59,8 @@ export interface GameOptions {
   width: number;
   height: number;
   initialSeed?: string;
-  onWin: () => void;
-  onLose: () => void;
 }
-export type EncodableGameOptions = Omit<GameOptions, "onWin" | "onLose">;
+export type EncodableGameOptions = GameOptions;
 
 export interface GameState {
   mode: GameMode;
@@ -74,7 +75,8 @@ export interface GameState {
   pillCount: number;
   score: number;
   timeBonus: number;
-  comboLineCount: number;
+  // comboLineCount: number;
+  lineColors: GameColor[];
 }
 
 // options that can be passed to control game parameters
@@ -85,10 +87,7 @@ export const defaultGameOptions: GameOptions = {
   baseSpeed: 15,
   // width and height of grid (# of grid squares)
   width: PLAYFIELD_WIDTH,
-  height: PLAYFIELD_HEIGHT,
-  // callbacks called when game is won or game is lost
-  onWin: noop,
-  onLose: noop
+  height: PLAYFIELD_HEIGHT
 };
 
 export class Game extends EventEmitter {
@@ -117,7 +116,8 @@ export class Game extends EventEmitter {
   // the player's score
   protected score: number = 0;
   protected timeBonus: number = 0;
-  protected comboLineCount: number = 0;
+  // protected comboLineCount: number = 0;
+  protected lineColors: GameColor[] = [];
 
   constructor(passedOptions: Partial<GameOptions> = {}) {
     super();
@@ -143,7 +143,7 @@ export class Game extends EventEmitter {
     this.inputRepeater = new InputRepeater();
   }
 
-  public tick(actions: GameAction[] = []) {
+  public tick(actions: GameAction[] = []): void | GameTickResult {
     this.frame++;
     const moveActions: GameActionMove[] = actions.filter(isMoveAction);
     const moveQueue: GameInputMove[] = this.inputRepeater.tick(moveActions);
@@ -170,7 +170,7 @@ export class Game extends EventEmitter {
     const mode: GameMode = this.fsm.currentState;
     const { movingCounters } = this.inputRepeater.getState();
     const { grid, pill, nextPill, seed, frame, gameTicks, modeTicks } = this;
-    const { pillCount, score, timeBonus, comboLineCount } = this;
+    const { pillCount, score, timeBonus, lineColors } = this;
     return {
       mode,
       grid,
@@ -184,10 +184,14 @@ export class Game extends EventEmitter {
       pillCount,
       score,
       timeBonus,
-      comboLineCount
+      // comboLineCount
+      lineColors
     };
   }
   public setState(state: GameState) {
+    // set the state of the game to the given state
+    // this requires a complete game state, and always completely rewrites game state
+
     // reset state machine mode
     delete this.fsm;
     this.fsm = this.initStateMachine(state.mode);
@@ -206,7 +210,8 @@ export class Game extends EventEmitter {
     this.pillCount = state.pillCount;
     this.score = state.score;
     this.timeBonus = state.timeBonus;
-    this.comboLineCount = state.comboLineCount;
+    // this.comboLineCount = state.comboLineCount;
+    this.lineColors = state.lineColors;
   }
 
   protected initStateMachine(initialMode: GameMode = GameMode.Ready): TypeState.FiniteStateMachine<GameMode> {
@@ -244,15 +249,6 @@ export class Game extends EventEmitter {
     fsm.on(GameMode.Destruction, this.resetModeTicks);
     // onCascade
     fsm.on(GameMode.Cascade, this.resetModeTicks);
-    fsm.on(GameMode.Ended, (from: GameMode | undefined) => {
-      if (from === GameMode.Reconcile) {
-        // onWin
-        this.options.onWin();
-      } else if (from === GameMode.Playing) {
-        // onLose
-        this.options.onLose();
-      }
-    });
 
     return fsm;
   }
@@ -271,8 +267,9 @@ export class Game extends EventEmitter {
     this.fsm.go(GameMode.Playing);
   }
 
-  private tickPlaying(moveQueue: GameInputMove[]) {
-    this.comboLineCount = 0;
+  private tickPlaying(moveQueue: GameInputMove[]): void | GameTickResult {
+    // this.comboLineCount = 0;
+    this.lineColors = [];
     this.modeTicks++;
     this.gameTicks++;
 
@@ -291,7 +288,7 @@ export class Game extends EventEmitter {
       } else {
         // didn't get a pill, the entrance is blocked and we lose
         this.fsm.go(GameMode.Ended);
-        return;
+        return {type: GameTickResultType.Lose};
       }
     }
 
@@ -322,20 +319,23 @@ export class Game extends EventEmitter {
     }
   }
 
-  private tickReconcile() {
+  private tickReconcile(): void | GameTickResult {
     // clear the true top row, in case any pills have been rotated up into it and stuck into place
     // do this first to ensure player can't get lines from it
     this.grid = clearTopRow(this.grid);
 
     // playfield is locked, check for same-color lines
     // setting them to destroyed if they are found
-    const { grid, lines, hasLines, destroyedCount, virusCount } = destroyLines(this.grid);
+    const { grid, lineColors, hasLines, destroyedCount, virusCount } = destroyLines(this.grid);
     this.grid = grid;
 
     if (hasLines) {
-      this.comboLineCount += lines.length;
+      // this.comboLineCount += lines.length;
+      this.lineColors = this.lineColors.concat(lineColors);
+      const comboLineCount = lineColors.length;
+
       this.score +=
-        Math.pow(destroyedCount, this.comboLineCount) * 5 + Math.pow(virusCount, this.comboLineCount) * 3 * 5;
+        Math.pow(destroyedCount, comboLineCount) * 5 + Math.pow(virusCount, comboLineCount) * 3 * 5;
     }
 
     const gridHasViruses = hasViruses(this.grid);
@@ -350,6 +350,7 @@ export class Game extends EventEmitter {
       this.timeBonus = Math.max(0, expectedTicks - this.gameTicks);
       this.score += this.timeBonus;
       this.fsm.go(GameMode.Ended);
+      return {type: GameTickResultType.Win};
     }
     // lines are being destroyed, go to destroy mode
     else if (hasLines) {
@@ -372,7 +373,7 @@ export class Game extends EventEmitter {
     this.modeTicks++;
   }
 
-  private tickCascade() {
+  private tickCascade(): void | GameTickResult {
     // # of frames it takes debris to fall 1 row during cascade
     const cascadeGravity = gravityFrames(CASCADE_TICK_COUNT);
 
@@ -383,6 +384,14 @@ export class Game extends EventEmitter {
       // nothing to drop, ready for another pill
       if (!fallingCells.length) {
         this.fsm.go(GameMode.Playing);
+        // if we have destroyed at least two lines in this combo,
+        // return garbage colors to give to the other player (if playing multiplayer)
+        if(this.lineColors.length >= 2) {
+          return {
+            type: GameTickResultType.Garbage,
+            colors: this.lineColors.slice(0, 4)
+          }
+        }
         return;
       }
     } else if (this.modeTicks % cascadeGravity === 0) {

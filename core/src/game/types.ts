@@ -133,5 +133,35 @@ export type GameAction =
   | GameActionDefeat
   | GameActionForfeitWin;
 
+
+// game tick result types
+// GameTickResults are returned from game.tick() and represent events that happen in the game
+// as the result of the game state + tick inputs.
+// GameActions are the game's inputs and GameTickResults are the outputs.
+export enum GameTickResultType {
+  Win = "Win",
+  Lose = "Lose",
+  Garbage = "Garbage"
+}
+export interface GameTickResultWin {
+  type: GameTickResultType.Win
+}
+export interface GameTickResultLose {
+  type: GameTickResultType.Lose
+}
+export interface GameTickResultGarbage {
+  type: GameTickResultType.Garbage,
+  colors: GameColor[]
+}
+export type GameTickResult =
+  | GameTickResultWin
+  | GameTickResultLose
+  | GameTickResultGarbage;
+
+
+// for network play, the game controllers emit pairs of [frame, actions/results]
+// where `frame` is the game frame # on which they took place,
+// so that the server/other clients can time/sync them appropriately
 export type TimedGameActions = [number, GameAction[]];
 export type TimedMoveActions = [number, GameActionMove[]];
+export type TimedGameTickResult = [number, GameTickResult];
