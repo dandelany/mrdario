@@ -2,7 +2,6 @@ import * as t from "io-ts";
 
 // Types associated with the Match API
 
-
 export const TMatch = t.type({
   // id of the match
   id: t.string,
@@ -22,7 +21,7 @@ export const TMatch = t.type({
   // array of game levels, one per player - each player may play their own level
   level: t.array(t.number),
   // array of game speeds, one per player - each player may play their own speed
-  baseSpeed: t.array(t.number),
+  baseSpeed: t.array(t.number)
 });
 
 // export const TMatchOptions = pick(TMatch, [
@@ -31,4 +30,4 @@ export const TMatch = t.type({
 //   'baseSpeed'
 // ]);
 
-export type Match =  t.TypeOf<typeof TMatch>;
+export type Match = t.TypeOf<typeof TMatch>;

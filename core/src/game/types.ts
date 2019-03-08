@@ -2,8 +2,6 @@ import { GameColor, GameInput, GridDirection, GridObjectType, InputEventType, Sp
 
 export * from "./enums";
 
-export * from "./controller/types";
-
 export type OneOrMore<T> = { 0: T } & T[];
 
 export interface GridObjectBase {
@@ -133,7 +131,6 @@ export type GameAction =
   | GameActionDefeat
   | GameActionForfeitWin;
 
-
 // game tick result types
 // GameTickResults are returned from game.tick() and represent events that happen in the game
 // as the result of the game state + tick inputs.
@@ -144,20 +141,16 @@ export enum GameTickResultType {
   Garbage = "Garbage"
 }
 export interface GameTickResultWin {
-  type: GameTickResultType.Win
+  type: GameTickResultType.Win;
 }
 export interface GameTickResultLose {
-  type: GameTickResultType.Lose
+  type: GameTickResultType.Lose;
 }
 export interface GameTickResultGarbage {
-  type: GameTickResultType.Garbage,
-  colors: GameColor[]
+  type: GameTickResultType.Garbage;
+  colors: GameColor[];
 }
-export type GameTickResult =
-  | GameTickResultWin
-  | GameTickResultLose
-  | GameTickResultGarbage;
-
+export type GameTickResult = GameTickResultWin | GameTickResultLose | GameTickResultGarbage;
 
 // for network play, the game controllers emit pairs of [frame, actions/results]
 // where `frame` is the game frame # on which they took place,

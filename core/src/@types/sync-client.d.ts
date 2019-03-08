@@ -40,14 +40,11 @@ declare namespace SyncClient {
   interface ClientOptions {
     estimationMonotonicity?: boolean;
     estimationStability?: number;
-    pingTimeOutDelay?: {min: number, max: number};
+    pingTimeOutDelay?: { min: number; max: number };
     pingSeriesIterations?: number;
     pingSeriesPeriod?: number;
-    pingSeriesDelay?: {min: number, max: number};
+    pingSeriesDelay?: { min: number; max: number };
     longTermDataTrainingDuration?: number;
     longTermDataDuration?: number;
   }
-
-  // todo options object
-  type SyncClientOptions = { [K in string]: any };
 }

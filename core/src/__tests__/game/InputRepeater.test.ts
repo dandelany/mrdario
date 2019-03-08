@@ -1,6 +1,6 @@
-import { InputRepeater } from "../../game/InputRepeater";
-import { GameActionType, GameInput, INPUT_REPEAT_INTERVALS, InputEventType } from "../../game";
 import { times } from "lodash";
+import { GameActionType, GameInput, INPUT_REPEAT_INTERVALS, InputEventType } from "../../game";
+import { InputRepeater } from "../../game/InputRepeater";
 
 describe("InputRepeater", () => {
   test("Can be constructed with correct initial state", () => {
@@ -14,7 +14,9 @@ describe("InputRepeater", () => {
     const repeater: InputRepeater = new InputRepeater();
     const noMoves = repeater.tick();
     expect(noMoves).toEqual([]);
-    const oneMove = repeater.tick([{ type: GameActionType.Move, input: GameInput.Left, eventType: InputEventType.KeyDown }]);
+    const oneMove = repeater.tick([
+      { type: GameActionType.Move, input: GameInput.Left, eventType: InputEventType.KeyDown }
+    ]);
     expect(oneMove).toEqual([GameInput.Left]);
   });
 
@@ -33,7 +35,9 @@ describe("InputRepeater", () => {
 
   test("Returns moves which have been held down long enough to repeat", () => {
     const repeater: InputRepeater = new InputRepeater();
-    const move = repeater.tick([{ type: GameActionType.Move, input: GameInput.Right, eventType: InputEventType.KeyDown }]);
+    const move = repeater.tick([
+      { type: GameActionType.Move, input: GameInput.Right, eventType: InputEventType.KeyDown }
+    ]);
     expect(move).toEqual([GameInput.Right]);
     const entries = Array.from(repeater.movingCounters.entries());
     expect(entries).toEqual([[GameInput.Right, 0]]);
@@ -63,8 +67,8 @@ describe("InputRepeater", () => {
       GameInput.Down
     ]);
     repeater.tick([
-      { type: GameActionType.Move,input: GameInput.Left, eventType: InputEventType.KeyUp },
-      { type: GameActionType.Move,input: GameInput.Right, eventType: InputEventType.KeyUp }
+      { type: GameActionType.Move, input: GameInput.Left, eventType: InputEventType.KeyUp },
+      { type: GameActionType.Move, input: GameInput.Right, eventType: InputEventType.KeyUp }
     ]);
     expect(Array.from(repeater.movingCounters.keys())).toEqual([GameInput.Down]);
     repeater.tick([{ type: GameActionType.Move, input: GameInput.Down, eventType: InputEventType.KeyUp }]);

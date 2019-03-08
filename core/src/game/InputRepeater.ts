@@ -31,7 +31,7 @@ export class InputRepeater implements InputRepeaterState {
     const moveQueue: GameInputMove[] = [];
 
     // increment moving counters (for moves which are being held down)
-    for (let entry of movingCounters.entries()) {
+    for (const entry of movingCounters.entries()) {
       const [key, count] = entry;
       movingCounters.set(key, count + 1);
     }

@@ -1,9 +1,9 @@
 import invariant from "invariant";
 
 import { GameAction, GameActionMove, GameActionType, TimedGameActions } from "../game";
-import { decodeMoveInputEvent, encodeMoveInputEvent } from "./move";
-import { decodeInt, encodeInt } from "./game";
 import { isMoveAction } from "../game/utils";
+import { decodeInt, encodeInt } from "./game";
+import { decodeMoveInputEvent, encodeMoveInputEvent } from "./move";
 
 export type ActionTypeEncodingMap = { [I in GameActionType]: string };
 
@@ -24,8 +24,8 @@ export function encodeMoveAction(action: GameActionMove): EncodedMoveAction {
   return `${actionTypeCodes[GameActionType.Move]}${encodeMoveInputEvent({ input, eventType })}`;
 }
 export function decodeMoveAction(encodedAction: EncodedMoveAction): GameActionMove {
-  const {input, eventType} = decodeMoveInputEvent(encodedAction.slice(1));
-  return {type: GameActionType.Move, input, eventType};
+  const { input, eventType } = decodeMoveInputEvent(encodedAction.slice(1));
+  return { type: GameActionType.Move, input, eventType };
 }
 function isEncodedMoveAction(encodedAction: EncodedAction): encodedAction is EncodedMoveAction {
   return !!encodedAction.length && encodedAction[0] === actionTypeCodes[GameActionType.Move];
@@ -49,11 +49,11 @@ export function decodeAction(encodedAction: EncodedAction): GameAction {
 
 export function encodeTimedActions(timedActions: TimedGameActions): EncodedTimedActions {
   const [frame, actions] = timedActions;
-  let encodedActions = actions.map(encodeAction);
+  const encodedActions = actions.map(encodeAction);
   return `${encodeInt(frame)}:${encodedActions.join("|")}`;
 }
 export function decodeTimedActions(encodedTimedActions: EncodedTimedActions): TimedGameActions {
-  const splitArr = encodedTimedActions.split(':');
+  const splitArr = encodedTimedActions.split(":");
   invariant(splitArr.length === 2, `Invalid EncodedTimedActions: ${encodedTimedActions}`);
   const frame: number = decodeInt(splitArr[0]);
   const actionStrings: EncodedAction[] = splitArr[1].split("|");

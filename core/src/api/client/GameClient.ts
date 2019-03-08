@@ -1,7 +1,7 @@
 // import { partial } from "lodash";
+import SyncClient from "@ircam/sync/client";
 import { PathReporter } from "io-ts/lib/PathReporter";
 import { create as createSocket, SCClientSocket } from "socketcluster-client";
-import SyncClient from "@ircam/sync/client";
 
 import {
   ClientAuthenticatedUser,
@@ -26,8 +26,8 @@ import {
 import * as t from "io-ts";
 import { partialRight, remove, uniqBy } from "lodash";
 import { encodeGrid } from "../../encoding";
-import { GameGrid, TimedGameActions } from "../../game";
 import { decodeTimedActions, encodeTimedActions } from "../../encoding/action";
+import { GameGrid, TimedGameActions } from "../../game";
 
 // import { SCChannelOptions } from "sc-channel";
 
@@ -145,23 +145,28 @@ export class GameClient {
           const request = [pingId, clientPingTime];
           console.log(`[ping] - id: ${pingId}, pingTime: ${clientPingTime}`);
 
-          this.socket.emit('sPing', request);
+          this.socket.emit("sPing", request);
         };
 
         const syncReceive: SyncClient.ReceiveFunction = callback => {
-          this.socket.on('sPong', (response: any) => {
-            if(response) {
+          this.socket.on("sPong", (response: any) => {
+            if (response) {
               const [pingId, clientPingTime, serverPingTime, serverPongTime] = response;
 
-              console.log(`[pong] - id: %s, clientPingTime: %s, serverPingTime: %s, serverPongTime: %s`,
-                pingId, clientPingTime, serverPingTime, serverPongTime);
+              console.log(
+                `[pong] - id: %s, clientPingTime: %s, serverPingTime: %s, serverPongTime: %s`,
+                pingId,
+                clientPingTime,
+                serverPingTime,
+                serverPongTime
+              );
 
               callback(pingId, clientPingTime, serverPingTime, serverPongTime);
             }
           });
         };
 
-        const syncReport: SyncClient.ReportFunction = (report) => {
+        const syncReport: SyncClient.ReportFunction = report => {
           console.log(report);
         };
 
@@ -267,7 +272,6 @@ export class GameClient {
           reject(err);
         }
         resolve(game);
-
       });
     });
   }
@@ -285,10 +289,11 @@ export class GameClient {
   public watchSimpleGameMoves(gameId: string, handleMoves?: (actions: TimedGameActions) => void) {
     const gameChannel = this.socket.subscribe(`game-${gameId}`);
     gameChannel.watch((data: string) => {
-      if(handleMoves) handleMoves(decodeTimedActions(data));
-    })
+      if (handleMoves) {
+        handleMoves(decodeTimedActions(data));
+      }
+    });
   }
-
 
   public ping(): Promise<number> {
     const start = performance.now();

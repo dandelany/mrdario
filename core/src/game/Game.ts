@@ -100,14 +100,14 @@ export class Game extends EventEmitter {
   // Ended: game has ended
 
   public readonly options: GameOptions;
+  // current frame #
+  public frame: number = 0;
   protected fsm: TypeState.FiniteStateMachine<GameMode>;
   protected inputRepeater: InputRepeater;
   protected grid: GameGrid;
   protected pill?: PillLocation;
   protected nextPill: PillColors;
   protected seed: string;
-  // current frame #
-  public frame: number = 0;
   // counters, used to count # of frames we've been in a particular state
   protected gameTicks: number = 0;
   protected modeTicks: number = 0;
@@ -288,7 +288,7 @@ export class Game extends EventEmitter {
       } else {
         // didn't get a pill, the entrance is blocked and we lose
         this.fsm.go(GameMode.Ended);
-        return {type: GameTickResultType.Lose};
+        return { type: GameTickResultType.Lose };
       }
     }
 
@@ -350,7 +350,7 @@ export class Game extends EventEmitter {
       this.timeBonus = Math.max(0, expectedTicks - this.gameTicks);
       this.score += this.timeBonus;
       this.fsm.go(GameMode.Ended);
-      return {type: GameTickResultType.Win};
+      return { type: GameTickResultType.Win };
     }
     // lines are being destroyed, go to destroy mode
     else if (hasLines) {
@@ -386,11 +386,11 @@ export class Game extends EventEmitter {
         this.fsm.go(GameMode.Playing);
         // if we have destroyed at least two lines in this combo,
         // return garbage colors to give to the other player (if playing multiplayer)
-        if(this.lineColors.length >= 2) {
+        if (this.lineColors.length >= 2) {
           return {
             type: GameTickResultType.Garbage,
             colors: this.lineColors.slice(0, 4)
-          }
+          };
         }
         return;
       }
@@ -437,8 +437,8 @@ export class Game extends EventEmitter {
           input === GameInput.Down
             ? GridDirection.Down
             : input === GameInput.Left
-              ? GridDirection.Left
-              : GridDirection.Right;
+            ? GridDirection.Left
+            : GridDirection.Right;
 
         const moved = movePill(this.grid, this.pill, direction);
         grid = moved.grid;

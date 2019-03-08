@@ -1,9 +1,9 @@
 import { noop } from "lodash";
+import { getGetTime } from "../../utils/time";
 import { PLAYFIELD_HEIGHT, PLAYFIELD_WIDTH } from "../constants";
 import { GameInput } from "../enums";
 // options that can be passed to control game parameters
-import { GameControllerMode, GameControllerOptions, KeyBindings } from "./types";
-import { getGetTime } from "../../utils/time";
+import { GameControllerMode, GameControllerOptions, KeyBindings } from "./GameController";
 
 export const DEFAULT_GAME_CONTROLLER_OPTIONS: GameControllerOptions = {
   gameOptions: {
@@ -13,7 +13,7 @@ export const DEFAULT_GAME_CONTROLLER_OPTIONS: GameControllerOptions = {
     baseSpeed: 15,
     // width and height of the playfield grid, in grid units
     height: PLAYFIELD_HEIGHT,
-    width: PLAYFIELD_WIDTH,
+    width: PLAYFIELD_WIDTH
   },
   hasHistory: true,
   getTime: getGetTime(),
@@ -25,11 +25,7 @@ export const DEFAULT_GAME_CONTROLLER_OPTIONS: GameControllerOptions = {
   // this should be the main connection between game logic and presentation
   render: noop,
   // callback called when state machine mode changes
-  onChangeMode: noop,
-  // frames (this.tick/render calls) per second
-  // fps: 60,
-  // slow motion factor, to simulate faster/slower gameplay for debugging
-  // slow: 1
+  onChangeMode: noop
 };
 
 export const DEFAULT_KEYS: KeyBindings = {

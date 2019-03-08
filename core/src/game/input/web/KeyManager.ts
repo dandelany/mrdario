@@ -1,7 +1,8 @@
 import { EventEmitter } from "events";
 import { each } from "lodash";
 import * as Mousetrap from "mousetrap";
-import { GameControllerMode, GameInput, InputEventType, InputManager, KeyBindings } from "../../types";
+import { GameControllerMode, InputManager, KeyBindings } from "../../controller";
+import { GameInput, InputEventType} from "../../types";
 
 export class KeyManager extends EventEmitter implements InputManager {
   public mode?: GameControllerMode;
@@ -54,8 +55,9 @@ export class KeyManager extends EventEmitter implements InputManager {
     }
   }
 
-  public handleInput(inputType: GameInput, keyType: InputEventType, event: KeyboardEvent) {
-    super.emit(inputType, keyType);
+  public handleInput(input: GameInput, eventType: InputEventType, event: KeyboardEvent) {
+    super.emit("input", input, eventType);
+    // super.emit(input, eventType);
     if (event.preventDefault) {
       event.preventDefault();
     }

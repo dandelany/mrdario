@@ -32,4 +32,3 @@ export const TLoginRequest = t.type({
   token: t.union([t.string, t.undefined])
 });
 export type LoginRequest = t.TypeOf<typeof TLoginRequest>;
-

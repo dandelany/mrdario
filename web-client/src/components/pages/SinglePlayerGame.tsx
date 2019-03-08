@@ -4,12 +4,13 @@ import { RouteComponentProps, withRouter } from "react-router-dom";
 import shallowEqual from "@/utils/shallowEqual";
 
 import { DEFAULT_KEYS } from "mrdario-core/lib/game/controller/constants";
-import { GameControllerMode, GameControllerState } from "mrdario-core/lib/game/controller/types";
+import { GameControllerMode, GameControllerState } from "mrdario-core/lib/game/controller";
 import { GameGrid, PillColors } from "mrdario-core/lib/game/types";
 
 import { encodeGameState } from "mrdario-core/lib/encoding/game";
 import { GameClient } from "mrdario-core/lib/api/client/GameClient";
-import { LocalWebGameController } from "mrdario-core/lib/game/controller/web";
+// import { LocalWebGameController } from "mrdario-core/lib/game/controller/web";
+import { GameController } from "mrdario-core/lib/game/controller/GameController";
 import { GamepadManager, KeyManager, SwipeManager } from "mrdario-core/lib/game/input/web";
 import { GameScoreResponse, LobbyResponse } from "mrdario-core/lib/api/types";
 
@@ -17,6 +18,7 @@ import { GameRouteParams } from "@/types";
 import responsiveGame from "@/components/responsiveGame";
 import { ResponsiveGameDisplay } from "@/components/game/GameDisplay";
 import { GameOptions } from "mrdario-core";
+import { getGetTime } from "mrdario-core/lib/utils/time";
 
 function getName() {
   return window.localStorage ? window.localStorage.getItem("mrdario-name") || "Anonymous" : "Anonymous";
@@ -135,7 +137,9 @@ class SinglePlayerGame extends React.Component<SinglePlayerGameProps, SinglePlay
 
     // create new game controller that will run the game
     // and update component state whenever game state changes to re-render
-    this.game = new LocalWebGameController({
+    this.game = new GameController({
+      hasHistory: false,
+      getTime: getGetTime(),
       gameOptions: {
         level,
         baseSpeed,
@@ -167,7 +171,8 @@ class SinglePlayerGame extends React.Component<SinglePlayerGameProps, SinglePlay
         if (this.props.onChangeMode) this.props.onChangeMode(toMode);
       }
     });
-    this.game.play();
+    // this.game.play();
+    this.game.startCountdown(3500);
   }
   protected resetGame = () => {
     this._initGame(this.props);

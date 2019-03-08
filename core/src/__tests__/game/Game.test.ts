@@ -269,7 +269,7 @@ describe("Game", () => {
     };
     game.setState(nextState);
     const result = game.tick();
-    expect(result).toEqual({type: GameTickResultType.Lose});
+    expect(result).toEqual({ type: GameTickResultType.Lose });
 
     expect(game.getState()).toEqual({
       ...nextState,
@@ -456,19 +456,17 @@ describe("Game", () => {
     });
   });
 
-  test(
-    "Reconcile sets lines to destroyed if they are found, and moves to Destruction mode afterwards if more viruses exist",
-    () => {
-      const options = getMockGameOptions();
-      const startState = {
-        ...getMockGameState(),
-        mode: GameMode.Reconcile,
-        frame: 100,
-        gameTicks: 99,
-        modeTicks: 0,
-        pillCount: 10,
-        pill: undefined,
-        grid: decodeGrid(`gh,8:
+  test("Reconcile sets lines to destroyed if they are found, and moves to Destruction mode afterwards if more viruses exist", () => {
+    const options = getMockGameOptions();
+    const startState = {
+      ...getMockGameState(),
+      mode: GameMode.Reconcile,
+      frame: 100,
+      gameTicks: 99,
+      modeTicks: 0,
+      pillCount: 10,
+      pill: undefined,
+      grid: decodeGrid(`gh,8:
         XXXXXXXX
         XXXXXXXX
         XXXXXXXX
@@ -487,23 +485,23 @@ describe("Game", () => {
         VVFXVXFV
         NFFNXXFX
       `),
-        nextPill: [GameColor.Color1, GameColor.Color2]
-      } as GameState;
+      nextPill: [GameColor.Color1, GameColor.Color2]
+    } as GameState;
 
-      const game = new Game(options);
-      game.setState(startState);
-      game.tick();
+    const game = new Game(options);
+    game.setState(startState);
+    game.tick();
 
-      expect(game.getState()).toEqual({
-        ...startState,
-        frame: 101,
-        mode: GameMode.Destruction,
-        score: 780,
-        lineColors: [GameColor.Color2, GameColor.Color2],
-        gameTicks: 99,
-        modeTicks: 0,
-        pill: undefined,
-        grid: decodeGrid(`gh,8:
+    expect(game.getState()).toEqual({
+      ...startState,
+      frame: 101,
+      mode: GameMode.Destruction,
+      score: 780,
+      lineColors: [GameColor.Color2, GameColor.Color2],
+      gameTicks: 99,
+      modeTicks: 0,
+      pill: undefined,
+      grid: decodeGrid(`gh,8:
         XXXXXXXX
         XXXXXXXX
         XXXXXXXX
@@ -522,9 +520,8 @@ describe("Game", () => {
         VVFXVXFV
         NFFNXXFX
       `)
-      });
-    }
-  );
+    });
+  });
 
   test("Reconcile wins the game if all viruses are destroyed", () => {
     const options = getMockGameOptions();
@@ -562,7 +559,7 @@ describe("Game", () => {
     game.setState(startState);
     const result = game.tick();
 
-    expect(result).toEqual({type: GameTickResultType.Win});
+    expect(result).toEqual({ type: GameTickResultType.Win });
 
     expect(game.getState()).toEqual({
       ...startState,
@@ -602,5 +599,4 @@ describe("Game", () => {
   // todo: test moves
   // todo: test emit garbage on line combo
   // todo: test receives garbage action
-
 });

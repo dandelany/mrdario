@@ -6,12 +6,12 @@ import * as cx from "classnames";
 import shallowEqual from "@/utils/shallowEqual";
 
 import { DEFAULT_KEYS } from "mrdario-core/lib/game/controller/constants";
-import { GameControllerMode, GameControllerState } from "mrdario-core/lib/game/controller/types";
+import { GameControllerMode, GameControllerState } from "mrdario-core/lib/game/controller";
 import { GameGrid, PillColors, TimedGameActions, TimedMoveActions } from "mrdario-core/lib/game/types";
 
 import { encodeGameState } from "mrdario-core/lib/encoding/game";
 import { GameClient } from "mrdario-core/lib/api/client/GameClient";
-import { LocalWebGameController } from "mrdario-core/lib/game/controller/web";
+import { GameController } from "mrdario-core/lib/game/controller";
 import { GamepadManager, KeyManager, SwipeManager } from "mrdario-core/lib/game/input/web";
 import { GameListItem, GameScoreResponse } from "mrdario-core/lib/api/types";
 
@@ -63,8 +63,8 @@ class MirrorGame extends React.Component<MirrorGameProps, MirrorGameState> {
 
   state: MirrorGameState = {};
 
-  game?: LocalWebGameController;
-  mirrorGame?: LocalWebGameController;
+  game?: GameController;
+  mirrorGame?: GameController;
   keyManager?: KeyManager;
   gamepadManager?: GamepadManager;
   touchManager?: SwipeManager;
@@ -119,14 +119,6 @@ class MirrorGame extends React.Component<MirrorGameProps, MirrorGameState> {
     return hasChanged;
   }
 
-  componentDidUpdate() {
-    // const { grid, gameId } = this.state;
-    // if (grid && gameId) {
-    // console.log('send', this.state.gameId, this.state.grid);
-    // this.props.gameClient.publishSimpleGameState(gameId, grid);
-    // }
-  }
-
   protected getGameOptions = (props: MirrorGameProps) => {
     const { params } = props.match;
     const level = parseInt(params.level) || 0;
@@ -149,7 +141,9 @@ class MirrorGame extends React.Component<MirrorGameProps, MirrorGameState> {
 
     // create new game controller that will run the game
     // and update component state whenever game state changes to re-render
-    this.game = new LocalWebGameController({
+    this.game = new GameController({
+      hasHistory: true,
+      getTime: window.performance.now.bind(window.performance),
       gameOptions,
       onMoveActions: (timedMoveActions: TimedMoveActions) => {
         if(gameId) {
@@ -183,8 +177,10 @@ class MirrorGame extends React.Component<MirrorGameProps, MirrorGameState> {
       }
     });
 
-    this.mirrorGame = new LocalWebGameController({
+    this.mirrorGame = new GameController({
       gameOptions,
+      hasHistory: true,
+      getTime: window.performance.now.bind(window.performance),
       inputManagers: [],
       render: (gameControllerState: GameControllerState) => {
         const { gameState } = gameControllerState;
@@ -218,7 +214,7 @@ class MirrorGame extends React.Component<MirrorGameProps, MirrorGameState> {
 
     setTimeout(() => {
       if(this.game) this.game.play();
-    }, 1);
+    }, 1000);
   };
   protected resetGame = () => {
     this._initGame(this.props);

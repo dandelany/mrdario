@@ -1,6 +1,10 @@
 import {
-  GameAction, GameActionMove, GameActionType,
+  GameAction,
+  GameActionMove,
+  GameActionType,
   GameColor,
+  GameInput,
+  GameInputMove,
   GridObject,
   GridObjectDestroyed,
   GridObjectEmpty,
@@ -70,6 +74,16 @@ export function isPillLocation(obj: PillLocation | undefined | null): obj is Pil
   return !!obj;
 }
 
+export function isMoveInput(input: GameInput): input is GameInputMove {
+  return (
+    input === GameInput.Up ||
+    input === GameInput.Down ||
+    input === GameInput.Left ||
+    input === GameInput.Right ||
+    input === GameInput.RotateCW ||
+    input === GameInput.RotateCCW
+  );
+}
 export function isMoveAction(action: GameAction): action is GameActionMove {
   return action.type === GameActionType.Move;
 }

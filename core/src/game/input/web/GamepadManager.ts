@@ -3,7 +3,8 @@ import { GamepadPlusAxisEvent, GamepadPlusButtonEvent, GamepadPlusEvent, Gamepad
 import { inRange } from "lodash";
 // import Gamepads from "gamepad-plus/src";
 
-import { GameControllerMode, GameInput, InputEventType } from "../../types";
+import { GameControllerMode } from "../../controller";
+import { GameInput, InputEventType } from "../../types";
 
 const gamepadConfig = {
   axisThreshold: 0,

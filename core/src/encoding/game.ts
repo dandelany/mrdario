@@ -60,6 +60,6 @@ export function encodeGameState(state: GameState): EncodedGameState {
     gameTicks: encodeInt(state.gameTicks),
     modeTicks: encodeInt(state.modeTicks),
     pillCount: encodeInt(state.pillCount),
-    movingCounters: encodeMovingCounters(state.movingCounters),
+    movingCounters: encodeMovingCounters(state.movingCounters)
   });
 }
