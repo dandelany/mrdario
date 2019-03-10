@@ -1,9 +1,9 @@
 import { EventEmitter } from "events";
 import * as Hammer from "hammerjs";
 
-
-import { GameControllerMode, InputManager } from "../../controller";
+import { InputManager } from "../types";
 import { GameInput, InputEventType } from "../../types";
+import { GameControllerMode } from "../../controller";
 
 export class SwipeManager extends EventEmitter implements InputManager {
   public mode?: GameControllerMode;

@@ -3,7 +3,8 @@ import { getGetTime } from "../../utils/time";
 import { PLAYFIELD_HEIGHT, PLAYFIELD_WIDTH } from "../constants";
 import { GameInput } from "../enums";
 // options that can be passed to control game parameters
-import { GameControllerMode, GameControllerOptions, KeyBindings } from "./GameController";
+import { KeyBindings } from "../input/types";
+import { GameControllerMode, GameControllerOptions } from "./types";
 
 export const DEFAULT_GAME_CONTROLLER_OPTIONS: GameControllerOptions = {
   gameOptions: {

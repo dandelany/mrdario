@@ -6,12 +6,11 @@ import * as cx from "classnames";
 import shallowEqual from "@/utils/shallowEqual";
 
 import { DEFAULT_KEYS } from "mrdario-core/lib/game/controller/constants";
-import { GameControllerMode, GameControllerState } from "mrdario-core/lib/game/controller";
+import { GameController, GameControllerMode, GameControllerState } from "mrdario-core/lib/game/controller";
 import { GameGrid, PillColors, TimedGameActions, TimedMoveActions } from "mrdario-core/lib/game/types";
 
 import { encodeGameState } from "mrdario-core/lib/encoding/game";
 import { GameClient } from "mrdario-core/lib/api/client/GameClient";
-import { GameController } from "mrdario-core/lib/game/controller";
 import { GamepadManager, KeyManager, SwipeManager } from "mrdario-core/lib/game/input/web";
 import { GameListItem, GameScoreResponse } from "mrdario-core/lib/api/types";
 
@@ -195,6 +194,12 @@ class MirrorGame extends React.Component<MirrorGameProps, MirrorGameState> {
           mirrorTimeBonus: timeBonus
         });
         // this.game.replayHistory();
+        // if(this.game) {
+        //   if(encodeGameState(gameState) !== encodeGameState(this.game.getState().gameState)) {
+        //     console.log('OUT OF SYNC')
+        //   }
+        // }
+
       },
       onChangeMode: (fromMode: GameControllerMode, toMode: GameControllerMode) => {
         console.log("onchangemode", fromMode, toMode);

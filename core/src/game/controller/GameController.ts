@@ -1,56 +1,28 @@
+import invariant from "invariant";
 import { cloneDeep, defaults, findLast, findLastIndex, isFunction, omitBy } from "lodash";
 import { TypeState } from "typestate";
 
-import { defaultGameOptions, Game, GameOptions, GameState } from "../Game";
+import { GameControllerMode, GameControllerOptions, GameControllerState } from "./types";
+import { InputManager } from "../input/types";
 
-import invariant from "invariant";
+import { defaultGameOptions, Game, GameOptions, GameState } from "../Game";
 import {
   GameAction,
+  GameActionMove,
   GameActionType,
   GameInput,
   GameInputMove,
   GameTickResult,
   GameTickResultType,
-  InputEventType, ModeKeyBindings,
+  InputEventType,
   TimedGameActions,
   TimedGameTickResult,
   TimedMoveActions
 } from "../types";
-import { isMoveInput } from "../utils";
+import { isMoveAction, isMoveInput } from "../utils";
 import { DEFAULT_GAME_CONTROLLER_OPTIONS } from "./constants";
 
-export enum GameControllerMode {
-  Ready = "Ready",
-  Countdown = "Countdown",
-  Playing = "Playing",
-  Paused = "Paused",
-  Won = "Won",
-  Lost = "Lost",
-  Ended = "Ended"
-}
-
-export interface GameControllerState {
-  mode: GameControllerMode;
-  gameState: GameState;
-}
-
-export interface GameControllerOptions {
-  gameOptions: Partial<GameOptions>;
-  hasHistory: boolean;
-  getTime: () => number;
-  inputManagers: InputManager[];
-  render: (state: GameControllerState, dt?: number) => any;
-  onChangeMode: (fromMode: GameControllerMode, toMode: GameControllerMode) => any;
-  onMoveActions?: (timedMoveActions: TimedMoveActions) => void;
-}
-
-export interface InputManager {
-  setMode: (mode: GameControllerMode) => any;
-  on: (event: "input", callback: (input: GameInput, keyType: InputEventType) => any) => any;
-  removeAllListeners: () => any;
-}
-
-export type KeyBindings = { [M in GameControllerMode]?: ModeKeyBindings };
+// import { encodeTimedActions } from "../../encoding/action";
 
 // game controller class
 // controls the frame timing and must tick the Game object once per frame
@@ -132,13 +104,13 @@ export class GameController {
     const frame = this.game.frame;
     const expectedFrame = Math.floor((now - refTime) / (1000 / 60)) + refFrame;
     const frameDiff = expectedFrame - frame;
-    if (frameDiff > 60) {
+    if (frameDiff > 6000) {
       throw new Error("GameController ticks got out of sync");
     }
 
-    if (Math.abs(frameDiff) > 1) {
-      console.log("frame off by", expectedFrame - frame);
-    }
+    // if (Math.abs(frameDiff) > 1) {
+    //   console.log("frame off by", expectedFrame - frame);
+    // }
 
     const tickResults: TimedGameTickResult[] = [];
 
@@ -168,19 +140,31 @@ export class GameController {
   public tickGame(): void | GameTickResult {
     // tick the game to the next frame, applying any relevant actions from futureActions queue
     // check if there are actions in futureActions that are supposed to happen on next frame
+    // this is a tight loop - don't create arrays if not necessary
     let actions: GameAction[] | undefined;
-    while (this.futureActions.length && this.futureActions[0][0] === this.game.frame + 1) {
-      const timedActions = this.futureActions.shift();
-      if (timedActions) {
+    let timedActions: TimedGameActions | undefined;
+    if (this.futureActions.length && this.futureActions[0][0] === this.game.frame + 1) {
+      const nextTimedActions = this.futureActions.shift();
+      if (nextTimedActions) {
         // add action from futureActions to list of actions for next tick
-        actions = (actions || []).concat(timedActions[1]);
+        actions = nextTimedActions[1];
+        timedActions = nextTimedActions;
       }
     }
+
     const tickResult = this.game.tick(actions);
+
+    // call user-provided callback so they can eg. send moves to server
+    if (timedActions && timedActions.length && this.options.onMoveActions) {
+      const moveActions: GameActionMove[] = timedActions[1].filter(isMoveAction);
+      if (moveActions.length) {
+        this.options.onMoveActions([timedActions[0], moveActions]);
+      }
+    }
 
     if (actions && actions.length && this.options.hasHistory) {
       const frameActions: TimedGameActions = [this.game.frame, actions];
-      console.log("history item", frameActions);
+      // console.log("history item", frameActions);
       this.actionHistory.push(frameActions);
       // todo still need to cloneDeep?
       this.stateHistory.push(cloneDeep(this.game.getState()));
@@ -213,6 +197,7 @@ export class GameController {
     this.refTime = this.getTime();
     // todo update refFrame/refTime when the game is paused
 
+    // todo allow passed rAF / setinterval
     requestAnimationFrame(this.tick.bind(this));
   }
 
@@ -229,6 +214,7 @@ export class GameController {
       invariant(this.options.hasHistory, `Action happened in the past and hasHistory is false`);
       this.rewriteHistoryWithActions(frameActions);
     }
+    // this.actionHistory.map(encodeTimedActions);
   }
 
   protected initStateMachine(): TypeState.FiniteStateMachine<GameControllerMode> {
@@ -313,12 +299,13 @@ export class GameController {
       [{ type: GameActionType.Move, input, eventType }]
     ];
 
-    // call user-provided callback so they can eg. send moves to server
-    if (this.options.onMoveActions) {
-      this.options.onMoveActions(timedActions);
-    }
+    // // call user-provided callback so they can eg. send moves to server
+    // if (this.options.onMoveActions) {
+    //   this.options.onMoveActions(timedActions);
+    // }
 
     // add move actions so they will be processed on next game tick
+    // console.log('handled moves', timedActions);
     this.addFrameActions(timedActions);
   };
 
@@ -369,6 +356,7 @@ export class GameController {
   }
   protected rewindGameToFrame(game: Game, frame: number) {
     invariant(this.options.hasHistory, `Cannot rewind game, options.hasHistory is false`);
+    // console.log('history length', this.stateHistory.length, this.actionHistory.length);
     // use state history to "rewind" the state of the game to a given frame
     // may not have saved that exact frame, so find the nearest saved frame less tham or equal to the target,
     // start there, and tick forward through time until reaching the target frame
@@ -384,6 +372,7 @@ export class GameController {
   }
 
   protected rewriteHistoryWithActions(frameActions: TimedGameActions) {
+    // const stateHistory = this.stateHistory;
     invariant(this.options.hasHistory, `Cannot rewrite history, options.hasHistory is false`);
     const [frame] = frameActions;
     const currentFrame = this.game.frame;
@@ -395,7 +384,10 @@ export class GameController {
     addFrameActionsToList(frameActions, this.actionHistory);
     // all of our state history after (frame - 1) is no longer valid - remove them from stateHistory
     const firstInvalidStateIndex = findLastIndex(this.stateHistory, state => state.frame >= frame);
-    this.stateHistory.splice(firstInvalidStateIndex, this.stateHistory.length - firstInvalidStateIndex);
+    if (firstInvalidStateIndex > -1) {
+      console.log("splicing state history", firstInvalidStateIndex);
+      this.stateHistory.splice(firstInvalidStateIndex, this.stateHistory.length - firstInvalidStateIndex);
+    }
 
     // find the earliest action(s) in actionHistory which happen after the game's current frame
     let nextActionsIndex = this.actionHistory.findIndex(([actionsFrame]) => actionsFrame > dummyGame.frame);

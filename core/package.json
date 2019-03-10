@@ -8,12 +8,12 @@
     "test": "jest --config jestconfig.json",
     "test-watch": "jest --config jestconfig.json --watch",
     "clean": "rimraf lib/",
-    "build": "npm run clean && tsc",
+    "build": "tsc",
     "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
     "lint": "tslint -p tsconfig.json --fix",
     "watch-changed": "npm run build && echo 'OK'",
     "watch": "onchange -i 'src/**/*.ts' 'src/**/*.js' -- npm run watch-changed",
-    "release": "npm run format && npm run lint && npm run test && npm run build"
+    "release": "npm run format && npm run lint && npm run test && npm run clean && npm run build"
   },
   "author": "Dan Delany <dan.delany@gmail.com>",
   "license": "MIT",

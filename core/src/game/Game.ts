@@ -45,6 +45,7 @@ import {
   rotatePill,
   slamPill
 } from "./utils";
+import { encodeMoveAction } from "../encoding/action";
 
 function gravityFrames(speed: number): number {
   return GRAVITY_TABLE[Math.min(speed, GRAVITY_TABLE.length - 1)];
@@ -147,6 +148,11 @@ export class Game extends EventEmitter {
     this.frame++;
     const moveActions: GameActionMove[] = actions.filter(isMoveAction);
     const moveQueue: GameInputMove[] = this.inputRepeater.tick(moveActions);
+
+    if(moveActions.length > 0) {
+      // console.log('multiple moves: on frame', this.frame, moveActions);
+      console.log(this.frame, moveActions.map(encodeMoveAction).join('; '))
+    }
 
     // the main game loop, called once per game tick
     switch (this.fsm.currentState) {

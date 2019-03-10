@@ -1,6 +1,7 @@
 import * as React from "react";
 
-import { GameControllerMode, GameGrid, GameOptions, PillColors } from "mrdario-core";
+import { GameGrid, GameOptions, PillColors } from "mrdario-core";
+import { GameControllerMode } from "mrdario-core/lib/game/controller";
 
 import PillPreviewPanel from "@/components/game/PillPreviewPanel";
 import ContainerDimensions, { Dimensions } from "react-container-dimensions";
