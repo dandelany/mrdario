@@ -72,16 +72,14 @@ export interface GameClientOptions {
   onAuthenticate?: (signedAuthToken: string | null, socket: SCClientSocket) => void;
   onDeauthenticate?: (oldSignedToken: string | null, socket: SCClientSocket) => void;
   onAuthStateChange?: (stateChangeData: SCClientSocket.AuthStateChangeData, socket: SCClientSocket) => void;
+  // todo handle other socket events?:
   // onRemoveAuthToken?: (oldToken: object | null, socket: SCClientSocket) => void;
-
   // onKickOut?: (message: string, channelName: string) => void;
   // onSubscribe?: (channelName: string, subscriptionOptions: SCChannelOptions) => void;
   // onSubscribeRequest?: (channelName: string, subscriptionOptions: SCChannelOptions) => void;
   // onSubscribeStateChange?: (stateChangeData: SCClientSocket.SubscribeStateChangeData) => void;
   // onSubscribeFail?: (err: Error, channelName: string, subscriptionOptions: SCChannelOptions) => void;
   // onUnsubscribe?: (channelName: string) => void;
-  // onRaw?: (data: any) => void;
-  // onMessage?: (message: WebSocket.Data) => void;
 }
 
 export class GameClient {

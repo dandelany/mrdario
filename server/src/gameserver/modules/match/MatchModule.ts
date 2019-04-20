@@ -18,7 +18,7 @@ function requireAuthToken(socket: SCServerSocket, respond: (error: string, data:
   }
 }
 
-export class SyncModule {
+export class MatchModule {
   scServer: SCServer;
 
   constructor(scServer: SCServer) {

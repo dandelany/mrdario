@@ -1,6 +1,6 @@
 import { invert } from "lodash";
 
-import { GameColor, GridObject, GridObjectType, GridObjectWithColor } from "../game";
+import { GridObject, GridObjectWithColor, GridObjectType, GameColor } from "../game/types";
 import { hasColor } from "../game/utils";
 
 export type EncodedGridObject = string;

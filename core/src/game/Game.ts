@@ -2,7 +2,7 @@ import { EventEmitter } from "events";
 import { defaults, includes } from "lodash";
 import { TypeState } from "typestate";
 
-import { InputRepeater, MovingCounters } from "./InputRepeater";
+import { InputRepeater } from "./InputRepeater";
 
 import {
   ACCELERATE_INTERVAL,
@@ -21,6 +21,8 @@ import {
   GameInput,
   GameInputMove,
   GameMode,
+  GameOptions,
+  GameState,
   GameTickResult,
   GameTickResultType,
   GridDirection,
@@ -49,35 +51,6 @@ import { encodeMoveAction } from "../encoding/action";
 
 function gravityFrames(speed: number): number {
   return GRAVITY_TABLE[Math.min(speed, GRAVITY_TABLE.length - 1)];
-}
-
-export type Omit<T, K extends keyof T> = Pick<T, Exclude<keyof T, K>>;
-
-// options that can be passed to control game parameters
-export interface GameOptions {
-  level: number;
-  baseSpeed: number;
-  width: number;
-  height: number;
-  initialSeed?: string;
-}
-export type EncodableGameOptions = GameOptions;
-
-export interface GameState {
-  mode: GameMode;
-  grid: GameGrid;
-  pill?: PillLocation;
-  nextPill: PillColors;
-  movingCounters: MovingCounters;
-  seed: string;
-  frame: number;
-  gameTicks: number;
-  modeTicks: number;
-  pillCount: number;
-  score: number;
-  timeBonus: number;
-  // comboLineCount: number;
-  lineColors: GameColor[];
 }
 
 // options that can be passed to control game parameters

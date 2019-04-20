@@ -21,7 +21,7 @@ import {
 import { MIN_VIRUS_ROW_TABLE, VIRUS_COUNT_TABLE } from "../constants";
 import { getCellNeighbors, getInGrid } from "./grid";
 import { hasColor, isColor, isEmpty } from "./guards";
-import { seedRandomColor, seedRandomInt } from "./random";
+import { seedRandomColor, seedRandomInt } from "../../utils/random";
 import { setInGrid } from "./setters";
 
 export function makeEmpty(): GridObjectEmpty {

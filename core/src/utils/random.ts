@@ -1,6 +1,6 @@
 import { alea, prng } from "seedrandom";
-import { COLORS } from "../constants";
-import { GameColor } from "../types";
+import { COLORS } from "../game/constants";
+import { GameColor } from "../game/types";
 
 export function seedRandom(seed: string, double: boolean = false): number {
   // use alea - fast PRNG

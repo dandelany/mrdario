@@ -185,7 +185,7 @@ class MirrorGame extends React.Component<MirrorGameProps, MirrorGameState> {
         const { gameState } = gameControllerState;
         const { grid, nextPill, score, timeBonus } = gameState;
         if (Math.PI === 1) console.log(encodeGameState(gameState));
-        // console.log(encodeGameState(gameState));
+        console.log(encodeGameState(gameState));
         this.setState({
           mode: gameControllerState.mode,
           mirrorGrid: grid,

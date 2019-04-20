@@ -1,6 +1,6 @@
 import invariant from "invariant";
 
-import { GameAction, GameActionMove, GameActionType, TimedGameActions } from "../game";
+import { GameAction, GameActionMove, GameActionType, TimedGameActions } from "../game/types";
 import { isMoveAction } from "../game/utils";
 import { decodeInt, encodeInt } from "./game";
 import { decodeMoveInputEvent, encodeMoveInputEvent } from "./move";

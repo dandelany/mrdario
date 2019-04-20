@@ -5,13 +5,13 @@ import { TypeState } from "typestate";
 import { GameControllerMode, GameControllerOptions, GameControllerState } from "./types";
 import { InputManager } from "../input/types";
 
-import { defaultGameOptions, Game, GameOptions, GameState } from "../Game";
+import { defaultGameOptions, Game} from "../Game";
 import {
   GameAction,
   GameActionMove,
   GameActionType,
   GameInput,
-  GameInputMove,
+  GameInputMove, GameOptions, GameState,
   GameTickResult,
   GameTickResultType,
   InputEventType,

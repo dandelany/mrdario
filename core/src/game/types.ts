@@ -1,4 +1,8 @@
-import { GameColor, GameInput, GridDirection, GridObjectType, InputEventType, SpeedLevel } from "./enums";
+import * as t from 'io-ts';
+
+import { GameColor, GameInput, GameMode, GridDirection, GridObjectType, InputEventType, SpeedLevel } from "./enums";
+import { MovingCounters } from "./InputRepeater";
+import { numEnumType } from "../encoding/utils";
 
 export * from "./enums";
 
@@ -74,7 +78,13 @@ export type GridCellLocationDelta = [number, number];
 export type GridCellNeighbors = { [D in GridDirection]: MaybeGridObject };
 
 export type PillLocation = [GridCellLocation, GridCellLocation];
-export type PillColors = [GameColor, GameColor];
+
+
+export const tGameColor = numEnumType<GameColor>(GameColor, "GameColor");
+
+export const tPillColors = t.tuple([tGameColor, tGameColor], "PillColors");
+export type PillColors = t.TypeOf<typeof tPillColors>;
+// export type PillColors = [GameColor, GameColor];
 
 export type SpeedTable = { [S in SpeedLevel]: number };
 
@@ -158,3 +168,31 @@ export type GameTickResult = GameTickResultWin | GameTickResultLose | GameTickRe
 export type TimedGameActions = [number, GameAction[]];
 export type TimedMoveActions = [number, GameActionMove[]];
 export type TimedGameTickResult = [number, GameTickResult];
+
+// options that can be passed to control game parameters
+export interface GameOptions {
+  level: number;
+  baseSpeed: number;
+  width: number;
+  height: number;
+  initialSeed?: string;
+}
+
+export type EncodableGameOptions = GameOptions;
+
+export interface GameState {
+  mode: GameMode;
+  grid: GameGrid;
+  pill?: PillLocation;
+  nextPill: PillColors;
+  movingCounters: MovingCounters;
+  seed: string;
+  frame: number;
+  gameTicks: number;
+  modeTicks: number;
+  pillCount: number;
+  score: number;
+  timeBonus: number;
+  // comboLineCount: number;
+  lineColors: GameColor[];
+}

@@ -1,5 +1,5 @@
-import { GameOptions, GameState } from "../Game";
-import { TimedMoveActions } from "../types";
+import { GameOptions} from "../types";
+import { GameState, TimedMoveActions } from "../types";
 import { InputManager } from "../input/types";
 
 export enum GameControllerMode {
