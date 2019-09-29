@@ -2,8 +2,7 @@ import invariant = require("invariant");
 import * as t from "io-ts";
 import { EncodableGameOptions, GameState } from "../game";
 import { MovingCounters } from "../game/InputRepeater";
-import { PillColors, tPillColors, GameInput } from "../game/types";
-import { GameColor } from "../game/enums";
+import { PillColors, tPillColors, GameInput, GameColor } from "../game/types";
 import { encodeGrid } from "./grid";
 import { numEnumType, strEnumType } from "./utils";
 
@@ -33,7 +32,6 @@ export function decodeInt(numStr: string): number {
 
 // export const tPillColors = new t.Type<PillColors>
 export const tGameInput = strEnumType<GameInput>(GameInput, 'GameInput');
-
 
 export const tGameColor = numEnumType<GameColor>(GameColor, "GameColor");
 
@@ -65,22 +63,6 @@ export const tPillColorsCodec = new t.Type<PillColors, string, unknown>(
   }
 );
 
-export function encodePillColors(pillColors: PillColors): string {
-  const color0: number = pillColors[0];
-  const color1: number = pillColors[1];
-  // there are only 3 colors (0, 1, 2), so we can cheaply fit 2 in 1 character by bit shifting them
-  const combined: number = (color0 << 2) + color1;
-  return encodeInt(combined);
-}
-export function decodePillColors(encodedColors: string): PillColors {
-  // todo validate pill colors string
-  invariant(encodedColors.length === 1, "Invalid pill colors string - expected 1 character");
-  const combinedNum: number = decodeInt(encodedColors);
-  const color0 = combinedNum >> 2;
-  const color1 = combinedNum & 0b11;
-  return [color0, color1];
-}
-
 export function encodeMovingCounters(movingCounters: MovingCounters): string {
   const entries = Array.from(movingCounters.entries());
   return JSON.stringify(entries);
@@ -103,7 +85,8 @@ export function encodeGameState(state: GameState): EncodedGameState {
   return JSON.stringify({
     ...state,
     grid: encodeGrid(state.grid),
-    nextPill: encodePillColors(state.nextPill),
+    // nextPill: encodePillColors(state.nextPill),
+    nextPill: tPillColorsCodec.encode(state.nextPill),
     frame: tEncodedInt.encode(state.frame),
     score: tEncodedInt.encode(state.score),
     timeBonus: tEncodedInt.encode(state.timeBonus),

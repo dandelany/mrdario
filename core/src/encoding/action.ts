@@ -1,8 +1,9 @@
 import invariant from "invariant";
+// import * as t from "io-ts";
 
 import { GameAction, GameActionMove, GameActionType, TimedGameActions } from "../game/types";
 import { isMoveAction } from "../game/utils";
-import { decodeInt, encodeInt } from "./game";
+import { tEncodedInt } from "./game";
 import { decodeMoveInputEvent, encodeMoveInputEvent } from "./move";
 
 export type ActionTypeEncodingMap = { [I in GameActionType]: string };
@@ -18,6 +19,9 @@ export const actionTypeCodes: ActionTypeEncodingMap = {
   [GameActionType.Defeat]: "D",
   [GameActionType.ForfeitWin]: "W"
 };
+
+
+// export const tEncodedMoveAction = new t.Type<GameActionMove, string, unknown>()
 
 export function encodeMoveAction(action: GameActionMove): EncodedMoveAction {
   const { input, eventType } = action;
@@ -50,13 +54,18 @@ export function decodeAction(encodedAction: EncodedAction): GameAction {
 export function encodeTimedActions(timedActions: TimedGameActions): EncodedTimedActions {
   const [frame, actions] = timedActions;
   const encodedActions = actions.map(encodeAction);
-  return `${encodeInt(frame)}:${encodedActions.join("|")}`;
+  return `${tEncodedInt.encode(frame)}:${encodedActions.join("|")}`;
 }
 export function decodeTimedActions(encodedTimedActions: EncodedTimedActions): TimedGameActions {
   const splitArr = encodedTimedActions.split(":");
   invariant(splitArr.length === 2, `Invalid EncodedTimedActions: ${encodedTimedActions}`);
-  const frame: number = decodeInt(splitArr[0]);
-  const actionStrings: EncodedAction[] = splitArr[1].split("|");
-  const actions: GameAction[] = actionStrings.map(decodeAction);
-  return [frame, actions];
+  const decodedFrame = tEncodedInt.decode(splitArr[0]);
+  if(decodedFrame.isRight()) {
+    const frame = decodedFrame.value;
+    const actionStrings: EncodedAction[] = splitArr[1].split("|");
+    const actions: GameAction[] = actionStrings.map(decodeAction);
+    return [frame, actions];
+  } else {
+    throw new Error("");
+  }
 }

@@ -1,10 +1,12 @@
 import {
   decodeGrid,
   decodeInt,
-  decodePillColors,
+  // decodePillColors,
   encodeGameState,
   encodeInt,
-  encodePillColors, tEncodedInt, tPillColorsCodec
+  // encodePillColors,
+  tEncodedInt,
+  tPillColorsCodec
   // tGameInput
 } from "../../encoding";
 import { GameColor, GameInput, GameInputMove, GameMode, PillColors } from "../../game";
@@ -24,7 +26,7 @@ describe("Game Encoding", () => {
       const encoded = tEncodedInt.encode(intValue);
       const decoded = tEncodedInt.decode(encoded);
       expect(decoded.isRight()).toBe(true);
-      if(decoded.isRight()) {
+      if (decoded.isRight()) {
         expect(decoded.value).toEqual(intValue);
       }
     });
@@ -61,7 +63,6 @@ describe("Game Encoding", () => {
     });
   });
 
-
   describe("Pill Colors codec", () => {
     test("tPillColorsCodec encodes two pill colors into a single character", () => {
       for (const color1 of COLORS) {
@@ -80,7 +81,7 @@ describe("Game Encoding", () => {
           const encoded = tPillColorsCodec.encode(pillColors);
           const decoded = tPillColorsCodec.decode(encoded);
           expect(decoded.isRight()).toBe(true);
-          if(decoded.isRight()) {
+          if (decoded.isRight()) {
             expect(decoded.value).toEqual(pillColors);
           }
         }
@@ -90,32 +91,8 @@ describe("Game Encoding", () => {
       expect(tPillColorsCodec.decode(null).isRight()).toBe(false);
       expect(tPillColorsCodec.decode(undefined).isRight()).toBe(false);
       expect(tPillColorsCodec.decode(0).isRight()).toBe(false);
-      expect(tPillColorsCodec.decode('00').isRight()).toBe(false);
-      expect(tPillColorsCodec.decode('z').isRight()).toBe(false);
-    });
-  });
-
-  // todo: deprecate
-  describe("Pill Color/Sequence Encoding", () => {
-    test("encodePillColors encodes two pill colors into a single character", () => {
-      for (const color1 of COLORS) {
-        for (const color2 of COLORS) {
-          const pillColors: PillColors = [color1, color2];
-          const encoded = encodePillColors(pillColors);
-          expect(typeof encoded).toBe("string");
-          expect(encoded).toHaveLength(1);
-        }
-      }
-    });
-    test("decodePillColors(encoded) returns decoded colors", () => {
-      for (const color1 of COLORS) {
-        for (const color2 of COLORS) {
-          const pillColors: PillColors = [color1, color2];
-          const encoded = encodePillColors(pillColors);
-          const decoded: PillColors = decodePillColors(encoded);
-          expect(decoded).toEqual(pillColors);
-        }
-      }
+      expect(tPillColorsCodec.decode("00").isRight()).toBe(false);
+      expect(tPillColorsCodec.decode("z").isRight()).toBe(false);
     });
   });
 

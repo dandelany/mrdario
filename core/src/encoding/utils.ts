@@ -1,22 +1,18 @@
 import * as t from "io-ts";
 
-/**
- * Returns an object where the keys are the values
- * of the object passed as input and all values are undefined
- */
-const getObjectValues = (e: object) =>
-  Object.keys(e).reduce(
-    // tslint:disable-next-line:no-any
-    (o, k) => ({ ...o, [(e as any)[k]]: undefined }),
-    {} as { readonly [k: string]: undefined }
-  );
 
 /**
  * Creates an io-ts Type from a string enum
  */
-export const strEnumType = <E>(e: object, name: string): t.Type<E> =>
-  // tslint:disable-next-line:no-any
-  t.keyof(getObjectValues(e), name) as any;
+export const strEnumType = <E>(e: object, name: string): t.Type<E> => {
+  // create an object where the keys are the values
+  // of the object passed as input and all values are undefined
+  const valuesObject = Object.keys(e).reduce(
+    (o, k) => ({ ...o, [(e as any)[k]]: undefined }),
+    {} as { readonly [k: string]: undefined }
+  );
+  return t.keyof(valuesObject, name) as any;
+};
 
 /**
  * Creates an io-ts Type from a numeric enum
@@ -34,8 +30,27 @@ export const numEnumType = <E>(e: object, name: string): t.Type<E> => {
   }
 };
 
-// const getLiteralUnionFromValues = (e: object) =>
-//   Object.keys(e).map(
-//     // tslint:disable-next-line:no-any
-//     (o, k) => ()
-//   )
+export const tJSONString = <C extends t.Mixed>(tCodec: C) => {
+  type CType = t.TypeOf<typeof tCodec>;
+  return new t.Type<CType, string, unknown>(
+    `JSONString<${tCodec.name}>`,
+    tCodec.is,
+    (input: unknown, context: t.Context) => {
+      return t.string
+        .validate(input, context)
+        .chain((jsonStr: string) => {
+          try {
+            return t.success(JSON.parse(jsonStr));
+          } catch (e) {
+            return t.failure(input, context, e.toString());
+          }
+        })
+        .chain((parsed: any) => {
+          return tCodec.validate(parsed, context);
+        });
+    },
+    (value: CType): string => {
+      return JSON.stringify(value);
+    }
+  );
+};
