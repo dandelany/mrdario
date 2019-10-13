@@ -1,4 +1,4 @@
-import { GameControllerMode, GameInput, GridObjectType, KeyBindings } from "mrdario-core/lib/types";
+import { GameControllerMode, GameInput, GridObjectType, KeyBindings } from "mrdario-core/lib/game";
 import { GridObjectStringMap } from "./types";
 
 export const GRID_OBJECT_STRINGS: GridObjectStringMap = {

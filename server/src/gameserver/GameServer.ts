@@ -13,6 +13,7 @@ import { HighScoresModule } from "./modules/highScores";
 import { LobbyModule } from "./modules/lobby";
 import { AuthModule } from "./modules/auth";
 import { SyncModule } from "./modules/sync";
+import { MatchModule } from "./modules/match/MatchModule";
 
 // in-memory state, for now...
 // todo put this in redis where appropriate?
@@ -36,6 +37,7 @@ export class GameServer {
   lobby: LobbyModule;
   auth: AuthModule;
   sync: SyncModule;
+  match: MatchModule;
 
   constructor(scServer: SCServer, rClient: RedisClient) {
     this.scServer = scServer;
@@ -51,6 +53,7 @@ export class GameServer {
     this.lobby = new LobbyModule(scServer);
     this.auth = new AuthModule(scServer);
     this.sync = new SyncModule(scServer);
+    this.match = new MatchModule(scServer);
 
     scServer.on("connection", this.handleConnect);
   }
@@ -63,6 +66,7 @@ export class GameServer {
     this.lobby.handleConnect(socket);
     this.auth.handleConnect(socket);
     this.sync.handleConnect(socket);
+    this.match.handleConnect(socket);
 
     socket.on("disconnect", () => {
       // temporary - remove below

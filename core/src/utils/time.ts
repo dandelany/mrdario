@@ -7,9 +7,21 @@ export function getNodeProcessTimeMs(): number {
 }
 
 export function getGetTime(): () => number {
+  if (typeof process !== 'undefined' &&  process.release && process.release.name === 'node') {
+    return process && process.hrtime
+      ? getNodeProcessTimeMs
+      : () => new Date().getTime();
+  }
   return window && window.performance && window.performance.now
     ? window.performance.now.bind(window.performance)
-    : process && process.hrtime
-    ? getNodeProcessTimeMs
     : () => new Date().getTime();
+  //
+  // if (typeof window !== 'undefined') {
+  //   return window && window.performance && window.performance.now
+  //     ? window.performance.now.bind(window.performance)
+  //     : () => new Date().getTime();
+  // }
+  // return process && process.hrtime
+  //   ? getNodeProcessTimeMs
+  //   : () => new Date().getTime();
 }

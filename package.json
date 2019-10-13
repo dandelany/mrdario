@@ -1,0 +1,18 @@
+{
+  "name": "mrdario",
+  "description": "Mr. Dario",
+  "author": "Dan Delany <dan.delany@gmail.com>",
+  "version": "2.0.0",
+  "main": "index.js",
+  "repository": "github:dandelany/mrdario",
+  "license": "MIT",
+  "private": true,
+  "workspaces": [
+    "bots",
+    "core",
+    "scripts",
+    "server",
+    "terminal-client",
+    "web-client"
+  ]
+}

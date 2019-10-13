@@ -1,20 +1,37 @@
-import * as t from 'io-ts';
+import * as t from "io-ts";
 
 import { GameColor, GameInput, GameMode, GridDirection, GridObjectType, InputEventType, SpeedLevel } from "./enums";
 import { MovingCounters } from "./InputRepeater";
 import { numEnumType, strEnumType } from "../encoding/utils";
 
 export * from "./enums";
+export * from "./input/types";
+export * from "./controller/types";
 
 export const tGameColor = numEnumType<GameColor>(GameColor, "GameColor");
-export const tGameInput = strEnumType<GameInput>(GameInput, 'GameInput');
-export const tGameMode = strEnumType<GameMode>(GameMode, 'GameMode');
-export const tGridDirection = strEnumType<GridDirection>(GridDirection, 'GridDirection');
-export const tGridObjectType = strEnumType<GridObjectType>(GridObjectType, 'GridObjectType');
-export const tInputEventType = strEnumType<InputEventType>(InputEventType, 'InputEventType');
-export const tSpeedLevel = strEnumType<SpeedLevel>(SpeedLevel, 'SpeedLevel');
+export const tGameInput = strEnumType<GameInput>(GameInput, "GameInput");
+export const tGameMode = strEnumType<GameMode>(GameMode, "GameMode");
+export const tGridDirection = strEnumType<GridDirection>(GridDirection, "GridDirection");
+export const tGridObjectType = strEnumType<GridObjectType>(GridObjectType, "GridObjectType");
+export const tInputEventType = strEnumType<InputEventType>(InputEventType, "InputEventType");
+export const tSpeedLevel = strEnumType<SpeedLevel>(SpeedLevel, "SpeedLevel");
 
 export type OneOrMore<T> = { 0: T } & T[];
+
+export const tGridObjectBase = t.type({
+  type: tGridObjectType
+});
+
+export const tGridObjectWithColor = t.type({
+  type: tGridObjectType,
+  color: tGameColor
+});
+
+export const tGridObjectDestroyed = t.type({
+  type: t.literal(GridObjectType.Destroyed)
+});
+// export type TGridObjectDestroyed = t.TypeOf<typeof tGridObjectDestroyed>;
+
 
 export interface GridObjectBase {
   readonly type: GridObjectType;
@@ -87,7 +104,6 @@ export type GridCellNeighbors = { [D in GridDirection]: MaybeGridObject };
 
 export type PillLocation = [GridCellLocation, GridCellLocation];
 
-
 export const tPillColors = t.tuple([tGameColor, tGameColor], "PillColors");
 export type PillColors = t.TypeOf<typeof tPillColors>;
 // export type PillColors = [GameColor, GameColor];
@@ -97,14 +113,17 @@ export type SpeedTable = { [S in SpeedLevel]: number };
 export type ModeKeyBindings = { [I in GameInput]?: string | string[] };
 
 // Subset of GameInputs which are moves
-export const tGameInputMove = t.union([
-  t.literal(GameInput.Up),
-  t.literal(GameInput.Down),
-  t.literal(GameInput.Left),
-  t.literal(GameInput.Right),
-  t.literal(GameInput.RotateCCW),
-  t.literal(GameInput.RotateCW)
-], "GameInputMove");
+export const tGameInputMove = t.union(
+  [
+    t.literal(GameInput.Up),
+    t.literal(GameInput.Down),
+    t.literal(GameInput.Left),
+    t.literal(GameInput.Right),
+    t.literal(GameInput.RotateCCW),
+    t.literal(GameInput.RotateCW)
+  ],
+  "GameInputMove"
+);
 export type GameInputMove = t.TypeOf<typeof tGameInputMove>;
 
 // export type GameInputMove =
@@ -132,11 +151,14 @@ export enum GameActionType {
   Defeat = "Defeat",
   ForfeitWin = "ForfeitWin"
 }
-export const tGameActionMove = t.interface({
-  type: t.literal(GameActionType.Move),
-  input: tGameInputMove,
-  eventType: tInputEventType
-}, "GameActionMove");
+export const tGameActionMove = t.interface(
+  {
+    type: t.literal(GameActionType.Move),
+    input: tGameInputMove,
+    eventType: tInputEventType
+  },
+  "GameActionMove"
+);
 export type GameActionMove = t.TypeOf<typeof tGameActionMove>;
 // export interface GameActionMove {
 //   type: GameActionType.Move;

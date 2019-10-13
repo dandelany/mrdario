@@ -1,8 +1,8 @@
 import * as blessed from "blessed";
 import chalk from "chalk";
 
-import { GameColor, GameControllerState, GameGridRow, GridObject } from "mrdario-core/lib/types";
-import { hasColor } from "mrdario-core/lib/utils/guards";
+import { GameColor, GameControllerState, GameGridRow, GridObject } from "mrdario-core/lib/game/types";
+import { hasColor } from "mrdario-core/lib/game/utils/guards";
 
 import { GRID_OBJECT_STRINGS } from "./constants";
 import { GridObjectStringMap } from "./types";
@@ -74,7 +74,7 @@ export default class TerminalGameUi {
     this.screen.render();
   }
   renderGame(state: GameControllerState) {
-    const gridRowStrs = state.grid.map((row: GameGridRow) => {
+    const gridRowStrs = state.gameState.grid.map((row: GameGridRow) => {
       const objStrs = row.map((obj: GridObject) => {
         return renderObject(obj, GRID_OBJECT_STRINGS);
       });
@@ -84,7 +84,7 @@ export default class TerminalGameUi {
     if (gridStr !== this.lastGridStr) {
       this.lastGridStr = gridStr;
       this.gameBox.setContent(gridStr);
-      this.scoreBox.setContent(`Score\n${state.score}`);
+      this.scoreBox.setContent(`Score\n${state.gameState.score}`);
       this.screen.render();
     }
   }

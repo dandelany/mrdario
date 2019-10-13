@@ -8,7 +8,7 @@ import {
   InputManager,
   KeyBindings,
   ModeKeyBindings
-} from "mrdario-core/lib/types";
+} from "mrdario-core/lib/game/types";
 
 
 export default class TerminalKeyManager extends EventEmitter implements InputManager {

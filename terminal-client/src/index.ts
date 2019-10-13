@@ -6,7 +6,8 @@ import {
   GameControllerMode,
   GameControllerState,
   KeyBindings,
-} from "mrdario-core/lib/types";
+} from "mrdario-core/lib/game/types";
+
 
 import { GridObjectStringMap } from "./types";
 import { GRID_OBJECT_STRINGS, KEY_BINDINGS } from "./constants";

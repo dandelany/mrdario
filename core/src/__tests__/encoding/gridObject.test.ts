@@ -1,5 +1,6 @@
 import { uniq, values } from "lodash";
-import { colorEncodingMap, gridObjectTypeEncodingMap } from "../../encoding";
+import { colorEncodingMap, gridObjectTypeEncodingMap, tGridObjectCodec } from "../../encoding";
+import { GridObjectType } from "../../game";
 
 function hasDuplicates(arr: Array<string | number>): boolean {
   const strArr: string[] = arr.map((d: string | number) => d + "");
@@ -27,4 +28,9 @@ describe("Grid Object Encoding", () => {
     ).toBeTruthy();
   });
   // todo test encoder & decoder
+  test("codec encoder", () => {
+    const encoded = tGridObjectCodec.encode({type: GridObjectType.Destroyed});
+    console.log(encoded);
+  });
+
 });

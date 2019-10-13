@@ -1,14 +1,14 @@
 import * as blessed from "blessed";
 
-import {Game} from "mrdario-core/lib/Game";
+import { Game, GameActionType } from "mrdario-core/lib/Game";
 import {
   GameControllerMode,
+  GameControllerState,
   GameInput,
   GameInputMove,
   InputEventType,
-  MoveInputEvent,
-  GameControllerState
-} from "mrdario-core/lib/types";
+  MoveInputEvent
+} from "mrdario-core/lib/game/types";
 
 import TerminalKeyManager from "./TerminalKeyManager";
 
@@ -30,8 +30,8 @@ export default class CLIGameController {
   constructor(options: CLIGameControllerOptions) {
     this.options = options;
     this.game = new Game({
-      onLose: options.onLose,
-      onWin: options.onWin,
+      // onLose: options.onLose,
+      // onWin: options.onWin,
       level: 12
     });
     this.moveInputQueue = [];
@@ -46,7 +46,9 @@ export default class CLIGameController {
   }
 
   tick() {
-    this.game.tick(this.moveInputQueue);
+    this.game.tick(this.moveInputQueue.map(({input, eventType}) => {
+      return {type: GameActionType.Move, input, eventType}
+    }));
     this.render();
     this.moveInputQueue = [];
   }
@@ -73,13 +75,15 @@ export default class CLIGameController {
 
   public getState(mode?: GameControllerMode): GameControllerState {
     // minimal description of game state to render
+    // return this.game.getState();
     return {
       mode: mode || GameControllerMode.Playing,
-      pillCount: this.game.pillCount,
-      grid: this.game.grid,
-      pillSequence: this.game.pillSequence,
-      score: this.game.score,
-      timeBonus: this.game.timeBonus
+      gameState: this.game.getState()
+    //   pillCount: this.game.pillCount,
+    //   grid: this.game.grid,
+    //   pillSequence: this.game.pillSequence,
+    //   score: this.game.score,
+    //   timeBonus: this.game.timeBonus
     };
   }
 

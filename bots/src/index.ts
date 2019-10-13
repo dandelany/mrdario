@@ -33,7 +33,7 @@ class GameBot {
     return await this.gameClient.joinLobby();
   }
   async sendChat() {
-    return await this.gameClient.sendLobbyChat(`My favorite band is ${generate()}`);
+    return await this.gameClient.sendLobbyChat(`My favorite band is ${generate('')}`);
   }
 }
 

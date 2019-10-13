@@ -24,6 +24,14 @@ export const TMatch = t.type({
   baseSpeed: t.array(t.number)
 });
 
+// options which can be passed when creating a match
+export const TCreateMatchRequest = t.partial({
+  invitationOnly: t.boolean,
+  level: t.number,
+  baseSpeed: t.number
+});
+export type CreateMatchRequest = t.TypeOf<typeof TCreateMatchRequest>;
+
 // export const TMatchOptions = pick(TMatch, [
 //   'invitationOnly',
 //   'level',

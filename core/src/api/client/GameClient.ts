@@ -29,7 +29,7 @@ import { encodeGrid } from "../../encoding";
 import { decodeTimedActions, encodeTimedActions } from "../../encoding/action";
 import { GameGrid, TimedGameActions } from "../../game";
 
-// import { SCChannelOptions } from "sc-channel";
+// import { setupSyncClient } from "./SyncClient";
 
 interface AuthToken {
   id: string;
@@ -51,9 +51,9 @@ export function hasValidAuthToken(socket: SCClientSocket): socket is ClientSocke
   return !!socket.authToken && isAuthToken(socket.authToken);
 }
 
-const getTimeFunction = () => {
-  return performance.now() / 1000;
-};
+// const getTimeFunction = () => {
+//   return performance.now() / 1000;
+// };
 
 export interface GameClientOptions {
   socketOptions?: SCClientSocket.ClientOptions;
@@ -85,7 +85,7 @@ export interface GameClientOptions {
 export class GameClient {
   public socket: SCClientSocket;
   private lobbyUsers: LobbyResponse;
-  private syncClient: SyncClient;
+  private syncClient?: SyncClient;
 
   constructor(options: GameClientOptions = {}) {
     const socket = createSocket({
@@ -93,7 +93,7 @@ export class GameClient {
       ...(options.socketOptions || {}),
       autoConnect: false
     });
-    this.syncClient = new SyncClient(getTimeFunction);
+    // this.syncClient = new SyncClient(getTimeFunction);
 
     if (options.onConnecting) {
       socket.on("connecting", partialRight(options.onConnecting, socket));
@@ -122,53 +122,17 @@ export class GameClient {
     if (options.onAuthStateChange) {
       socket.on("authStateChange", partialRight(options.onAuthStateChange, socket));
     }
-    if (options.onAuthStateChange) {
-      socket.on("authStateChange", partialRight(options.onAuthStateChange, socket));
-    }
 
     this.socket = socket;
     this.lobbyUsers = [];
   }
+
   public connect() {
     return new Promise<SCClientSocket>((resolve, reject) => {
       this.socket.connect();
       this.socket.on("connect", () => {
         console.log("Socket connected - OK");
-
-        const syncSend = (pingId: number, clientPingTime: number) => {
-          // const request = new Float64Array(3);
-          // request[0] = 0; // this is a ping
-          // request[1] = pingId;
-          // request[2] = clientPingTime;
-          const request = [pingId, clientPingTime];
-          console.log(`[ping] - id: ${pingId}, pingTime: ${clientPingTime}`);
-
-          this.socket.emit("sPing", request);
-        };
-
-        const syncReceive: SyncClient.ReceiveFunction = callback => {
-          this.socket.on("sPong", (response: any) => {
-            if (response) {
-              const [pingId, clientPingTime, serverPingTime, serverPongTime] = response;
-
-              console.log(
-                `[pong] - id: %s, clientPingTime: %s, serverPingTime: %s, serverPongTime: %s`,
-                pingId,
-                clientPingTime,
-                serverPingTime,
-                serverPongTime
-              );
-
-              callback(pingId, clientPingTime, serverPingTime, serverPongTime);
-            }
-          });
-        };
-
-        const syncReport: SyncClient.ReportFunction = report => {
-          console.log(report);
-        };
-
-        this.syncClient.start(syncSend, syncReceive, syncReport);
+        // this.syncClient = setupSyncClient(this.socket, getTimeFunction);
 
         resolve(this.socket);
       });
@@ -280,7 +244,7 @@ export class GameClient {
   }
   public publishSimpleGameActions(gameId: string, timedActions: TimedGameActions) {
     const encodedActions = encodeTimedActions(timedActions);
-    console.log(this.syncClient.getSyncTime());
+    if (this.syncClient) console.log(this.syncClient.getSyncTime());
     this.socket.publish(`game-${gameId}`, encodedActions);
   }
 
@@ -292,6 +256,10 @@ export class GameClient {
       }
     });
   }
+
+  // public createMatch() {
+  //   this.socket.emit(MatchEventType.CreateMatch)
+  // }
 
   public ping(): Promise<number> {
     const start = performance.now();

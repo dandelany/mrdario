@@ -33,3 +33,8 @@ export function unbindSocketHandlers(socket: SCServerSocket, handlers: EventHand
     delete handlers[eventType];
   }
 }
+
+export interface SocketResponder<T> {
+  (error: Error | string | true, data: null): void;
+  (error: null, data: T): void;
+}
