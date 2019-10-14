@@ -12,7 +12,7 @@
   "author": "Dan Delany <dan.delany@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "mrdario-core": "file:../core"
+    "mrdario-core": "2.0.0"
   },
   "devDependencies": {
     "band-name": "github:dandelany/band-name#28d7e58",

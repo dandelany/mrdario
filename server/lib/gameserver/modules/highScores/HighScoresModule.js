@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var highScoresStore_1 = require("./highScoresStore");
-var log_1 = require("../../utils/log");
+var utils_1 = require("../../utils");
 var HighScoresModule = /** @class */ (function () {
     function HighScoresModule(rClient) {
         this.rClient = rClient;
@@ -37,7 +37,7 @@ var HighScoresModule = /** @class */ (function () {
 }());
 exports.HighScoresModule = HighScoresModule;
 function logHighScore(scoreInfo, rank) {
-    log_1.logWithTime(scoreInfo.name + " won on level " + scoreInfo.level + "! Score: " + scoreInfo.score + " (high score #" + (rank + 1) + ")", 
+    utils_1.logWithTime(scoreInfo.name + " won on level " + scoreInfo.level + "! Score: " + scoreInfo.score + " (high score #" + (rank + 1) + ")", 
     // bell character to wake up anyone tailing the logs :)
     "\u0007");
 }

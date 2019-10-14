@@ -1,18 +1,11 @@
 import { SCServer, SCServerSocket } from "socketcluster-server";
-import {
-  AppAuthToken,
-  ClientAuthenticatedUser,
-  hasAuthToken,
-  hasValidAuthToken,
-  isAuthToken,
-  LoginRequest,
-  ServerUser
-} from "mrdario-core/lib/api/types";
-import { logWithTime } from "../../utils/log";
-import { getClientIpAddress } from "../../utils";
-import uuid from "uuid/v4";
 import hashUtil from "tweetnacl-util";
 import { hash } from "tweetnacl";
+import uuid from "uuid/v4";
+
+import { ClientAuthenticatedUser, LoginRequest, ServerUser } from "mrdario-core/lib/api/types";
+
+import { getClientIpAddress, logWithTime, hasAuthToken, hasValidAuthToken, isAuthToken, AppAuthToken } from "../../utils";
 
 type ServerUsers = { [K in string]: ServerUser };
 

@@ -2,7 +2,7 @@ import { ActionCreator, Dispatch } from "redux";
 import { ThunkAction, ThunkDispatch } from "redux-thunk";
 import { SCClientSocket } from "socketcluster-client";
 
-import { GameClient, GameClientOptions } from "mrdario-core/lib/api/client";
+import { GameClient, GameClientOptions } from "mrdario-core/lib/client";
 import { ClientAuthenticatedUser, HighScoresResponse } from "mrdario-core/lib/api/types";
 
 import {

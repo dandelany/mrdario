@@ -14,12 +14,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var types_1 = require("mrdario-core/lib/api/types");
-var log_1 = require("../../utils/log");
-var utils_1 = require("../../utils");
-var v4_1 = __importDefault(require("uuid/v4"));
 var tweetnacl_util_1 = __importDefault(require("tweetnacl-util"));
 var tweetnacl_1 = require("tweetnacl");
+var v4_1 = __importDefault(require("uuid/v4"));
+var utils_1 = require("../../utils");
 var AuthModule = /** @class */ (function () {
     function AuthModule(scServer) {
         this.scServer = scServer;
@@ -29,19 +27,19 @@ var AuthModule = /** @class */ (function () {
     }
     AuthModule.prototype.handleConnect = function (socket) {
         var _this = this;
-        if (types_1.hasAuthToken(socket)) {
+        if (utils_1.hasAuthToken(socket)) {
             // revoke auth token if badly formatted, or if user is not in users collection
-            if (!types_1.isAuthToken(socket.authToken) || !(socket.authToken.id in this.state.users)) {
+            if (!utils_1.isAuthToken(socket.authToken) || !(socket.authToken.id in this.state.users)) {
                 socket.deauthenticate();
             }
             else {
-                log_1.logWithTime("Welcome back, " + socket.authToken.name);
+                utils_1.logWithTime("Welcome back, " + socket.authToken.name);
             }
         }
         socket.on("disconnect", function () {
-            log_1.logWithTime("Disconnected: ", utils_1.getClientIpAddress(socket));
-            if (types_1.hasValidAuthToken(socket) && socket.authToken.id in _this.state.users) {
-                log_1.logWithTime("Goodbye, ", socket.authToken.name);
+            utils_1.logWithTime("Disconnected: ", utils_1.getClientIpAddress(socket));
+            if (utils_1.hasValidAuthToken(socket) && socket.authToken.id in _this.state.users) {
+                utils_1.logWithTime("Goodbye, ", socket.authToken.name);
                 delete _this.state.users[socket.authToken.id].socketId;
             }
         });
@@ -72,7 +70,7 @@ var AuthModule = /** @class */ (function () {
             respond(null, clientUser);
             var authToken = { id: clientUser.id, name: clientUser.name };
             socket.setAuthToken(authToken);
-            log_1.logWithTime(clientUser.name + " logged in. (" + clientUser.id + ")");
+            utils_1.logWithTime(clientUser.name + " logged in. (" + clientUser.id + ")");
             console.table(Object.values(_this.state.users));
         });
     };
@@ -87,8 +85,8 @@ function createUser(name) {
     var tokenHashBytes = tweetnacl_1.hash(tokenBytes);
     var tokenHash = tweetnacl_util_1.default.encodeBase64(tokenHashBytes);
     return {
-        clientUser: __assign({}, user, { token: token }),
-        serverUser: __assign({}, user, { tokenHash: tokenHash })
+        clientUser: __assign(__assign({}, user), { token: token }),
+        serverUser: __assign(__assign({}, user), { tokenHash: tokenHash })
     };
 }
 function authenticateUser(id, token, users) {

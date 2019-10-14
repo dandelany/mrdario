@@ -1,6 +1,5 @@
 import * as t from "io-ts";
 
-export * from "./auth";
 export * from "./game";
 export * from "./scores";
 export * from "./lobby";

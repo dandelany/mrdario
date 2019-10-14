@@ -1,4 +1,4 @@
-import { decodeGrid } from "../../../encoding";
+import { decodeGrid } from "../../../api/encoding";
 import { GameColor, GridDirection, RotateDirection } from "../../../game/enums";
 import {
   clearTopRow,

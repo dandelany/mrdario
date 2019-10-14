@@ -1,4 +1,4 @@
-import { GameClient } from "mrdario-core/lib/api/client";
+import { GameClient } from "mrdario-core/lib/client/GameClient";
 import { AppAuthToken } from "mrdario-core/lib/api/types/auth";
 import { generate } from "band-name";
 

@@ -9,8 +9,8 @@ import { DEFAULT_KEYS } from "mrdario-core/lib/game/controller/constants";
 import { GameController, GameControllerMode, GameControllerState } from "mrdario-core/lib/game/controller";
 import { GameGrid, PillColors, TimedGameActions, TimedMoveActions } from "mrdario-core/lib/game/types";
 
-import { encodeGameState } from "mrdario-core/lib/encoding/game";
-import { GameClient } from "mrdario-core/lib/api/client/GameClient";
+import { encodeGameState } from "mrdario-core/lib/api/encoding/game";
+import { GameClient } from "mrdario-core/lib/client/GameClient";
 import { GamepadManager, KeyManager, SwipeManager } from "mrdario-core/lib/game/input/web";
 import { GameListItem, GameScoreResponse } from "mrdario-core/lib/api/types";
 

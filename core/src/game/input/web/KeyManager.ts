@@ -2,9 +2,9 @@ import { EventEmitter } from "events";
 import { each } from "lodash";
 import * as Mousetrap from "mousetrap";
 
+import { GameControllerMode } from "../../controller";
 import { GameInput, InputEventType } from "../../types";
 import { InputManager, KeyBindings } from "../types";
-import { GameControllerMode } from "../../controller";
 
 export class KeyManager extends EventEmitter implements InputManager {
   public mode?: GameControllerMode;

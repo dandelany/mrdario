@@ -2,7 +2,7 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { Redirect, RouteComponentProps, withRouter } from "react-router-dom";
 
-import { GameClient } from "mrdario-core/lib/api/client";
+import { GameClient } from "mrdario-core/lib/client";
 
 import { AppThunkDispatch, login } from "@/store/actions/creators";
 import { AppAuthToken } from "mrdario-core/lib/api/types/auth";

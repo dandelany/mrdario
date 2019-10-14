@@ -123,8 +123,8 @@ export class Game extends EventEmitter {
     const moveQueue: GameInputMove[] = this.inputRepeater.tick(moveActions);
 
     // if(moveActions.length > 0) {
-      // console.log('multiple moves: on frame', this.frame, moveActions);
-      // console.log(this.frame, moveActions.map(encodeMoveAction).join('; '))
+    // console.log('multiple moves: on frame', this.frame, moveActions);
+    // console.log(this.frame, moveActions.map(encodeMoveAction).join('; '))
     // }
 
     // the main game loop, called once per game tick

@@ -2,16 +2,18 @@ import invariant from "invariant";
 import { cloneDeep, defaults, findLast, findLastIndex, isFunction, omitBy } from "lodash";
 import { TypeState } from "typestate";
 
-import { GameControllerMode, GameControllerOptions, GameControllerState } from "./types";
 import { InputManager } from "../input/types";
+import { GameControllerMode, GameControllerOptions, GameControllerState } from "./types";
 
-import { defaultGameOptions, Game} from "../Game";
+import { defaultGameOptions, Game } from "../Game";
 import {
   GameAction,
   GameActionMove,
   GameActionType,
   GameInput,
-  GameInputMove, GameOptions, GameState,
+  GameInputMove,
+  GameOptions,
+  GameState,
   GameTickResult,
   GameTickResultType,
   InputEventType,

@@ -6,7 +6,7 @@ import Slider from "rc-slider";
 
 import MayaNumeral from "@/components/ui/MayaNumeral";
 import { HighScoresResponse, HighScoresRow } from "mrdario-core/lib/api/types/scores";
-import { GameClient } from "mrdario-core/lib/api/client";
+import { GameClient } from "mrdario-core/lib/client";
 
 interface HighScoresState {
   level: number;

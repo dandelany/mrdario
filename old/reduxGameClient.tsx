@@ -4,7 +4,7 @@ import * as promisify from 'es6-promisify';
 import * as PropTypes from 'prop-types';
 import { SCClientSocket } from "socketcluster-client";
 import { GameClient } from "../core/lib/api/client/index";
-import { GameClientOptions } from "../core/src/api/client/index";
+import { GameClientOptions } from "../core/src/client/index";
 
 // constants
 const CLOSED = 'closed';

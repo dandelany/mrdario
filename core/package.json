@@ -13,7 +13,7 @@
     "lint": "tslint -p tsconfig.json --fix",
     "watch-changed": "npm run build && echo 'OK'",
     "watch": "onchange -i 'src/**/*.ts' 'src/**/*.js' -- npm run watch-changed",
-    "release": "npm run format && npm run lint && npm run test && npm run clean && npm run build"
+    "release": "yarn run lint && yarn run format && yarn run test && yarn run clean && yarn run build"
   },
   "author": "Dan Delany <dan.delany@gmail.com>",
   "license": "MIT",

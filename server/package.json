@@ -21,7 +21,7 @@
     "lodash": "4.17.11",
     "minimist": "^1.2.0",
     "morgan": "^1.9.1",
-    "mrdario-core": "file:../core",
+    "mrdario-core": "2.0.0",
     "random-word-by-length": "^0.1.0",
     "redis": "^2.8.0",
     "sc-errors": "^2.0.0",

@@ -1,8 +1,16 @@
 import * as t from "io-ts";
 
-import { GameColor, GameInput, GameMode, GridDirection, GridObjectType, InputEventType, SpeedLevel } from "./enums";
+import { numEnumType, strEnumType } from "../utils/io";
+import {
+  GameColor,
+  GameInput,
+  GameMode,
+  GridDirection,
+  GridObjectType,
+  InputEventType,
+  SpeedLevel
+} from "./enums";
 import { MovingCounters } from "./InputRepeater";
-import { numEnumType, strEnumType } from "../encoding/utils";
 
 export * from "./enums";
 export * from "./input/types";
@@ -31,7 +39,6 @@ export const tGridObjectDestroyed = t.type({
   type: t.literal(GridObjectType.Destroyed)
 });
 // export type TGridObjectDestroyed = t.TypeOf<typeof tGridObjectDestroyed>;
-
 
 export interface GridObjectBase {
   readonly type: GridObjectType;

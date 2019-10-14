@@ -4,7 +4,7 @@
   "author": "Dan Delany <dan.delany@gmail.com>",
   "version": "2.0.0",
   "main": "index.js",
-  "repository": "github:dandelany/mrdario",
+  "repository": "https://github.com/github:dandelany/mrdario",
   "license": "MIT",
   "private": true,
   "workspaces": [

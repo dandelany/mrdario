@@ -3,10 +3,10 @@ import { SCChannel } from "sc-channel";
 import { RedisClient } from "redis";
 import uuid from "uuid/v4";
 
-import { hasValidAuthToken } from "mrdario-core/lib/api/types";
 import { GameListItem } from "mrdario-core/lib/api/types";
 
 import { getClientIpAddress, socketInfoStr } from "./utils";
+import { hasValidAuthToken } from "./utils/auth";
 import { logWithTime } from "./utils/log";
 
 import { HighScoresModule } from "./modules/highScores";

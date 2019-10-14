@@ -1,16 +1,17 @@
-import { SCServer, SCServerSocket } from "socketcluster-server";
-import { Match } from "mrdario-core/lib/api/types/match";
-import uuid from "uuid/v4";
-import { SocketResponder } from "../../utils";
-import { times, constant, defaults } from "lodash";
 import * as t from "io-ts";
 import { PathReporter } from "io-ts/lib/PathReporter";
+import { times, constant, defaults } from "lodash";
+import { SCServer, SCServerSocket } from "socketcluster-server";
+import uuid from "uuid/v4";
+
 import {
-  AppAuthToken,
-  hasValidAuthToken,
+  Match,
   TCreateMatchRequest,
   CreateMatchRequest
 } from "mrdario-core/lib/api/types";
+
+import { SocketResponder, AppAuthToken, hasValidAuthToken } from "../../utils";
+
 
 // interface Responder<T> {
 //   (error: Error | string | true, data: null): void;

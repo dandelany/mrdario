@@ -11,10 +11,9 @@ var __assign = (this && this.__assign) || function () {
     return __assign.apply(this, arguments);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var types_1 = require("mrdario-core/lib/api/types");
+var types_1 = require("mrdario-api/src/types");
 var utils_1 = require("../../utils");
-var log_1 = require("../../utils/log");
-var LOBBY_CHANNEL_NAME = 'mrdario-lobby';
+var LOBBY_CHANNEL_NAME = "mrdario-lobby";
 var LobbyModule = /** @class */ (function () {
     function LobbyModule(scServer) {
         this.scServer = scServer;
@@ -26,7 +25,7 @@ var LobbyModule = /** @class */ (function () {
     LobbyModule.prototype.addMiddleware = function () {
         this.scServer.addMiddleware(this.scServer.MIDDLEWARE_PUBLISH_IN, function (req, next) {
             if (req.channel === LOBBY_CHANNEL_NAME) {
-                if (!types_1.hasAuthToken(req.socket)) {
+                if (!utils_1.hasAuthToken(req.socket)) {
                     next(new Error("Invalid LobbyMessage"));
                     return;
                 }
@@ -34,9 +33,9 @@ var LobbyModule = /** @class */ (function () {
                 if (decoded.isRight()) {
                     var value = decoded.value;
                     if (value.type === types_1.LobbyMessageType.ChatIn) {
-                        var outMessage = __assign({}, value, { type: types_1.LobbyMessageType.ChatOut, userName: req.socket.authToken.name });
+                        var outMessage = __assign(__assign({}, value), { type: types_1.LobbyMessageType.ChatOut, userName: req.socket.authToken.name });
                         req.data = outMessage;
-                        log_1.logWithTime(outMessage.userName + ": " + value.payload);
+                        utils_1.logWithTime(outMessage.userName + ": " + value.payload);
                     }
                     next();
                 }
@@ -56,14 +55,14 @@ var LobbyModule = /** @class */ (function () {
         };
         // @ts-ignore
         socket.on("joinLobby", function (data, respond) {
-            if (types_1.hasValidAuthToken(socket)) {
+            if (utils_1.hasValidAuthToken(socket)) {
                 var userId = socket.authToken.id;
                 var name_1 = socket.authToken.name;
                 if (userId in _this.state.lobby) {
                     // user already in lobby
                     var lobbyUser = _this.state.lobby[userId];
                     if (lobbyUser.sockets.indexOf(socket.id) >= 0) {
-                        log_1.logWithTime(name_1 + " tried to re-join the lobby on the same socket");
+                        utils_1.logWithTime(name_1 + " tried to re-join the lobby on the same socket");
                         // todo dont return error?
                         respond(new Error("You are already in the lobby"), null);
                         return;
@@ -71,7 +70,7 @@ var LobbyModule = /** @class */ (function () {
                     else {
                         // add socket to existing lobby user
                         lobbyUser.sockets.push(socket.id);
-                        log_1.logWithTime(name_1 + " joined the lobby in another socket");
+                        utils_1.logWithTime(name_1 + " joined the lobby in another socket");
                     }
                 }
                 else {
@@ -88,7 +87,7 @@ var LobbyModule = /** @class */ (function () {
                         payload: { name: name_1, id: userId, joined: lobbyUser.joined }
                     };
                     _this.scServer.exchange.publish(LOBBY_CHANNEL_NAME, message, function () { });
-                    log_1.logWithTime(socket.authToken.name + " joined the lobby");
+                    utils_1.logWithTime(socket.authToken.name + " joined the lobby");
                 }
                 //shouldn't have any, but unbind old handlers to be safe
                 utils_1.unbindSocketHandlers(socket, connectionState.lobbyHandlers);
@@ -99,7 +98,7 @@ var LobbyModule = /** @class */ (function () {
                     authenticate: function () {
                         // if user authenticates as a new user, old user should leave lobby
                         // todo new user should re-enter lobby too?
-                        log_1.logWithTime(name_1 + " reauthenticated as " + socket.authToken.name + " - removing " + name_1 + " from lobby");
+                        utils_1.logWithTime(name_1 + " reauthenticated as " + socket.authToken.name + " - removing " + name_1 + " from lobby");
                         _this.leaveLobby(socket);
                     }
                 };
@@ -117,7 +116,7 @@ var LobbyModule = /** @class */ (function () {
         });
         // @ts-ignore
         socket.on("leaveLobby", function (_data, respond) {
-            if (types_1.hasValidAuthToken(socket)) {
+            if (utils_1.hasValidAuthToken(socket)) {
                 var error = null;
                 if (socket.authToken.id in _this.state.lobby) {
                     _this.leaveLobby(socket);
@@ -132,7 +131,7 @@ var LobbyModule = /** @class */ (function () {
     };
     LobbyModule.prototype.leaveLobby = function (socket) {
         var lobby = this.state.lobby;
-        if (types_1.hasAuthToken(socket)) {
+        if (utils_1.hasAuthToken(socket)) {
             var authToken = socket.authToken;
             var userId = authToken.id, name_2 = authToken.name;
             if (authToken.id in lobby) {
@@ -149,7 +148,7 @@ var LobbyModule = /** @class */ (function () {
                         payload: { name: user.name, id: user.id, joined: user.joined }
                     };
                     this.scServer.exchange.publish(LOBBY_CHANNEL_NAME, message, function () { });
-                    log_1.logWithTime(name_2 + " left the lobby");
+                    utils_1.logWithTime(name_2 + " left the lobby");
                     console.table(lobby);
                 }
             }

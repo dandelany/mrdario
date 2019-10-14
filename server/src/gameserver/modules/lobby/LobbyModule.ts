@@ -1,17 +1,24 @@
 import { SCServer, SCServerSocket } from "socketcluster-server";
 import {
-  AppAuthToken,
-  hasAuthToken,
-  hasValidAuthToken, LobbyChatMessageOut,
+  LobbyChatMessageOut,
   LobbyJoinMessage,
   LobbyLeaveMessage,
   LobbyMessageType,
-  LobbyResponse, TLobbyMessage
+  LobbyResponse,
+  TLobbyMessage
 } from "mrdario-core/lib/api/types";
-import { bindSocketHandlers, EventHandlersObj, unbindSocketHandlers } from "../../utils";
-import { logWithTime } from "../../utils/log";
 
-const LOBBY_CHANNEL_NAME = 'mrdario-lobby';
+import {
+  logWithTime,
+  bindSocketHandlers,
+  EventHandlersObj,
+  unbindSocketHandlers,
+  AppAuthToken,
+  hasAuthToken,
+  hasValidAuthToken
+} from "../../utils";
+
+const LOBBY_CHANNEL_NAME = "mrdario-lobby";
 
 type ServerLobbyUser = {
   name: string;

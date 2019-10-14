@@ -1,8 +1,11 @@
-import { getSingleHighScores, handleSingleScore, SingleScoreDataObj } from "./highScoresStore";
 import { RedisClient } from "redis";
 import { SCServerSocket } from "socketcluster-server";
-import { logWithTime } from "../../utils/log";
+
 import { HighScoresResponse } from "mrdario-core/lib/api/types";
+
+import { getSingleHighScores, handleSingleScore, SingleScoreDataObj } from "./highScoresStore";
+import { logWithTime } from "../../utils";
+
 
 export class HighScoresModule {
   rClient: RedisClient;

@@ -2,7 +2,7 @@ import * as React from "react";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 import { connect } from "react-redux";
 
-import { GameClient, GameClientOptions } from "mrdario-core/lib/api/client";
+import { GameClient, GameClientOptions } from "mrdario-core/lib/client/GameClient";
 import { GameControllerMode } from "mrdario-core/lib/game/controller";
 
 import AztecCalendar, { AztecCalendarMode } from "./AztecCalendar";

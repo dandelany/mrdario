@@ -1,6 +1,6 @@
-import { GameOptions} from "../types";
-import { GameState, TimedMoveActions } from "../types";
 import { InputManager } from "../input/types";
+import { GameOptions } from "../types";
+import { GameState, TimedMoveActions } from "../types";
 
 export enum GameControllerMode {
   Ready = "Ready",

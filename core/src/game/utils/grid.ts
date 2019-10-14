@@ -117,11 +117,9 @@ export function findLines(grid: GameGrid, lineLength: number = 4): GridCellLocat
   const horizontalLines: GridCellLocation[][] = flatten(
     grid.map((row: GameGridRow, rowIndex: number) => {
       const rowLines: number[][] = findLinesIn(row, lineLength);
-      return rowLines.map(
-        (line: number[]): GridCellLocation[] => {
-          return line.map((colIndex: number): GridCellLocation => [rowIndex, colIndex]);
-        }
-      );
+      return rowLines.map((line: number[]): GridCellLocation[] => {
+        return line.map((colIndex: number): GridCellLocation => [rowIndex, colIndex]);
+      });
     })
   );
 
@@ -134,9 +132,8 @@ export function findLines(grid: GameGrid, lineLength: number = 4): GridCellLocat
   const verticalLines: GridCellLocation[][] = flatten(
     gridCols.map((col: GameGridRow, colIndex: number) => {
       const colLines: number[][] = findLinesIn(col, lineLength);
-      return colLines.map(
-        (line: number[]): GridCellLocation[] =>
-          line.map((rowIndex: number): GridCellLocation => [rowIndex, colIndex])
+      return colLines.map((line: number[]): GridCellLocation[] =>
+        line.map((rowIndex: number): GridCellLocation => [rowIndex, colIndex])
       );
     })
   );

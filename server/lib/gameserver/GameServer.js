@@ -5,11 +5,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var v4_1 = __importDefault(require("uuid/v4"));
 var utils_1 = require("./utils");
+var auth_1 = require("./utils/auth");
 var log_1 = require("./utils/log");
 var highScores_1 = require("./modules/highScores");
 var lobby_1 = require("./modules/lobby");
-var auth_1 = require("./modules/auth");
-var types_1 = require("mrdario-core/lib/api/types");
+var auth_2 = require("./modules/auth");
+var sync_1 = require("./modules/sync");
+var MatchModule_1 = require("./modules/match/MatchModule");
 var GameServer = /** @class */ (function () {
     function GameServer(scServer, rClient) {
         var _this = this;
@@ -19,6 +21,8 @@ var GameServer = /** @class */ (function () {
             _this.highScores.handleConnect(socket);
             _this.lobby.handleConnect(socket);
             _this.auth.handleConnect(socket);
+            _this.sync.handleConnect(socket);
+            _this.match.handleConnect(socket);
             socket.on("disconnect", function () {
                 // temporary - remove below
                 if (connectionState.game) {
@@ -37,7 +41,7 @@ var GameServer = /** @class */ (function () {
             socket.on(
             // @ts-ignore
             "createSimpleGame", function (data, respond) {
-                if (types_1.hasValidAuthToken(socket)) {
+                if (auth_1.hasValidAuthToken(socket)) {
                     var userId = socket.authToken.id;
                     // const name = socket.authToken.name;
                     try {
@@ -90,7 +94,9 @@ var GameServer = /** @class */ (function () {
         // modules - the parts which actually handle requests and do things
         this.highScores = new highScores_1.HighScoresModule(rClient);
         this.lobby = new lobby_1.LobbyModule(scServer);
-        this.auth = new auth_1.AuthModule(scServer);
+        this.auth = new auth_2.AuthModule(scServer);
+        this.sync = new sync_1.SyncModule(scServer);
+        this.match = new MatchModule_1.MatchModule(scServer);
         scServer.on("connection", this.handleConnect);
     }
     return GameServer;
