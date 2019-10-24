@@ -9,7 +9,7 @@ import { getClientIpAddress, socketInfoStr } from "./utils";
 import { hasValidAuthToken } from "./utils/auth";
 import { logWithTime } from "./utils/log";
 
-import { HighScoresModule } from "./modules/highScores";
+import { HighScoresModule } from "./modules/scores";
 import { LobbyModule } from "./modules/lobby";
 import { AuthModule } from "./modules/auth";
 import { SyncModule } from "./modules/sync";

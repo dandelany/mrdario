@@ -3,9 +3,17 @@ import hashUtil from "tweetnacl-util";
 import { hash } from "tweetnacl";
 import uuid from "uuid/v4";
 
-import { ClientAuthenticatedUser, LoginRequest, ServerUser } from "mrdario-core/lib/api/types";
+import { AuthEventType, ClientAuthenticatedUser, LoginRequest, ServerUser } from "mrdario-core/lib/api/auth";
 
-import { getClientIpAddress, logWithTime, hasAuthToken, hasValidAuthToken, isAuthToken, AppAuthToken } from "../../utils";
+import {
+  getClientIpAddress,
+  logWithTime,
+  hasAuthToken,
+  hasValidAuthToken,
+  isAuthToken,
+  AppAuthToken,
+  SocketResponder
+} from "../../utils";
 
 type ServerUsers = { [K in string]: ServerUser };
 
@@ -43,10 +51,15 @@ export class AuthModule {
 
     socket.on(
       // @ts-ignore
-      "login",
-      (request: LoginRequest, respond: (err: Error | null, data: ClientAuthenticatedUser) => any): void => {
-        const { id, token, name } = request;
+      AuthEventType.Login,
+      (request: LoginRequest, respond: SocketResponder<ClientAuthenticatedUser>): void => {
+        // todo properly validate requests here
+        if(!request.name || !request.name.length) {
+          respond("Login requires a name", null);
+          return;
+        }
 
+        const { id, token, name } = request;
         let clientUser: ClientAuthenticatedUser;
         if (id && token && authenticateUser(id, token, this.state.users)) {
           // user is authenticated

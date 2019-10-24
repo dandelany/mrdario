@@ -40,11 +40,7 @@ export default [
     key="single-player-game"
     component={SinglePlayerGame}
   />,
-  <PropsRoute
-    path="/mirror/level/:level/speed/:speed/:mode?"
-    key="mirror-game"
-    component={MirrorGame}
-  />,
+  <PropsRoute path="/mirror/level/:level/speed/:speed/:mode?" key="mirror-game" component={MirrorGame} />,
   <PropsRoute path="/settings" key="settings" component={GameSettings} />,
   <PropsRoute path="/login" key="login" component={LoginPage} />,
   <PropsRoute path="/lobby" key="lobby" component={LobbyPage} />

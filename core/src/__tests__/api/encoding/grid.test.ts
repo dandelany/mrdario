@@ -1,12 +1,6 @@
 import { flatten, sample, times } from "lodash";
 
-import {
-  decodeGrid,
-  decodeGridObject,
-  encodeGrid,
-  encodeGridObject,
-  getGridEncodingDictionary
-} from "../../../api/encoding";
+import { decodeGrid, encodeGrid, getGridEncodingDictionary, tGridObjectCodec } from "../../../api/encoding";
 import { GameColor, GameGrid, GridObject, GridObjectType } from "../../../game/types";
 
 describe("Grid Encoding", () => {
@@ -35,7 +29,11 @@ describe("Grid Encoding", () => {
     ];
     // check that decode(encode(obj)) deep equals original obj
     flatten(grid).forEach((gridObj: GridObject) => {
-      expect(decodeGridObject(encodeGridObject(gridObj))).toEqual(gridObj);
+      const encoded = tGridObjectCodec.encode(gridObj);
+      expect(typeof encoded).toEqual("string");
+      const decoded = tGridObjectCodec.decode(encoded);
+      expect(decoded.isRight()).toBeTruthy();
+      expect(decoded.value).toEqual(gridObj);
     });
     const encoded = encodeGrid(grid);
     expect(typeof encoded).toBe("string");

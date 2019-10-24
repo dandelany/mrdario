@@ -1,50 +1,51 @@
 // import { partial } from "lodash";
 import SyncClient from "@ircam/sync/client";
-import * as t from "io-ts";
-import { PathReporter } from "io-ts/lib/PathReporter";
 import { partialRight, remove, uniqBy } from "lodash";
 import { create as createSocket, SCClientSocket } from "socketcluster-client";
 
 import {
-  ClientAuthenticatedUser,
+  CreateMatchRequest,
   GameListItem,
   GameScoreRequest,
   GameScoreResponse,
   HighScoresResponse,
+  Match,
+  MatchEventType,
+  TGameScoreResponse,
+  THighScoresResponse,
+  TMatch
+} from "../api";
+
+import {
+  AppAuthToken,
+  AuthEventType,
+  isAuthToken,
+  ClientAuthenticatedUser,
+  TClientAuthenticatedUser,
+  LoginRequest
+} from "../api/auth";
+
+import {
+  LOBBY_CHANNEL_NAME,
+  LobbyEventType,
   LobbyChatMessageIn,
   LobbyChatMessageOut,
   LobbyMessage,
   LobbyMessageType,
-  LobbyResponse,
+  LobbyJoinResponse,
   LobbyUser,
-  LoginRequest,
-  TClientAuthenticatedUser,
-  TGameScoreResponse,
-  THighScoresResponse,
   TLobbyMessage,
-  TLobbyResponse
-} from "../api/types";
+  TLobbyJoinResponse,
+  TLobbyLeaveResponse
+} from "../api/lobby";
 
 import { decodeTimedActions, encodeTimedActions } from "../api/encoding/action";
 import { encodeGrid } from "../api/encoding/grid";
 import { GameGrid, TimedGameActions } from "../game/types";
+import { promisifySocketPublish, promisifySocketRequest as emit, validatedChannel } from "./utils";
 
-// import { setupSyncClient } from "./SyncClient";
-
-interface AuthToken {
-  id: string;
-  name: string;
-}
 interface ClientSocketWithValidAuthToken extends SCClientSocket {
-  authToken: AuthToken;
-}
-function isAuthToken(authToken?: { [K in string]: any }): authToken is AuthToken {
-  return (
-    !!authToken &&
-    typeof authToken.id === "string" &&
-    !!authToken.id.length &&
-    typeof authToken.name === "string"
-  );
+  authToken: AppAuthToken;
 }
 
 export function hasValidAuthToken(socket: SCClientSocket): socket is ClientSocketWithValidAuthToken {
@@ -84,7 +85,7 @@ export interface GameClientOptions {
 
 export class GameClient {
   public socket: SCClientSocket;
-  private lobbyUsers: LobbyResponse;
+  private lobbyUsers: LobbyJoinResponse;
   private syncClient?: SyncClient;
 
   constructor(options: GameClientOptions = {}) {
@@ -128,12 +129,12 @@ export class GameClient {
   }
 
   public connect() {
+    // todo handle case when connect is called after already connected
     return new Promise<SCClientSocket>((resolve, reject) => {
       this.socket.connect();
       this.socket.on("connect", () => {
-        console.log("Socket connected - OK");
+        // console.log("Socket connected - OK");
         // this.syncClient = setupSyncClient(this.socket, getTimeFunction);
-
         resolve(this.socket);
       });
       this.socket.on("error", (err: Error) => {
@@ -143,10 +144,14 @@ export class GameClient {
     });
   }
 
+  public disconnect() {
+    this.socket.disconnect();
+  }
+
   public async login(name: string, id?: string, token?: string): Promise<ClientAuthenticatedUser> {
-    return await promisifySocketRequest<ClientAuthenticatedUser, LoginRequest>(
+    return await emit<ClientAuthenticatedUser, LoginRequest>(
       this.socket,
-      "login",
+      AuthEventType.Login,
       { name, id, token },
       TClientAuthenticatedUser
     );
@@ -154,32 +159,37 @@ export class GameClient {
 
   public async joinLobby(
     options: {
-      onChangeLobbyUsers?: (lobbyUsers: LobbyResponse) => any;
+      onChangeLobbyUsers?: (lobbyUsers: LobbyJoinResponse) => any;
       onChatMessage?: (message: LobbyChatMessageOut) => any;
     } = {}
-  ): Promise<LobbyResponse> {
-    return await promisifySocketRequest<LobbyResponse>(this.socket, "joinLobby", null, TLobbyResponse).then(
-      (lobbyResponse: LobbyResponse) => {
+  ): Promise<LobbyJoinResponse> {
+    return await emit(this.socket, LobbyEventType.Join, null, TLobbyJoinResponse).then(
+      (lobbyResponse: LobbyJoinResponse) => {
         this.lobbyUsers = lobbyResponse;
-        const lobbyChannel = this.socket.subscribe("mrdario-lobby");
-        lobbyChannel.watch((data: any) => {
+        let rawLobbyChannel = this.socket.subscribe(LOBBY_CHANNEL_NAME);
+        const lobbyChannel = validatedChannel(rawLobbyChannel, TLobbyMessage);
+
+        lobbyChannel.watch((data: LobbyMessage) => {
           const decoded = TLobbyMessage.decode(data);
           if (decoded.isRight()) {
             const message: LobbyMessage = decoded.value;
             console.log("lobby channel:", message);
+            const { onChangeLobbyUsers, onChatMessage } = options;
+
             if (message.type === LobbyMessageType.Join) {
               this.lobbyUsers.push(message.payload);
               this.lobbyUsers = uniqBy(this.lobbyUsers, (user: LobbyUser) => user.id);
+              if (onChangeLobbyUsers) onChangeLobbyUsers(this.lobbyUsers.slice());
             } else if (message.type === LobbyMessageType.Leave) {
               remove(this.lobbyUsers, (user: LobbyUser) => user.id === message.payload.id);
-            } else if (message.type === LobbyMessageType.ChatOut && options.onChatMessage) {
-              options.onChatMessage(message);
-            }
-            if (options.onChangeLobbyUsers) {
-              options.onChangeLobbyUsers(this.lobbyUsers.slice());
+              if (onChangeLobbyUsers) onChangeLobbyUsers(this.lobbyUsers.slice());
+            } else if (message.type === LobbyMessageType.ChatOut && onChatMessage) {
+              console.log("call chat callback", message);
+              onChatMessage(message);
             }
           }
         });
+
         console.table(lobbyResponse);
         return lobbyResponse;
       }
@@ -188,36 +198,26 @@ export class GameClient {
 
   public async leaveLobby(): Promise<null> {
     // todo have to unwatch also?
-    this.socket.unsubscribe("mrdario-lobby");
-    this.socket.unwatch("mrdario-lobby");
-    return await promisifySocketRequest<null>(this.socket, "leaveLobby", null, t.null);
+    this.socket.unsubscribe(LOBBY_CHANNEL_NAME);
+    this.socket.unwatch(LOBBY_CHANNEL_NAME);
+    return await emit(this.socket, LobbyEventType.Leave, null, TLobbyLeaveResponse);
   }
 
-  public sendLobbyChat(message: string): void {
+  public async sendLobbyChat(message: string): Promise<undefined> {
     const chatMessage: LobbyChatMessageIn = {
       type: LobbyMessageType.ChatIn,
       payload: message
     };
-    this.socket.publish("mrdario-lobby", chatMessage);
+    return await promisifySocketPublish(this.socket, LOBBY_CHANNEL_NAME, chatMessage);
   }
 
   public async getHighScores(level: number): Promise<HighScoresResponse> {
-    return await promisifySocketRequest<HighScoresResponse>(
-      this.socket,
-      "getSingleHighScores",
-      level,
-      THighScoresResponse
-    );
+    return await emit(this.socket, "getSingleHighScores", level, THighScoresResponse);
   }
 
   public sendSingleGameHighScore(level: number, name: string, score: number): Promise<GameScoreResponse> {
     const request: GameScoreRequest = [level, name, score];
-    return promisifySocketRequest<GameScoreResponse>(
-      this.socket,
-      "singleGameScore",
-      request,
-      TGameScoreResponse
-    );
+    return emit(this.socket, "singleGameScore", request, TGameScoreResponse);
   }
 
   public sendInfoStartGame(name: string, level: number, speed: number, callback?: any) {
@@ -259,9 +259,9 @@ export class GameClient {
     });
   }
 
-  // public createMatch() {
-  //   this.socket.emit(MatchEventType.CreateMatch)
-  // }
+  public async createMatch(options: CreateMatchRequest = {}): Promise<Match> {
+    return await emit(this.socket, MatchEventType.CreateMatch, options, TMatch);
+  }
 
   public ping(): Promise<number> {
     const start = performance.now();
@@ -274,26 +274,4 @@ export class GameClient {
       });
     });
   }
-}
-
-async function promisifySocketRequest<ResponseType, RequestType = any>(
-  socket: SCClientSocket,
-  eventName: string,
-  requestData: RequestType,
-  TResponseType: t.Any
-): Promise<ResponseType> {
-  return await new Promise<ResponseType>(function(resolve, reject) {
-    socket.emit(eventName, requestData, (err: Error, data: any) => {
-      if (err) {
-        reject(err);
-      }
-      const decoded = TResponseType.decode(data);
-      if (decoded.isRight()) {
-        resolve(decoded.value);
-      } else if (decoded.isLeft()) {
-        reject(new Error(PathReporter.report(decoded)[0]));
-      }
-      resolve(data);
-    });
-  });
 }

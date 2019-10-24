@@ -16,7 +16,7 @@ export default class PillPreviewPanel extends React.Component<PillPreviewPanelPr
     style: {}
   };
   render() {
-    const { pill, cellSize, className} = this.props;
+    const { pill, cellSize, className } = this.props;
 
     const name = window.localStorage
       ? window.localStorage.getItem("mrdario-name") || "Anonymous"
@@ -28,7 +28,6 @@ export default class PillPreviewPanel extends React.Component<PillPreviewPanelPr
       ...this.props.style
     };
     return (
-
       <div className={className} style={style}>
         <h5>NEXT</h5>
 

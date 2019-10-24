@@ -11,7 +11,7 @@ import { encodeGameState } from "mrdario-core/lib/encoding/game";
 import { GameClient } from "mrdario-core/lib/api/client/GameClient";
 import { LocalWebGameController } from "mrdario-core/lib/game/controller/web";
 import { GamepadManager, KeyManager, SwipeManager } from "mrdario-core/lib/game/input/web";
-import { GameScoreResponse } from "mrdario-core/lib/api/types";
+import { GameScoreResponse } from "mrdario-core/lib/api/scores";
 
 import { GameRouteParams } from "@/types";
 

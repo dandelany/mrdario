@@ -17,7 +17,6 @@ import * as pillSegmentGreen from "@/svg2/pill_segment_green.svg";
 import * as destroyed from "@/svg2/destroyed.svg";
 import * as particle from "@/img/Pixel25px.png";
 
-
 type SpriteGrid = (Pixi.Sprite | null)[][];
 
 const pillHalves = [pillHalfOrange, pillHalfPurple, pillHalfGreen];
@@ -49,7 +48,7 @@ const particlesConfig = {
   color: {
     start: "#d44646",
     // end: "#d44646"
-    "end": "#ffffff"
+    end: "#ffffff"
   },
   speed: {
     start: 1800,
@@ -89,11 +88,9 @@ const particlesConfig = {
   angleStart: 0
 };
 
-
 export interface PlayfieldProps {
   cellSize: number;
   grid: GameGrid;
-
 }
 export default class Playfield extends React.Component<PlayfieldProps> {
   static defaultProps = {
@@ -264,7 +261,7 @@ export default class Playfield extends React.Component<PlayfieldProps> {
   }
   updateEmitter = () => {
     requestAnimationFrame(this.updateEmitter);
-  }
+  };
 
   _getSize = () => {
     const grid = this.props.grid;
@@ -276,7 +273,7 @@ export default class Playfield extends React.Component<PlayfieldProps> {
     const width = numCols * cellSize;
     const height = numRows * cellSize;
     return { width, height };
-  }
+  };
 
   render() {
     const grid = this.props.grid;

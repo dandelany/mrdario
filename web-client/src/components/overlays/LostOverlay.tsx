@@ -6,7 +6,7 @@ import { GameOptions } from "mrdario-core";
 
 interface LostOverlayProps {
   style?: object;
-  gameOptions?: Partial<GameOptions>
+  gameOptions?: Partial<GameOptions>;
   onResetGame?: () => void;
 }
 
@@ -25,12 +25,12 @@ const LostOverlay: React.FunctionComponent<LostOverlayProps> = props => {
       </div>
 
       <div>
-          <span className="btn-white" onClick={props.onResetGame}>
-            <div className="btn-maya-numeral" style={{ marginBottom: 10 }}>
-              <MayaNumeral value={level} size={20} />
-            </div>
-            Try Again
-          </span>
+        <span className="btn-white" onClick={props.onResetGame}>
+          <div className="btn-maya-numeral" style={{ marginBottom: 10 }}>
+            <MayaNumeral value={level} size={20} />
+          </div>
+          Try Again
+        </span>
       </div>
       <div>
         <Link to="/">

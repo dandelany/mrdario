@@ -1,7 +1,8 @@
-import { SCServerSocket } from "socketcluster-server";
+import { SCServerSocket,  } from "socketcluster-server";
 import { get } from "lodash";
 
 export * from "./auth";
+export * from "./io";
 export * from "./log";
 
 export function getClientIpAddress(socket: SCServerSocket) {
@@ -40,4 +41,16 @@ export function unbindSocketHandlers(socket: SCServerSocket, handlers: EventHand
 export interface SocketResponder<T> {
   (error: Error | string | true, data: null): void;
   (error: null, data: T): void;
+}
+
+// SCServer only exports these constants on a class instance
+// convenient for typing reasons to have them as an enum
+export enum SCMiddlewareType {
+  MIDDLEWARE_HANDSHAKE_WS = "handshakeWS",
+  MIDDLEWARE_HANDSHAKE_SC ="handshakeSC",
+  MIDDLEWARE_AUTHENTICATE = "authenticate",
+  MIDDLEWARE_SUBSCRIBE = "subscribe",
+  MIDDLEWARE_PUBLISH_IN ="publishIn",
+  MIDDLEWARE_PUBLISH_OUT = "publishOut",
+  MIDDLEWARE_EMIT = "emit"
 }

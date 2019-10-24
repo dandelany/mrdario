@@ -1,24 +1,41 @@
 import { SCServer, SCServerSocket } from "socketcluster-server";
 import {
+  AppAuthToken
+} from "mrdario-core/lib/api/auth";
+
+
+import * as t from "io-ts";
+
+import {
+  bindSocketHandlers,
+  EventHandlersObj,
+  hasAuthToken,
+  hasValidAuthToken,
+  logWithTime,
+  unbindSocketHandlers
+} from "../../utils";
+import {
+  PublishOutMiddlewareWithDataType,
+  PublishOutRequestWithDataType,
+  requireAuthMiddleware,
+  validateChannelRequest,
+  ValidatedChannelMiddlewareConfig,
+  ValidatedPublishInMiddleware
+} from "../../utils/middleware";
+
+import {
+  LOBBY_CHANNEL_NAME,
   LobbyChatMessageOut,
   LobbyJoinMessage,
   LobbyLeaveMessage,
   LobbyMessageType,
-  LobbyResponse,
+  LobbyJoinResponse,
   TLobbyMessage
-} from "mrdario-core/lib/api/types";
+} from "mrdario-core/lib/api/lobby";
 
-import {
-  logWithTime,
-  bindSocketHandlers,
-  EventHandlersObj,
-  unbindSocketHandlers,
-  AppAuthToken,
-  hasAuthToken,
-  hasValidAuthToken
-} from "../../utils";
+// export type ExtractGeneric<T> = T extends any<infer R> ? true : never;
 
-const LOBBY_CHANNEL_NAME = "mrdario-lobby";
+// type ChainablePubInMiddleware = PrependParameter<PublishInMiddleware, (...args: any) => any>;
 
 type ServerLobbyUser = {
   name: string;
@@ -34,9 +51,74 @@ interface LobbyModuleConnectionState {
   lobbyHandlers: EventHandlersObj;
 }
 
+type ModuleConfig = {
+  channels: ModuleChannelConfig<any>[];
+};
+
+type ModuleChannelConfig<DataType> = {
+  match: string; // todo allow regex and match function
+  requireAuth: boolean;
+  messageCodec: t.Type<DataType>;
+  middlewares?: ValidatedChannelMiddlewareConfig<DataType>[];
+  publishInMiddleware?: ValidatedPublishInMiddleware<DataType>;
+  publishOutMiddleware?: PublishOutMiddlewareWithDataType<DataType>;
+  // middleware: PublishInMiddleware<DataType>;
+};
+
+// the only way i can figure out to infer Datatype from the codec type
+function makeChannelConfig<DataType>(
+  // codec: t.Type<DataType>,
+  config: ModuleChannelConfig<DataType>
+): ModuleChannelConfig<DataType> {
+  return config;
+}
+
 export class LobbyModule {
   scServer: SCServer;
   state: LobbyModuleState;
+
+  static config: ModuleConfig = {
+    channels: [
+      makeChannelConfig(
+        // TLobbyResponse
+        {
+          match: LOBBY_CHANNEL_NAME,
+          requireAuth: true,
+          messageCodec: TLobbyMessage,
+          publishInMiddleware: (req, next) => {
+            console.log("lobby publish in");
+            console.log(req.data);
+            console.log(req.validData);
+
+            const message = req.validData;
+
+            if (message.type === LobbyMessageType.ChatIn) {
+              const outMessage: LobbyChatMessageOut = {
+                ...message,
+                type: LobbyMessageType.ChatOut,
+                // todo figure out typing for this so we don't use `as`
+                userName: (req.socket.authToken as AppAuthToken).name
+              };
+              req.data = outMessage;
+              logWithTime(`${outMessage.userName}: ${message.payload}`);
+            }
+
+            next();
+          },
+          publishOutMiddleware: (req, next) => {
+            console.log("lobby publish out");
+
+            console.log(req.data);
+
+            if (req.data.type === LobbyMessageType.Join) {
+              console.log("joined", req.data.payload.name);
+            }
+            next();
+          }
+        }
+      )
+    ]
+  };
 
   constructor(scServer: SCServer) {
     this.scServer = scServer;
@@ -47,35 +129,44 @@ export class LobbyModule {
   }
 
   protected addMiddleware() {
-    this.scServer.addMiddleware(
-      this.scServer.MIDDLEWARE_PUBLISH_IN,
-      (req: SCServer.PublishInRequest, next: SCServer.nextMiddlewareFunction) => {
-        if (req.channel === LOBBY_CHANNEL_NAME) {
-          if (!hasAuthToken(req.socket)) {
-            next(new Error("Invalid LobbyMessage"));
-            return;
-          }
-          const decoded = TLobbyMessage.decode(req.data);
-          if (decoded.isRight()) {
-            const value = decoded.value;
-            if (value.type === LobbyMessageType.ChatIn) {
-              const outMessage: LobbyChatMessageOut = {
-                ...value,
-                type: LobbyMessageType.ChatOut,
-                userName: (req.socket.authToken as AppAuthToken).name
-              };
-              req.data = outMessage;
-              logWithTime(`${outMessage.userName}: ${value.payload}`);
+    LobbyModule.config.channels.forEach(channelConfig => {
+      // const chainedPubInMiddleware = chainMiddleware<PublishInRequest>([
+      //   (req, _next, end) => {
+      //     if (req.channel !== LOBBY_CHANNEL_NAME) end();
+      //   },
+      //   requireAuthMiddleware,
+      //   getValidateMiddleware(TLobbyMessage)
+      // ])
+      const { messageCodec, publishInMiddleware } = channelConfig;
+      this.scServer.addMiddleware(this.scServer.MIDDLEWARE_PUBLISH_IN, (req, next) => {
+        if (req.channel === channelConfig.match) {
+          requireAuthMiddleware(req, (e?: string | true | Error | undefined) => {
+            if (e) next(e);
+            else {
+              validateChannelRequest(
+                req,
+                messageCodec,
+                validReq => {
+                  if (publishInMiddleware) publishInMiddleware(validReq, next);
+                  else next();
+                },
+                (e: Error) => next(e)
+              );
             }
-            next();
-          } else {
-            next(new Error("Invalid LobbyMessage"));
-          }
+          });
         } else {
           next();
         }
+      });
+
+      if (channelConfig.publishOutMiddleware) {
+        const { publishOutMiddleware } = channelConfig;
+
+        this.scServer.addMiddleware(this.scServer.MIDDLEWARE_PUBLISH_OUT, (req, next) => {
+          publishOutMiddleware(req as PublishOutRequestWithDataType<t.TypeOf<typeof messageCodec>>, next);
+        });
       }
-    );
+    });
   }
 
   public handleConnect(socket: SCServerSocket) {
@@ -134,7 +225,7 @@ export class LobbyModule {
         };
         bindSocketHandlers(socket, connectionState.lobbyHandlers);
 
-        const lobbyUsers: LobbyResponse = Object.values(this.state.lobby).map((user: ServerLobbyUser) => {
+        const lobbyUsers: LobbyJoinResponse = Object.values(this.state.lobby).map((user: ServerLobbyUser) => {
           const { id, name, joined } = user;
           return { id, name, joined };
         });
@@ -148,6 +239,7 @@ export class LobbyModule {
 
     // @ts-ignore
     socket.on("leaveLobby", (_data: null, respond: (err: Error | null, data: null) => any) => {
+      console.log('got leaveLobby');
       if (hasValidAuthToken(socket)) {
         let error = null;
         if (socket.authToken.id in this.state.lobby) {
@@ -157,6 +249,8 @@ export class LobbyModule {
         }
         unbindSocketHandlers(socket, connectionState.lobbyHandlers);
         respond(error, null);
+      } else {
+        respond(new Error("User is not authenticated - login first"), null);
       }
     });
   }

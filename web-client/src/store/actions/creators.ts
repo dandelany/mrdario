@@ -3,7 +3,8 @@ import { ThunkAction, ThunkDispatch } from "redux-thunk";
 import { SCClientSocket } from "socketcluster-client";
 
 import { GameClient, GameClientOptions } from "mrdario-core/lib/client";
-import { ClientAuthenticatedUser, HighScoresResponse } from "mrdario-core/lib/api/types";
+import { AppAuthToken, ClientAuthenticatedUser } from "mrdario-core/lib/api/auth";
+import { HighScoresResponse } from "mrdario-core/lib/api/scores";
 
 import {
   AppAction,
@@ -27,7 +28,7 @@ import {
   SocketErrorAction
 } from "./types";
 import { AppState } from "../state/types";
-import { AppAuthToken } from "mrdario-core/lib/api/types/auth";
+
 
 export type AppThunkAction<R> = ThunkAction<R, AppState, null, AppAction>;
 

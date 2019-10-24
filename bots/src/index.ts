@@ -1,5 +1,5 @@
 import { GameClient } from "mrdario-core/lib/client/GameClient";
-import { AppAuthToken } from "mrdario-core/lib/api/types/auth";
+import { AppAuthToken } from "mrdario-core/lib/api/auth";
 import { generate } from "band-name";
 
 class GameBot {

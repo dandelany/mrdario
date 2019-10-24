@@ -12,7 +12,7 @@ import {
 } from "../../game/types";
 
 import { encodeGrid } from "./grid";
-import { numEnumType, strEnumType } from "./utils";
+import { numEnumType, strEnumType } from "../../utils/io";
 
 export type EncodedGameState = string;
 

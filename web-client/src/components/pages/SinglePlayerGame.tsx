@@ -10,15 +10,18 @@ import { GameGrid, PillColors } from "mrdario-core/lib/game/types";
 import { encodeGameState } from "mrdario-core/lib/api/encoding/game";
 import { GameClient } from "mrdario-core/lib/client/GameClient";
 // import { LocalWebGameController } from "mrdario-core/lib/game/controller/web";
+
+import { GameOptions } from "mrdario-core";
+import { getGetTime } from "mrdario-core/lib/utils/time";
 import { GameController } from "mrdario-core/lib/game/controller/GameController";
 import { GamepadManager, KeyManager, SwipeManager } from "mrdario-core/lib/game/input/web";
-import { GameScoreResponse, LobbyResponse } from "mrdario-core/lib/api/types";
+import { GameScoreResponse } from "mrdario-core/lib/api/scores";
+import { LobbyJoinResponse } from "mrdario-core/lib/api/lobby";
 
 import { GameRouteParams } from "@/types";
 import responsiveGame from "@/components/responsiveGame";
 import { ResponsiveGameDisplay } from "@/components/game/GameDisplay";
-import { GameOptions } from "mrdario-core";
-import { getGetTime } from "mrdario-core/lib/utils/time";
+
 
 function getName() {
   return window.localStorage ? window.localStorage.getItem("mrdario-name") || "Anonymous" : "Anonymous";
@@ -121,14 +124,12 @@ class SinglePlayerGame extends React.Component<SinglePlayerGameProps, SinglePlay
 
     gameClient
       .joinLobby()
-      .then((data: LobbyResponse) => {
+      .then((data: LobbyJoinResponse) => {
         console.log("OK", data);
       })
       .catch((err: Error) => {
         console.error(err);
       });
-
-
 
     // input managers controlling keyboard and touch events
     this.keyManager = new KeyManager(DEFAULT_KEYS);
@@ -142,7 +143,7 @@ class SinglePlayerGame extends React.Component<SinglePlayerGameProps, SinglePlay
       getTime: getGetTime(),
       gameOptions: {
         level,
-        baseSpeed,
+        baseSpeed
         // initialSeed: "help"
       },
       // inputManagers: [this.keyManager, this.touchManager, this.gamepadManager],
@@ -173,7 +174,7 @@ class SinglePlayerGame extends React.Component<SinglePlayerGameProps, SinglePlay
     });
     // this.game.play();
     this.game.startCountdown(3500);
-  }
+  };
   protected resetGame = () => {
     this._initGame(this.props);
   };

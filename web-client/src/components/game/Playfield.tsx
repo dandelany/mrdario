@@ -19,7 +19,6 @@ import * as pillSegmentGreen from "@/svg2/pill_segment_green.svg";
 import * as destroyed from "@/svg2/destroyed.svg";
 import * as particle from "@/img/Pixel25px.png";
 
-
 type SpriteGrid = (Pixi.Sprite | null)[][];
 
 const pillHalves = [pillHalfOrange, pillHalfPurple, pillHalfGreen];
@@ -51,7 +50,7 @@ const particlesConfig = {
   color: {
     start: "#d44646",
     // end: "#d44646"
-    "end": "#ffffff"
+    end: "#ffffff"
   },
   speed: {
     start: 1800,
@@ -90,7 +89,6 @@ const particlesConfig = {
   particleSpacing: 0,
   angleStart: 0
 };
-
 
 export interface PlayfieldProps {
   cellSize: number;
@@ -162,14 +160,14 @@ export default class Playfield extends React.Component<PlayfieldProps> {
 
     if (!pixiApp) return;
 
-    if(nextProps.cellSize !== this.props.cellSize) {
+    if (nextProps.cellSize !== this.props.cellSize) {
       const { width, height } = this._getSize(nextProps);
-      console.log('resizing to ', width, height);
+      console.log("resizing to ", width, height);
       pixiApp.renderer.resize(width, height);
     }
 
     if (!this.spriteGrid || !this.lastGrid || nextProps.cellSize !== this.props.cellSize) {
-      console.log('removing children...', nextProps.cellSize);
+      console.log("removing children...", nextProps.cellSize);
       pixiApp.stage.removeChildren();
       this.lastGrid = grid;
       this.spriteGrid = grid.map((row: GameGridRow, rowIndex: number) => {
@@ -266,7 +264,7 @@ export default class Playfield extends React.Component<PlayfieldProps> {
   }
   updateEmitter = () => {
     requestAnimationFrame(this.updateEmitter);
-  }
+  };
 
   _getSize = (props = this.props) => {
     const grid = props.grid;
@@ -281,8 +279,8 @@ export default class Playfield extends React.Component<PlayfieldProps> {
   };
 
   render() {
-    const {cellSize} = this.props;
-    const {width, height} = this._getSize();
+    const { cellSize } = this.props;
+    const { width, height } = this._getSize();
 
     // translate svg up by one row to account for out-of-sight true top row
     // const style = { width, height, transform: `translate(0, ${-this.props.cellSize}px)` };
@@ -298,7 +296,7 @@ export default class Playfield extends React.Component<PlayfieldProps> {
       padding,
       borderRadius: cellSize * 0.75,
       width: width + padding * 2,
-      height: (height + padding * 2) - (cellSize)
+      height: height + padding * 2 - cellSize
     };
 
     // todo use real device pixel ratio
@@ -309,4 +307,3 @@ export default class Playfield extends React.Component<PlayfieldProps> {
     );
   }
 }
-

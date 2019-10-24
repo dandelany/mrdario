@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import Slider from "rc-slider";
 
 import MayaNumeral from "@/components/ui/MayaNumeral";
-import { HighScoresResponse, HighScoresRow } from "mrdario-core/lib/api/types/scores";
+import { HighScoresResponse, HighScoresRow } from "mrdario-core/lib/api/scores";
 import { GameClient } from "mrdario-core/lib/client";
 
 interface HighScoresState {
@@ -58,7 +58,7 @@ export default class HighScores extends React.Component<HighScoresProps, HighSco
     if (!_.has(this.state.scoresForLevel, level + "")) {
       this._debouncedGetScoresForLevel(level);
     }
-  }
+  };
 
   render() {
     const { level, scoresForLevel } = this.state;

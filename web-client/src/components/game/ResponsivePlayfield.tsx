@@ -22,16 +22,18 @@ export class ResponsivePlayfield extends React.PureComponent<ResponsivePlayfield
     // padding is % of gridCell size, not pixels
 
     // todo should be based on width too
-    return <ContainerDimensions>
-      {({ height }: Dimensions): React.ReactNode => {
-        if(height === 0) return null;
-        const gridRows = grid.length - 1;
+    return (
+      <ContainerDimensions>
+        {({ height }: Dimensions): React.ReactNode => {
+          if (height === 0) return null;
+          const gridRows = grid.length - 1;
 
-        const cellSize = Math.floor((height * heightPercent) / (gridRows + (2 * padding)));
+          const cellSize = Math.floor((height * heightPercent) / (gridRows + 2 * padding));
 
-        // const cellSize = Math.floor(((height - padding * 2) * heightPercent) / gridRows);
-        return <Playfield {...this.props} cellSize={cellSize} />;
-      }}
-    </ContainerDimensions>;
+          // const cellSize = Math.floor(((height - padding * 2) * heightPercent) / gridRows);
+          return <Playfield {...this.props} cellSize={cellSize} />;
+        }}
+      </ContainerDimensions>
+    );
   }
 }

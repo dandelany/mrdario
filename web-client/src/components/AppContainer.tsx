@@ -57,7 +57,7 @@ class AppContainer extends React.Component<AppContainerProps, AppContainerState>
 
   _onResize = () => {
     this.setState(getWindowSize());
-  }
+  };
 
   _onChangeMode = (mode: GameControllerMode) => this.setState({ mode });
 
@@ -80,10 +80,10 @@ class AppContainer extends React.Component<AppContainerProps, AppContainerState>
       this.props.location.pathname === "/"
         ? AztecCalendarMode.Title
         : this.state.mode === GameControllerMode.Lost
-          ? AztecCalendarMode.Lost
-          : this.state.mode === GameControllerMode.Won
-            ? AztecCalendarMode.Won
-            : AztecCalendarMode.Other;
+        ? AztecCalendarMode.Lost
+        : this.state.mode === GameControllerMode.Won
+        ? AztecCalendarMode.Won
+        : AztecCalendarMode.Other;
 
     return (
       <div id="mrdario" style={{ width: "100%", height: "100%" }}>

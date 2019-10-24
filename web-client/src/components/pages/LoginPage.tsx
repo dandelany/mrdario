@@ -5,7 +5,7 @@ import { Redirect, RouteComponentProps, withRouter } from "react-router-dom";
 import { GameClient } from "mrdario-core/lib/client";
 
 import { AppThunkDispatch, login } from "@/store/actions/creators";
-import { AppAuthToken } from "mrdario-core/lib/api/types/auth";
+import { AppAuthToken } from "mrdario-core/lib/api/auth";
 import { AppState } from "@/store/state";
 
 const styles = require("./LoginPage.module.scss");

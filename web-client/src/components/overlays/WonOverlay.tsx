@@ -98,4 +98,3 @@ const WonOverlay: React.FunctionComponent<WonOverlayProps> = props => {
 };
 
 export default WonOverlay;
-

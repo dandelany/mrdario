@@ -3,7 +3,7 @@ import invariant from "invariant";
 import { COLORS } from "../../game/constants";
 import { GameGrid, GameGridRow, GridObject, GridObjectType } from "../../game/types";
 import { hasColor } from "../../game/utils";
-import { decodeGridObject, EncodedGridObject, encodeGridObject } from "./gridObject";
+import { EncodedGridObject, encodeGridObject, tGridObjectCodec } from "./gridObject";
 
 export type EncodedGrid = string;
 
@@ -47,8 +47,10 @@ export function decodeGrid(encodedRaw: EncodedGrid): GameGrid {
   for (let rowIndex = 0; rowIndex < rowCount; rowIndex++) {
     const row: GameGridRow = [];
     for (let colIndex = 0; colIndex < colCount; colIndex++) {
-      const gridObj = decodeGridObject(gridStr[gridStrIndex]);
-      row.push(gridObj);
+      // const gridObj = decodeGridObject(gridStr[gridStrIndex]);
+      const gridObj = tGridObjectCodec.decode(gridStr[gridStrIndex]);
+      if(gridObj.isLeft()) throw new Error("failed to decode grid object");
+      row.push(gridObj.value);
       gridStrIndex += 1;
     }
     grid.push(row);

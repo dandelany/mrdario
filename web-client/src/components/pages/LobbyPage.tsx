@@ -1,7 +1,7 @@
 import { connect } from "react-redux";
 
-import { LobbyChatMessageOut, LobbyResponse, LobbyUser } from "mrdario-core/lib/api/types";
-import { AppAuthToken } from "mrdario-core/lib/api/types/auth";
+import { LobbyChatMessageOut, LobbyJoinResponse, LobbyUser } from "mrdario-core/lib/api/lobby";
+import { AppAuthToken } from "mrdario-core/lib/api/auth";
 import { GameClient } from "mrdario-core/lib/client";
 
 import * as React from "react";
@@ -23,7 +23,7 @@ export interface LobbyPageProps extends LobbyPageStateProps {
 }
 
 export interface LobbyPageState {
-  lobbyUsers: LobbyResponse;
+  lobbyUsers: LobbyJoinResponse;
   pendingMessage: string;
   chatMessages: LobbyChatMessageOut[];
 }
@@ -44,7 +44,7 @@ export class UnconnectedLobbyPage extends React.Component<LobbyPageProps, LobbyP
   componentDidMount() {
     this.props.gameClient
       .joinLobby({
-        onChangeLobbyUsers: (lobbyUsers: LobbyResponse) => this.setState({ lobbyUsers }),
+        onChangeLobbyUsers: (lobbyUsers: LobbyJoinResponse) => this.setState({ lobbyUsers }),
         onChatMessage: (chatMessage: LobbyChatMessageOut) => {
           this.setState({ chatMessages: this.state.chatMessages.concat(chatMessage) });
           if (this.messagesEndRef && this.messagesEndRef.current) {
@@ -54,7 +54,7 @@ export class UnconnectedLobbyPage extends React.Component<LobbyPageProps, LobbyP
           }
         }
       })
-      .then((lobbyUsers: LobbyResponse) => this.setState({ lobbyUsers }));
+      .then((lobbyUsers: LobbyJoinResponse) => this.setState({ lobbyUsers }));
   }
   componentWillUnmount() {
     this.props.gameClient.leaveLobby();
@@ -62,12 +62,12 @@ export class UnconnectedLobbyPage extends React.Component<LobbyPageProps, LobbyP
   handleChangeMessage = (e: React.ChangeEvent<HTMLInputElement>) => {
     const pendingMessage = e.currentTarget.value;
     this.setState({ pendingMessage });
-  }
+  };
   handleSubmit = (e?: React.SyntheticEvent) => {
     if (e) e.preventDefault();
     this.props.gameClient.sendLobbyChat(this.state.pendingMessage);
     this.setState({ pendingMessage: "" });
-  }
+  };
   render() {
     // todo do this in a wrapper component?
     if (this.props.socketState !== "open") {

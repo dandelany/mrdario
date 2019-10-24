@@ -12,7 +12,8 @@ import { GameGrid, PillColors, TimedGameActions, TimedMoveActions } from "mrdari
 import { encodeGameState } from "mrdario-core/lib/api/encoding/game";
 import { GameClient } from "mrdario-core/lib/client/GameClient";
 import { GamepadManager, KeyManager, SwipeManager } from "mrdario-core/lib/game/input/web";
-import { GameListItem, GameScoreResponse } from "mrdario-core/lib/api/types";
+import { GameListItem } from "mrdario-core/lib/api/types";
+import { GameScoreResponse } from "mrdario-core/lib/api/scores";
 
 import { GameRouteParams } from "@/types";
 import { ResponsiveGameDisplay } from "@/components/game/GameDisplay";
@@ -67,7 +68,6 @@ class MirrorGame extends React.Component<MirrorGameProps, MirrorGameState> {
   keyManager?: KeyManager;
   gamepadManager?: GamepadManager;
   touchManager?: SwipeManager;
-
 
   componentWillMount() {
     const gameOptions = this.getGameOptions(this.props);
@@ -128,10 +128,10 @@ class MirrorGame extends React.Component<MirrorGameProps, MirrorGameState> {
   _initGame = (props: MirrorGameProps) => {
     if (this.game && this.game.cleanup) this.game.cleanup();
 
-    const {gameId} = this.state;
+    const { gameId } = this.state;
     const { gameClient } = props;
     const gameOptions = this.state.gameOptions;
-    if(!gameOptions || !gameClient || !gameId) return;
+    if (!gameOptions || !gameClient || !gameId) return;
 
     // input managers controlling keyboard and touch events
     this.keyManager = new KeyManager(DEFAULT_KEYS);
@@ -145,8 +145,8 @@ class MirrorGame extends React.Component<MirrorGameProps, MirrorGameState> {
       getTime: window.performance.now.bind(window.performance),
       gameOptions,
       onMoveActions: (timedMoveActions: TimedMoveActions) => {
-        if(gameId) {
-          gameClient.publishSimpleGameActions(gameId, timedMoveActions)
+        if (gameId) {
+          gameClient.publishSimpleGameActions(gameId, timedMoveActions);
         }
       },
       // inputManagers: [this.keyManager, this.touchManager, this.gamepadManager],
@@ -199,26 +199,23 @@ class MirrorGame extends React.Component<MirrorGameProps, MirrorGameState> {
         //     console.log('OUT OF SYNC')
         //   }
         // }
-
       },
       onChangeMode: (fromMode: GameControllerMode, toMode: GameControllerMode) => {
         console.log("onchangemode", fromMode, toMode);
-
       }
     });
 
     this.props.gameClient.watchSimpleGameMoves(gameId, (actions: TimedGameActions) => {
-      console.log('got actions from client', actions);
-      if(this.mirrorGame) this.mirrorGame.addFrameActions(actions);
+      console.log("got actions from client", actions);
+      if (this.mirrorGame) this.mirrorGame.addFrameActions(actions);
     });
-
 
     this.mirrorGame.play();
 
     // if(this.game) this.game.play();
 
     setTimeout(() => {
-      if(this.game) this.game.play();
+      if (this.game) this.game.play();
     }, 1000);
   };
   protected resetGame = () => {
