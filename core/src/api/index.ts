@@ -1,5 +1,5 @@
 export * from "./auth"
-export * from "./encoding"
+export * from "./game/encoding"
 export * from "./game"
 export * from "./lobby"
 export * from "./match"

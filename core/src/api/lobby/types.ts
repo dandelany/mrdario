@@ -14,7 +14,10 @@ export type LobbyUser = t.TypeOf<typeof TLobbyUser>;
 // types of event requests/responses emitted by the lobby module
 
 export const TLobbyJoinRequest = t.null;
-export type LobbyJoinRequest = t.TypeOf<typeof TLobbyJoinResponse>;
+export type LobbyJoinRequest = t.TypeOf<typeof TLobbyJoinRequest>;
+
+export const TLobbyLeaveRequest = t.null;
+export type LobbyLeaveRequest = t.TypeOf<typeof TLobbyLeaveRequest>;
 
 export const TLobbyJoinResponse = t.array(TLobbyUser);
 export type LobbyJoinResponse = t.TypeOf<typeof TLobbyJoinResponse>;
@@ -56,5 +59,5 @@ export const TLobbyMessage = t.union([
   TLobbyLeaveMessage,
   TLobbyChatMessageIn,
   TLobbyChatMessageOut
-]);
+], "LobbyMessage");
 export type LobbyMessage = t.TypeOf<typeof TLobbyMessage>;

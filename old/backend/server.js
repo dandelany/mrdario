@@ -8,7 +8,7 @@ var options = {
   // Switch wsEngine to 'uws' for a MAJOR performance boost (beta)
   wsEngine: process.env.SOCKETCLUSTER_WS_ENGINE || 'ws',
   appName: argv.n || process.env.SOCKETCLUSTER_APP_NAME || null,
-  workerController: process.env.SOCKETCLUSTER_WORKER_CONTROLLER || __dirname + '/worker.js',
+  workerController: process.env.SOCKETCLUSTER_WORKER_CONTROLLER || __dirname + '/worker.ts',
   brokerController: process.env.SOCKETCLUSTER_BROKER_CONTROLLER || __dirname + '/broker.js',
   socketChannelLimit: Number(process.env.SOCKETCLUSTER_SOCKET_CHANNEL_LIMIT) || 1000,
   crashWorkerOnError: argv['auto-reboot'] != false

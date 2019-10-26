@@ -28,7 +28,7 @@ var options = {
   // You can switch to 'sc-uws' for improved performance.
   wsEngine: process.env.SOCKETCLUSTER_WS_ENGINE || "ws",
   appName: argv.n || process.env.SOCKETCLUSTER_APP_NAME || null,
-  workerController: workerControllerPath || path.join(__dirname, "worker.js"),
+  workerController: workerControllerPath || path.join(__dirname, "worker.ts"),
   brokerController: brokerControllerPath || path.join(__dirname, "broker.js"),
   workerClusterController: workerClusterControllerPath || null,
   socketChannelLimit: Number(process.env.SOCKETCLUSTER_SOCKET_CHANNEL_LIMIT) || 1000,
@@ -44,7 +44,8 @@ var options = {
   clusterStateServerReconnectRandomness: Number(process.env.SCC_STATE_SERVER_RECONNECT_RANDOMNESS) || null,
   crashWorkerOnError: argv["auto-reboot"] != false,
   // If using nodemon, set this to true, and make sure that environment is 'dev'.
-  killMasterOnSignal: false,
+  // killMasterOnSignal: false,
+  killMasterOnSignal: environment === "dev",
   environment: environment
 };
 

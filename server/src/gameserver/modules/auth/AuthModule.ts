@@ -1,4 +1,4 @@
-import { SCServer, SCServerSocket } from "socketcluster-server";
+import { SCServerSocket } from "socketcluster-server";
 import hashUtil from "tweetnacl-util";
 import { hash } from "tweetnacl";
 import uuid from "uuid/v4";
@@ -6,14 +6,15 @@ import uuid from "uuid/v4";
 import { AuthEventType, ClientAuthenticatedUser, LoginRequest, ServerUser } from "mrdario-core/lib/api/auth";
 
 import {
+  AppAuthToken,
   getClientIpAddress,
-  logWithTime,
   hasAuthToken,
   hasValidAuthToken,
   isAuthToken,
-  AppAuthToken,
+  logWithTime,
   SocketResponder
 } from "../../utils";
+import { AbstractServerModule, ServerModuleOptions } from "../../AbstractServerModule";
 
 type ServerUsers = { [K in string]: ServerUser };
 
@@ -21,12 +22,11 @@ interface AuthModuleState {
   users: ServerUsers;
 }
 
-export class AuthModule {
-  scServer: SCServer;
+export class AuthModule extends AbstractServerModule {
   state: AuthModuleState;
 
-  constructor(scServer: SCServer) {
-    this.scServer = scServer;
+  constructor(options: ServerModuleOptions) {
+    super(options);
     this.state = {
       users: {}
     };
@@ -54,7 +54,7 @@ export class AuthModule {
       AuthEventType.Login,
       (request: LoginRequest, respond: SocketResponder<ClientAuthenticatedUser>): void => {
         // todo properly validate requests here
-        if(!request.name || !request.name.length) {
+        if (!request.name || !request.name.length) {
           respond("Login requires a name", null);
           return;
         }

@@ -17,6 +17,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 var tweetnacl_util_1 = __importDefault(require("tweetnacl-util"));
 var tweetnacl_1 = require("tweetnacl");
 var v4_1 = __importDefault(require("uuid/v4"));
+var auth_1 = require("mrdario-core/lib/api/auth");
 var utils_1 = require("../../utils");
 var AuthModule = /** @class */ (function () {
     function AuthModule(scServer) {
@@ -45,7 +46,12 @@ var AuthModule = /** @class */ (function () {
         });
         socket.on(
         // @ts-ignore
-        "login", function (request, respond) {
+        auth_1.AuthEventType.Login, function (request, respond) {
+            // todo properly validate requests here
+            if (!request.name || !request.name.length) {
+                respond("Login requires a name", null);
+                return;
+            }
             var id = request.id, token = request.token, name = request.name;
             var clientUser;
             if (id && token && authenticateUser(id, token, _this.state.users)) {

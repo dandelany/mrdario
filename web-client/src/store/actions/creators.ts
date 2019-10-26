@@ -4,7 +4,7 @@ import { SCClientSocket } from "socketcluster-client";
 
 import { GameClient, GameClientOptions } from "mrdario-core/lib/client";
 import { AppAuthToken, ClientAuthenticatedUser } from "mrdario-core/lib/api/auth";
-import { HighScoresResponse } from "mrdario-core/lib/api/scores";
+import { GetHighScoresResponse } from "mrdario-core/lib/api/scores";
 
 import {
   AppAction,
@@ -128,7 +128,7 @@ export const getHighScoresLoading = (level: number): GetHighScoresAction => ({
 });
 export const getHighScoresSuccess = (
   level: number,
-  response: HighScoresResponse
+  response: GetHighScoresResponse
 ): GetHighScoresSuccessAction => ({
   type: AppActionType.GetHighScores,
   status: RequestStatus.Success,
@@ -215,7 +215,7 @@ export const getHighScores: AsyncActionCreator<GetHighScoresAction> = (gameClien
     dispatch(getHighScoresLoading(level));
     return gameClient
       .getHighScores(level)
-      .then((response: HighScoresResponse) => {
+      .then((response: GetHighScoresResponse) => {
         return dispatch(getHighScoresSuccess(level, response));
       })
       .catch((error: Error) => {

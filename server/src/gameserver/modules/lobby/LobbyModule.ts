@@ -1,37 +1,26 @@
-import { SCServer, SCServerSocket } from "socketcluster-server";
-import {
-  AppAuthToken
-} from "mrdario-core/lib/api/auth";
-
-
+import { SCServerSocket } from "socketcluster-server";
 import * as t from "io-ts";
-
-import {
-  bindSocketHandlers,
-  EventHandlersObj,
-  hasAuthToken,
-  hasValidAuthToken,
-  logWithTime,
-  unbindSocketHandlers
-} from "../../utils";
-import {
-  PublishOutMiddlewareWithDataType,
-  PublishOutRequestWithDataType,
-  requireAuthMiddleware,
-  validateChannelRequest,
-  ValidatedChannelMiddlewareConfig,
-  ValidatedPublishInMiddleware
-} from "../../utils/middleware";
 
 import {
   LOBBY_CHANNEL_NAME,
   LobbyChatMessageOut,
+  LobbyEventType,
   LobbyJoinMessage,
-  LobbyLeaveMessage,
-  LobbyMessageType,
+  LobbyJoinRequest,
   LobbyJoinResponse,
+  LobbyLeaveMessage,
+  LobbyLeaveRequest,
+  LobbyLeaveResponse,
+  LobbyMessageType,
+  TLobbyJoinRequest,
+  TLobbyLeaveRequest,
   TLobbyMessage
 } from "mrdario-core/lib/api/lobby";
+import { AppAuthToken } from "mrdario-core/lib/api/auth";
+
+import { AbstractServerModule, makeChannelConfig, ModuleConfig, ServerModuleOptions } from "../../AbstractServerModule";
+import { bindSocketHandlers, EventHandlersObj, hasAuthToken, logWithTime, unbindSocketHandlers } from "../../utils";
+import { PublishOutRequestWithDataType, requireAuthMiddleware, validateChannelRequest } from "../../utils/middleware";
 
 // export type ExtractGeneric<T> = T extends any<infer R> ? true : never;
 
@@ -51,30 +40,7 @@ interface LobbyModuleConnectionState {
   lobbyHandlers: EventHandlersObj;
 }
 
-type ModuleConfig = {
-  channels: ModuleChannelConfig<any>[];
-};
-
-type ModuleChannelConfig<DataType> = {
-  match: string; // todo allow regex and match function
-  requireAuth: boolean;
-  messageCodec: t.Type<DataType>;
-  middlewares?: ValidatedChannelMiddlewareConfig<DataType>[];
-  publishInMiddleware?: ValidatedPublishInMiddleware<DataType>;
-  publishOutMiddleware?: PublishOutMiddlewareWithDataType<DataType>;
-  // middleware: PublishInMiddleware<DataType>;
-};
-
-// the only way i can figure out to infer Datatype from the codec type
-function makeChannelConfig<DataType>(
-  // codec: t.Type<DataType>,
-  config: ModuleChannelConfig<DataType>
-): ModuleChannelConfig<DataType> {
-  return config;
-}
-
-export class LobbyModule {
-  scServer: SCServer;
+export class LobbyModule extends AbstractServerModule {
   state: LobbyModuleState;
 
   static config: ModuleConfig = {
@@ -82,7 +48,7 @@ export class LobbyModule {
       makeChannelConfig(
         // TLobbyResponse
         {
-          match: LOBBY_CHANNEL_NAME,
+          name: LOBBY_CHANNEL_NAME,
           requireAuth: true,
           messageCodec: TLobbyMessage,
           publishInMiddleware: (req, next) => {
@@ -107,9 +73,7 @@ export class LobbyModule {
           },
           publishOutMiddleware: (req, next) => {
             console.log("lobby publish out");
-
             console.log(req.data);
-
             if (req.data.type === LobbyMessageType.Join) {
               console.log("joined", req.data.payload.name);
             }
@@ -120,11 +84,9 @@ export class LobbyModule {
     ]
   };
 
-  constructor(scServer: SCServer) {
-    this.scServer = scServer;
-    this.state = {
-      lobby: {}
-    };
+  constructor(options: ServerModuleOptions) {
+    super(options);
+    this.state = { lobby: {} };
     this.addMiddleware();
   }
 
@@ -139,7 +101,7 @@ export class LobbyModule {
       // ])
       const { messageCodec, publishInMiddleware } = channelConfig;
       this.scServer.addMiddleware(this.scServer.MIDDLEWARE_PUBLISH_IN, (req, next) => {
-        if (req.channel === channelConfig.match) {
+        if (req.channel === channelConfig.name) {
           requireAuthMiddleware(req, (e?: string | true | Error | undefined) => {
             if (e) next(e);
             else {
@@ -174,11 +136,12 @@ export class LobbyModule {
       lobbyHandlers: {}
     };
 
-    // @ts-ignore
-    socket.on("joinLobby", (data: null, respond: (err: Error | null, data: Lobby | null) => any) => {
-      if (hasValidAuthToken(socket)) {
-        const userId = socket.authToken.id;
-        const name = socket.authToken.name;
+    this.bindListener<LobbyJoinRequest, LobbyJoinResponse>(socket, {
+      eventType: LobbyEventType.Join,
+      codec: TLobbyJoinRequest,
+      listener: (_data, authToken, respond) => {
+        const userId = authToken.id;
+        const name = authToken.name;
 
         if (userId in this.state.lobby) {
           // user already in lobby
@@ -207,7 +170,7 @@ export class LobbyModule {
             payload: { name: name, id: userId, joined: lobbyUser.joined }
           };
           this.scServer.exchange.publish(LOBBY_CHANNEL_NAME, message, () => {});
-          logWithTime(`${socket.authToken.name} joined the lobby`);
+          logWithTime(`${authToken.name} joined the lobby`);
         }
 
         //shouldn't have any, but unbind old handlers to be safe
@@ -219,7 +182,7 @@ export class LobbyModule {
           authenticate: () => {
             // if user authenticates as a new user, old user should leave lobby
             // todo new user should re-enter lobby too?
-            logWithTime(`${name} reauthenticated as ${socket.authToken.name} - removing ${name} from lobby`);
+            logWithTime(`${name} reauthenticated as ${authToken.name} - removing ${name} from lobby`);
             this.leaveLobby(socket);
           }
         };
@@ -232,25 +195,20 @@ export class LobbyModule {
         console.table(this.state.lobby);
 
         respond(null, lobbyUsers);
-      } else {
-        respond(new Error("User is not authenticated - login first"), null);
       }
     });
 
-    // @ts-ignore
-    socket.on("leaveLobby", (_data: null, respond: (err: Error | null, data: null) => any) => {
-      console.log('got leaveLobby');
-      if (hasValidAuthToken(socket)) {
-        let error = null;
-        if (socket.authToken.id in this.state.lobby) {
+    this.bindListener<LobbyLeaveRequest, LobbyLeaveResponse>(socket, {
+      eventType: LobbyEventType.Leave,
+      codec: TLobbyLeaveRequest,
+      listener: (_data, authToken, respond) => {
+        if (authToken.id in this.state.lobby) {
           this.leaveLobby(socket);
         } else {
-          error = new Error("You are not in the lobby");
+          respond(new Error("You are not in the lobby"), null);
         }
         unbindSocketHandlers(socket, connectionState.lobbyHandlers);
-        respond(error, null);
-      } else {
-        respond(new Error("User is not authenticated - login first"), null);
+        respond(null, null);
       }
     });
   }

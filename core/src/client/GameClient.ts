@@ -6,15 +6,17 @@ import { create as createSocket, SCClientSocket } from "socketcluster-client";
 import {
   CreateMatchRequest,
   GameListItem,
-  GameScoreRequest,
-  GameScoreResponse,
-  HighScoresResponse,
+  SaveScoreRequest,
+  SaveScoreResponse,
+  GetHighScoresResponse,
   Match,
   MatchEventType,
-  TGameScoreResponse,
-  THighScoresResponse,
+  TSaveScoreResponse,
+  TGetHighScoresResponse,
+  ScoresEventType,
   TMatch
 } from "../api";
+
 
 import {
   AppAuthToken,
@@ -39,8 +41,8 @@ import {
   TLobbyLeaveResponse
 } from "../api/lobby";
 
-import { decodeTimedActions, encodeTimedActions } from "../api/encoding/action";
-import { encodeGrid } from "../api/encoding/grid";
+import { decodeTimedActions, encodeTimedActions } from "../api/game/encoding/action";
+import { encodeGrid } from "../api/game/encoding/grid";
 import { GameGrid, TimedGameActions } from "../game/types";
 import { promisifySocketPublish, promisifySocketRequest as emit, validatedChannel } from "./utils";
 
@@ -165,6 +167,7 @@ export class GameClient {
   ): Promise<LobbyJoinResponse> {
     return await emit(this.socket, LobbyEventType.Join, null, TLobbyJoinResponse).then(
       (lobbyResponse: LobbyJoinResponse) => {
+        console.log(lobbyResponse);
         this.lobbyUsers = lobbyResponse;
         let rawLobbyChannel = this.socket.subscribe(LOBBY_CHANNEL_NAME);
         const lobbyChannel = validatedChannel(rawLobbyChannel, TLobbyMessage);
@@ -211,13 +214,13 @@ export class GameClient {
     return await promisifySocketPublish(this.socket, LOBBY_CHANNEL_NAME, chatMessage);
   }
 
-  public async getHighScores(level: number): Promise<HighScoresResponse> {
-    return await emit(this.socket, "getSingleHighScores", level, THighScoresResponse);
+  public async getHighScores(level: number): Promise<GetHighScoresResponse> {
+    return await emit(this.socket, ScoresEventType.GetHighScores, level, TGetHighScoresResponse);
   }
 
-  public sendSingleGameHighScore(level: number, name: string, score: number): Promise<GameScoreResponse> {
-    const request: GameScoreRequest = [level, name, score];
-    return emit(this.socket, "singleGameScore", request, TGameScoreResponse);
+  public sendSingleGameHighScore(level: number, name: string, score: number): Promise<SaveScoreResponse> {
+    const request: SaveScoreRequest = [level, name, score];
+    return emit(this.socket, ScoresEventType.SaveScore, request, TSaveScoreResponse);
   }
 
   public sendInfoStartGame(name: string, level: number, speed: number, callback?: any) {

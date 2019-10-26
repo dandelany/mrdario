@@ -4,22 +4,27 @@ import * as t from "io-ts";
 export const THighScoresRow = t.tuple([t.string, t.number]);
 export type HighScoresRow = t.TypeOf<typeof THighScoresRow>;
 
-export const THighScoresResponse = t.type({
+// get high scores
+export const TGetHighScoresRequest = t.number;
+export type GetHighScoresRequest = t.TypeOf<typeof TGetHighScoresRequest>;
+
+export const TGetHighScoresResponse = t.type({
   level: t.number,
   scores: t.array(THighScoresRow)
 });
-export type HighScoresResponse = t.TypeOf<typeof THighScoresResponse>;
+export type GetHighScoresResponse = t.TypeOf<typeof TGetHighScoresResponse>;
 
-// game score - when user wins and sends score for high score
-export const TGameScoreRequest = t.tuple([
+
+// save score - when user wins and sends score for high score
+export const TSaveScoreRequest = t.tuple([
   t.number, // level
   t.string, // name
   t.number // score
 ]);
-export type GameScoreRequest = t.TypeOf<typeof TGameScoreRequest>;
+export type SaveScoreRequest = t.TypeOf<typeof TSaveScoreRequest>;
 
-export const TGameScoreResponse = t.type({
+export const TSaveScoreResponse = t.type({
   rank: t.number,
   scores: t.array(THighScoresRow)
 });
-export type GameScoreResponse = t.TypeOf<typeof TGameScoreResponse>;
+export type SaveScoreResponse = t.TypeOf<typeof TSaveScoreResponse>;

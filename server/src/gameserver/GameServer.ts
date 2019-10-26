@@ -3,7 +3,7 @@ import { SCChannel } from "sc-channel";
 import { RedisClient } from "redis";
 import uuid from "uuid/v4";
 
-import { GameListItem } from "mrdario-core/lib/api/types";
+import { GameListItem } from "mrdario-core/lib/api/game";
 
 import { getClientIpAddress, socketInfoStr } from "./utils";
 import { hasValidAuthToken } from "./utils/auth";
@@ -14,6 +14,7 @@ import { LobbyModule } from "./modules/lobby";
 import { AuthModule } from "./modules/auth";
 import { SyncModule } from "./modules/sync";
 import { MatchModule } from "./modules/match/MatchModule";
+import { AbstractServerModule } from "./AbstractServerModule";
 
 // in-memory state, for now...
 // todo put this in redis where appropriate?
@@ -27,14 +28,18 @@ interface ConnectionState {
   game?: string;
 }
 
+interface ServerModule extends AbstractServerModule {};
+
 export class GameServer {
   scServer: SCServer;
   rClient: RedisClient;
   // todo store in redis?
   state: GameServerState;
 
-  highScores: HighScoresModule;
-  lobby: LobbyModule;
+  modules: {[k in string]: ServerModule};
+
+  // highScores: HighScoresModule;
+  // lobby: LobbyModule;
   auth: AuthModule;
   sync: SyncModule;
   match: MatchModule;
@@ -48,10 +53,14 @@ export class GameServer {
     };
 
     // modules - the parts which actually handle requests and do things
-
-    this.highScores = new HighScoresModule(rClient);
-    this.lobby = new LobbyModule(scServer);
-    this.auth = new AuthModule(scServer);
+    const moduleOpts = {scServer, rClient};
+    this.modules = {
+      highScores: new HighScoresModule(moduleOpts),
+      lobby: new LobbyModule(moduleOpts)
+    };
+    // this.highScores = new HighScoresModule({scServer, rClient});
+    // this.lobby = new LobbyModule({scServer, rClient});
+    this.auth = new AuthModule(moduleOpts);
     this.sync = new SyncModule(scServer);
     this.match = new MatchModule(scServer);
 
@@ -61,9 +70,14 @@ export class GameServer {
   protected handleConnect = (socket: SCServerSocket) => {
     const connectionState: ConnectionState = {};
     logWithTime("Connected: ", getClientIpAddress(socket));
+    logWithTime(socketInfoStr(socket));
 
-    this.highScores.handleConnect(socket);
-    this.lobby.handleConnect(socket);
+    Object.values(this.modules).forEach(module => {
+      module.handleConnect(socket);
+    });
+
+    // this.highScores.handleConnect(socket);
+    // this.lobby.handleConnect(socket);
     this.auth.handleConnect(socket);
     this.sync.handleConnect(socket);
     this.match.handleConnect(socket);

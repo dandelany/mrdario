@@ -1,5 +1,5 @@
 import { times } from "lodash";
-import { decodeGrid } from "../../api/encoding";
+import { decodeGrid } from "../../api/game/encoding";
 import {
   Game,
   GameColor,

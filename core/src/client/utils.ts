@@ -71,9 +71,9 @@ export async function promisifySocketRequest<ResponseType, RequestType = any>(
   TResponseType: t.Type<ResponseType>
 ): Promise<ResponseType> {
   return await new Promise<ResponseType>(function(resolve, reject) {
-    socket.emit(eventName, requestData, (err: Error, data: any) => {
+    socket.emit(eventName, requestData, (err: string | undefined, data: any) => {
       if (err) {
-        reject(err);
+        reject(new Error(err));
       }
       const decoded = TResponseType.decode(data);
       if (decoded.isRight()) {

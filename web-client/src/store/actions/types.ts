@@ -1,7 +1,7 @@
 import { Action } from "redux";
 import { SCClientSocket } from "socketcluster-client";
 
-import { HighScoresResponse } from "mrdario-core/lib/api/scores";
+import { GetHighScoresResponse } from "mrdario-core/lib/api/scores";
 import { AppAuthToken, ClientAuthenticatedUser, LoginRequest } from "mrdario-core/lib/api/auth";
 
 // master list of app action type strings
@@ -112,7 +112,7 @@ export interface GetHighScoresSuccessAction extends GetHighScoresAction {
   status: RequestStatus.Success;
   payload: {
     level: number;
-    response: HighScoresResponse;
+    response: GetHighScoresResponse;
   };
 }
 export interface GetHighScoresFailedAction extends GetHighScoresAction {

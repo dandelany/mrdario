@@ -9,11 +9,11 @@ import { DEFAULT_KEYS } from "mrdario-core/lib/game/controller/constants";
 import { GameController, GameControllerMode, GameControllerState } from "mrdario-core/lib/game/controller";
 import { GameGrid, PillColors, TimedGameActions, TimedMoveActions } from "mrdario-core/lib/game/types";
 
-import { encodeGameState } from "mrdario-core/lib/api/encoding/game";
+import { encodeGameState } from "mrdario-core/lib/api/game/encoding";
 import { GameClient } from "mrdario-core/lib/client/GameClient";
 import { GamepadManager, KeyManager, SwipeManager } from "mrdario-core/lib/game/input/web";
-import { GameListItem } from "mrdario-core/lib/api/types";
-import { GameScoreResponse } from "mrdario-core/lib/api/scores";
+import { GameListItem } from "mrdario-core/lib/api/game";
+import { SaveScoreResponse } from "mrdario-core/lib/api/scores";
 
 import { GameRouteParams } from "@/types";
 import { ResponsiveGameDisplay } from "@/components/game/GameDisplay";
@@ -231,8 +231,8 @@ class MirrorGame extends React.Component<MirrorGameProps, MirrorGameState> {
       if (_.isFinite(level) && _.isFinite(score) && this.props.gameClient.socket.state) {
         this.props.gameClient
           .sendSingleGameHighScore(level, name, score)
-          .then((data: GameScoreResponse) => {
-            const scoreResponse = data as GameScoreResponse;
+          .then((data: SaveScoreResponse) => {
+            const scoreResponse = data as SaveScoreResponse;
             const { scores, rank } = scoreResponse;
             console.log("high scores received!", scores, rank);
             this.setState({ highScores: scores, rank: rank });

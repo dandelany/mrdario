@@ -7,11 +7,11 @@ import { DEFAULT_KEYS } from "mrdario-core/lib/game/controller/constants";
 import { GameControllerMode, GameControllerState } from "mrdario-core/lib/game/controller/types";
 import { GameGrid, PillColors } from "mrdario-core/lib/game/types";
 
-import { encodeGameState } from "mrdario-core/lib/encoding/game";
+import { encodeGameState } from "mrdario-core/lib/game/encoding";
 import { GameClient } from "mrdario-core/lib/api/client/GameClient";
 import { LocalWebGameController } from "mrdario-core/lib/game/controller/web";
 import { GamepadManager, KeyManager, SwipeManager } from "mrdario-core/lib/game/input/web";
-import { GameScoreResponse } from "mrdario-core/lib/api/scores";
+import { SaveScoreResponse } from "mrdario-core/lib/api/scores";
 
 import { GameRouteParams } from "@/types";
 
@@ -174,8 +174,8 @@ class SinglePlayerGame extends React.Component<SinglePlayerGameProps, SinglePlay
 
         this.props.gameClient
           .sendSingleGameHighScore(level, name, score)
-          .then((data: GameScoreResponse) => {
-            const scoreResponse = data as GameScoreResponse;
+          .then((data: SaveScoreResponse) => {
+            const scoreResponse = data as SaveScoreResponse;
             const { scores, rank } = scoreResponse;
             console.log("high scores received!", scores, rank);
             this.setState({ highScores: scores, rank: rank });

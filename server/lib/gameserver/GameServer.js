@@ -7,7 +7,7 @@ var v4_1 = __importDefault(require("uuid/v4"));
 var utils_1 = require("./utils");
 var auth_1 = require("./utils/auth");
 var log_1 = require("./utils/log");
-var highScores_1 = require("./modules/highScores");
+var scores_1 = require("./modules/scores");
 var lobby_1 = require("./modules/lobby");
 var auth_2 = require("./modules/auth");
 var sync_1 = require("./modules/sync");
@@ -18,6 +18,7 @@ var GameServer = /** @class */ (function () {
         this.handleConnect = function (socket) {
             var connectionState = {};
             log_1.logWithTime("Connected: ", utils_1.getClientIpAddress(socket));
+            log_1.logWithTime(utils_1.socketInfoStr(socket));
             _this.highScores.handleConnect(socket);
             _this.lobby.handleConnect(socket);
             _this.auth.handleConnect(socket);
@@ -92,8 +93,8 @@ var GameServer = /** @class */ (function () {
             channels: {}
         };
         // modules - the parts which actually handle requests and do things
-        this.highScores = new highScores_1.HighScoresModule(rClient);
-        this.lobby = new lobby_1.LobbyModule(scServer);
+        this.highScores = new scores_1.HighScoresModule({ scServer: scServer, rClient: rClient });
+        this.lobby = new lobby_1.LobbyModule({ scServer: scServer, rClient: rClient });
         this.auth = new auth_2.AuthModule(scServer);
         this.sync = new sync_1.SyncModule(scServer);
         this.match = new MatchModule_1.MatchModule(scServer);

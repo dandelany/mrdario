@@ -10,6 +10,7 @@
   "workspaces": [
     "bots",
     "core",
+    "integration",
     "scripts",
     "server",
     "terminal-client",

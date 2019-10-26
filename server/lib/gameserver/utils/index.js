@@ -5,6 +5,7 @@ function __export(m) {
 Object.defineProperty(exports, "__esModule", { value: true });
 var lodash_1 = require("lodash");
 __export(require("./auth"));
+__export(require("./io"));
 __export(require("./log"));
 function getClientIpAddress(socket) {
     return lodash_1.get(socket, "request.headers.x-forwarded-for", socket.remoteAddress);
@@ -40,3 +41,15 @@ function unbindSocketHandlers(socket, handlers) {
     }
 }
 exports.unbindSocketHandlers = unbindSocketHandlers;
+// SCServer only exports these constants on a class instance
+// convenient for typing reasons to have them as an enum
+var SCMiddlewareType;
+(function (SCMiddlewareType) {
+    SCMiddlewareType["MIDDLEWARE_HANDSHAKE_WS"] = "handshakeWS";
+    SCMiddlewareType["MIDDLEWARE_HANDSHAKE_SC"] = "handshakeSC";
+    SCMiddlewareType["MIDDLEWARE_AUTHENTICATE"] = "authenticate";
+    SCMiddlewareType["MIDDLEWARE_SUBSCRIBE"] = "subscribe";
+    SCMiddlewareType["MIDDLEWARE_PUBLISH_IN"] = "publishIn";
+    SCMiddlewareType["MIDDLEWARE_PUBLISH_OUT"] = "publishOut";
+    SCMiddlewareType["MIDDLEWARE_EMIT"] = "emit";
+})(SCMiddlewareType = exports.SCMiddlewareType || (exports.SCMiddlewareType = {}));
