@@ -1,9 +1,9 @@
-import { decodeGrid } from "../../../api/game/encoding";
+import { decodeGrid, encodeGrid } from "../../../api/game/encoding";
 import { GameColor, GridDirection, RotateDirection } from "../../../game/enums";
 import {
   clearTopRow,
   destroyLines,
-  dropDebris,
+  dropDebris, giveGarbage,
   givePill,
   moveCell,
   moveCells,
@@ -12,6 +12,7 @@ import {
   rotatePill,
   slamPill
 } from "../../../game/utils/moves";
+import { GameGrid } from "../../../game";
 
 /*
 Y = Destroyed
@@ -625,6 +626,57 @@ describe("Moves", () => {
         XKXSC
       `)
       );
+    });
+  });
+
+  describe("giveGarbage()", () => {
+    test("adds garbage to a grid", () => {
+      const grid: GameGrid = decodeGrid(`gh,8:
+        XXXXXXXX
+        XXXXXXXX
+        XXXXXXXX
+        XXXXXXXX
+        XXXXXXXX
+        XXXXXXXX
+        XXXXXXXX
+        XNFVVXXF
+        XXXFNVFN
+        XFNNXVXX
+        XVVXFXXF
+        VXXFNXVV
+        VNNXXXFX
+        FNVVFXNF
+        FXVVFFNV
+        VVFXVXFV
+        NFFNXXFX
+      `);
+      const newGrid = giveGarbage(
+        grid,
+        [GameColor.Color2, GameColor.Color3, GameColor.Color1],
+        "some-seed",
+        127
+      );
+      expect(newGrid).toEqual(decodeGrid(`gh,8:
+        XXXXXXXX
+        XXXXXXXX
+        XXXXXXXX
+        XXXXXXXX
+        XXXXXXXX
+        XXXXXXXX
+        XXXXXXXX
+        XNFVVXXF
+        XXXFNVFN
+        XFNNXVXX
+        XVVXFXXF
+        VXXFNXVV
+        VNNXXXFX
+        FNVVFXNF
+        FXVVFFNV
+        VVFXVXFV
+        NFFNXXFX
+      `));
+
+      console.log(encodeGrid(newGrid, true));
     });
   });
 });
