@@ -29,9 +29,6 @@ class Worker extends SCWorker {
     httpServer.on("request", app);
 
     // initialize redis client for storage
-    // var rClient = redis.createClient();
-
-    console.log("is test?????", process.env.TEST_ENV);
     // use redis database 15 for testing, to avoid accidentally deleting prod/dev data
     const redisDB = (process.env.TEST_ENV) ? 15 : 0;
     var rClient = redis.createClient({db: redisDB});

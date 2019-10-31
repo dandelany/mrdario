@@ -1,4 +1,4 @@
-import invariant from "invariant";
+import { invariant } from "ts-invariant";
 // import * as t from "io-ts";
 
 import { GameAction, GameActionMove, GameActionType, TimedGameActions } from "../../../game/types";

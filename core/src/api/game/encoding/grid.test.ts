@@ -1,6 +1,6 @@
 import { flatten, sample, times } from "lodash";
 
-import { decodeGrid, encodeGrid, getGridEncodingDictionary } from "./grid";
+import { getGridEncodingDictionary, tGameGridCodec } from "./grid";
 import { tGridObjectCodec } from "./gridObject";
 import { GameColor, GameGrid, GridObject, GridObjectType } from "../../../game/types";
 
@@ -36,9 +36,11 @@ describe("Grid Encoding", () => {
       expect(decoded.isRight()).toBeTruthy();
       expect(decoded.value).toEqual(gridObj);
     });
-    const encoded = encodeGrid(grid);
+    // const encoded = encodeGrid(grid);
+    const encoded = tGameGridCodec.encode(grid);
     expect(typeof encoded).toBe("string");
-    expect(decodeGrid(encoded)).toEqual(grid);
+    // expect(decodeGrid(encoded)).toEqual(grid);
+    expect(tGameGridCodec.decode(encoded).value).toEqual(grid);
   });
 
   test("encode and decode long grid", () => {
@@ -50,7 +52,8 @@ describe("Grid Encoding", () => {
         };
       });
     }) as GameGrid;
-    expect(decodeGrid(encodeGrid(grid))).toEqual(grid);
+    // expect(decodeGrid(encodeGrid(grid))).toEqual(grid);
+    expect(tGameGridCodec.decode(tGameGridCodec.encode(grid)).value).toEqual(grid);
   });
 
   test("allows linebreaks + spaces in grid", () => {
@@ -62,7 +65,7 @@ describe("Grid Encoding", () => {
 
     getGridEncodingDictionary();
 
-    expect(decodeGrid(gridStr)).toEqual([
+    expect(tGameGridCodec.decode(gridStr).value).toEqual([
       [
         { type: GridObjectType.Empty },
         { type: GridObjectType.Virus, color: GameColor.Color2 },

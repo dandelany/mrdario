@@ -37,6 +37,8 @@ const pillHalfRotations: { [P in GridObjectPillHalfType]: number } = {
   [GridObjectType.PillLeft]: (3 * Math.PI) / 2
 };
 
+// Explosion configuration,
+// edit this to change the look of the particle emitter
 const particlesConfig = {
   alpha: {
     start: 1,
@@ -78,7 +80,7 @@ const particlesConfig = {
   blendMode: "normal",
   frequency: 0.001,
   emitterLifetime: 1,
-  maxParticles: 40,
+  maxParticles: 30,
   pos: {
     x: 0,
     y: 0
@@ -208,8 +210,6 @@ export default class Playfield extends React.Component<PlayfieldProps> {
             let emitter = new particles.Emitter(
               pixiApp.stage,
               [PIXI.Texture.fromImage(particle)],
-              // Emitter configuration, edit this to change the look
-              // of the emitter
               {
                 ...particlesConfig,
                 pos: {

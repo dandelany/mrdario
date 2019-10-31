@@ -45,13 +45,13 @@
     "gamepad-plus": "^1.0.14",
     "hammerjs": "^2.0.8",
     "immer": "^2.0.0",
-    "invariant": "^2.2.4",
     "io-ts": "^1.8.2",
     "lodash": "^4.17.11",
     "mousetrap": "^1.6.2",
     "seedrandom": "^2.4.4",
     "socketcluster": "^14.3.3",
     "socketcluster-server": "^14.4.0",
+    "ts-invariant": "^0.4.4",
     "typestate": "^1.0.6",
     "ws": "^6.1.4"
   }

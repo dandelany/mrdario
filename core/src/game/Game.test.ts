@@ -1,16 +1,15 @@
 import { times } from "lodash";
-import { decodeGrid } from "../../api/game/encoding";
+import { decodeGrid } from "../api/game/encoding";
 import {
   Game,
   GameColor,
   GameInput,
-  GameInputMove,
   GameMode,
   GameOptions,
   GameState,
   GameTickResultType,
   GRAVITY_TABLE
-} from "../../game";
+} from "./index";
 
 /*
 Y = Destroyed
@@ -49,7 +48,8 @@ function getMockGameState(): Partial<GameState> {
     modeTicks: 0,
     pillCount: 0,
     lineColors: [],
-    movingCounters: new Map<GameInputMove, number>()
+    garbage: [],
+    movingCounters: {}
   };
 }
 
@@ -171,7 +171,7 @@ describe("Game", () => {
     game.tick();
     const nextState: GameState = {
       mode: GameMode.Playing,
-      movingCounters: new Map<GameInputMove, number>([[GameInput.Right, 7]]),
+      movingCounters: {[GameInput.Right]: 7},
       grid: decodeGrid(`gh,8:
         XXXXXXXX
         XXXXXXXX
@@ -200,7 +200,8 @@ describe("Game", () => {
       gameTicks: 527,
       modeTicks: 36,
       pillCount: 13,
-      lineColors: []
+      lineColors: [],
+      garbage: []
     };
     game.setState(nextState);
     expect(game.getState()).toEqual(nextState);

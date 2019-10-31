@@ -36,9 +36,10 @@ import {
   dropDebris,
   generateEnemies,
   getLevelVirusCount,
-  getNextPill,
+  getNextPill, giveGarbage,
   givePill,
   hasViruses,
+  isGarbageAction,
   isMoveAction,
   isPillLocation,
   makeEmptyGrid,
@@ -65,33 +66,34 @@ export const defaultGameOptions: GameOptions = {
 };
 
 export class Game extends EventEmitter {
-  // game modes, used by the state machine
-  // Ready: pre-playing state, todo: use this to populate viruses slowly?
-  // Playing: pill is in play and falling
-  // Reconcile: pill is locked in place, checking for lines to destroy
-  // Cascade: cascading line destruction & debris falling
-  // Destruction: lines are being destroyed
-  // Ended: game has ended
-
+  // options passed in when creating the game
   public readonly options: GameOptions;
   // current frame #
   public frame: number = 0;
+  // finite state machine, keeps current mode & transitions
   protected fsm: TypeState.FiniteStateMachine<GameMode>;
+  // an input queue which repeats move inputs if they are held down long enough
   protected inputRepeater: InputRepeater;
+  // the game grid which contains all viruses, pills, etc.
   protected grid: GameGrid;
+  // grid location of the pill controlled by the user (if applicable)
   protected pill?: PillLocation;
+  // preview of the colors of the next upcoming pill
   protected nextPill: PillColors;
+  // random seed which controls all RNG's - virus generation, pill colors & garbage
   protected seed: string;
   // counters, used to count # of frames we've been in a particular state
   protected gameTicks: number = 0;
   protected modeTicks: number = 0;
   // # of pills given since beginning of game
   protected pillCount: number = 0;
-  // the player's score
+  // the player's current score & time bonus
   protected score: number = 0;
   protected timeBonus: number = 0;
   // protected comboLineCount: number = 0;
   protected lineColors: GameColor[] = [];
+  // queue of incoming garbage from other player(s), to be added to grid on next reconcile
+  protected garbage: GameColor[] = [];
 
   constructor(passedOptions: Partial<GameOptions> = {}) {
     super();
@@ -122,6 +124,14 @@ export class Game extends EventEmitter {
     const moveActions: GameActionMove[] = actions.filter(isMoveAction);
     const moveQueue: GameInputMove[] = this.inputRepeater.tick(moveActions);
 
+    // find any garbage actions, combine them and add them to pendingGarbage queue
+    actions.filter(isGarbageAction).reduce((colors: GameColor[], action) => {
+      colors.push(...action.colors);
+      return colors;
+    }, this.garbage);
+    // limit to 4
+    this.garbage.splice(4);
+
     // if(moveActions.length > 0) {
     // console.log('multiple moves: on frame', this.frame, moveActions);
     // console.log(this.frame, moveActions.map(encodeMoveAction).join('; '))
@@ -149,7 +159,7 @@ export class Game extends EventEmitter {
     const mode: GameMode = this.fsm.currentState;
     const { movingCounters } = this.inputRepeater.getState();
     const { grid, pill, nextPill, seed, frame, gameTicks, modeTicks } = this;
-    const { pillCount, score, timeBonus, lineColors } = this;
+    const { pillCount, score, timeBonus, lineColors, garbage } = this;
     return {
       mode,
       grid,
@@ -164,7 +174,8 @@ export class Game extends EventEmitter {
       score,
       timeBonus,
       // comboLineCount
-      lineColors
+      lineColors,
+      garbage
     };
   }
   public setState(state: GameState) {
@@ -190,6 +201,7 @@ export class Game extends EventEmitter {
     this.score = state.score;
     this.timeBonus = state.timeBonus;
     // this.comboLineCount = state.comboLineCount;
+    this.garbage = state.garbage;
     this.lineColors = state.lineColors;
   }
 
@@ -248,7 +260,8 @@ export class Game extends EventEmitter {
 
   private tickPlaying(moveQueue: GameInputMove[]): void | GameTickResult {
     // this.comboLineCount = 0;
-    this.lineColors = [];
+    // this.lineColors = [];
+    empty(this.lineColors);
     this.modeTicks++;
     this.gameTicks++;
 
@@ -276,7 +289,8 @@ export class Game extends EventEmitter {
 
     // gravity pulling pill down
     const gravity = this.getGravity();
-    if (this.modeTicks > gravity && !this.inputRepeater.movingCounters.has(GameInput.Down)) {
+    // if (this.modeTicks > gravity && !this.inputRepeater.movingCounters.has(GameInput.Down)) {
+    if (this.modeTicks > gravity && !(GameInput.Down in this.inputRepeater.movingCounters)) {
       // deactivate gravity while moving down
       this.modeTicks = 0;
       if (isPillLocation(this.pill)) {
@@ -334,6 +348,12 @@ export class Game extends EventEmitter {
     // lines are being destroyed, go to destroy mode
     else if (hasLines) {
       this.fsm.go(GameMode.Destruction);
+    }
+    // if we have garbage queued up, add it to grid and reconcile again (in case garbage makes lines)
+    else if(this.garbage.length) {
+      this.grid = giveGarbage(this.grid, this.garbage, this.seed, this.frame);
+      empty(this.garbage);
+      // don't change modes - next tick will reconcile again
     }
     // no lines, cascade falling debris
     else {
@@ -416,8 +436,8 @@ export class Game extends EventEmitter {
           input === GameInput.Down
             ? GridDirection.Down
             : input === GameInput.Left
-            ? GridDirection.Left
-            : GridDirection.Right;
+              ? GridDirection.Left
+              : GridDirection.Right;
 
         const moved = movePill(this.grid, this.pill, direction);
         grid = moved.grid;
@@ -445,4 +465,9 @@ export class Game extends EventEmitter {
 
     return shouldReconcile;
   }
+}
+
+function empty<T>(arr: T[]): void {
+  // empty an array, mutating it. faster than `x = []`
+  arr.length = 0;
 }

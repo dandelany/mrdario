@@ -1,6 +1,6 @@
 import * as t from "io-ts";
 
-import {LobbyMessageType} from './constants';
+import {LobbyMessageType} from './enums';
 
 // Types associated with the Lobby API
 

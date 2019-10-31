@@ -88,14 +88,12 @@ describe("Lobby", () => {
     let userB: ClientAuthenticatedUser;
 
     beforeEach(async () => {
-      gameClientA = new GameClient({ socketOptions: { port: 8000, multiplex: false } });
-      await expect(gameClientA.connect()).resolves.toBeTruthy();
+      gameClientA = await connectGameClient();
       const loginPromise = gameClientA.login("TestUser");
       await expect(loginPromise).resolves.toBeTruthy();
       user = await loginPromise;
 
-      gameClientB = new GameClient({ socketOptions: { port: 8000, multiplex: false } });
-      await expect(gameClientB.connect()).resolves.toBeTruthy();
+      gameClientB = await connectGameClient();
       const loginPromiseB = gameClientB.login("TestUserB");
       await expect(loginPromiseB).resolves.toBeTruthy();
       userB = await loginPromiseB;

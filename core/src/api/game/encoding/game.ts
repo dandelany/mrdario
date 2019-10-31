@@ -1,17 +1,18 @@
-import invariant = require("invariant");
+import { invariant } from "ts-invariant";
 import * as t from "io-ts";
 
 import { MovingCounters } from "../../../game/InputRepeater";
 import {
   EncodableGameOptions,
   GameColor,
+  GameControllerState,
   GameInput,
   GameState,
   PillColors,
   tPillColors
 } from "../../../game/types";
 
-import { encodeGrid } from "./grid";
+import { decodeGrid, encodeGrid } from "./grid";
 import { numEnumType, strEnumType } from "../../../utils/io";
 
 export type EncodedGameState = string;
@@ -71,11 +72,15 @@ export const tPillColorsCodec = new t.Type<PillColors, string, unknown>(
   }
 );
 
+
 export function encodeMovingCounters(movingCounters: MovingCounters): string {
-  const entries = Array.from(movingCounters.entries());
-  return JSON.stringify(entries);
+  // const entries = Array.from(movingCounters.entries());
+  return JSON.stringify(movingCounters);
 }
-// todo decodeMovingCounters
+export function decodeMovingCounters(countersStr: string): MovingCounters {
+  // return new Map(JSON.parse(countersStr)) as MovingCounters;
+  return JSON.parse(countersStr);
+}
 
 export function encodeGameOptions(options: EncodableGameOptions): string {
   const { width, height, level, baseSpeed } = options;
@@ -89,6 +94,22 @@ export function decodeGameOptions(encoded: string): EncodableGameOptions {
   return { width, height, level, baseSpeed };
 }
 
+// enforcing this type ensures we set codecs for all keys in GameState
+// const baseGameCodecTypes: {[K in keyof GameState]: t.Type<GameState[K], any, any>} = {
+//   mode: tGameMode,
+//   grid: tGameGridCodec,
+//   nextPill: tPillColorsCodec,
+//   frame: tEncodedInt,
+//   score: tEncodedInt,
+//   timeBonus: tEncodedInt,
+//   gameTicks: tEncodedInt,
+//   modeTicks: tEncodedInt,
+//   pillCount: tEncodedInt,
+//   seed: t.string,
+//   movingCounters: t.object,
+//
+//
+// }
 export function encodeGameState(state: GameState): EncodedGameState {
   return JSON.stringify({
     ...state,
@@ -100,7 +121,33 @@ export function encodeGameState(state: GameState): EncodedGameState {
     timeBonus: tEncodedInt.encode(state.timeBonus),
     gameTicks: tEncodedInt.encode(state.gameTicks),
     modeTicks: tEncodedInt.encode(state.modeTicks),
-    pillCount: tEncodedInt.encode(state.pillCount),
-    movingCounters: encodeMovingCounters(state.movingCounters)
+    pillCount: tEncodedInt.encode(state.pillCount)
   });
+}
+
+export function decodeGameState(stateStr: string): GameState {
+  // todo better error handling etc.
+  const parsed = JSON.parse(stateStr);
+  return {...parsed,
+    grid: decodeGrid(parsed.grid),
+    nextPill: tPillColorsCodec.decode(parsed.nextPill).value,
+    frame: tEncodedInt.decode(parsed.frame).value,
+    score: tEncodedInt.decode(parsed.score).value,
+    timeBonus: tEncodedInt.decode(parsed.timeBonus).value,
+    gameTicks: tEncodedInt.decode(parsed.gameTicks).value,
+    modeTicks: tEncodedInt.decode(parsed.modeTicks).value,
+    pillCount: tEncodedInt.decode(parsed.pillCount).value
+  }
+}
+
+export function encodeGameControllerState(state: GameControllerState)  {
+  return JSON.stringify({
+    ...state,
+    gameState: encodeGameState(state.gameState)
+  })
+}
+
+export function decodeGameControllerState(stateStr: string) {
+  const parsed = JSON.parse(stateStr);
+  return {...parsed, gameState: decodeGameState(parsed.gameState)}
 }

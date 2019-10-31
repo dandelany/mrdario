@@ -4,14 +4,17 @@ import { AppAuthToken } from "mrdario-core/lib/api";
 import { authAndValidateRequest, SocketResponder, validateRequest } from "./utils";
 import {
   PublishOutMiddlewareWithDataType,
+  PublishOutRequestWithDataType,
+  requireAuthMiddleware,
+  validateChannelRequest,
   ValidatedChannelMiddlewareConfig,
   ValidatedPublishInMiddleware
 } from "./utils/middleware";
 import { RedisClient } from "redis";
 
 export interface ServerModuleOptions {
-  scServer: SCServer
-  rClient: RedisClient
+  scServer: SCServer;
+  rClient: RedisClient;
 }
 
 export abstract class AbstractServerModule {
@@ -47,6 +50,43 @@ export abstract class AbstractServerModule {
   ) {
     const { eventType, codec, listener } = options;
     socket.on(eventType, validateRequest(codec, listener));
+  }
+
+  protected addMiddleware(channels: ModuleChannelConfig<any>[]) {
+    channels.forEach(channelConfig => {
+      const { messageCodec, publishInMiddleware } = channelConfig;
+      this.scServer.addMiddleware(this.scServer.MIDDLEWARE_PUBLISH_IN, (req, next) => {
+        // todo match regex
+        if (req.channel === channelConfig.name) {
+          requireAuthMiddleware(req, (e?: string | true | Error | undefined) => {
+            if (e) next(e);
+            else {
+              validateChannelRequest(
+                req,
+                messageCodec,
+                validReq => {
+                  if (publishInMiddleware) publishInMiddleware(validReq, next);
+                  else next();
+                },
+                (e: Error) => next(e)
+              );
+            }
+          });
+        } else {
+          next();
+        }
+      });
+
+      if (channelConfig.publishOutMiddleware) {
+        const { publishOutMiddleware } = channelConfig;
+
+        this.scServer.addMiddleware(this.scServer.MIDDLEWARE_PUBLISH_OUT, (req, next) => {
+          if (req.channel === channelConfig.name) {
+            publishOutMiddleware(req as PublishOutRequestWithDataType<t.TypeOf<typeof messageCodec>>, next);
+          } else next();
+        });
+      }
+    });
   }
 }
 

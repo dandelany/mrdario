@@ -1,20 +1,18 @@
 import { SCServer, SCServerSocket } from "socketcluster-server";
 import { SCChannel } from "sc-channel";
 import { RedisClient } from "redis";
-import uuid from "uuid/v4";
 
 import { GameListItem } from "mrdario-core/lib/api/game";
 
-import { getClientIpAddress, socketInfoStr } from "./utils";
-import { hasValidAuthToken } from "./utils/auth";
-import { logWithTime } from "./utils/log";
+import { getClientIpAddress, socketInfoStr, logWithTime } from "./utils";
 
+import { AbstractServerModule } from "./AbstractServerModule";
 import { HighScoresModule } from "./modules/scores";
 import { LobbyModule } from "./modules/lobby";
 import { AuthModule } from "./modules/auth";
 import { SyncModule } from "./modules/sync";
 import { MatchModule } from "./modules/match/MatchModule";
-import { AbstractServerModule } from "./AbstractServerModule";
+import { GameModule } from "./modules/game/GameModule";
 
 // in-memory state, for now...
 // todo put this in redis where appropriate?
@@ -56,7 +54,8 @@ export class GameServer {
     const moduleOpts = {scServer, rClient};
     this.modules = {
       highScores: new HighScoresModule(moduleOpts),
-      lobby: new LobbyModule(moduleOpts)
+      lobby: new LobbyModule(moduleOpts),
+      game: new GameModule(moduleOpts)
     };
     // this.highScores = new HighScoresModule({scServer, rClient});
     // this.lobby = new LobbyModule({scServer, rClient});
@@ -99,50 +98,6 @@ export class GameServer {
     socket.on("error", err => {
       logWithTime("ERROR ", err.name, err.message, ": ", socketInfoStr(socket));
     });
-
-    type CreateSimpleGameRequest = [number, number];
-
-    socket.on(
-      // @ts-ignore
-      "createSimpleGame",
-      (data: CreateSimpleGameRequest, respond: (err: Error | null, game: GameListItem | null) => void) => {
-        if (hasValidAuthToken(socket)) {
-          const userId = socket.authToken.id;
-          // const name = socket.authToken.name;
-
-          try {
-            // const seed =
-            const gameListItem: GameListItem = {
-              id: uuid().slice(-10),
-              initialSeed: uuid().slice(-10),
-              level: data[0],
-              speed: data[1],
-              creator: userId
-            };
-            const gameId = uuid().slice(-10);
-
-            this.state.games[gameId] = gameListItem;
-            connectionState.game = gameId;
-
-            console.log("created game", gameId, gameListItem);
-
-            const channelId = `game-${gameId}`;
-            const channel = socket.exchange.subscribe(channelId);
-            this.state.channels[channelId] = channel;
-
-            channel.watch(data => {
-              console.log(data);
-            });
-
-            respond(null, gameListItem);
-          } catch (e) {
-            respond(e, null);
-          }
-        } else {
-          respond(new Error("User is not authenticated - login first"), null);
-        }
-      }
-    );
 
     //@ts-ignore
     socket.on("ping", (data, res) => {

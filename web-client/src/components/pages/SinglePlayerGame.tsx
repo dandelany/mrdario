@@ -172,8 +172,8 @@ class SinglePlayerGame extends React.Component<SinglePlayerGameProps, SinglePlay
         if (this.props.onChangeMode) this.props.onChangeMode(toMode);
       }
     });
-    // this.game.play();
-    this.game.startCountdown(3500);
+    this.game.play();
+    // this.game.startCountdown(0);
   };
   protected resetGame = () => {
     this._initGame(this.props);

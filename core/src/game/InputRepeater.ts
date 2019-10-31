@@ -1,7 +1,7 @@
 import { INPUT_REPEAT_INTERVALS } from "./constants";
 import { GameActionMove, GameInputMove, InputEventType, MoveInputNumberMap } from "./types";
 
-export type MovingCounters = Map<GameInputMove, number>;
+export type MovingCounters = Partial<Record<GameInputMove, number>>;
 export interface InputRepeaterState {
   movingCounters: MovingCounters;
 }
@@ -16,47 +16,48 @@ export class InputRepeater implements InputRepeaterState {
   constructor() {
     // these counters count up while a move key is held down (for normalizing key-repeat)
     // ie. represents the # of frames during which we have been moving in a particular direction
-    this.movingCounters = new Map<GameInputMove, number>();
+    this.movingCounters = {};
   }
   public getState(): InputRepeaterState {
-    const { movingCounters } = this;
-    return { movingCounters: new Map(movingCounters) };
+    return { movingCounters: { ...this.movingCounters } };
   }
   public setState(state: InputRepeaterState) {
     this.movingCounters = state.movingCounters;
   }
 
-  public tick(inputQueue: GameActionMove[] = []): GameInputMove[] {
+  public tick = (inputQueue: GameActionMove[] = []): GameInputMove[] => {
     const { movingCounters } = this;
     const moveQueue: GameInputMove[] = [];
 
     // increment moving counters (for moves which are being held down)
-    for (const entry of movingCounters.entries()) {
-      const [key, count] = entry;
-      movingCounters.set(key, count + 1);
+    for (const key in movingCounters) {
+      const count: number = movingCounters[key];
+      movingCounters[key] = count + 1;
     }
 
     // process inputs in inputQueue
     for (const { input, eventType } of inputQueue) {
       // start key press - add input direction to movingCounters
-      if (eventType === InputEventType.KeyDown && !movingCounters.get(input)) {
+      if (eventType === InputEventType.KeyDown && !(input in movingCounters)) {
         moveQueue.push(input);
-        movingCounters.set(input, 0);
+        movingCounters[input] = 0;
       } else if (eventType === InputEventType.KeyUp) {
         // end key press - remove input from movingCounters
-        movingCounters.delete(input);
+        delete movingCounters[input];
       }
     }
 
     // find inputs which have been held down long enough to repeat
-    for (const [input, count] of movingCounters.entries()) {
+    for (const input in movingCounters) {
+      const gameInput = input as GameInputMove;
+      const count = movingCounters[gameInput] as number;
       if (count >= repeatIntervals[input]) {
         // push the new move to the moveQueue and reset its counter
-        moveQueue.push(input);
-        movingCounters.set(input, 0);
+        moveQueue.push(gameInput);
+        movingCounters[input] = 0;
       }
     }
 
     return moveQueue;
-  }
+  };
 }

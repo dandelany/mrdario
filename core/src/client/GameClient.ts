@@ -17,7 +17,6 @@ import {
   TMatch
 } from "../api";
 
-
 import {
   AppAuthToken,
   AuthEventType,
@@ -41,9 +40,16 @@ import {
   TLobbyLeaveResponse
 } from "../api/lobby";
 
+import {
+  CreateSingleGameRequest,
+  CreateSingleGameResponse,
+  GameEventType,
+  TCreateSingleGameResponse
+} from "../api/game";
+
 import { decodeTimedActions, encodeTimedActions } from "../api/game/encoding/action";
 import { encodeGrid } from "../api/game/encoding/grid";
-import { GameGrid, TimedGameActions } from "../game/types";
+import { GameControllerMode, GameGrid, TimedGameActions, TimedMoveActions } from "../game/types";
 import { promisifySocketPublish, promisifySocketRequest as emit, validatedChannel } from "./utils";
 
 interface ClientSocketWithValidAuthToken extends SCClientSocket {
@@ -223,6 +229,22 @@ export class GameClient {
     return emit(this.socket, ScoresEventType.SaveScore, request, TSaveScoreResponse);
   }
 
+  public createSingleGame(level: number, baseSpeed: number): Promise<CreateSingleGameResponse> {
+    return emit<CreateSingleGameResponse, CreateSingleGameRequest>(
+      this.socket,
+      GameEventType.CreateSingle,
+      {level, baseSpeed},
+      TCreateSingleGameResponse
+    );
+  }
+
+  public sendSingleGameMoves(moveActions: TimedMoveActions): void {
+    this.socket.emit(GameEventType.SingleMove, encodeTimedActions(moveActions));
+  }
+  public sendSingleGameModeChange(nextMode: GameControllerMode): void {
+    this.socket.emit(GameEventType.SingleModeChange, nextMode);
+  }
+
   public sendInfoStartGame(name: string, level: number, speed: number, callback?: any) {
     this.socket.emit("infoStartGame", [name, level, speed], callback);
   }
@@ -250,6 +272,7 @@ export class GameClient {
     if (this.syncClient) {
       console.log(this.syncClient.getSyncTime());
     }
+    console.log("publish", encodedActions);
     this.socket.publish(`game-${gameId}`, encodedActions);
   }
 

@@ -10,7 +10,7 @@ export const TWO_SHAKES = 100;
 export const GAMESERVER_PORT = 8118;
 
 export function getGameClient(): GameClient {
-  return new GameClient({ socketOptions: { port: GAMESERVER_PORT } });
+  return new GameClient({ socketOptions: { port: GAMESERVER_PORT, multiplex: false } });
 }
 
 export async function connectGameClient(): Promise<GameClient> {

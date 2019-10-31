@@ -1,5 +1,5 @@
-import invariant from "invariant";
-import { cloneDeep, defaults, findLast, findLastIndex, isFunction, omitBy } from "lodash";
+import { invariant } from "ts-invariant";
+import { cloneDeep, defaults, findIndex, findLast, findLastIndex, isEqual, isFunction, omitBy } from "lodash";
 import { TypeState } from "typestate";
 
 import { InputManager } from "../input/types";
@@ -8,6 +8,7 @@ import { GameControllerMode, GameControllerOptions, GameControllerState } from "
 import { defaultGameOptions, Game } from "../Game";
 import {
   GameAction,
+  GameActionGarbage,
   GameActionMove,
   GameActionType,
   GameInput,
@@ -23,6 +24,7 @@ import {
 } from "../types";
 import { isMoveAction, isMoveInput } from "../utils";
 import { DEFAULT_GAME_CONTROLLER_OPTIONS } from "./constants";
+import { seedRandomInt } from "../../utils/random";
 
 // import { encodeTimedActions } from "../../encoding/action";
 
@@ -105,16 +107,34 @@ export class GameController {
     // even if FPS changes or lags due to performance
     const frame = this.game.frame;
     const expectedFrame = Math.floor((now - refTime) / (1000 / 60)) + refFrame;
+
     const frameDiff = expectedFrame - frame;
     if (frameDiff > 6000) {
-      throw new Error("GameController ticks got out of sync");
+      console.error("GameController ticks got out of sync");
     }
 
     // if (Math.abs(frameDiff) > 1) {
     //   console.log("frame off by", expectedFrame - frame);
     // }
 
+    const tickResults: TimedGameTickResult[] = this.tickToFrame(expectedFrame);
+
+    // render with the current game state
+    // this.options.render(this.getState(), this.dt / slow);
+    this.options.render(this.getState());
+    // this.last = now;
+    requestAnimationFrame(this.tick.bind(this));
+
+    return tickResults;
+  }
+
+  public tickToFrame(toFrame: number): TimedGameTickResult[] {
+    const frameDiff = toFrame - this.game.frame;
     const tickResults: TimedGameTickResult[] = [];
+    invariant(
+      frameDiff >= 0,
+      `tickToFrame cannot tick to an earlier frame (game frame ${this.game.frame}, toFrame ${toFrame})`
+    );
 
     for (let i = 0; i < frameDiff; i++) {
       const result = this.tickGame();
@@ -129,13 +149,6 @@ export class GameController {
         }
       }
     }
-
-    // render with the current game state
-    // this.options.render(this.getState(), this.dt / slow);
-    this.options.render(this.getState());
-    // this.last = now;
-    requestAnimationFrame(this.tick.bind(this));
-
     return tickResults;
   }
 
@@ -152,6 +165,16 @@ export class GameController {
         actions = nextTimedActions[1];
         timedActions = nextTimedActions;
       }
+    }
+
+    const { frame } = this.game;
+    if (seedRandomInt("foo" + frame, 0, 1000) === 50) {
+      const garbageAction: GameActionGarbage = {
+        type: GameActionType.Garbage,
+        colors: [seedRandomInt(frame + "a", 0, 2), seedRandomInt(frame + "b", 0, 2)]
+      };
+      const newActions = (actions || []).slice(0).concat([garbageAction]);
+      actions = newActions;
     }
 
     const tickResult = this.game.tick(actions);
@@ -179,7 +202,6 @@ export class GameController {
   }
 
   public getState(mode?: GameControllerMode): GameControllerState {
-    // minimal description of game state to render
     return {
       mode: mode || this.fsm.currentState,
       gameState: this.game.getState()
@@ -219,9 +241,11 @@ export class GameController {
     // this.actionHistory.map(encodeTimedActions);
   }
 
-  protected initStateMachine(): TypeState.FiniteStateMachine<GameControllerMode> {
+  protected initStateMachine(
+    initialMode: GameControllerMode = GameControllerMode.Ready
+  ): TypeState.FiniteStateMachine<GameControllerMode> {
     // a finite state machine representing game mode, & transitions between modes
-    const fsm = new TypeState.FiniteStateMachine<GameControllerMode>(GameControllerMode.Ready);
+    const fsm = new TypeState.FiniteStateMachine<GameControllerMode>(initialMode);
 
     fsm.from(GameControllerMode.Ready).to(GameControllerMode.Countdown);
     fsm.from(GameControllerMode.Countdown).to(GameControllerMode.Playing);
@@ -242,18 +266,7 @@ export class GameController {
     fsm.fromAny(GameControllerMode).to(GameControllerMode.Ended);
 
     // Countdown
-    fsm.on(GameControllerMode.Countdown, () => {
-      console.log("countdown!");
-      const startTime = this.refTime;
-      const now = this.getTime();
-      if (now >= startTime) {
-        fsm.go(GameControllerMode.Playing);
-      } else {
-        setTimeout(() => {
-          fsm.go(GameControllerMode.Playing);
-        }, startTime - now);
-      }
-    });
+    fsm.on(GameControllerMode.Countdown, this.onCountdown);
     // Play
     fsm.on(GameControllerMode.Playing, () => {
       this.run();
@@ -276,6 +289,19 @@ export class GameController {
 
     return fsm;
   }
+
+  protected onCountdown = (): void => {
+    console.log("countdown!");
+    const startTime = this.refTime;
+    const now = this.getTime();
+    if (now >= startTime) {
+      this.fsm.go(GameControllerMode.Playing);
+    } else {
+      setTimeout(() => {
+        this.fsm.go(GameControllerMode.Playing);
+      }, startTime - now);
+    }
+  };
 
   protected initGame(): Game {
     return new Game({
@@ -414,6 +440,33 @@ export class GameController {
     // done - dummyGame is at same frame as this.game, but has frameActions in its history
     // update this.game state to dummyGame's state
     this.game.setState(dummyGame.getState());
+  }
+
+  public replayHistory(): void {
+    // todo use it or lose it?
+    const dummyGame = this.makeDummyGame(cloneDeep(this.stateHistory[0]));
+
+    const currentFrame = this.game.frame;
+
+    // find the first action in actionHistory which happens after the game's current frame
+    let nextActionsItemIndex = findIndex(this.actionHistory, ([frame]) => frame > dummyGame.frame);
+    // tick through the game, applying actions in actionHistory to appropriate frames
+    while (nextActionsItemIndex > -1) {
+      const [nextActionsFrame, nextActions] = this.actionHistory[nextActionsItemIndex];
+      if (nextActionsFrame > currentFrame) break;
+      tickGameToFrame(dummyGame, nextActionsFrame - 1);
+      dummyGame.tick(nextActions);
+      // get the next action in history, or break out of loop if we've done them all
+      nextActionsItemIndex =
+        nextActionsItemIndex >= this.actionHistory.length - 1 ? -1 : nextActionsItemIndex + 1;
+    }
+    // game is now at the frame of the last action in actionHistory before currentFrame
+    // no more actions - tick ahead to target frame
+    tickGameToFrame(dummyGame, currentFrame);
+
+    // todo handle this error?
+    if (!isEqual(this.game.getState(), dummyGame.getState()))
+      console.error("states not equal: ", this.game.getState(), dummyGame.getState());
   }
 }
 

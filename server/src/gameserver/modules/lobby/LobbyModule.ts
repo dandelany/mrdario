@@ -1,6 +1,4 @@
 import { SCServerSocket } from "socketcluster-server";
-import * as t from "io-ts";
-
 import {
   LOBBY_CHANNEL_NAME,
   LobbyChatMessageOut,
@@ -20,7 +18,7 @@ import { AppAuthToken } from "mrdario-core/lib/api/auth";
 
 import { AbstractServerModule, makeChannelConfig, ModuleConfig, ServerModuleOptions } from "../../AbstractServerModule";
 import { bindSocketHandlers, EventHandlersObj, hasAuthToken, logWithTime, unbindSocketHandlers } from "../../utils";
-import { PublishOutRequestWithDataType, requireAuthMiddleware, validateChannelRequest } from "../../utils/middleware";
+// import * as t from "io-ts";
 
 // export type ExtractGeneric<T> = T extends any<infer R> ? true : never;
 
@@ -87,48 +85,7 @@ export class LobbyModule extends AbstractServerModule {
   constructor(options: ServerModuleOptions) {
     super(options);
     this.state = { lobby: {} };
-    this.addMiddleware();
-  }
-
-  protected addMiddleware() {
-    LobbyModule.config.channels.forEach(channelConfig => {
-      // const chainedPubInMiddleware = chainMiddleware<PublishInRequest>([
-      //   (req, _next, end) => {
-      //     if (req.channel !== LOBBY_CHANNEL_NAME) end();
-      //   },
-      //   requireAuthMiddleware,
-      //   getValidateMiddleware(TLobbyMessage)
-      // ])
-      const { messageCodec, publishInMiddleware } = channelConfig;
-      this.scServer.addMiddleware(this.scServer.MIDDLEWARE_PUBLISH_IN, (req, next) => {
-        if (req.channel === channelConfig.name) {
-          requireAuthMiddleware(req, (e?: string | true | Error | undefined) => {
-            if (e) next(e);
-            else {
-              validateChannelRequest(
-                req,
-                messageCodec,
-                validReq => {
-                  if (publishInMiddleware) publishInMiddleware(validReq, next);
-                  else next();
-                },
-                (e: Error) => next(e)
-              );
-            }
-          });
-        } else {
-          next();
-        }
-      });
-
-      if (channelConfig.publishOutMiddleware) {
-        const { publishOutMiddleware } = channelConfig;
-
-        this.scServer.addMiddleware(this.scServer.MIDDLEWARE_PUBLISH_OUT, (req, next) => {
-          publishOutMiddleware(req as PublishOutRequestWithDataType<t.TypeOf<typeof messageCodec>>, next);
-        });
-      }
-    });
+    this.addMiddleware(LobbyModule.config.channels);
   }
 
   public handleConnect(socket: SCServerSocket) {

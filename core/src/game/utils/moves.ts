@@ -1,4 +1,4 @@
-import { flatten, uniqBy } from "lodash";
+import { flatten, range, uniqBy } from "lodash";
 
 import {
   GameColor,
@@ -43,6 +43,7 @@ import {
   setPillPartType,
   setPillSegments
 } from "./setters";
+import { seedShuffle } from "../../utils/random";
 
 // Pure functions which perform updates on the
 // Immutable game grid/cell objects, returning the updated objects.
@@ -96,16 +97,6 @@ export function givePill(grid: GameGrid, pillColors: PillColors): GivePillResult
   grid = setInGrid(grid, pill[1], makePillRight(pillColors[1]));
 
   return { grid, pill, didGive: true };
-}
-
-export function giveGarbage(grid: GameGrid, colors: GameColor[]) {
-  // add garbage parts to grid
-  colors.slice(0, 4).forEach((color, colorI) => {
-    // todo figure out correct places to drop
-    const colI = Math.min(colorI * 2, grid[0].length);
-    setInGrid(grid, [1, colI], makePillSegment(color));
-  });
-  return { grid };
 }
 
 export function moveCell(grid: GameGrid, cell: GridCellLocation, direction: GridDirection): MoveCellResult {
@@ -359,5 +350,28 @@ export function clearTopRow(grid: GameGrid): GameGrid {
   // turn remaining widowed pill halves into rounded 1-square pill segments
   grid = setPillSegments(grid, findWidows(grid));
 
+  return grid;
+}
+
+/**
+ * Add "garbage" segments of the given color to the top row of the grid
+ * @param grid The game grid
+ * @param colors A list of colors, one piece of garbage will created for each
+ * @param baseSeed The RNG seed for the game
+ * @param frame The current frame count of the game, used to create a unique seed for garbage
+ */
+export function giveGarbage(grid: GameGrid, colors: GameColor[], baseSeed: string, frame: number) {
+  // RNG seed which is unique to this garbage, but also consistently reproducible
+  const garbageSeed = `${frame}-garbage-${baseSeed}`;
+  const gridWidth = grid[0].length;
+  // generate list of garbage column indices all at once by shuffling a list of all possible columns [0..n]
+  const garbageCols = seedShuffle(garbageSeed, range(gridWidth));
+
+  colors.slice(0, gridWidth).forEach((color, colorI) => {
+    // index of grid column where the garbage piece will go
+    const pieceCol = garbageCols[colorI];
+    // add to row 1, 0 is special "true" top row which is cleared every turn
+    grid = setInGrid(grid, [1, pieceCol], makePillSegment(color));
+  });
   return grid;
 }

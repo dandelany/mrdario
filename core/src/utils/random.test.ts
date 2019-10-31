@@ -1,7 +1,7 @@
-import { countBy, includes, mean } from "lodash";
+import { countBy, includes, mean, range, sortBy } from "lodash";
 
-import { COLORS, GameColor } from "../../../game";
-import { seedRandom, seedRandomColor, seedRandomInt } from "../../../utils/random";
+import { COLORS, GameColor } from "../game";
+import { seedRandom, seedRandomColor, seedRandomInt, seedShuffle } from "./random";
 
 describe("Seeded Pseudo-Random Number Generators", () => {
   describe("seedRandom()", () => {
@@ -60,4 +60,24 @@ describe("Seeded Pseudo-Random Number Generators", () => {
       });
     });
   });
+
+  describe("seedShuffle()", () => {
+    test("shuffles an array into random order", () => {
+      const origArr = range(10);
+      const shuffled = seedShuffle("test", origArr);
+      expect(shuffled).not.toEqual(origArr);
+      // shuffled should contain all numbers in original
+      expect(sortBy(shuffled)).toEqual(origArr);
+      // shuffle with same seed should produce same order
+      const shuffledSame = seedShuffle("test", origArr);
+      expect(shuffledSame).toEqual(shuffled);
+      // shuffle with diff seed should produce diff order
+      const shuffledDifferent = seedShuffle("different seed", origArr);
+      expect(shuffledDifferent).not.toEqual(shuffled);
+      expect(shuffledDifferent).not.toEqual(origArr);
+      expect(sortBy(shuffledDifferent)).toEqual(origArr);
+    })
+  })
 });
+
+

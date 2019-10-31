@@ -1,12 +1,11 @@
 import * as React from "react";
+import ContainerDimensions, { Dimensions } from "react-container-dimensions";
 
 import { GameGrid, GameOptions, PillColors } from "mrdario-core";
 import { GameControllerMode } from "mrdario-core/lib/game/controller";
 
-import PillPreviewPanel from "@/components/game/PillPreviewPanel";
-import ContainerDimensions, { Dimensions } from "react-container-dimensions";
-import { Omit } from "lodash";
 import Playfield from "@/components/game/Playfield";
+import PillPreviewPanel from "@/components/game/PillPreviewPanel";
 import LostOverlay from "@/components/overlays/LostOverlay";
 import WonOverlay from "@/components/overlays/WonOverlay";
 

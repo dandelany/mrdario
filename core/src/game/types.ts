@@ -38,7 +38,20 @@ export const tGridObjectWithColor = t.type({
 export const tGridObjectDestroyed = t.type({
   type: t.literal(GridObjectType.Destroyed)
 });
-// export type TGridObjectDestroyed = t.TypeOf<typeof tGridObjectDestroyed>;
+export type TGridObjectDestroyed = t.TypeOf<typeof tGridObjectDestroyed>;
+
+export const tGridObjectEmpty = t.type({
+  type: t.literal(GridObjectType.Empty)
+});
+export type TGridObjectEmpty = t.TypeOf<typeof tGridObjectEmpty>;
+
+export const tGridObjectPillLeft = t.type({
+  type: t.literal(GridObjectType.PillLeft),
+  color: tGameColor
+});
+export type TGridObjectPillLeft = t.TypeOf<typeof tGridObjectPillLeft>;
+
+
 
 export interface GridObjectBase {
   readonly type: GridObjectType;
@@ -98,6 +111,7 @@ export type GridObjectPillPartType = GridObjectPillHalfType | GridObjectType.Pil
 
 export type MaybeGridObject = GridObject | null;
 export type MaybeGridObjectWithColor = GridObjectWithColor | null;
+
 
 export type GameGridRow = GridObject[];
 export type GameGrid = GameGridRow[];
@@ -173,17 +187,21 @@ export type GameActionMove = t.TypeOf<typeof tGameActionMove>;
 //   eventType: InputEventType;
 // }
 
+// other player got a combo and sent you garbage
 export interface GameActionGarbage {
   type: GameActionType.Garbage;
   colors: GameColor[];
 }
+// change the game's random number seed (so that server can make upcoming pills unpredictable)
 export interface GameActionSeed {
   type: GameActionType.Seed;
   seed: string;
 }
+// You lose because the other player won (destroyed all viruses)
 export interface GameActionDefeat {
   type: GameActionType.Defeat;
 }
+// You win because the other player lost (filled up with pills)
 export interface GameActionForfeitWin {
   type: GameActionType.ForfeitWin;
 }
@@ -201,6 +219,7 @@ export type GameAction =
 export enum GameTickResultType {
   Win = "Win",
   Lose = "Lose",
+  // emit a garbage result when you get a
   Garbage = "Garbage"
 }
 export interface GameTickResultWin {
@@ -246,6 +265,6 @@ export interface GameState {
   pillCount: number;
   score: number;
   timeBonus: number;
-  // comboLineCount: number;
   lineColors: GameColor[];
+  garbage: GameColor[];
 }

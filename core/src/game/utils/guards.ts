@@ -1,5 +1,6 @@
 import {
   GameAction,
+  GameActionGarbage,
   GameActionMove,
   GameActionType,
   GameColor,
@@ -86,4 +87,7 @@ export function isMoveInput(input: GameInput): input is GameInputMove {
 }
 export function isMoveAction(action: GameAction): action is GameActionMove {
   return action.type === GameActionType.Move;
+}
+export function isGarbageAction(action: GameAction): action is GameActionGarbage {
+  return action.type === GameActionType.Garbage;
 }

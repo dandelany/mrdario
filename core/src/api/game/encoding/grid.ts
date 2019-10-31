@@ -1,9 +1,10 @@
-import invariant from "invariant";
+import * as t from "io-ts";
 
 import { COLORS } from "../../../game/constants";
 import { GameGrid, GameGridRow, GridObject, GridObjectType } from "../../../game/types";
 import { hasColor } from "../../../game/utils";
 import { EncodedGridObject, encodeGridObject, tGridObjectCodec } from "./gridObject";
+import { PathReporter } from "io-ts/lib/PathReporter";
 
 export type EncodedGrid = string;
 
@@ -26,37 +27,55 @@ export function encodeGrid(grid: GameGrid, prettyPrint: boolean = false): Encode
   return encoded;
 }
 
-export function decodeGrid(encodedRaw: EncodedGrid): GameGrid {
-  // const invalidGridMessage = "Invalid encoded grid: " + encoded;
-  const encoded = encodedRaw.replace(/\s/g, "");
-  // header looks like `g9x17:`
-  const headerEndIndex = encoded.indexOf(":");
-  if (encoded[0] !== "g" || headerEndIndex < 4) {
-    throw new Error("invalidGridMessage");
-  }
-  const headerValStr = encoded.slice(1, headerEndIndex);
-  const headerNumStrs = headerValStr.split(",");
-  invariant(headerNumStrs.length === 2, "grid header must contain grid size");
-  const rowCount = parseInt(headerNumStrs[0], 36);
-  const colCount = parseInt(headerNumStrs[1], 36);
-  invariant(isFinite(rowCount) && isFinite(colCount), "invalid grid size");
+export const tGameGridCodec = new t.Type<GameGrid, string, unknown>(
+  "GameGrid",
+  // todo custom guard?
+  (a: unknown): a is GameGrid => t.array(t.array(t.unknown)).is(a),
+  // decode grid
+  (input: unknown, context) => {
+    if (!t.string.is(input)) return t.failure(input, context, "Encoded grid must be a string");
+    const encoded = input.replace(/\s/g, "");
+    // get grid size from header (string should start with `gHEIGHTxWIDTH:`)
+    const headerEndIndex = encoded.indexOf(":");
+    if (encoded[0] !== "g" || headerEndIndex < 4)
+      return t.failure(input, context, "Invalid encoded grid header (should start with eg. `g9x17:`)");
+    const headerValStr = encoded.slice(1, headerEndIndex);
+    const headerNumStrs = headerValStr.split(",");
+    if (headerNumStrs.length !== 2)
+      return t.failure(input, context, "Invalid encoded grid header: must contain grid size");
+    const rowCount = parseInt(headerNumStrs[0], 36);
+    const colCount = parseInt(headerNumStrs[1], 36);
+    if(!isFinite(rowCount) || !isFinite(colCount) || rowCount < 1 || colCount < 1)
+      return t.failure(input, context, "Invalid encoded grid header: invalid grid size");
 
-  const gridStr = encoded.slice(headerEndIndex + 1);
-  invariant(gridStr.length === rowCount * colCount, "grid size does not match header");
+    const gridStr = encoded.slice(headerEndIndex + 1);
+    if(gridStr.length !== rowCount * colCount)
+      return t.failure(input, context, "grid size does not match header");
 
-  const grid: GameGrid = [];
-  let gridStrIndex = 0;
-  for (let rowIndex = 0; rowIndex < rowCount; rowIndex++) {
-    const row: GameGridRow = [];
-    for (let colIndex = 0; colIndex < colCount; colIndex++) {
-      const gridObj = tGridObjectCodec.decode(gridStr[gridStrIndex]);
-      if(gridObj.isLeft()) throw new Error("failed to decode grid object");
-      row.push(gridObj.value);
-      gridStrIndex += 1;
+    const grid: GameGrid = [];
+    let gridStrIndex = 0;
+    for (let rowIndex = 0; rowIndex < rowCount; rowIndex++) {
+      const row: GameGridRow = [];
+      for (let colIndex = 0; colIndex < colCount; colIndex++) {
+        const gridObj = tGridObjectCodec.decode(gridStr[gridStrIndex]);
+        if (gridObj.isLeft())
+          return t.failure(input, context, `Invalid grid object: ${gridStr[gridStrIndex]}`);
+        row.push(gridObj.value);
+        gridStrIndex += 1;
+      }
+      grid.push(row);
     }
-    grid.push(row);
+    return t.success(grid);
+  },
+  (grid: GameGrid) => {
+    return encodeGrid(grid);
   }
-  return grid;
+);
+
+export function decodeGrid(encoded: string) {
+  const decoded = tGameGridCodec.decode(encoded);
+  if(decoded.isLeft()) throw new Error(PathReporter.report(decoded).join("; "));
+  return decoded.value;
 }
 
 // for debugging purposes -

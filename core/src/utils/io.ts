@@ -54,3 +54,16 @@ export const tJSONString = <C extends t.Mixed>(tCodec: C) => {
 };
 
 
+// encodes a Map object as an array so it can be JSON.stringified
+export const tMapAsArrayCodec = new t.Type<Map<any, any>, [any, any][], [any, any][]>(
+  "MapAsArray",
+  (m): m is Map<any, any> => m instanceof Map,
+  (input: [any, any][]) => {
+    // input
+    return t.success(new Map(input));
+  },
+  (map: Map<any, any>): [any, any][] => {
+    return Array.from(map.entries());
+
+  }
+);

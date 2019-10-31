@@ -1,5 +1,5 @@
-import { decodeGrid, encodeGrid } from "../../../api/game/encoding";
-import { GameColor, GridDirection, RotateDirection } from "../../../game/enums";
+import { decodeGrid, encodeGrid } from "../../api/game/encoding";
+import { GameColor, GridDirection, RotateDirection } from "../enums";
 import {
   clearTopRow,
   destroyLines,
@@ -11,8 +11,8 @@ import {
   removeDestroyed,
   rotatePill,
   slamPill
-} from "../../../game/utils/moves";
-import { GameGrid } from "../../../game";
+} from "./moves";
+import { GameGrid } from "../index";
 
 /*
 Y = Destroyed
@@ -656,9 +656,11 @@ describe("Moves", () => {
         "some-seed",
         127
       );
+      console.log(encodeGrid(newGrid, true));
+
       expect(newGrid).toEqual(decodeGrid(`gh,8:
         XXXXXXXX
-        XXXXXXXX
+        SXXCXXKX
         XXXXXXXX
         XXXXXXXX
         XXXXXXXX
@@ -675,8 +677,6 @@ describe("Moves", () => {
         VVFXVXFV
         NFFNXXFX
       `));
-
-      console.log(encodeGrid(newGrid, true));
     });
   });
 });

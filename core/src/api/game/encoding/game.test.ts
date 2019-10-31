@@ -1,15 +1,5 @@
-import {
-  decodeGrid,
-  decodeInt,
-  // decodePillColors,
-  encodeGameState,
-  encodeInt,
-  // encodePillColors,
-  tEncodedInt,
-  tPillColorsCodec
-  // tGameInput
-} from "./index";
-import { COLORS, GameColor, GameInput, GameInputMove, GameMode, GameState, PillColors } from "../../../game";
+import { decodeGrid, decodeInt, encodeGameState, encodeInt, tEncodedInt, tPillColorsCodec } from "./index";
+import { COLORS, GameColor, GameInput, GameMode, GameState, PillColors } from "../../../game";
 
 describe("Game Encoding", () => {
   describe("Integer Encoding with tEncodedInt", () => {
@@ -123,6 +113,8 @@ function getMockGameState(): GameState {
     lineColors: [],
     seed: "mock-seed",
     nextPill: [GameColor.Color1, GameColor.Color2],
-    movingCounters: new Map<GameInputMove, number>([[GameInput.Left, 3]])
+    // movingCounters: new Map<GameInputMove, number>([[GameInput.Left, 3]])
+    movingCounters: {[GameInput.Left]: 3},
+    garbage: []
   };
 }

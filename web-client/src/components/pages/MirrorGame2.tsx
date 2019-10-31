@@ -7,23 +7,29 @@ import shallowEqual from "@/utils/shallowEqual";
 
 import { DEFAULT_KEYS } from "mrdario-core/lib/game/controller/constants";
 import { GameController, GameControllerMode, GameControllerState } from "mrdario-core/lib/game/controller";
-import { GameGrid, PillColors, TimedGameActions, TimedMoveActions } from "mrdario-core/lib/game/types";
+import { GameGrid, PillColors, TimedMoveActions } from "mrdario-core/lib/game/types";
 
-import { encodeGameState } from "mrdario-core/lib/api/game/encoding";
+import { decodeGameControllerState, encodeGameState } from "mrdario-core/lib/api/game/encoding";
 import { GameClient } from "mrdario-core/lib/client/GameClient";
 import { GamepadManager, KeyManager, SwipeManager } from "mrdario-core/lib/game/input/web";
-import { GameListItem } from "mrdario-core/lib/api/game";
+import { CreateSingleGameResponse } from "mrdario-core/lib/api/game";
 import { SaveScoreResponse } from "mrdario-core/lib/api/scores";
 
 import { GameRouteParams } from "@/types";
 import { ResponsiveGameDisplay } from "@/components/game/GameDisplay";
 import { GameOptions } from "mrdario-core";
+import { encodeTimedActions } from "mrdario-core/lib/api";
+import { PuppetGameController } from "mrdario-core/lib/game/controller/PuppetGameController";
 
 const styles = require("./MirrorGame.module.scss");
 
 function getName() {
   return window.localStorage ? window.localStorage.getItem("mrdario-name") || "Anonymous" : "Anonymous";
 }
+
+// function shallowishEqual<T extends ArrayLike<unknown>>(a: T, b: T):boolean {
+//   return _.every(a, (value, key) => shallowEqual(value, b[key]));
+// }
 
 export interface MirrorGameProps extends RouteComponentProps<GameRouteParams> {
   cellSize: number;
@@ -64,7 +70,7 @@ class MirrorGame extends React.Component<MirrorGameProps, MirrorGameState> {
   state: MirrorGameState = {};
 
   game?: GameController;
-  mirrorGame?: GameController;
+  mirrorGame?: PuppetGameController;
   keyManager?: KeyManager;
   gamepadManager?: GamepadManager;
   touchManager?: SwipeManager;
@@ -73,14 +79,11 @@ class MirrorGame extends React.Component<MirrorGameProps, MirrorGameState> {
     const gameOptions = this.getGameOptions(this.props);
     const { level, baseSpeed } = gameOptions;
 
-    this.props.gameClient.createSimpleGame(level, baseSpeed).then((game: GameListItem) => {
+
+    this.props.gameClient.createSingleGame(level, baseSpeed).then((response: CreateSingleGameResponse) => {
       this.setState({
-        gameId: game.id,
-        gameOptions: {
-          level: game.level,
-          baseSpeed: game.speed,
-          initialSeed: game.initialSeed
-        }
+        gameId: response.id,
+        gameOptions: response.gameOptions
       });
       this._initGame(this.props);
     });
@@ -125,13 +128,14 @@ class MirrorGame extends React.Component<MirrorGameProps, MirrorGameState> {
     return { level, baseSpeed };
   };
 
-  _initGame = (props: MirrorGameProps) => {
+  _initGame = async (props: MirrorGameProps) => {
     if (this.game && this.game.cleanup) this.game.cleanup();
 
     const { gameId } = this.state;
     const { gameClient } = props;
     const gameOptions = this.state.gameOptions;
     if (!gameOptions || !gameClient || !gameId) return;
+
 
     // input managers controlling keyboard and touch events
     this.keyManager = new KeyManager(DEFAULT_KEYS);
@@ -145,9 +149,8 @@ class MirrorGame extends React.Component<MirrorGameProps, MirrorGameState> {
       getTime: window.performance.now.bind(window.performance),
       gameOptions,
       onMoveActions: (timedMoveActions: TimedMoveActions) => {
-        if (gameId) {
-          gameClient.publishSimpleGameActions(gameId, timedMoveActions);
-        }
+        console.log('send', encodeTimedActions(timedMoveActions));
+        gameClient.sendSingleGameMoves(timedMoveActions);
       },
       // inputManagers: [this.keyManager, this.touchManager, this.gamepadManager],
       inputManagers: [this.keyManager, this.touchManager],
@@ -156,17 +159,22 @@ class MirrorGame extends React.Component<MirrorGameProps, MirrorGameState> {
         const { grid, nextPill, score, timeBonus } = gameState;
         if (Math.PI === 1) console.log(encodeGameState(gameState));
         // console.log(encodeGameState(gameState));
-        this.setState({
+        const nextState = {
           mode: gameControllerState.mode,
           grid,
           nextPill,
           score,
           timeBonus
-        });
+        };
+        const {state} = this;
+        if(!_.every(nextState, (value, key) => shallowEqual(value, state[key]))) {
+          this.setState(nextState);
+        }
         // this.game.replayHistory();
       },
       onChangeMode: (fromMode: GameControllerMode, toMode: GameControllerMode) => {
         console.log("onchangemode", fromMode, toMode);
+        gameClient.sendSingleGameModeChange(toMode);
         if (_.includes([GameControllerMode.Lost, GameControllerMode.Won], toMode)) {
           this.setState({ pendingMode: toMode });
           if (toMode === GameControllerMode.Won) this._handleWin();
@@ -176,7 +184,7 @@ class MirrorGame extends React.Component<MirrorGameProps, MirrorGameState> {
       }
     });
 
-    this.mirrorGame = new GameController({
+    this.mirrorGame = new PuppetGameController({
       gameOptions,
       hasHistory: true,
       getTime: window.performance.now.bind(window.performance),
@@ -184,31 +192,44 @@ class MirrorGame extends React.Component<MirrorGameProps, MirrorGameState> {
       render: (gameControllerState: GameControllerState) => {
         const { gameState } = gameControllerState;
         const { grid, nextPill, score, timeBonus } = gameState;
-        if (Math.PI === 1) console.log(encodeGameState(gameState));
-        // console.log(encodeGameState(gameState));
-        this.setState({
+
+        const nextState = {
           mode: gameControllerState.mode,
           mirrorGrid: grid,
           mirrorNextPill: nextPill,
           mirrorScore: score,
           mirrorTimeBonus: timeBonus
-        });
-        if(this.game) this.game.replayHistory();
+        };
+        const {state} = this;
+        if(!_.every(nextState, (value, key) => shallowEqual(value, state[key]))) {
+          this.setState(nextState);
+        }
+
+        // if(this.game) this.game.replayHistory();
         // if(this.game) {
         //   if(encodeGameState(gameState) !== encodeGameState(this.game.getState().gameState)) {
         //     console.log('OUT OF SYNC')
         //   }
         // }
       },
-      onChangeMode: (fromMode: GameControllerMode, toMode: GameControllerMode) => {
-        console.log("onchangemode", fromMode, toMode);
+      // onChangeMode: (fromMode: GameControllerMode, toMode: GameControllerMode) => {
+        // console.log("onchangemode", fromMode, toMode);
+      // }
+    });
+
+    this.props.gameClient.socket.on("singleGameState", (encodedState) => {
+      const gameControllerState = decodeGameControllerState(encodedState);
+      console.log('got single game state', gameControllerState);
+      if(this.mirrorGame) {
+        this.mirrorGame.setState(gameControllerState);
+        this.mirrorGame.tick();
       }
     });
 
-    this.props.gameClient.watchSimpleGameMoves(gameId, (actions: TimedGameActions) => {
-      console.log("got actions from client", actions);
-      if (this.mirrorGame) this.mirrorGame.addFrameActions(actions);
-    });
+    // this.props.gameClient.watchSimpleGameMoves(gameId, (actions: TimedGameActions) => {
+    //   console.log("got actions from client", actions);
+    //   if (this.mirrorGame) this.mirrorGame.addFrameActions(actions);
+    // });
 
     this.mirrorGame.play();
 
@@ -257,6 +278,8 @@ class MirrorGame extends React.Component<MirrorGameProps, MirrorGameState> {
   render() {
     const { grid, nextPill, score, timeBonus, mode /*pendingMode*/ } = this.state;
     const { mirrorGrid, mirrorNextPill, mirrorScore, mirrorTimeBonus, mirrorMode } = this.state;
+
+    if(!grid || !this.game) return 'loading';
 
     return (
       <div className={styles.mirrorGame}>
