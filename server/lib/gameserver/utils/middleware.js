@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-var PathReporter_1 = require("io-ts/lib/PathReporter");
-var auth_1 = require("./auth");
+const PathReporter_1 = require("io-ts/lib/PathReporter");
+const auth_1 = require("./auth");
 ;
 function getChainedNext(i, middlewares, req, next) {
     if (i + 1 === middlewares.length) {
@@ -13,7 +13,7 @@ function getChainedNext(i, middlewares, req, next) {
             if (error)
                 next(error);
             // otherwise, call the next middleware
-            var nextMiddleware = middlewares[i + 1];
+            const nextMiddleware = middlewares[i + 1];
             nextMiddleware(req, getChainedNext(i + 1, middlewares, req, next), next);
         };
     }
@@ -44,7 +44,7 @@ function requireAuthMiddleware(req, next) {
 exports.requireAuthMiddleware = requireAuthMiddleware;
 function getValidateMiddleware(messageCodec) {
     return function validateMiddleware(req, next) {
-        var decoded = messageCodec.decode(req.data);
+        const decoded = messageCodec.decode(req.data);
         if (decoded.isRight()) {
             next();
         }
@@ -54,12 +54,11 @@ function getValidateMiddleware(messageCodec) {
     };
 }
 exports.getValidateMiddleware = getValidateMiddleware;
-function validateChannelRequest(req, codec, callback, failCallback) {
-    if (failCallback === void 0) { failCallback = function (e) { throw e; }; }
-    var decoded = codec.decode(req.data);
+function validateChannelRequest(req, codec, callback, failCallback = (e) => { throw e; }) {
+    const decoded = codec.decode(req.data);
     if (decoded.isRight()) {
         req.validData = decoded.value;
-        var validReq = req;
+        const validReq = req;
         validReq.validData = decoded.value;
         callback(validReq);
     }
@@ -68,3 +67,4 @@ function validateChannelRequest(req, codec, callback, failCallback) {
     }
 }
 exports.validateChannelRequest = validateChannelRequest;
+//# sourceMappingURL=middleware.js.map

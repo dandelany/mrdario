@@ -1,8 +1,4 @@
 import {
-  GameAction,
-  GameActionGarbage,
-  GameActionMove,
-  GameActionType,
   GameColor,
   GameInput,
   GameInputMove,
@@ -22,6 +18,7 @@ import {
   MaybeGridObjectWithColor,
   PillLocation
 } from "../types";
+import { GameAction, GameActionGarbage, GameActionMove, GameActionType } from "../types/gameAction";
 
 export function isGridObject(obj: MaybeGridObject): obj is GridObject {
   return !!obj && obj.type !== undefined;

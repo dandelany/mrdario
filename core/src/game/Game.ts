@@ -14,8 +14,6 @@ import {
   PLAYFIELD_WIDTH
 } from "./constants";
 import {
-  GameAction,
-  GameActionMove,
   GameColor,
   GameGrid,
   GameInput,
@@ -36,10 +34,10 @@ import {
   dropDebris,
   generateEnemies,
   getLevelVirusCount,
-  getNextPill, giveGarbage,
+  getNextPill,
+  giveGarbage,
   givePill,
   hasViruses,
-  isGarbageAction,
   isMoveAction,
   isPillLocation,
   makeEmptyGrid,
@@ -48,6 +46,8 @@ import {
   rotatePill,
   slamPill
 } from "./utils";
+import { GameAction, GameActionMove, GameActionType } from "./types/gameAction";
+
 // import { encodeMoveAction } from "../encoding/action";
 
 function gravityFrames(speed: number): number {
@@ -120,17 +120,49 @@ export class Game extends EventEmitter {
   }
 
   public tick(actions: GameAction[] = []): void | GameTickResult {
+    // short circuit early if game is being ticked after ending for some reason
+    if (this.fsm.currentState === GameMode.Ended) { return; }
+
     this.frame++;
-    const moveActions: GameActionMove[] = actions.filter(isMoveAction);
+    let moveActions: GameActionMove[] | undefined;
+
+    // process incoming actions
+    for (const action of actions) {
+      if (action.type === GameActionType.Defeat) {
+        // lose because another player has won
+        this.fsm.go(GameMode.Ended);
+        return { type: GameTickResultType.Lose };
+
+      } else if (action.type === GameActionType.ForfeitWin) {
+        // win because all other players have lost
+        this.fsm.go(GameMode.Ended);
+        return { type: GameTickResultType.Win };
+
+      } else if (isMoveAction(action)) {
+        // add incoming moves to moveActions queue, to be processed by InputRepeater
+        if (moveActions) { moveActions.push(action); }
+        else { moveActions = [action]; }
+
+      } else if (action.type === GameActionType.Garbage) {
+        // add incoming garbage colors to the pending garbage queue & limit length to 4
+        this.garbage.push(...action.colors);
+        if (this.garbage.length > 4) { this.garbage.splice(4); }
+      }
+    }
+
+    // const moveActions: GameActionMove[] = actions.filter(isMoveAction);
     const moveQueue: GameInputMove[] = this.inputRepeater.tick(moveActions);
 
     // find any garbage actions, combine them and add them to pendingGarbage queue
-    actions.filter(isGarbageAction).reduce((colors: GameColor[], action) => {
-      colors.push(...action.colors);
-      return colors;
-    }, this.garbage);
-    // limit to 4
-    this.garbage.splice(4);
+    // actions.filter(isGarbageAction).reduce((colors: GameColor[], action) => {
+    //   colors.push(...action.colors);
+    //   return colors;
+    // }, this.garbage);
+    // // limit to 4
+    // this.garbage.splice(4);
+
+    // todo handle Defeat action
+    // todo handle ForfeitWin action
 
     // if(moveActions.length > 0) {
     // console.log('multiple moves: on frame', this.frame, moveActions);
@@ -149,8 +181,7 @@ export class Game extends EventEmitter {
         return this.tickDestruction();
       case GameMode.Cascade:
         return this.tickCascade();
-      case GameMode.Ended:
-        // console.log("ended!");
+      default:
         return;
     }
   }
@@ -350,7 +381,7 @@ export class Game extends EventEmitter {
       this.fsm.go(GameMode.Destruction);
     }
     // if we have garbage queued up, add it to grid and reconcile again (in case garbage makes lines)
-    else if(this.garbage.length) {
+    else if (this.garbage.length) {
       this.grid = giveGarbage(this.grid, this.garbage, this.seed, this.frame);
       empty(this.garbage);
       // don't change modes - next tick will reconcile again
@@ -384,10 +415,10 @@ export class Game extends EventEmitter {
       if (!fallingCells.length) {
         this.fsm.go(GameMode.Playing);
         // if we have destroyed at least two lines in this combo,
-        // return garbage colors to give to the other player (if playing multiplayer)
+        // return combo colors to give to the other player as garbage (if playing multiplayer)
         if (this.lineColors.length >= 2) {
           return {
-            type: GameTickResultType.Garbage,
+            type: GameTickResultType.Combo,
             colors: this.lineColors.slice(0, 4)
           };
         }

@@ -13,8 +13,8 @@ import {
   TLobbyJoinRequest,
   TLobbyLeaveRequest,
   TLobbyMessage
-} from "mrdario-core/lib/api/lobby";
-import { AppAuthToken } from "mrdario-core/lib/api/auth";
+} from "mrdario-core/src/api/lobby";
+import { AppAuthToken } from "mrdario-core/src/api/auth";
 
 import { AbstractServerModule, makeChannelConfig, ModuleConfig, ServerModuleOptions } from "../../AbstractServerModule";
 import { bindSocketHandlers, EventHandlersObj, hasAuthToken, logWithTime, unbindSocketHandlers } from "../../utils";

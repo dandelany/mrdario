@@ -2,7 +2,7 @@ import { SCServer, SCServerSocket } from "socketcluster-server";
 import { SCChannel } from "sc-channel";
 import { RedisClient } from "redis";
 
-import { GameListItem } from "mrdario-core/lib/api/game";
+import { GameListItem } from "mrdario-core/src/api/game";
 
 import { getClientIpAddress, socketInfoStr, logWithTime } from "./utils";
 

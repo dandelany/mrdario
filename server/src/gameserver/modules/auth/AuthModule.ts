@@ -3,7 +3,7 @@ import hashUtil from "tweetnacl-util";
 import { hash } from "tweetnacl";
 import uuid from "uuid/v4";
 
-import { AuthEventType, ClientAuthenticatedUser, LoginRequest, ServerUser } from "mrdario-core/lib/api/auth";
+import { AuthEventType, ClientAuthenticatedUser, LoginRequest, ServerUser } from "mrdario-core/src/api/auth";
 
 import {
   AppAuthToken,

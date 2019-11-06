@@ -22,13 +22,13 @@ export function seedRandomColor(seed: string): GameColor {
 export function seedShuffle<T>(seed: string, array: T[]): T[] {
   let index = -1;
   const length = array.length;
-  let lastIndex = length - 1;
+  const lastIndex = length - 1;
 
   const arrCopy = array.slice();
 
   while (++index < length) {
-    var rand = seedRandomInt(seed + index, index, lastIndex),
-      value = arrCopy[rand];
+    const rand = seedRandomInt(seed + index, index, lastIndex);
+    const value = arrCopy[rand];
 
     arrCopy[rand] = arrCopy[index];
     arrCopy[index] = value;

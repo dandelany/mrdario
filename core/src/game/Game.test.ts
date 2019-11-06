@@ -2,6 +2,7 @@ import { times } from "lodash";
 import { decodeGrid } from "../api/game/encoding";
 import {
   Game,
+  GameActionType,
   GameColor,
   GameInput,
   GameMode,
@@ -37,7 +38,18 @@ F = Virus Color3
 // always use the same test seed so the results are predictable
 const mockSeed = "test-seed";
 
+function getMockGameOptions(): Partial<GameOptions> {
+  return {
+    level: 12,
+    baseSpeed: 15,
+    width: 8,
+    height: 16,
+    initialSeed: mockSeed
+  };
+}
+
 function getMockGameState(): Partial<GameState> {
+  // initial state of a game created with getMockGameOptions
   return {
     pill: undefined,
     seed: mockSeed,
@@ -49,17 +61,26 @@ function getMockGameState(): Partial<GameState> {
     pillCount: 0,
     lineColors: [],
     garbage: [],
-    movingCounters: {}
-  };
-}
-
-function getMockGameOptions(): Partial<GameOptions> {
-  return {
-    level: 12,
-    baseSpeed: 15,
-    width: 8,
-    height: 16,
-    initialSeed: mockSeed
+    movingCounters: {},
+    grid: decodeGrid(`gh,8:
+        XXXXXXXX
+        XXXXXXXX
+        XXXXXXXX
+        XXXXXXXX
+        XXXXXXXX
+        XXXXXXXX
+        XXXXXXXX
+        XNFVVXXF
+        XXXFNVFN
+        XFNNXVXX
+        XVVXFXXF
+        VXXFNXVV
+        VNNXXXFX
+        FNVVFXNF
+        FXVVFFNV
+        VVFXVXFV
+        NFFNXXFX
+      `)
   };
 }
 
@@ -69,37 +90,18 @@ describe("Game", () => {
     expect(game).toBeInstanceOf(Game);
   });
 
-  test("Game has correct initial options & state after construction", () => {
+  test("Has correct initial options & state after construction", () => {
     const game = new Game(getMockGameOptions());
     const state = game.getState();
     const expectedState: GameState = {
       ...getMockGameState(),
       mode: GameMode.Ready,
-      nextPill: [GameColor.Color3, GameColor.Color2],
-      grid: decodeGrid(`gh,8:
-        XXXXXXXX
-        XXXXXXXX
-        XXXXXXXX
-        XXXXXXXX
-        XXXXXXXX
-        XXXXXXXX
-        XXXXXXXX
-        XNFVVXXF
-        XXXFNVFN
-        XFNNXVXX
-        XVVXFXXF
-        VXXFNXVV
-        VNNXXXFX
-        FNVVFXNF
-        FXVVFFNV
-        VVFXVXFV
-        NFFNXXFX
-      `)
+      nextPill: [GameColor.Color3, GameColor.Color2]
     } as GameState;
     expect(state).toEqual(expectedState);
   });
 
-  test("Game is in Playing mode after first tick", () => {
+  test("Is in Playing mode after first tick", () => {
     const game = new Game(getMockGameOptions());
     game.tick();
     const state = game.getState();
@@ -107,26 +109,7 @@ describe("Game", () => {
       ...getMockGameState(),
       mode: GameMode.Playing,
       frame: 1,
-      nextPill: [GameColor.Color3, GameColor.Color2],
-      grid: decodeGrid(`gh,8:
-        XXXXXXXX
-        XXXXXXXX
-        XXXXXXXX
-        XXXXXXXX
-        XXXXXXXX
-        XXXXXXXX
-        XXXXXXXX
-        XNFVVXXF
-        XXXFNVFN
-        XFNNXVXX
-        XVVXFXXF
-        VXXFNXVV
-        VNNXXXFX
-        FNVVFXNF
-        FXVVFFNV
-        VVFXVXFV
-        NFFNXXFX
-      `)
+      nextPill: [GameColor.Color3, GameColor.Color2]
     });
   });
 
@@ -171,7 +154,7 @@ describe("Game", () => {
     game.tick();
     const nextState: GameState = {
       mode: GameMode.Playing,
-      movingCounters: {[GameInput.Right]: 7},
+      movingCounters: { [GameInput.Right]: 7 },
       grid: decodeGrid(`gh,8:
         XXXXXXXX
         XXXXXXXX
@@ -236,7 +219,7 @@ describe("Game", () => {
     });
   });
 
-  test("Playing mode loses the game when the entrance is blocked", () => {
+  test("Game is lost when the entrance is blocked", () => {
     const game = new Game({
       ...getMockGameOptions()
     });
@@ -283,6 +266,7 @@ describe("Game", () => {
       pill: [[1, 3], [1, 4]]
     });
   });
+
   test("Gravity pulls the pill downwards in Playing mode", () => {
     const game = new Game(getMockGameOptions());
     const startState = {
@@ -345,6 +329,7 @@ describe("Game", () => {
       pill: [[2, 3], [2, 4]]
     });
   });
+
   test("Playing mode goes to Reconcile mode when pill cannot move any further", () => {
     const options = getMockGameOptions();
     const startState = {
@@ -600,4 +585,41 @@ describe("Game", () => {
   // todo: test moves
   // todo: test emit garbage on line combo
   // todo: test receives garbage action
+
+  test("Defeat GameAction causes game to be lost", () => {
+    const game = new Game(getMockGameOptions());
+    game.tick();
+    const result = game.tick([{ type: GameActionType.Defeat }]);
+    expect(result).toEqual({ type: GameTickResultType.Lose });
+    const state = game.getState();
+    expect(state).toEqual({
+      ...getMockGameState(),
+      mode: GameMode.Ended,
+      frame: 2,
+      nextPill: [GameColor.Color3, GameColor.Color2]
+    });
+    // state shouldn't change any more if you try to tick after ending
+    game.tick();
+    game.tick();
+    expect(game.getState()).toEqual(state);
+  });
+
+  test("ForfeitWin GameAction causes game to be won", () => {
+    const game = new Game(getMockGameOptions());
+    game.tick();
+    const result = game.tick([{ type: GameActionType.ForfeitWin }]);
+    expect(result).toEqual({ type: GameTickResultType.Win });
+    const state = game.getState();
+    expect(state).toEqual({
+      ...getMockGameState(),
+      mode: GameMode.Ended,
+      frame: 2,
+      nextPill: [GameColor.Color3, GameColor.Color2]
+    });
+    // state shouldn't change any more if you try to tick after ending
+    game.tick();
+    game.tick();
+    expect(game.getState()).toEqual(state);
+  });
+
 });

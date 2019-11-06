@@ -30,6 +30,7 @@ export async function getRedisDumpPath(rClient: RedisClient): Promise<string> {
         if (err) reject(err);
         else if (err2) reject(err2);
         else {
+          //@ts-ignore
           const path = `${dir[1]}/${dbfilename[1]}`;
           console.log(path);
           resolve(path);

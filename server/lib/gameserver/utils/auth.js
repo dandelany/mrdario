@@ -7,8 +7,8 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var t = __importStar(require("io-ts"));
-var io_1 = require("./io");
+const t = __importStar(require("io-ts"));
+const io_1 = require("./io");
 exports.TAppAuthToken = t.type({
     id: t.string,
     name: t.string
@@ -33,8 +33,7 @@ function respondNotAuthenticated(respond) {
     respond(exports.NOT_AUTHENTICATED_MESSAGE, null);
 }
 exports.respondNotAuthenticated = respondNotAuthenticated;
-function requireAuth(socket, respond, successCallback, failureCallback) {
-    if (failureCallback === void 0) { failureCallback = respondNotAuthenticated; }
+function requireAuth(socket, respond, successCallback, failureCallback = respondNotAuthenticated) {
     if (hasValidAuthToken(socket)) {
         successCallback(socket.authToken, respond);
     }
@@ -43,9 +42,7 @@ function requireAuth(socket, respond, successCallback, failureCallback) {
     }
 }
 exports.requireAuth = requireAuth;
-function authAndValidateRequest(socket, TCodec, successCallback, failAuthCallback, failValidateCallback) {
-    if (failAuthCallback === void 0) { failAuthCallback = respondNotAuthenticated; }
-    if (failValidateCallback === void 0) { failValidateCallback = io_1.respondInvalidData; }
+function authAndValidateRequest(socket, TCodec, successCallback, failAuthCallback = respondNotAuthenticated, failValidateCallback = io_1.respondInvalidData) {
     return function authAndValidHandler(data, respond) {
         function authSuccess(authToken) {
             function validateSuccess(data) {
@@ -57,3 +54,4 @@ function authAndValidateRequest(socket, TCodec, successCallback, failAuthCallbac
     };
 }
 exports.authAndValidateRequest = authAndValidateRequest;
+//# sourceMappingURL=auth.js.map

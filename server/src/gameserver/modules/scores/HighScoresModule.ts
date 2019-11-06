@@ -8,7 +8,7 @@ import {
   ScoresEventType,
   TGetHighScoresRequest,
   TSaveScoreRequest
-} from "mrdario-core/lib/api";
+} from "mrdario-core/src/api";
 
 import { logWithTime } from "../../utils";
 import { AbstractServerModule } from "../../AbstractServerModule";

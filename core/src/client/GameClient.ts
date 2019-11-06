@@ -6,38 +6,38 @@ import { create as createSocket, SCClientSocket } from "socketcluster-client";
 import {
   CreateMatchRequest,
   GameListItem,
-  SaveScoreRequest,
-  SaveScoreResponse,
   GetHighScoresResponse,
   Match,
   MatchEventType,
-  TSaveScoreResponse,
-  TGetHighScoresResponse,
+  SaveScoreRequest,
+  SaveScoreResponse,
   ScoresEventType,
-  TMatch
+  TGetHighScoresResponse,
+  TMatch,
+  TSaveScoreResponse
 } from "../api";
 
 import {
   AppAuthToken,
   AuthEventType,
-  isAuthToken,
   ClientAuthenticatedUser,
-  TClientAuthenticatedUser,
-  LoginRequest
+  isAuthToken,
+  LoginRequest,
+  TClientAuthenticatedUser
 } from "../api/auth";
 
 import {
   LOBBY_CHANNEL_NAME,
-  LobbyEventType,
   LobbyChatMessageIn,
   LobbyChatMessageOut,
+  LobbyEventType,
+  LobbyJoinResponse,
   LobbyMessage,
   LobbyMessageType,
-  LobbyJoinResponse,
   LobbyUser,
-  TLobbyMessage,
   TLobbyJoinResponse,
-  TLobbyLeaveResponse
+  TLobbyLeaveResponse,
+  TLobbyMessage
 } from "../api/lobby";
 
 import {
@@ -51,6 +51,8 @@ import { decodeTimedActions, encodeTimedActions } from "../api/game/encoding/act
 import { encodeGrid } from "../api/game/encoding/grid";
 import { GameControllerMode, GameGrid, TimedGameActions, TimedMoveActions } from "../game/types";
 import { promisifySocketPublish, promisifySocketRequest as emit, validatedChannel } from "./utils";
+// import { setupSyncClient } from "./SyncClient";
+
 
 interface ClientSocketWithValidAuthToken extends SCClientSocket {
   authToken: AppAuthToken;
@@ -175,7 +177,7 @@ export class GameClient {
       (lobbyResponse: LobbyJoinResponse) => {
         console.log(lobbyResponse);
         this.lobbyUsers = lobbyResponse;
-        let rawLobbyChannel = this.socket.subscribe(LOBBY_CHANNEL_NAME);
+        const rawLobbyChannel = this.socket.subscribe(LOBBY_CHANNEL_NAME);
         const lobbyChannel = validatedChannel(rawLobbyChannel, TLobbyMessage);
 
         lobbyChannel.watch((data: LobbyMessage) => {
@@ -188,10 +190,10 @@ export class GameClient {
             if (message.type === LobbyMessageType.Join) {
               this.lobbyUsers.push(message.payload);
               this.lobbyUsers = uniqBy(this.lobbyUsers, (user: LobbyUser) => user.id);
-              if (onChangeLobbyUsers) onChangeLobbyUsers(this.lobbyUsers.slice());
+              if (onChangeLobbyUsers) { onChangeLobbyUsers(this.lobbyUsers.slice()); }
             } else if (message.type === LobbyMessageType.Leave) {
               remove(this.lobbyUsers, (user: LobbyUser) => user.id === message.payload.id);
-              if (onChangeLobbyUsers) onChangeLobbyUsers(this.lobbyUsers.slice());
+              if (onChangeLobbyUsers) { onChangeLobbyUsers(this.lobbyUsers.slice()); }
             } else if (message.type === LobbyMessageType.ChatOut && onChatMessage) {
               console.log("call chat callback", message);
               onChatMessage(message);

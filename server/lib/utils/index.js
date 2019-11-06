@@ -3,8 +3,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var lodash_1 = __importDefault(require("lodash"));
-var random_word_by_length_1 = __importDefault(require("random-word-by-length"));
+const lodash_1 = __importDefault(require("lodash"));
+const random_word_by_length_1 = __importDefault(require("random-word-by-length"));
 // export * from "./socket";
 // todo use or delete these?
 function makeGameToken() {
@@ -13,9 +13,9 @@ function makeGameToken() {
 exports.makeGameToken = makeGameToken;
 function initSingleGame() {
     // const id = uuid.v4();
-    var id = lodash_1.default.times(3, function () { return lodash_1.default.capitalize(random_word_by_length_1.default(8)); }).join("");
-    var token = makeGameToken();
-    return { id: id, token: token };
+    const id = lodash_1.default.times(3, () => lodash_1.default.capitalize(random_word_by_length_1.default(8))).join("");
+    const token = makeGameToken();
+    return { id, token };
 }
 exports.initSingleGame = initSingleGame;
 function getClientIpAddress(socket) {
@@ -35,3 +35,4 @@ function getSocketInfo(socket) {
     };
 }
 exports.getSocketInfo = getSocketInfo;
+//# sourceMappingURL=index.js.map

@@ -1,5 +1,6 @@
 import { INPUT_REPEAT_INTERVALS } from "./constants";
-import { GameActionMove, GameInputMove, InputEventType, MoveInputNumberMap } from "./types";
+import { GameInputMove, InputEventType, MoveInputNumberMap } from "./types";
+import { GameActionMove } from "./types/gameAction";
 
 export type MovingCounters = Partial<Record<GameInputMove, number>>;
 export interface InputRepeaterState {
@@ -31,8 +32,9 @@ export class InputRepeater implements InputRepeaterState {
 
     // increment moving counters (for moves which are being held down)
     for (const key in movingCounters) {
-      const count: number = movingCounters[key];
-      movingCounters[key] = count + 1;
+      const moveKey = key as GameInputMove;
+      const count = movingCounters[moveKey] as number;
+      movingCounters[moveKey] = count + 1;
     }
 
     // process inputs in inputQueue
@@ -51,10 +53,10 @@ export class InputRepeater implements InputRepeaterState {
     for (const input in movingCounters) {
       const gameInput = input as GameInputMove;
       const count = movingCounters[gameInput] as number;
-      if (count >= repeatIntervals[input]) {
+      if (count >= repeatIntervals[gameInput]) {
         // push the new move to the moveQueue and reset its counter
         moveQueue.push(gameInput);
-        movingCounters[input] = 0;
+        movingCounters[gameInput] = 0;
       }
     }
 

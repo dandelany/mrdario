@@ -1,5 +1,5 @@
-import { invariant } from "ts-invariant";
 import { invert } from "lodash";
+import { invariant } from "ts-invariant";
 
 import { GameInput, GameInputMove, InputEventType, MoveInputEvent } from "../../../game/types";
 

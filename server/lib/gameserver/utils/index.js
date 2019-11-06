@@ -3,7 +3,7 @@ function __export(m) {
     for (var p in m) if (!exports.hasOwnProperty(p)) exports[p] = m[p];
 }
 Object.defineProperty(exports, "__esModule", { value: true });
-var lodash_1 = require("lodash");
+const lodash_1 = require("lodash");
 __export(require("./auth"));
 __export(require("./io"));
 __export(require("./log"));
@@ -26,16 +26,14 @@ function socketInfoStr(socket) {
 }
 exports.socketInfoStr = socketInfoStr;
 function bindSocketHandlers(socket, handlers) {
-    for (var _i = 0, _a = Object.keys(handlers); _i < _a.length; _i++) {
-        var eventType = _a[_i];
+    for (let eventType of Object.keys(handlers)) {
         //@ts-ignore
         socket.on(eventType, handlers[eventType]);
     }
 }
 exports.bindSocketHandlers = bindSocketHandlers;
 function unbindSocketHandlers(socket, handlers) {
-    for (var _i = 0, _a = Object.keys(handlers); _i < _a.length; _i++) {
-        var eventType = _a[_i];
+    for (let eventType of Object.keys(handlers)) {
         socket.off(eventType, handlers[eventType]);
         delete handlers[eventType];
     }
@@ -53,3 +51,4 @@ var SCMiddlewareType;
     SCMiddlewareType["MIDDLEWARE_PUBLISH_OUT"] = "publishOut";
     SCMiddlewareType["MIDDLEWARE_EMIT"] = "emit";
 })(SCMiddlewareType = exports.SCMiddlewareType || (exports.SCMiddlewareType = {}));
+//# sourceMappingURL=index.js.map

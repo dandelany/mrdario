@@ -1,6 +1,6 @@
 import { SCServer, SCServerSocket } from "socketcluster-server";
 import * as t from "io-ts";
-import { AppAuthToken } from "mrdario-core/lib/api";
+import { AppAuthToken } from "mrdario-core/src/api";
 import { authAndValidateRequest, SocketResponder, validateRequest } from "./utils";
 import {
   PublishOutMiddlewareWithDataType,

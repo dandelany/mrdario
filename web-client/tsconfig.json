@@ -5,6 +5,7 @@
     "module": "commonjs",
     "target": "es5",
     "jsx": "preserve",
+    "suppressImplicitAnyIndexErrors": true,
     "lib": [
       "es6",
       "dom",

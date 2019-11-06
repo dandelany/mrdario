@@ -1,5 +1,5 @@
-import { decodeGrid, decodeInt, encodeGameState, encodeInt, tEncodedInt, tPillColorsCodec } from "./index";
 import { COLORS, GameColor, GameInput, GameMode, GameState, PillColors } from "../../../game";
+import { decodeGrid, decodeInt, encodeGameState, encodeInt, tEncodedInt, tPillColorsCodec } from "./index";
 
 describe("Game Encoding", () => {
   describe("Integer Encoding with tEncodedInt", () => {

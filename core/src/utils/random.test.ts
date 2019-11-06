@@ -76,8 +76,8 @@ describe("Seeded Pseudo-Random Number Generators", () => {
       expect(shuffledDifferent).not.toEqual(shuffled);
       expect(shuffledDifferent).not.toEqual(origArr);
       expect(sortBy(shuffledDifferent)).toEqual(origArr);
-    })
-  })
+    });
+  });
 });
 
 

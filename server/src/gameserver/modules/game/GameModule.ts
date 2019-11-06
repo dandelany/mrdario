@@ -15,21 +15,30 @@ import {
   decodeTimedActions,
   encodeGameControllerState,
   encodeGrid
-} from "mrdario-core/lib/api";
-import { encodeGameState } from "mrdario-core/lib/api/game";
+} from "mrdario-core/src/api";
+import { encodeGameState } from "mrdario-core/src/api/game";
 import { ServerSingleGameController } from "./ServerSingleGameController";
-import { GameControllerMode } from "mrdario-core";
+import { GameControllerMode } from "mrdario-core/src";
+import { SocketResponder } from "../../utils";
 // import _ = require("lodash");
 
+interface ServerGameState extends CreateSingleGameResponse {
+  gameController: ServerSingleGameController;
+}
 type GameModuleState = {
-  gameController?: ServerSingleGameController;
+  serverGame?: ServerGameState;
+  // gameController?: ServerSingleGameController;
+  games: { [k in string]: ServerGameState };
 };
 export class GameModule extends AbstractServerModule {
   state: GameModuleState;
   constructor(options: ServerModuleOptions) {
     super(options);
-    this.state = {};
+    this.state = {
+      games: {}
+    };
   }
+
   public handleConnect(socket: SCServerSocket): void {
     this.bindListener<CreateSingleGameRequest, CreateSingleGameResponse>(socket, {
       eventType: GameEventType.CreateSingle,
@@ -39,9 +48,10 @@ export class GameModule extends AbstractServerModule {
         const { level, baseSpeed } = options;
         const initialSeed = uuid().slice(-10);
         const gameOptions = { level, baseSpeed, initialSeed };
+        const gameId = uuid().slice(-10);
 
         const response: CreateSingleGameResponse = {
-          id: uuid().slice(-10),
+          id: gameId,
           creator: userId,
           gameOptions
         };
@@ -54,7 +64,12 @@ export class GameModule extends AbstractServerModule {
         console.log(gameController.getState());
         console.log(encodeGameState(gameController.getState().gameState));
 
-        this.state.gameController = gameController;
+        const serverGame: ServerGameState = {
+          ...response,
+          gameController
+        };
+        this.state.serverGame = serverGame;
+        this.state.games[gameId] = serverGame;
         respond(null, response);
       }
     });
@@ -64,8 +79,9 @@ export class GameModule extends AbstractServerModule {
       codec: tSingleGameModeChangeMessage,
       listener: (nextMode: GameControllerMode) => {
         console.log("mode change", nextMode);
-        if (this.state.gameController) {
-          const { gameController } = this.state;
+        if (this.state.serverGame) {
+          const { serverGame } = this.state;
+          const { gameController } = serverGame;
           const gameControllerState = gameController.getState();
           gameController.setState({
             ...gameControllerState,
@@ -84,8 +100,9 @@ export class GameModule extends AbstractServerModule {
       codec: tSingleGameMoveMessage,
       listener: (encodedMoves: string) => {
         // console.log('move', encodedMoves);
-        if (this.state.gameController) {
-          const { gameController } = this.state;
+        if (this.state.serverGame) {
+          const { serverGame } = this.state;
+          const { gameController, id } = serverGame;
           const timedMoveActions = decodeTimedActions(encodedMoves);
           // console.log(timedMoveActions);
           console.log(timedMoveActions);
@@ -96,7 +113,18 @@ export class GameModule extends AbstractServerModule {
           // console.log('emitting singleGameState', encodedState);
           console.log("emitting singleGameState", encodeGrid(gameController.getState().gameState.grid, true));
           socket.emit("singleGameState", encodedState);
+          this.scServer.exchange.publish(`game-${id}`, encodedState);
         }
+      }
+    });
+
+    socket.on("GetSingleGameInfo", (gameId: string, respond: SocketResponder<any>) => {
+      const serverGame = this.state.games[gameId];
+      if (serverGame) {
+        const { id, creator, gameOptions } = serverGame;
+        respond(null, { id, creator, gameOptions });
+      } else {
+        respond("Could not find game " + gameId , null);
       }
     });
   }

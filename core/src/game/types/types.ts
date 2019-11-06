@@ -1,20 +1,8 @@
 import * as t from "io-ts";
 
-import { numEnumType, strEnumType } from "../utils/io";
-import {
-  GameColor,
-  GameInput,
-  GameMode,
-  GridDirection,
-  GridObjectType,
-  InputEventType,
-  SpeedLevel
-} from "./enums";
-import { MovingCounters } from "./InputRepeater";
-
-export * from "./enums";
-export * from "./input/types";
-export * from "./controller/types";
+import { numEnumType, strEnumType } from "../../utils/io";
+import { GameColor, GameInput, GameMode, GridDirection, GridObjectType, InputEventType, SpeedLevel } from "../enums";
+import { MovingCounters } from "../InputRepeater";
 
 export const tGameColor = numEnumType<GameColor>(GameColor, "GameColor");
 export const tGameInput = strEnumType<GameInput>(GameInput, "GameInput");
@@ -50,8 +38,6 @@ export const tGridObjectPillLeft = t.type({
   color: tGameColor
 });
 export type TGridObjectPillLeft = t.TypeOf<typeof tGridObjectPillLeft>;
-
-
 
 export interface GridObjectBase {
   readonly type: GridObjectType;
@@ -112,7 +98,6 @@ export type GridObjectPillPartType = GridObjectPillHalfType | GridObjectType.Pil
 export type MaybeGridObject = GridObject | null;
 export type MaybeGridObjectWithColor = GridObjectWithColor | null;
 
-
 export type GameGridRow = GridObject[];
 export type GameGrid = GameGridRow[];
 
@@ -162,55 +147,7 @@ export interface MoveInputEvent {
   eventType: InputEventType;
 }
 
-// game action types
-// GameActions represent events from the "outside world" which affect game state
-// these include our player's move inputs, as well as actions caused by other players
-export enum GameActionType {
-  Move = "Move",
-  Garbage = "Garbage",
-  Seed = "Seed",
-  Defeat = "Defeat",
-  ForfeitWin = "ForfeitWin"
-}
-export const tGameActionMove = t.interface(
-  {
-    type: t.literal(GameActionType.Move),
-    input: tGameInputMove,
-    eventType: tInputEventType
-  },
-  "GameActionMove"
-);
-export type GameActionMove = t.TypeOf<typeof tGameActionMove>;
-// export interface GameActionMove {
-//   type: GameActionType.Move;
-//   input: GameInputMove;
-//   eventType: InputEventType;
-// }
 
-// other player got a combo and sent you garbage
-export interface GameActionGarbage {
-  type: GameActionType.Garbage;
-  colors: GameColor[];
-}
-// change the game's random number seed (so that server can make upcoming pills unpredictable)
-export interface GameActionSeed {
-  type: GameActionType.Seed;
-  seed: string;
-}
-// You lose because the other player won (destroyed all viruses)
-export interface GameActionDefeat {
-  type: GameActionType.Defeat;
-}
-// You win because the other player lost (filled up with pills)
-export interface GameActionForfeitWin {
-  type: GameActionType.ForfeitWin;
-}
-export type GameAction =
-  | GameActionMove
-  | GameActionGarbage
-  | GameActionSeed
-  | GameActionDefeat
-  | GameActionForfeitWin;
 
 // game tick result types
 // GameTickResults are returned from game.tick() and represent events that happen in the game
@@ -220,7 +157,7 @@ export enum GameTickResultType {
   Win = "Win",
   Lose = "Lose",
   // emit a garbage result when you get a
-  Garbage = "Garbage"
+  Combo = "Combo"
 }
 export interface GameTickResultWin {
   type: GameTickResultType.Win;
@@ -229,16 +166,14 @@ export interface GameTickResultLose {
   type: GameTickResultType.Lose;
 }
 export interface GameTickResultGarbage {
-  type: GameTickResultType.Garbage;
+  type: GameTickResultType.Combo;
   colors: GameColor[];
 }
 export type GameTickResult = GameTickResultWin | GameTickResultLose | GameTickResultGarbage;
 
-// for network play, the game controllers emit pairs of [frame, actions/results]
+// for network play, the game controllers emit pairs of [frame, result]
 // where `frame` is the game frame # on which they took place,
 // so that the server/other clients can time/sync them appropriately
-export type TimedGameActions = [number, GameAction[]];
-export type TimedMoveActions = [number, GameActionMove[]];
 export type TimedGameTickResult = [number, GameTickResult];
 
 // options that can be passed to control game parameters

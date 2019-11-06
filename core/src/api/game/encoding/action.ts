@@ -1,10 +1,11 @@
 import { invariant } from "ts-invariant";
 // import * as t from "io-ts";
 
-import { GameAction, GameActionMove, GameActionType, TimedGameActions } from "../../../game/types";
+import { TimedGameActions } from "../../../game/types";
 import { isMoveAction } from "../../../game/utils";
 import { tEncodedInt } from "./game";
 import { decodeMoveInputEvent, encodeMoveInputEvent } from "./move";
+import { GameAction, GameActionMove, GameActionType } from "../../../game/types/gameAction";
 
 export type ActionTypeEncodingMap = { [I in GameActionType]: string };
 

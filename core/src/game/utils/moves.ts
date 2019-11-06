@@ -15,6 +15,7 @@ import {
   RotateDirection
 } from "../types";
 
+import { seedShuffle } from "../../utils/random";
 import { makeEmpty, makePillLeft, makePillRight, makePillSegment } from "./generators";
 import {
   canMoveCell,
@@ -43,7 +44,6 @@ import {
   setPillPartType,
   setPillSegments
 } from "./setters";
-import { seedShuffle } from "../../utils/random";
 
 // Pure functions which perform updates on the
 // Immutable game grid/cell objects, returning the updated objects.

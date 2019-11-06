@@ -85,6 +85,7 @@ class MirrorGame extends React.Component<MirrorGameProps, MirrorGameState> {
         gameId: response.id,
         gameOptions: response.gameOptions
       });
+      console.log('game id:', response.id);
       this._initGame(this.props);
     });
   }
@@ -168,6 +169,8 @@ class MirrorGame extends React.Component<MirrorGameProps, MirrorGameState> {
         };
         const {state} = this;
         if(!_.every(nextState, (value, key) => shallowEqual(value, state[key]))) {
+          // scoreGameState(gameState);
+
           this.setState(nextState);
         }
         // this.game.replayHistory();

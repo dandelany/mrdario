@@ -7,11 +7,11 @@
   "main": "src/index.js",
   "scripts": {
     "build": "tsc -p .",
-    "build:live": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/server.js",
+    "build:live": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/server.ts",
     "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
     "start": "npm run build:live",
     "start:docker": "node dockerwait.js && node ${SOCKETCLUSTER_MASTER_CONTROLLER:-server.js}",
-    "start:test": "env-cmd -f .test.env nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/server.js",
+    "start:test": "env-cmd -f .test.env nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/server.ts",
     "release": "npm run format && npm run build"
   },
   "dependencies": {
@@ -40,8 +40,11 @@
   },
   "devDependencies": {
     "@types/lodash": "^4.14.121",
+    "@types/minimist": "^1.2.0",
     "@types/node": "^11.9.4",
     "@types/redis": "^2.8.10",
+    "@types/sc-hot-reboot": "^1.0.2",
+    "@types/scc-broker-client": "^6.1.0",
     "@types/socketcluster-server": "^14.2.3",
     "@types/uuid": "^3.4.4",
     "env-cmd": "^10.0.1",

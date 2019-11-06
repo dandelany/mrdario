@@ -7,21 +7,24 @@
   each one has a specific meaning within the SC ecosystem.
 */
 
-var path = require("path");
-var argv = require("minimist")(process.argv.slice(2));
-var scHotReboot = require("sc-hot-reboot");
+import path from "path";
+import minimist from "minimist";
+import scHotReboot from "sc-hot-reboot";
+const argv = minimist(process.argv.slice(2));
 
-var fsUtil = require("socketcluster/fsutil");
+import fsUtil from "socketcluster/fsutil";
 var waitForFile = fsUtil.waitForFile;
 
-var SocketCluster = require("socketcluster");
+import SocketCluster from "socketcluster";
+import { SCServerOptions } from "socketcluster-server/scserver";
+import { PathLike } from "fs";
 
 var workerControllerPath = argv.wc || process.env.SOCKETCLUSTER_WORKER_CONTROLLER;
 var brokerControllerPath = argv.bc || process.env.SOCKETCLUSTER_BROKER_CONTROLLER;
 var workerClusterControllerPath = argv.wcc || process.env.SOCKETCLUSTER_WORKERCLUSTER_CONTROLLER;
 var environment = process.env.ENV || "dev";
 
-var options = {
+var options: SCServerOptions = {
   workers: Number(argv.w) || Number(process.env.SOCKETCLUSTER_WORKERS) || 1,
   brokers: Number(argv.b) || Number(process.env.SOCKETCLUSTER_BROKERS) || 1,
   port: Number(argv.p) || Number(process.env.SOCKETCLUSTER_PORT) || 8000,
@@ -29,7 +32,7 @@ var options = {
   wsEngine: process.env.SOCKETCLUSTER_WS_ENGINE || "ws",
   appName: argv.n || process.env.SOCKETCLUSTER_APP_NAME || null,
   workerController: workerControllerPath || path.join(__dirname, "worker.ts"),
-  brokerController: brokerControllerPath || path.join(__dirname, "broker.js"),
+  brokerController: brokerControllerPath || path.join(__dirname, "broker.ts"),
   workerClusterController: workerClusterControllerPath || null,
   socketChannelLimit: Number(process.env.SOCKETCLUSTER_SOCKET_CHANNEL_LIMIT) || 1000,
   clusterStateServerHost: argv.cssh || process.env.SCC_STATE_SERVER_HOST || null,
@@ -50,7 +53,7 @@ var options = {
 };
 
 var bootTimeout = Number(process.env.SOCKETCLUSTER_CONTROLLER_BOOT_TIMEOUT) || 10000;
-var SOCKETCLUSTER_OPTIONS;
+let SOCKETCLUSTER_OPTIONS;
 
 if (process.env.SOCKETCLUSTER_OPTIONS) {
   SOCKETCLUSTER_OPTIONS = JSON.parse(process.env.SOCKETCLUSTER_OPTIONS);
@@ -62,7 +65,7 @@ for (var i in SOCKETCLUSTER_OPTIONS) {
   }
 }
 
-var start = function() {
+const start = function start() {
   var socketCluster = new SocketCluster(options);
 
   socketCluster.on(socketCluster.EVENT_WORKER_CLUSTER_START, function(workerClusterInfo) {
@@ -81,8 +84,8 @@ var start = function() {
         "node_modules",
         "README.md",
         "Dockerfile",
-        "server.js",
-        "broker.js",
+        "server.ts",
+        "broker.ts",
         /[\/\\]\./,
         "*.log"
       ]
@@ -94,7 +97,7 @@ var bootCheckInterval = Number(process.env.SOCKETCLUSTER_BOOT_CHECK_INTERVAL) ||
 var bootStartTime = Date.now();
 
 // Detect when Docker volumes are ready.
-var startWhenFileIsReady = filePath => {
+var startWhenFileIsReady = (filePath: PathLike): Promise<void> => {
   var errorMessage =
     `Failed to locate a controller file at path ${filePath} ` +
     `before SOCKETCLUSTER_CONTROLLER_BOOT_TIMEOUT`;

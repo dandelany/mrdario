@@ -1,104 +1,93 @@
 "use strict";
-var __assign = (this && this.__assign) || function () {
-    __assign = Object.assign || function(t) {
-        for (var s, i = 1, n = arguments.length; i < n; i++) {
-            s = arguments[i];
-            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-                t[p] = s[p];
-        }
-        return t;
-    };
-    return __assign.apply(this, arguments);
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-var tweetnacl_util_1 = __importDefault(require("tweetnacl-util"));
-var tweetnacl_1 = require("tweetnacl");
-var v4_1 = __importDefault(require("uuid/v4"));
-var auth_1 = require("mrdario-core/lib/api/auth");
-var utils_1 = require("../../utils");
-var AuthModule = /** @class */ (function () {
-    function AuthModule(scServer) {
-        this.scServer = scServer;
+const tweetnacl_util_1 = __importDefault(require("tweetnacl-util"));
+const tweetnacl_1 = require("tweetnacl");
+const v4_1 = __importDefault(require("uuid/v4"));
+const auth_1 = require("mrdario-core/lib/api/auth");
+const utils_1 = require("../../utils");
+const AbstractServerModule_1 = require("../../AbstractServerModule");
+class AuthModule extends AbstractServerModule_1.AbstractServerModule {
+    constructor(options) {
+        super(options);
         this.state = {
             users: {}
         };
     }
-    AuthModule.prototype.handleConnect = function (socket) {
-        var _this = this;
+    handleConnect(socket) {
         if (utils_1.hasAuthToken(socket)) {
             // revoke auth token if badly formatted, or if user is not in users collection
             if (!utils_1.isAuthToken(socket.authToken) || !(socket.authToken.id in this.state.users)) {
                 socket.deauthenticate();
             }
             else {
-                utils_1.logWithTime("Welcome back, " + socket.authToken.name);
+                utils_1.logWithTime(`Welcome back, ${socket.authToken.name}`);
             }
         }
-        socket.on("disconnect", function () {
+        socket.on("disconnect", () => {
             utils_1.logWithTime("Disconnected: ", utils_1.getClientIpAddress(socket));
-            if (utils_1.hasValidAuthToken(socket) && socket.authToken.id in _this.state.users) {
+            if (utils_1.hasValidAuthToken(socket) && socket.authToken.id in this.state.users) {
                 utils_1.logWithTime("Goodbye, ", socket.authToken.name);
-                delete _this.state.users[socket.authToken.id].socketId;
+                delete this.state.users[socket.authToken.id].socketId;
             }
         });
         socket.on(
         // @ts-ignore
-        auth_1.AuthEventType.Login, function (request, respond) {
+        auth_1.AuthEventType.Login, (request, respond) => {
             // todo properly validate requests here
             if (!request.name || !request.name.length) {
                 respond("Login requires a name", null);
                 return;
             }
-            var id = request.id, token = request.token, name = request.name;
-            var clientUser;
-            if (id && token && authenticateUser(id, token, _this.state.users)) {
+            const { id, token, name } = request;
+            let clientUser;
+            if (id && token && authenticateUser(id, token, this.state.users)) {
                 // user is authenticated
                 // allow setting name at login
-                var serverUser = _this.state.users[id];
+                const serverUser = this.state.users[id];
                 if (name != serverUser.name) {
-                    _this.state.users[id].name = name;
-                    _this.state.users[id].socketId = socket.id;
+                    this.state.users[id].name = name;
+                    this.state.users[id].socketId = socket.id;
                 }
-                clientUser = { id: id, token: token, name: name };
+                clientUser = { id, token, name };
             }
             else {
                 // authentication failed,
                 // or no id/token provided, create a new user
-                var created = createUser(name);
+                const created = createUser(name);
                 clientUser = created.clientUser;
-                var serverUser = created.serverUser;
-                _this.state.users[serverUser.id] = serverUser;
-                _this.state.users[serverUser.id].socketId = socket.id;
+                const serverUser = created.serverUser;
+                this.state.users[serverUser.id] = serverUser;
+                this.state.users[serverUser.id].socketId = socket.id;
             }
             respond(null, clientUser);
-            var authToken = { id: clientUser.id, name: clientUser.name };
+            const authToken = { id: clientUser.id, name: clientUser.name };
             socket.setAuthToken(authToken);
-            utils_1.logWithTime(clientUser.name + " logged in. (" + clientUser.id + ")");
-            console.table(Object.values(_this.state.users));
+            utils_1.logWithTime(`${clientUser.name} logged in. (${clientUser.id})`);
+            console.table(Object.values(this.state.users));
         });
-    };
-    return AuthModule;
-}());
+    }
+}
 exports.AuthModule = AuthModule;
 function createUser(name) {
-    var id = v4_1.default();
-    var user = { name: name, id: id };
-    var token = v4_1.default().slice(-10);
-    var tokenBytes = tweetnacl_util_1.default.decodeUTF8(token);
-    var tokenHashBytes = tweetnacl_1.hash(tokenBytes);
-    var tokenHash = tweetnacl_util_1.default.encodeBase64(tokenHashBytes);
+    const id = v4_1.default();
+    const user = { name, id };
+    const token = v4_1.default().slice(-10);
+    const tokenBytes = tweetnacl_util_1.default.decodeUTF8(token);
+    const tokenHashBytes = tweetnacl_1.hash(tokenBytes);
+    const tokenHash = tweetnacl_util_1.default.encodeBase64(tokenHashBytes);
     return {
-        clientUser: __assign(__assign({}, user), { token: token }),
-        serverUser: __assign(__assign({}, user), { tokenHash: tokenHash })
+        clientUser: { ...user, token },
+        serverUser: { ...user, tokenHash }
     };
 }
 function authenticateUser(id, token, users) {
     if (!(id in users))
         return false;
-    var serverUser = users[id];
-    var tokenHash = tweetnacl_util_1.default.encodeBase64(tweetnacl_1.hash(tweetnacl_util_1.default.decodeUTF8(token)));
+    const serverUser = users[id];
+    const tokenHash = tweetnacl_util_1.default.encodeBase64(tweetnacl_1.hash(tweetnacl_util_1.default.decodeUTF8(token)));
     return tokenHash === serverUser.tokenHash;
 }
+//# sourceMappingURL=AuthModule.js.map

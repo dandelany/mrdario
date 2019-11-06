@@ -1,5 +1,5 @@
-import { invariant } from "ts-invariant";
 import * as t from "io-ts";
+import { invariant } from "ts-invariant";
 
 import { MovingCounters } from "../../../game/InputRepeater";
 import {
@@ -12,8 +12,8 @@ import {
   tPillColors
 } from "../../../game/types";
 
-import { decodeGrid, encodeGrid } from "./grid";
 import { numEnumType, strEnumType } from "../../../utils/io";
+import { decodeGrid, encodeGrid } from "./grid";
 
 export type EncodedGameState = string;
 
@@ -137,17 +137,17 @@ export function decodeGameState(stateStr: string): GameState {
     gameTicks: tEncodedInt.decode(parsed.gameTicks).value,
     modeTicks: tEncodedInt.decode(parsed.modeTicks).value,
     pillCount: tEncodedInt.decode(parsed.pillCount).value
-  }
+  };
 }
 
 export function encodeGameControllerState(state: GameControllerState)  {
   return JSON.stringify({
     ...state,
     gameState: encodeGameState(state.gameState)
-  })
+  });
 }
 
 export function decodeGameControllerState(stateStr: string) {
   const parsed = JSON.parse(stateStr);
-  return {...parsed, gameState: decodeGameState(parsed.gameState)}
+  return {...parsed, gameState: decodeGameState(parsed.gameState)};
 }

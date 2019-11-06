@@ -1,4 +1,4 @@
-import { GameController, GameControllerState, TimedGameTickResult } from "mrdario-core";
+import { GameController, GameControllerState, TimedGameTickResult } from "mrdario-core/src";
 
 export class ServerSingleGameController extends GameController {
   // simpler game controller which allows the client to control timing

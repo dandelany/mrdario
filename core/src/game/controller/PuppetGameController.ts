@@ -1,6 +1,6 @@
+import { TimedGameTickResult } from "../types";
 import { GameController } from "./GameController";
 import { GameControllerState } from "./types";
-import { TimedGameTickResult } from "../types";
 
 
 export class PuppetGameController extends GameController {

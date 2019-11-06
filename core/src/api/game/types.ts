@@ -1,6 +1,6 @@
 import * as t from "io-ts";
-import { strEnumType } from "../../utils/io";
 import { GameControllerMode } from "../../game/controller";
+import { strEnumType } from "../../utils/io";
 
 export interface GameListItem {
   id: string;

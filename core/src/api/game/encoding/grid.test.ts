@@ -1,8 +1,8 @@
 import { flatten, sample, times } from "lodash";
 
+import { GameColor, GameGrid, GridObject, GridObjectType } from "../../../game/types";
 import { getGridEncodingDictionary, tGameGridCodec } from "./grid";
 import { tGridObjectCodec } from "./gridObject";
-import { GameColor, GameGrid, GridObject, GridObjectType } from "../../../game/types";
 
 describe("Grid Encoding", () => {
   test("encode and decode grid", () => {

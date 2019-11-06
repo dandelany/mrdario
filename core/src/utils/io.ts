@@ -15,7 +15,7 @@ export const strEnumType = <E>(e: object, name: string): t.Type<E> => {
 /**
  * Creates an io-ts Type from a numeric enum
  */
-export const numEnumType = <E>(e: object, name: string): t.Type<E> => {
+export const numEnumType = <E>(e: {[k in string]: any}, name: string): t.Type<E> => {
   const numValues: ReadonlyArray<number> = Object.keys(e)
     .map(k => e[k])
     .filter(t.number.is);
@@ -55,14 +55,14 @@ export const tJSONString = <C extends t.Mixed>(tCodec: C) => {
 
 
 // encodes a Map object as an array so it can be JSON.stringified
-export const tMapAsArrayCodec = new t.Type<Map<any, any>, [any, any][], [any, any][]>(
+export const tMapAsArrayCodec = new t.Type<Map<any, any>, Array<[any, any]>, Array<[any, any]>>(
   "MapAsArray",
   (m): m is Map<any, any> => m instanceof Map,
-  (input: [any, any][]) => {
+  (input: Array<[any, any]>) => {
     // input
     return t.success(new Map(input));
   },
-  (map: Map<any, any>): [any, any][] => {
+  (map: Map<any, any>): Array<[any, any]> => {
     return Array.from(map.entries());
 
   }

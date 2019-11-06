@@ -1,6 +1,6 @@
-import * as SCChannel from "sc-channel";
 import * as t from "io-ts";
 import { PathReporter } from "io-ts/lib/PathReporter";
+import * as SCChannel from "sc-channel";
 import { SCClientSocket } from "socketcluster-client";
 
 export type ValidatedSCChannel<MessageType> = Omit<SCChannel.SCChannel, "watch"> & {
@@ -21,9 +21,9 @@ export function validatedChannel<MessageType>(
   codec: t.Type<MessageType>,
   shouldThrow: boolean = true
 ): ValidatedSCChannel<MessageType> {
-  let watchHandlerMap = new Map<Function, (data: any) => void>();
+  const watchHandlerMap = new Map<Function, (data: any) => void>();
   return new Proxy(channel, {
-    get: function(target, propKey) {
+    get(target, propKey) {
       // replace channel.watch method with one which validates incoming messages
       if (propKey === "watch") {
         const origWatch = target[propKey];
@@ -36,8 +36,8 @@ export function validatedChannel<MessageType>(
               origHandler(data);
             } else {
               const message = PathReporter.report(decoded)[0];
-              if (shouldThrow) throw new Error(message);
-              else console.error(message);
+              if (shouldThrow) { throw new Error(message); }
+              else { console.error(message); }
             }
           };
           // save original handler in map so we can unwatch
@@ -58,6 +58,8 @@ export function validatedChannel<MessageType>(
           }
         };
       }
+      // todo type?
+      // @ts-ignore
       return target[propKey];
     }
     // todo proxy publish
@@ -93,8 +95,8 @@ export async function promisifySocketPublish<AckDataType = undefined>(
 ): Promise<AckDataType> {
   return new Promise((resolve, reject) => {
     socket.publish(channelName, data, (err: Error, ackData: AckDataType) => {
-      if (err) reject(err);
-      else resolve(ackData);
+      if (err) { reject(err); }
+      else { resolve(ackData); }
     });
   });
 }
