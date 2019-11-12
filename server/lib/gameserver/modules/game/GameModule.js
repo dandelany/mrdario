@@ -6,13 +6,15 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const v4_1 = __importDefault(require("uuid/v4"));
 // import randomWord from "random-word-by-length";
 const AbstractServerModule_1 = require("../../AbstractServerModule");
-const api_1 = require("mrdario-core/lib/api");
-const game_1 = require("mrdario-core/lib/api/game");
+const api_1 = require("mrdario-core/src/api");
+const game_1 = require("mrdario-core/src/api/game");
 const ServerSingleGameController_1 = require("./ServerSingleGameController");
 class GameModule extends AbstractServerModule_1.AbstractServerModule {
     constructor(options) {
         super(options);
-        this.state = {};
+        this.state = {
+            games: {}
+        };
     }
     handleConnect(socket) {
         this.bindListener(socket, {
@@ -23,8 +25,9 @@ class GameModule extends AbstractServerModule_1.AbstractServerModule {
                 const { level, baseSpeed } = options;
                 const initialSeed = v4_1.default().slice(-10);
                 const gameOptions = { level, baseSpeed, initialSeed };
+                const gameId = v4_1.default().slice(-10);
                 const response = {
-                    id: v4_1.default().slice(-10),
+                    id: gameId,
                     creator: userId,
                     gameOptions
                 };
@@ -35,7 +38,12 @@ class GameModule extends AbstractServerModule_1.AbstractServerModule {
                 console.log(response);
                 console.log(gameController.getState());
                 console.log(game_1.encodeGameState(gameController.getState().gameState));
-                this.state.gameController = gameController;
+                const serverGame = {
+                    ...response,
+                    gameController
+                };
+                this.state.serverGame = serverGame;
+                this.state.games[gameId] = serverGame;
                 respond(null, response);
             }
         });
@@ -44,8 +52,9 @@ class GameModule extends AbstractServerModule_1.AbstractServerModule {
             codec: api_1.tSingleGameModeChangeMessage,
             listener: (nextMode) => {
                 console.log("mode change", nextMode);
-                if (this.state.gameController) {
-                    const { gameController } = this.state;
+                if (this.state.serverGame) {
+                    const { serverGame } = this.state;
+                    const { gameController } = serverGame;
                     const gameControllerState = gameController.getState();
                     gameController.setState({
                         ...gameControllerState,
@@ -63,8 +72,9 @@ class GameModule extends AbstractServerModule_1.AbstractServerModule {
             codec: api_1.tSingleGameMoveMessage,
             listener: (encodedMoves) => {
                 // console.log('move', encodedMoves);
-                if (this.state.gameController) {
-                    const { gameController } = this.state;
+                if (this.state.serverGame) {
+                    const { serverGame } = this.state;
+                    const { gameController, id } = serverGame;
                     const timedMoveActions = api_1.decodeTimedActions(encodedMoves);
                     // console.log(timedMoveActions);
                     console.log(timedMoveActions);
@@ -75,7 +85,18 @@ class GameModule extends AbstractServerModule_1.AbstractServerModule {
                     // console.log('emitting singleGameState', encodedState);
                     console.log("emitting singleGameState", api_1.encodeGrid(gameController.getState().gameState.grid, true));
                     socket.emit("singleGameState", encodedState);
+                    this.scServer.exchange.publish(`game-${id}`, encodedState);
                 }
+            }
+        });
+        socket.on("GetSingleGameInfo", (gameId, respond) => {
+            const serverGame = this.state.games[gameId];
+            if (serverGame) {
+                const { id, creator, gameOptions } = serverGame;
+                respond(null, { id, creator, gameOptions });
+            }
+            else {
+                respond("Could not find game " + gameId, null);
             }
         });
     }

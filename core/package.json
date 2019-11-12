@@ -29,30 +29,30 @@
     "@types/socketcluster-client": "^13.0.2",
     "@types/socketcluster-server": "^14.2.3",
     "jest": "^24.1.0",
-    "onchange": "^5.2.0",
-    "prettier": "^1.16.4",
-    "rimraf": "^2.6.3",
+    "onchange": "~6.1.0",
+    "prettier": "git://github.com/prettier/prettier.git#ae1d9afb8843ea033e62e029c06bcaaac43416cd",
+    "rimraf": "^3.0.0",
     "socketcluster-client": "^14.2.1",
     "ts-jest": "^24.0.0",
     "tslint": "^5.12.1",
     "tslint-config-prettier": "^1.18.0",
-    "typescript": "^3.3.3333"
+    "typescript": "~3.7.2"
   },
   "dependencies": {
     "@ircam/sync": "^2.0.1",
     "driftless": "^2.0.3",
     "events": "^3.0.0",
+    "fp-ts": "~2.1.1",
     "gamepad-plus": "^1.0.14",
     "hammerjs": "^2.0.8",
-    "immer": "^2.0.0",
-    "io-ts": "^1.8.2",
+    "immer": "~5.0.0",
+    "io-ts": "~2.0.1",
     "lodash": "^4.17.11",
     "mousetrap": "^1.6.2",
-    "seedrandom": "^2.4.4",
+    "seedrandom": "~3.0.5",
     "socketcluster": "^14.3.3",
     "socketcluster-server": "^14.4.0",
     "ts-invariant": "^0.4.4",
-    "typestate": "^1.0.6",
-    "ws": "^6.1.4"
+    "typestate": "^1.0.6"
   }
 }

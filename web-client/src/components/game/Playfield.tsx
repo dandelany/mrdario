@@ -129,7 +129,7 @@ export default class Playfield extends React.Component<PlayfieldProps> {
   ): Pixi.Sprite | null {
     if (!obj || obj.type === GridObjectType.Empty) return null;
     let sprite = null;
-    if (hasColor) {
+    if (hasColor(obj)) {
       if (obj.type === GridObjectType.Virus) {
         sprite = new Pixi.Sprite(this.virusTextures[obj.color]);
       } else if (obj.type === GridObjectType.PillSegment) {

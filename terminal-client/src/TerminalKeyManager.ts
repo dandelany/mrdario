@@ -15,7 +15,8 @@ export default class TerminalKeyManager extends EventEmitter implements InputMan
   mode: GameControllerMode;
   keyBindings: KeyBindings;
   screen: blessed.Widgets.Screen;
-  private keyListeners: object;
+  //todo: don't use any any
+  private keyListeners: {[k in string]: any};
 
   constructor(
     initialMode: GameControllerMode,

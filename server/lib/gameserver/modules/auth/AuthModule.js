@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const tweetnacl_util_1 = __importDefault(require("tweetnacl-util"));
 const tweetnacl_1 = require("tweetnacl");
 const v4_1 = __importDefault(require("uuid/v4"));
-const auth_1 = require("mrdario-core/lib/api/auth");
+const auth_1 = require("mrdario-core/src/api/auth");
 const utils_1 = require("../../utils");
 const AbstractServerModule_1 = require("../../AbstractServerModule");
 class AuthModule extends AbstractServerModule_1.AbstractServerModule {

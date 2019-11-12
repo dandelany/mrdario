@@ -1,6 +1,7 @@
 import { SocketResponder } from "./index";
 import * as t from "io-ts";
 import { PathReporter } from "io-ts/lib/PathReporter";
+import { isRight } from "fp-ts/lib/Either";
 
 export function respondInvalidData(respond: SocketResponder<any>, message: string = ""): void {
   respond(`Invalid data sent with request: ${message}`, null);
@@ -14,8 +15,8 @@ export function validateSocketData<RequestType, ResponseType = any>(
   failureCallback: (respond: SocketResponder<any>, message: string) => void = respondInvalidData
 ): void {
   const decoded = TCodec.decode(data);
-  if (decoded.isRight()) {
-    successCallback(decoded.value, respond);
+  if (isRight(decoded)) {
+    successCallback(decoded.right, respond);
   } else {
     failureCallback(respond, PathReporter.report(decoded)[0]);
   }

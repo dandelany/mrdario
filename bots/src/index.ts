@@ -1,7 +1,6 @@
 import { GameClient } from "mrdario-core/lib/client/GameClient";
 import { AppAuthToken } from "mrdario-core/lib/api/auth";
 import { generate } from "band-name";
-import { PuppetGameController } from "mrdario-core/lib/game/controller/PuppetGameController";
 
 class GameBot {
   gameClient: GameClient;
@@ -41,11 +40,11 @@ class GameBot {
     const gameInfo = await this.gameClient.createSingleGame(2, 10);
     console.log('gameInfo', gameInfo);
 
-    this.game = new PuppetGameController()
-
-    setInterval(() => {
-
-    }, 1000);
+    // // this.game = new PuppetGameController()
+    //
+    // setInterval(() => {
+    //
+    // }, 1000);
   }
 }
 

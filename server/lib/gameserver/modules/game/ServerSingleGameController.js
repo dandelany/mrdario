@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const mrdario_core_1 = require("mrdario-core");
-class ServerSingleGameController extends mrdario_core_1.GameController {
+const src_1 = require("mrdario-core/src");
+class ServerSingleGameController extends src_1.GameController {
     constructor() {
         // simpler game controller which allows the client to control timing
         // tick ahead to frame manually when events are received rather than controlling ticks/time

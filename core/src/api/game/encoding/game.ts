@@ -12,8 +12,9 @@ import {
   tPillColors
 } from "../../../game/types";
 
-import { numEnumType, strEnumType } from "../../../utils/io";
+import { decodeOrThrow, numEnumType, strEnumType } from "../../../utils/io";
 import { decodeGrid, encodeGrid } from "./grid";
+import { either } from "fp-ts/lib/Either";
 
 export type EncodedGameState = string;
 
@@ -51,7 +52,7 @@ export const tPillColorsCodec = new t.Type<PillColors, string, unknown>(
     if (!t.string.is(input) || input.length !== 1) {
       return t.failure(input, context, "Invalid pill colors string - expected 1 character");
     }
-    return tEncodedInt.validate(input, context).chain((combinedInt: number) => {
+    return either.chain(tEncodedInt.validate(input, context), (combinedInt: number) => {
       const color0: number = combinedInt >> 2;
       const color1: number = combinedInt & 0b11;
       if (!tGameColor.is(color0)) {
@@ -71,7 +72,6 @@ export const tPillColorsCodec = new t.Type<PillColors, string, unknown>(
     return tEncodedInt.encode(combined);
   }
 );
-
 
 export function encodeMovingCounters(movingCounters: MovingCounters): string {
   // const entries = Array.from(movingCounters.entries());
@@ -128,19 +128,29 @@ export function encodeGameState(state: GameState): EncodedGameState {
 export function decodeGameState(stateStr: string): GameState {
   // todo better error handling etc.
   const parsed = JSON.parse(stateStr);
-  return {...parsed,
+
+  const nextPill = decodeOrThrow(tPillColorsCodec, parsed.nextPill);
+  const frame = decodeOrThrow(tEncodedInt, parsed.frame);
+  const score = decodeOrThrow(tEncodedInt, parsed.score);
+  const timeBonus = decodeOrThrow(tEncodedInt, parsed.timeBonus);
+  const gameTicks = decodeOrThrow(tEncodedInt, parsed.gameTicks);
+  const modeTicks = decodeOrThrow(tEncodedInt, parsed.modeTicks);
+  const pillCount = decodeOrThrow(tEncodedInt, parsed.pillCount);
+
+  return {
+    ...parsed,
     grid: decodeGrid(parsed.grid),
-    nextPill: tPillColorsCodec.decode(parsed.nextPill).value,
-    frame: tEncodedInt.decode(parsed.frame).value,
-    score: tEncodedInt.decode(parsed.score).value,
-    timeBonus: tEncodedInt.decode(parsed.timeBonus).value,
-    gameTicks: tEncodedInt.decode(parsed.gameTicks).value,
-    modeTicks: tEncodedInt.decode(parsed.modeTicks).value,
-    pillCount: tEncodedInt.decode(parsed.pillCount).value
+    nextPill,
+    frame,
+    score,
+    timeBonus,
+    gameTicks,
+    modeTicks,
+    pillCount
   };
 }
 
-export function encodeGameControllerState(state: GameControllerState)  {
+export function encodeGameControllerState(state: GameControllerState) {
   return JSON.stringify({
     ...state,
     gameState: encodeGameState(state.gameState)
@@ -149,5 +159,6 @@ export function encodeGameControllerState(state: GameControllerState)  {
 
 export function decodeGameControllerState(stateStr: string) {
   const parsed = JSON.parse(stateStr);
-  return {...parsed, gameState: decodeGameState(parsed.gameState)};
+  return { ...parsed, gameState: decodeGameState(parsed.gameState) };
 }
+

@@ -2,7 +2,7 @@ import {
   DEFAULT_GAME_CONTROLLER_OPTIONS,
   GameController,
   GameControllerMode,
-  GameControllerState
+  GameControllerPublicState
 } from "./GameController2";
 import { GameOptions, InputManager, TimedMoveActions } from "../types";
 import { defaults, noop } from "lodash";
@@ -30,7 +30,7 @@ export interface SingleGameControllerOptions {
   getTime?: () => number;
   // each game may provide its own inputmanagers
   inputManagers: InputManager[];
-  render: (state: GameControllerState, dt?: number) => any;
+  render: (state: GameControllerPublicState, dt?: number) => any;
   onChangeMode: (fromMode: GameControllerMode, toMode: GameControllerMode) => any;
   onMoveActions?: (timedMoveActions: TimedMoveActions) => void;
 }

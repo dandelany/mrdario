@@ -1,5 +1,7 @@
+
 import { COLORS, GameColor, GameInput, GameMode, GameState, PillColors } from "../../../game";
 import { decodeGrid, decodeInt, encodeGameState, encodeInt, tEncodedInt, tPillColorsCodec } from "./index";
+import { isRight } from "fp-ts/lib/Either";
 
 describe("Game Encoding", () => {
   describe("Integer Encoding with tEncodedInt", () => {
@@ -13,9 +15,9 @@ describe("Game Encoding", () => {
       const intValue = 23234567;
       const encoded = tEncodedInt.encode(intValue);
       const decoded = tEncodedInt.decode(encoded);
-      expect(decoded.isRight()).toBe(true);
-      if (decoded.isRight()) {
-        expect(decoded.value).toEqual(intValue);
+      expect(isRight(decoded)).toBe(true);
+      if (isRight(decoded)) {
+        expect(decoded.right).toEqual(intValue);
       }
     });
   });
@@ -68,19 +70,19 @@ describe("Game Encoding", () => {
           const pillColors: PillColors = [color1, color2];
           const encoded = tPillColorsCodec.encode(pillColors);
           const decoded = tPillColorsCodec.decode(encoded);
-          expect(decoded.isRight()).toBe(true);
-          if (decoded.isRight()) {
-            expect(decoded.value).toEqual(pillColors);
+          expect(isRight(decoded)).toBe(true);
+          if (isRight(decoded)) {
+            expect(decoded.right).toEqual(pillColors);
           }
         }
       }
     });
     test("decode fails for invalid pill colors", () => {
-      expect(tPillColorsCodec.decode(null).isRight()).toBe(false);
-      expect(tPillColorsCodec.decode(undefined).isRight()).toBe(false);
-      expect(tPillColorsCodec.decode(0).isRight()).toBe(false);
-      expect(tPillColorsCodec.decode("00").isRight()).toBe(false);
-      expect(tPillColorsCodec.decode("z").isRight()).toBe(false);
+      expect(isRight(tPillColorsCodec.decode(null))).toBe(false);
+      expect(isRight(tPillColorsCodec.decode(undefined))).toBe(false);
+      expect(isRight(tPillColorsCodec.decode(0))).toBe(false);
+      expect(isRight(tPillColorsCodec.decode("00"))).toBe(false);
+      expect(isRight(tPillColorsCodec.decode("z"))).toBe(false);
     });
   });
 

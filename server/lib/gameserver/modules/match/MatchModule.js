@@ -5,7 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const lodash_1 = require("lodash");
 const v4_1 = __importDefault(require("uuid/v4"));
-const match_1 = require("mrdario-core/lib/api/match");
+const match_1 = require("mrdario-core/src/api/match");
 const utils_1 = require("../../utils");
 function createMatch(creatorId, options, playerCount = 2) {
     const defaultOptions = { invitationOnly: true, level: 10, baseSpeed: 15 };

@@ -1,4 +1,5 @@
 import * as t from "io-ts";
+import { isLeft } from "fp-ts/lib/Either";
 
 import { PathReporter } from "io-ts/lib/PathReporter";
 import { COLORS } from "../../../game/constants";
@@ -62,10 +63,11 @@ export const tGameGridCodec = new t.Type<GameGrid, string, unknown>(
       const row: GameGridRow = [];
       for (let colIndex = 0; colIndex < colCount; colIndex++) {
         const gridObj = tGridObjectCodec.decode(gridStr[gridStrIndex]);
-        if (gridObj.isLeft()) {
+
+        if (isLeft(gridObj)) {
           return t.failure(input, context, `Invalid grid object: ${gridStr[gridStrIndex]}`);
         }
-        row.push(gridObj.value);
+        row.push(gridObj.right);
         gridStrIndex += 1;
       }
       grid.push(row);
@@ -79,8 +81,8 @@ export const tGameGridCodec = new t.Type<GameGrid, string, unknown>(
 
 export function decodeGrid(encoded: string) {
   const decoded = tGameGridCodec.decode(encoded);
-  if (decoded.isLeft()) { throw new Error(PathReporter.report(decoded).join("; ")); }
-  return decoded.value;
+  if (isLeft(decoded)) { throw new Error(PathReporter.report(decoded).join("; ")); }
+  return decoded.right;
 }
 
 // for debugging purposes -

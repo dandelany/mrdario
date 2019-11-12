@@ -2,6 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const PathReporter_1 = require("io-ts/lib/PathReporter");
 const auth_1 = require("./auth");
+const Either_1 = require("fp-ts/lib/Either");
 ;
 function getChainedNext(i, middlewares, req, next) {
     if (i + 1 === middlewares.length) {
@@ -45,7 +46,7 @@ exports.requireAuthMiddleware = requireAuthMiddleware;
 function getValidateMiddleware(messageCodec) {
     return function validateMiddleware(req, next) {
         const decoded = messageCodec.decode(req.data);
-        if (decoded.isRight()) {
+        if (Either_1.isRight(decoded)) {
             next();
         }
         else {
@@ -56,10 +57,10 @@ function getValidateMiddleware(messageCodec) {
 exports.getValidateMiddleware = getValidateMiddleware;
 function validateChannelRequest(req, codec, callback, failCallback = (e) => { throw e; }) {
     const decoded = codec.decode(req.data);
-    if (decoded.isRight()) {
-        req.validData = decoded.value;
+    if (Either_1.isRight(decoded)) {
+        req.validData = decoded.right;
         const validReq = req;
-        validReq.validData = decoded.value;
+        validReq.validData = decoded.right;
         callback(validReq);
     }
     else {

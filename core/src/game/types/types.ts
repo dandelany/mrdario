@@ -165,11 +165,11 @@ export interface GameTickResultWin {
 export interface GameTickResultLose {
   type: GameTickResultType.Lose;
 }
-export interface GameTickResultGarbage {
+export interface GameTickResultCombo {
   type: GameTickResultType.Combo;
   colors: GameColor[];
 }
-export type GameTickResult = GameTickResultWin | GameTickResultLose | GameTickResultGarbage;
+export type GameTickResult = GameTickResultWin | GameTickResultLose | GameTickResultCombo;
 
 // for network play, the game controllers emit pairs of [frame, result]
 // where `frame` is the game frame # on which they took place,

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const lobby_1 = require("mrdario-core/lib/api/lobby");
+const lobby_1 = require("mrdario-core/src/api/lobby");
 const AbstractServerModule_1 = require("../../AbstractServerModule");
 const utils_1 = require("../../utils");
 class LobbyModule extends AbstractServerModule_1.AbstractServerModule {

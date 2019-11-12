@@ -12,6 +12,7 @@ import { SCServer } from "socketcluster-server";
 import { PathReporter } from "io-ts/lib/PathReporter";
 import { hasValidAuthToken, NOT_AUTHENTICATED_MESSAGE } from "./auth";
 import { SCMiddlewareType } from "./index";
+import { isRight } from "fp-ts/lib/Either";
 
 export type SCServerRequest =
   | AuthenticateRequest
@@ -122,7 +123,7 @@ export function getValidateMiddleware<ExpectedType>(
 ): ValidatedChannelMiddleware {
   return function validateMiddleware(req: SCChannelRequest, next: SCServer.nextMiddlewareFunction): void {
     const decoded = messageCodec.decode(req.data);
-    if (decoded.isRight()) {
+    if (isRight(decoded)) {
       next();
     } else {
       next(new Error(PathReporter.report(decoded)[0]));
@@ -137,10 +138,11 @@ export function validateChannelRequest<ReqType extends SCChannelRequest, DataTyp
   failCallback: (error: Error) => void = (e) => { throw e; }
 ): void {
   const decoded = codec.decode(req.data);
-  if (decoded.isRight()) {
-    (req as any).validData = decoded.value;
+
+  if (isRight(decoded)) {
+    (req as any).validData = decoded.right;
     const validReq = req as ValidatedChannelRequest<ReqType, DataType>;
-    validReq.validData = decoded.value;
+    validReq.validData = decoded.right;
     callback(validReq);
   } else {
     failCallback(new Error(PathReporter.report(decoded)[0]));

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const api_1 = require("mrdario-core/lib/api");
+const api_1 = require("mrdario-core/src/api");
 const utils_1 = require("../../utils");
 const AbstractServerModule_1 = require("../../AbstractServerModule");
 const highScoresStore_1 = require("./highScoresStore");

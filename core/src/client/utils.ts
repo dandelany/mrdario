@@ -2,6 +2,7 @@ import * as t from "io-ts";
 import { PathReporter } from "io-ts/lib/PathReporter";
 import * as SCChannel from "sc-channel";
 import { SCClientSocket } from "socketcluster-client";
+import { isRight } from "fp-ts/lib/Either";
 
 export type ValidatedSCChannel<MessageType> = Omit<SCChannel.SCChannel, "watch"> & {
   watch: (handler: (data: MessageType) => void) => void;
@@ -31,7 +32,7 @@ export function validatedChannel<MessageType>(
           // wrap user-provided handler with a func that validates data against codec
           const wrappedHandler = function(data: any) {
             const decoded = codec.decode(data);
-            if (decoded.isRight()) {
+            if (isRight(decoded)) {
               // passed validation, call handler
               origHandler(data);
             } else {
@@ -78,9 +79,9 @@ export async function promisifySocketRequest<ResponseType, RequestType = any>(
         reject(new Error(err));
       }
       const decoded = TResponseType.decode(data);
-      if (decoded.isRight()) {
-        resolve(decoded.value);
-      } else if (decoded.isLeft()) {
+      if (isRight(decoded)) {
+        resolve(decoded.right);
+      } else {
         reject(new Error(PathReporter.report(decoded)[0]));
       }
       resolve(data);

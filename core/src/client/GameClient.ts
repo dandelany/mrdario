@@ -51,6 +51,7 @@ import { decodeTimedActions, encodeTimedActions } from "../api/game/encoding/act
 import { encodeGrid } from "../api/game/encoding/grid";
 import { GameControllerMode, GameGrid, TimedGameActions, TimedMoveActions } from "../game/types";
 import { promisifySocketPublish, promisifySocketRequest as emit, validatedChannel } from "./utils";
+import { isRight } from "fp-ts/lib/Either";
 // import { setupSyncClient } from "./SyncClient";
 
 
@@ -182,8 +183,8 @@ export class GameClient {
 
         lobbyChannel.watch((data: LobbyMessage) => {
           const decoded = TLobbyMessage.decode(data);
-          if (decoded.isRight()) {
-            const message: LobbyMessage = decoded.value;
+          if (isRight(decoded)) {
+            const message: LobbyMessage = decoded.right;
             console.log("lobby channel:", message);
             const { onChangeLobbyUsers, onChatMessage } = options;
 

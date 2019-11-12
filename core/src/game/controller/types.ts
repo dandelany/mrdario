@@ -1,7 +1,8 @@
 import * as t from "io-ts";
 import { strEnumType } from "../../utils/io";
 import { InputManager } from "../input/types";
-import { GameOptions, GameState, TimedMoveActions, tTimedMoveActions } from "../types";
+import { GameOptions, GameState} from "../types/types";
+import { TimedMoveActions, tTimedMoveActions } from "../types/gameAction";
 
 export enum GameControllerMode {
   Setup = "Setup",
@@ -106,6 +107,7 @@ export const tGameControllerEndAction = t.exact(
     // todo what else to send? final game states?
   })
 );
+export type GameControllerEndAction = t.TypeOf<typeof tGameControllerEndAction>;
 
 export const tGameControllerAction = t.union(
   [

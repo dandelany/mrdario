@@ -3,6 +3,11 @@ import { flatten, sample, times } from "lodash";
 import { GameColor, GameGrid, GridObject, GridObjectType } from "../../../game/types";
 import { getGridEncodingDictionary, tGameGridCodec } from "./grid";
 import { tGridObjectCodec } from "./gridObject";
+import { toDecodeWith } from "../../../utils/jest";
+import { isRight } from "fp-ts/lib/Either";
+import { decodeOrThrow } from "../../../utils/io";
+
+expect.extend({ toDecodeWith });
 
 describe("Grid Encoding", () => {
   test("encode and decode grid", () => {
@@ -32,15 +37,17 @@ describe("Grid Encoding", () => {
     flatten(grid).forEach((gridObj: GridObject) => {
       const encoded = tGridObjectCodec.encode(gridObj);
       expect(typeof encoded).toEqual("string");
+
+      expect(encoded).toDecodeWith(tGridObjectCodec);
       const decoded = tGridObjectCodec.decode(encoded);
-      expect(decoded.isRight()).toBeTruthy();
-      expect(decoded.value).toEqual(gridObj);
+      if(isRight(decoded)) expect(decoded.right).toEqual(gridObj);
+
     });
     // const encoded = encodeGrid(grid);
-    const encoded = tGameGridCodec.encode(grid);
-    expect(typeof encoded).toBe("string");
-    // expect(decodeGrid(encoded)).toEqual(grid);
-    expect(tGameGridCodec.decode(encoded).value).toEqual(grid);
+    const encodedGrid = tGameGridCodec.encode(grid);
+    expect(typeof encodedGrid).toBe("string");
+    expect(encodedGrid).toDecodeWith(tGameGridCodec);
+    expect(decodeOrThrow(tGameGridCodec, encodedGrid)).toEqual(grid);
   });
 
   test("encode and decode long grid", () => {
@@ -53,7 +60,8 @@ describe("Grid Encoding", () => {
       });
     }) as GameGrid;
     // expect(decodeGrid(encodeGrid(grid))).toEqual(grid);
-    expect(tGameGridCodec.decode(tGameGridCodec.encode(grid)).value).toEqual(grid);
+    const decoded = decodeOrThrow(tGameGridCodec, tGameGridCodec.encode(grid));
+    expect(decoded).toEqual(grid);
   });
 
   test("allows linebreaks + spaces in grid", () => {
@@ -65,7 +73,8 @@ describe("Grid Encoding", () => {
 
     getGridEncodingDictionary();
 
-    expect(tGameGridCodec.decode(gridStr).value).toEqual([
+    expect(gridStr).toDecodeWith(tGameGridCodec);
+    expect(decodeOrThrow(tGameGridCodec, gridStr)).toEqual([
       [
         { type: GridObjectType.Empty },
         { type: GridObjectType.Virus, color: GameColor.Color2 },

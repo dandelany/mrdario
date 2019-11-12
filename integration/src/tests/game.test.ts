@@ -1,7 +1,8 @@
 import { ClientAuthenticatedUser, TCreateSingleGameResponse } from "mrdario-core/lib/api";
 import { GameClient } from "mrdario-core/lib/client";
 
-import { connectGameClient, toDecodeWith } from "../utils";
+import { connectGameClient } from "../utils";
+import { toDecodeWith } from "mrdario-core/src/utils/jest";
 
 expect.extend({ toDecodeWith });
 

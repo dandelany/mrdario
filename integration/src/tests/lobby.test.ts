@@ -9,7 +9,8 @@ import {
   TLobbyLeaveResponse
 } from "mrdario-core/lib/api/lobby";
 import { ClientAuthenticatedUser } from "mrdario-core/lib/api/auth";
-import { expectToRejectNotAuthenticated, sleep, toDecodeWith, A_JIFFY, connectGameClient } from "../utils";
+import { expectToRejectNotAuthenticated, sleep, A_JIFFY, connectGameClient } from "../utils";
+import { toDecodeWith } from "mrdario-core/src/utils/jest";
 import { promisifySocketPublish } from "mrdario-core/lib/client/utils";
 import { LOBBY_CHANNEL_NAME } from "mrdario-core/lib/api/lobby";
 

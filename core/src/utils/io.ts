@@ -1,4 +1,6 @@
 import * as t from "io-ts";
+import { either, isRight } from "fp-ts/lib/Either";
+import { PathReporter } from "io-ts/lib/PathReporter";
 
 /**
  * Creates an io-ts Type from a string enum
@@ -34,18 +36,28 @@ export const tJSONString = <C extends t.Mixed>(tCodec: C) => {
     `JSONString<${tCodec.name}>`,
     tCodec.is,
     (input: unknown, context: t.Context) => {
-      return t.string
-        .validate(input, context)
-        .chain((jsonStr: string) => {
-          try {
-            return t.success(JSON.parse(jsonStr));
-          } catch (e) {
-            return t.failure(input, context, e.toString());
-          }
-        })
-        .chain((parsed: any) => {
-          return tCodec.validate(parsed, context);
-        });
+      const stringAndJson = either.chain(t.string.validate(input, context), (jsonStr: string) => {
+        try {
+          return t.success(JSON.parse(jsonStr));
+        } catch (e) {
+          return t.failure(input, context, e.toString());
+        }
+      });
+      return either.chain(stringAndJson, (parsed: any) => {
+        return tCodec.validate(parsed, context);
+      });
+      // return t.string
+      //   .validate(input, context)
+      //   .chain((jsonStr: string) => {
+      //     try {
+      //       return t.success(JSON.parse(jsonStr));
+      //     } catch (e) {
+      //       return t.failure(input, context, e.toString());
+      //     }
+      //   })
+      //   .chain((parsed: any) => {
+      //     return tCodec.validate(parsed, context);
+      //   });
     },
     (value: CType): string => {
       return JSON.stringify(value);
@@ -67,3 +79,13 @@ export const tMapAsArrayCodec = new t.Type<Map<any, any>, Array<[any, any]>, Arr
 
   }
 );
+
+// hack for unsafe decoding, until we have codecs for everything
+export function decodeOrThrow<ValueType, EncodedType>(
+  codec: t.Type<ValueType, any, EncodedType>,
+  encoded: EncodedType
+): ValueType {
+  const decoded = codec.decode(encoded);
+  if (isRight(decoded)) return decoded.right;
+  throw new Error(`Decode error: ${PathReporter.report(decoded)}`);
+}
