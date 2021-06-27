@@ -1,6 +1,6 @@
 import * as blessed from "blessed";
 
-import { Game, GameActionType } from "mrdario-core/lib/Game";
+import { Game, GameActionType, GameTickResultType } from "mrdario-core/lib/Game";
 import {
   GameControllerMode,
   GameControllerState,
@@ -46,10 +46,18 @@ export default class CLIGameController {
   }
 
   tick() {
-    this.game.tick(this.moveInputQueue.map(({input, eventType}) => {
+    const result = this.game.tick(this.moveInputQueue.map(({input, eventType}) => {
       return {type: GameActionType.Move, input, eventType}
     }));
     this.render();
+
+    if(result) {
+      if(result.type === GameTickResultType.Lose) {
+        this.options.onLose();
+      } else if(result.type === GameTickResultType.Win) {
+        this.options.onWin();
+      }
+    }
     this.moveInputQueue = [];
   }
   private enqueueInputEvents(input: GameInputMove, eventType: InputEventType) {

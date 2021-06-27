@@ -1,21 +1,16 @@
 import { create as createSocket, SCClientSocket } from "socketcluster-client";
-import { defaults } from "lodash";
 
-// import Game from "mrdario-core/src/Game";
 import {
   GameControllerMode,
   GameControllerState,
   KeyBindings,
 } from "mrdario-core/lib/game/types";
 
-
 import { GridObjectStringMap } from "./types";
 import { GRID_OBJECT_STRINGS, KEY_BINDINGS } from "./constants";
 import TerminalGameUi from "./TerminalGameUi";
 import TerminalKeyManager from "./TerminalKeyManager";
 import CLIGameController from "./CLIGameController";
-// import TerminalGameController from "./TerminalGameController";
-
 
 export interface CLIGameClientOptions {
   gridObjectStrings: GridObjectStringMap;
@@ -35,7 +30,10 @@ export class CLIGameClient {
   keyManager: TerminalKeyManager;
 
   constructor(options: Partial<CLIGameClientOptions> = {}) {
-    this.options = defaults(options, defaultCLIGameClientOptions);
+    this.options = {
+      ...defaultCLIGameClientOptions,
+      ...options
+    };
     this.lastGridStr = "";
 
     this.ui = new TerminalGameUi();
@@ -66,12 +64,12 @@ export class CLIGameClient {
         this.ui.renderGame(state);
       },
       onWin: () => {
-        console.log("YOU WIN :)");
-        process.exit();
+        this.ui.renderWin();
+        setTimeout(this.cleanExit, 3000);
       },
       onLose: () => {
-        console.log("YOU LOSE :(");
-        process.exit();
+        this.ui.renderLose();
+        setTimeout(this.cleanExit, 3000);
       },
       keyManager: this.keyManager
     });
@@ -91,6 +89,11 @@ export class CLIGameClient {
 
       // socket.emit('sampleClientEvent', 0);
     });
+  }
+  cleanExit = () => {
+    this.ui.screen.destroy();
+    console.clear();
+    process.exit(0)
   }
 }
 

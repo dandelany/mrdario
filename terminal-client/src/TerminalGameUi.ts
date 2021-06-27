@@ -88,6 +88,14 @@ export default class TerminalGameUi {
       this.screen.render();
     }
   }
+  renderLose() {
+    this.gameBox.setContent("SORRY, YOU LOSE!");
+    this.screen.render();
+  }
+  renderWin() {
+    this.gameBox.setContent("CONGRATULATIONS\nYOU WIN!");
+    this.screen.render();
+  }
 }
 
 function renderObject(obj: GridObject, objStrings: GridObjectStringMap): string {
