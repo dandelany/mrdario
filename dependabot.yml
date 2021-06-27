@@ -7,3 +7,5 @@ updates:
     schedule:
       interval: "daily"
     target-branch: "dev/typescript"
+    # Disable PRs for yarn dependencies
+    open-pull-requests-limit: 0
