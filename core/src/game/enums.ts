@@ -10,7 +10,10 @@ export enum GameMode {
   // Destruction: lines are being destroyed
   Destruction = "Destruction",
   // Ended: game has ended
-  Ended = "Ended"
+  Ended = "Ended",
+  // todo: deprecate Ended mode and replace with Won/Lost
+  Won = "Won",
+  Lost = "Lost"
 }
 
 export enum GameInput {

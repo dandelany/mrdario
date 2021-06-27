@@ -28,7 +28,7 @@ import {
   GameControllerSettingsAction,
   GameControllerStartAction,
   GameInput,
-  GameInputMove,
+  GameInputMove, GameMode,
   GameOptions,
   GameState,
   GameTickResult,
@@ -45,12 +45,15 @@ import { isMoveAction, isMoveInput } from "../utils";
 import { GameAction, GameActionMove } from "../types/gameAction";
 import { assert } from "../../utils/assert";
 import produce from "immer";
+import { clearDriftless, setDriftlessInterval } from "driftless";
 
 export interface GameControllerOptions {
   // number of players (ie. number of games)
   players: number;
   seed?: string;
   gameOptions: Partial<GameOptions>[];
+  hasTimer: boolean;
+  useRAF: boolean;
   hasHistory: boolean;
   getTime: () => number;
   // each game may provide its own inputmanagers
@@ -71,6 +74,8 @@ export const DEFAULT_GAME_CONTROLLER_OPTIONS: GameControllerOptions = {
       baseSpeed: 15
     }
   ],
+  hasTimer: true,
+  useRAF: false,
   hasHistory: true,
   getTime: getGetTime(),
   // list of input managers, eg. of keyboard, touch events
@@ -90,23 +95,22 @@ export enum GameControllerMode {
   // Countdown = "Countdown",
   Playing = "Playing",
   Paused = "Paused",
-  Ended = "Ended"
+  Ended = "Ended",
+  // game ended early before it started
+  Cancelled = "Cancelled",
+
+  //todo remove
+  Ready = "Ready",
+  Countdown = "Countdown"
 }
 
-export interface BaseGameControllerState {
+export type BaseGameControllerState = {
   mode: GameControllerMode;
   gameOptions: Partial<GameOptions>[];
-}
+};
 
-export interface GameControllerSetupState extends BaseGameControllerState {
-  mode: GameControllerMode.Setup;
-  playersReady: boolean[];
-}
-
-export interface GameControllerInitializedState extends BaseGameControllerState {
-  mode: // | GameControllerMode.Ready
-  GameControllerMode.Playing | GameControllerMode.Paused | GameControllerMode.Ended;
-  playersReady: true[];
+export type BaseGameControllerGameState = {
+  // the portion of game controller state that keeps track of active game(s)
   games: Game[];
   frame: number;
   refFrame: number;
@@ -116,16 +120,58 @@ export interface GameControllerInitializedState extends BaseGameControllerState 
   actionHistory: TimedGameActions[][];
   stateHistory: GameState[][];
   initialGameStates: GameState[];
-
+  // todo do we need resultHistory?
   resultHistory: TimedGameTickResult[][];
-}
+};
 
-export type GameControllerState = GameControllerSetupState | GameControllerInitializedState;
+export type GameControllerSetupState = BaseGameControllerState & {
+  mode: GameControllerMode.Setup;
+  playersReady: boolean[];
+};
+// extra state to handle case of game ending early before it starts
+export type GameControllerCanceledState = BaseGameControllerState & {
+  mode: GameControllerMode.Cancelled;
+  playersReady: boolean[];
+};
+
+export type GameControllerInitializedState = BaseGameControllerState &
+  // definitely has all game state when playing/paused
+  BaseGameControllerGameState & {
+    mode: // | GameControllerMode.Ready
+    // GameControllerMode.Playing | GameControllerMode.Paused | GameControllerMode.Ended;
+    GameControllerMode.Playing | GameControllerMode.Paused | GameControllerMode.Ended;
+    playersReady: true[];
+  };
+
+// export interface GameControllerInitializedState extends BaseGameControllerState {
+//   mode: // | GameControllerMode.Ready
+//   GameControllerMode.Playing | GameControllerMode.Paused | GameControllerMode.Ended;
+//   playersReady: true[];
+//   games: Game[];
+//   frame: number;
+//   refFrame: number;
+//   refTime: number;
+//   // these are [][]s because they have one array per game
+//   futureActions: TimedGameActions[][];
+//   actionHistory: TimedGameActions[][];
+//   stateHistory: GameState[][];
+//   initialGameStates: GameState[];
+//   // todo do we need resultHistory?
+//   resultHistory: TimedGameTickResult[][];
+// }
+
+export type GameControllerState =
+  | GameControllerSetupState
+  | GameControllerInitializedState
+  | GameControllerCanceledState;
 
 export type GameControllerPublicInitializedState = Omit<GameControllerInitializedState, "games"> & {
   gameStates: GameState[];
 };
-export type GameControllerPublicState = GameControllerSetupState | GameControllerPublicInitializedState;
+export type GameControllerPublicState =
+  | GameControllerSetupState
+  | GameControllerCanceledState
+  | GameControllerPublicInitializedState;
 
 // import { encodeTimedActions } from "../../encoding/action";
 
@@ -142,20 +188,8 @@ export class GameController {
   public getTime: () => number;
 
   protected seed: string;
-  // protected playersReady: boolean[];
-  // protected games: Game[];
-  // protected frame: number;
-  // protected refTime: number;
-  // protected refFrame: number;
-  // protected fsm: TypeState.FiniteStateMachine<GameControllerMode>;
-
+  protected timer: number | undefined;
   protected state: GameControllerState;
-
-  // these are [][]s because they have one array per game
-  // protected futureActions: TimedGameActions[][];
-  // protected actionHistory: TimedGameActions[][];
-  // protected stateHistory: GameState[][];
-  // protected initialGameStates: GameState[];
 
   constructor(passedOptions: Partial<GameControllerOptions> = {}) {
     const options: GameControllerOptions = defaults({}, passedOptions, defaultOptions);
@@ -218,24 +252,25 @@ export class GameController {
     // but not to be used for actions from the network (see handleRemoteAction),
     // onLocalAction may be used to send actions over the network
     this.handleAction(action);
-    if(this.options.onLocalAction) this.options.onLocalAction(action);
+    if (this.options.onLocalAction) this.options.onLocalAction(action);
   }
 
   public handleRemoteAction(action: GameControllerAction) {
     // opposite of handleLocalAction above
-    // used solely to denote (via callbacks) which actions cone from network vs. local user
+    // used solely to denote (via callbacks) which actions come from network vs. local user
     this.handleAction(action);
-    if(this.options.onLocalAction) this.options.onLocalAction(action);
+    if (this.options.onRemoteAction) this.options.onRemoteAction(action);
   }
 
   public getState(): GameControllerPublicState {
-    if (this.state.mode === GameControllerMode.Setup) {
-      return this.state;
+    const { state } = this;
+    if (state.mode === GameControllerMode.Setup || state.mode === GameControllerMode.Cancelled) {
+      return state;
     } else {
       // don't return game instances, instead call getState on each game and return gameStates
-      const { games } = this.state;
+      const { games } = state;
       return {
-        ...omit(this.state, ["games"]),
+        ...omit(state, ["games"]),
         gameStates: games.map(game => game.getState())
       };
     }
@@ -249,14 +284,39 @@ export class GameController {
         manager.removeAllListeners();
       }
     }
-    // todo stop timer
+    // make sure game timer is stopped
+    this.stopTimer();
   }
 
+  protected initGames() {
+    const { players } = this.options;
+    const games: Game[] = times(players, (i: number) => {
+      const gameIOptions: Partial<GameOptions> = this.state.gameOptions[i];
+      // the game instance, which does the hard work
+      const game = new Game({ ...gameIOptions });
+      assert(game.frame === 0, "Game must have frame = 0 after initialization");
+      return game;
+    });
+    return games;
+  }
+
+  protected stopTimer() {
+    // stop timer if it exists
+    if (this.timer !== undefined) {
+      clearDriftless(this.timer);
+      delete this.timer;
+    }
+  }
+
+  protected assertValidPlayer(player: number) {
+    const { players } = this.options;
+    assert(player < players, `Invalid player index ${player} (${players}-player game)`);
+  }
 
   protected handleAction(action: GameControllerAction) {
     // main GameControllerAction handler
     // private method - call via handleLocalAction or handleRemoteAction
-    console.log(`${action.type} action:`, action);
+    // console.log(`${action.type} action:`, action);
 
     switch (action.type) {
       case GameControllerActionType.Settings:
@@ -303,8 +363,6 @@ export class GameController {
     console.log(this.state);
   }
 
-
-
   // protected setState(state: Partial<GameControllerInternalState>) {
   //   // const nextState =
   //   this.state = {...this.state, ...state};
@@ -326,9 +384,10 @@ export class GameController {
     this.state = nextState;
 
     // fire Start action if all players are ready
+    // todo for network game, wait for server to send Start action
     if (every(nextState.playersReady)) {
       setTimeout(() => {
-        this.handleAction({ type: GameControllerActionType.Start });
+        this.handleLocalAction({ type: GameControllerActionType.Start });
       }, 0);
     }
   }
@@ -360,6 +419,10 @@ export class GameController {
 
     this.state = nextState;
 
+    this.timer = setDriftlessInterval(() => {
+      this.tick();
+    }, 1000 / 60);
+
     console.log(this.getState());
     console.log(action.type);
   }
@@ -371,13 +434,60 @@ export class GameController {
   }
 
   protected handleEnd(action: GameControllerEndAction) {
-    // todo handle end action
-    console.log(action.type);
+    // todo handle end action.. what to do exactly, besides update mode?
+    console.log(action);
+    const { state } = this;
+    if (state.mode === GameControllerMode.Ended || state.mode === GameControllerMode.Cancelled) {
+      // already ended. throw error?
+      return;
+    }
+
+    if (state.mode === GameControllerMode.Setup) {
+      // set mode to cancelled if gane ends during setup (before starting)
+      this.state = {
+        ...state,
+        mode: GameControllerMode.Cancelled
+      };
+    } else {
+      this.state = {
+        ...state,
+        mode: GameControllerMode.Ended
+      };
+    }
+
+    this.stopTimer();
   }
 
-  protected assertValidPlayer(player: number) {
-    const { players } = this.options;
-    assert(player < players, `Invalid player index ${player} (${players}-player game)`);
+  protected handleGameTickResult(gameIndex: number, result: GameTickResult, frame: number) {
+    switch (result.type) {
+      case GameTickResultType.Win:
+        this.handleWinResult(gameIndex, result, frame);
+        break;
+      case GameTickResultType.Lose:
+        this.handleLoseResult(gameIndex, result, frame);
+        break;
+      case GameTickResultType.Combo:
+        this.handleComboResult(gameIndex, result, frame);
+        break;
+      default:
+        throw new Error(`Unexpected GameTickResult: ${result}`);
+    }
+
+    // this.state = produce(this.state, next => {
+    //   next.
+    // })
+  }
+  protected handleWinResult(gameIndex: number, result: GameTickResultWin, frame: number) {
+    // todo handle win
+    console.log("WIN", gameIndex, result, frame);
+  }
+  protected handleLoseResult(gameIndex: number, result: GameTickResultLose, frame: number) {
+    // todo handle lose
+    console.log("LOSE", gameIndex, result, frame);
+  }
+  protected handleComboResult(gameIndex: number, result: GameTickResultCombo, frame: number) {
+    // todo handle lose
+    console.log("COMBO", gameIndex, result, frame);
   }
 
   // public play() {
@@ -420,8 +530,9 @@ export class GameController {
     // render with the current game state
     this.options.render(this.getState());
     // this.last = now;
-    // requestAnimationFrame(this.tick.bind(this));
-
+    // if(this.options.hasTimer && this.options.useRAF) {
+    //   requestAnimationFrame(this.tick.bind(this));
+    // }
   }
 
   public tickToFrame(toFrame: number): void {
@@ -445,23 +556,34 @@ export class GameController {
 
     const nextFrame = state.frame + 1;
     let results = [];
+    let shouldSaveGames = false;
     for (let i = 0; i < state.games.length; i++) {
-      const result = this.tickGame(i) || undefined;
+      const { result, shouldSave } = this.tickGame(i) || undefined;
       results.push(result);
       if (result) this.handleGameTickResult(i, result, nextFrame);
+      if (shouldSave) shouldSaveGames = true;
     }
 
-    // todo add to results history?
-    // gamesTickResults[j].push([this.frame, result]);
+    // save state of all games in history, if necessary
+    if (shouldSaveGames) {
+      for (let i = 0; i < state.games.length; i++) {
+        const game = state.games[i];
+        // todo still need to cloneDeep?
+        // todo limit length of stored stateHistory?
+        state.stateHistory[i].push(cloneDeep(game.getState()));
+      }
+      // console.log(state.stateHistory);
+    }
 
     // if any of the game ticks had results,
     // process them and queue up any actions they created for the next tick
+    // todo add to results history?
     const nextTickActions = this.processGameResults(results);
     for (let i = 0; i < nextTickActions.length; i++) {
       const nextAction = nextTickActions[i];
-      if(nextAction) {
-        // todo make sure this works - or nextFrame + 1??
-        this.handleTimedGameActions(i, [nextFrame, [nextAction]])
+      if (nextAction) {
+        // todo make sure this works - or nextFrame ??
+        this.handleTimedGameActions(i, [nextFrame + 1, [nextAction]]);
       }
     }
 
@@ -470,8 +592,7 @@ export class GameController {
     });
   }
 
-
-  protected tickGame(gameIndex: number): void | GameTickResult {
+  protected tickGame(gameIndex: number): { result: undefined | GameTickResult; shouldSave: boolean } {
     const { state } = this;
     assert(state.mode === GameControllerMode.Playing);
     this.assertValidPlayer(gameIndex);
@@ -494,7 +615,7 @@ export class GameController {
       }
     }
 
-    const tickResult = game.tick(actions);
+    const tickResult = game.tick(actions) || undefined;
 
     // call user-provided callback so they can eg. send moves to server
     if (timedActions && timedActions.length && this.options.onMoveActions) {
@@ -502,60 +623,24 @@ export class GameController {
       if (moveActions.length) {
         this.options.onMoveActions(gameIndex, [timedActions[0], moveActions]);
       }
-      // todo general action callback
+      // todo general action callback??
     }
 
+    let shouldSave = false;
     // todo two different options for statehistory/actionhistory?
     if (actions && actions.length && this.options.hasHistory) {
       const gameActionHistory = state.actionHistory[gameIndex];
-      const gameStateHistory = state.stateHistory[gameIndex];
       const frameActions: TimedGameActions = [game.frame, actions];
       // console.log("history item", frameActions);
       // console.log(this.actionHistory.map(item => encodeTimedActions(item)).join(";"));
-      // console.log(this.actionHistory, this.stateHistory);
       gameActionHistory.push(frameActions);
-      // todo still need to cloneDeep?
-      gameStateHistory.push(cloneDeep(game.getState()));
-      // todo limit length of stored stateHistory
+
+      // return shouldSave as boolean because we need to save *all* game states
+      shouldSave = true;
     }
 
-    return tickResult;
+    return { result: tickResult, shouldSave };
   }
-
-
-  protected handleGameTickResult(gameIndex: number, result: GameTickResult, frame: number) {
-    switch (result.type) {
-      case GameTickResultType.Win:
-        this.handleWinResult(gameIndex, result, frame);
-        break;
-      case GameTickResultType.Lose:
-        this.handleLoseResult(gameIndex, result, frame);
-        break;
-      case GameTickResultType.Combo:
-        this.handleComboResult(gameIndex, result, frame);
-        break;
-      default:
-        throw new Error(`Unexpected GameTickResult: ${result}`);
-    }
-
-    // this.state = produce(this.state, next => {
-    //   next.
-    // })
-  }
-  protected handleWinResult(gameIndex: number, result: GameTickResultWin, frame: number) {
-    // todo handle win
-    console.log("WIN", gameIndex, result, frame);
-  }
-  protected handleLoseResult(gameIndex: number, result: GameTickResultLose, frame: number) {
-    // todo handle lose
-    console.log("LOSE", gameIndex, result, frame);
-  }
-  protected handleComboResult(gameIndex: number, result: GameTickResultCombo, frame: number) {
-    // todo handle lose
-    console.log("COMBO", gameIndex, result, frame);
-  }
-
-
 
   // public run() {
   //   // called when gameplay starts, to initialize the game loop
@@ -566,45 +651,6 @@ export class GameController {
   //
   //   // todo allow passed rAF / setinterval
   //   requestAnimationFrame(this.tick.bind(this));
-  // }
-
-  protected initGames() {
-    const { players } = this.options;
-    const games: Game[] = times(players, (i: number) => {
-      const gameIOptions: Partial<GameOptions> = this.state.gameOptions[i];
-      // the game instance, which does the hard work
-      const game = new Game({ ...gameIOptions });
-      assert(game.frame === 0, "Game must have frame = 0 after initialization");
-      return game;
-    });
-    return games;
-  }
-
-  // protected initStateMachine(
-
-  //   // Countdown
-  //   // fsm.on(GameControllerMode.Countdown, this.onCountdown);
-  //   // Play
-  //   fsm.on(GameControllerMode.Playing, () => {
-  //     this.run();
-  //   });
-  //   // todo Reset?
-  //   // fsm.on(GameControllerMode.Ready, () => {
-  //   //   this.game = this.initGame();
-  //   // });
-  //   fsm.on(GameControllerMode.Playing, from => {
-  //     if (from === GameControllerMode.Paused) {
-  //       // Resume
-  //       // tick to get the game started again after being paused
-  //       this.tick();
-  //     }
-  //   });
-  //
-  //   fsm.onTransition = (from: GameControllerMode, to: GameControllerMode) => {
-  //     this.onChangeMode(from, to);
-  //   };
-  //
-  //   return fsm;
   // }
 
   // protected onCountdown = (): void => {
@@ -629,6 +675,7 @@ export class GameController {
     for (let i = 0; i < inputManagers.length; i++) {
       const gameInputManagers = inputManagers[i];
       for (const manager of gameInputManagers) {
+        console.log("binding", "to", i);
         manager.on("input", this.handleInput.bind(this, i));
       }
     }
@@ -652,13 +699,10 @@ export class GameController {
     const action: GameControllerMovesAction = {
       type: GameControllerActionType.Moves,
       player: gameIndex,
-      moves: [
-        state.games[gameIndex].frame + 1,
-        [{ type: GameActionType.Move, input, eventType }]
-      ]
+      moves: [state.games[gameIndex].frame + 1, [{ type: GameActionType.Move, input, eventType }]]
     };
     this.handleLocalAction(action);
-    console.log('handled moves', action);
+    // console.log("handled moves", action);
   };
 
   protected onChangeMode = (fromMode: GameControllerMode, toMode: GameControllerMode): void => {
@@ -691,8 +735,7 @@ export class GameController {
       let resultIndices = [] as number[];
       for (let i = 0; i < results.length; i++) {
         const maybeResult = results[i];
-        if(!!maybeResult && maybeResult.type === resultType)
-          resultIndices.push(i);
+        if (!!maybeResult && maybeResult.type === resultType) resultIndices.push(i);
       }
       return resultIndices;
     }
@@ -712,22 +755,22 @@ export class GameController {
     if (loseIndex > -1) {
       // non-losing players get ForfeitWin action
       return times(gameCount, gameIndex => {
-        return gameIndex === loseIndex ? undefined : { type: GameActionType.Defeat };
+        return gameIndex === loseIndex ? undefined : { type: GameActionType.ForfeitWin };
       });
     }
 
     // default - no results, no actions
-    let nextActions =  times<undefined | GameAction>(gameCount, () => undefined);
+    let nextActions = times<undefined | GameAction>(gameCount, () => undefined);
 
     // if any player(s) get combo, another player gets garbage
     const comboIndices = findAllResultIndices(GameTickResultType.Combo);
-    for(let comboIndex of comboIndices) {
+    for (let comboIndex of comboIndices) {
       const comboResult = results[comboIndex];
       assert(comboResult && comboResult.type === GameTickResultType.Combo);
       // give garbage to next player, use % to wraparound
       const garbageIndex = (comboIndex + 1) % gameCount;
       // garbage should have same colors as combo colors
-      nextActions[garbageIndex] = {type: GameActionType.Garbage, colors:comboResult.colors}
+      nextActions[garbageIndex] = { type: GameActionType.Garbage, colors: comboResult.colors };
     }
 
     return nextActions;
@@ -760,7 +803,7 @@ export class GameController {
 
   protected rewriteHistoryWithActions(gameIndex: number, timedActions: TimedGameActions) {
     const { state } = this;
-    assert(state.mode !== GameControllerMode.Setup);
+    assert(state.mode === GameControllerMode.Playing || state.mode === GameControllerMode.Paused);
     assert(this.options.hasHistory, `Cannot rewrite history, options.hasHistory is false`);
 
     // given a gameIndex and a new timedActions which occurred *in the past*
@@ -779,11 +822,7 @@ export class GameController {
     const currentFrame = game.frame;
 
     // make dummy games with last state before timedActions
-    // todo fix this, need to rewind in lockstep - rewindDummyGamesToFrame?
-    const dummyGames = games.map(g => this.makeDummyGameCopy(g));
-    dummyGames.forEach((dummy, i) => {
-      this.rewindGameToFrame(i, dummy, frame - 1);
-    });
+    const dummyGames = this.getDummyGamesAtFrame(frame - 1);
 
     // insert new frameActions at the correct place in affected game's actionHistory
     addTimedActionsTo(timedActions, actionHistory[gameIndex]);
@@ -839,29 +878,31 @@ export class GameController {
     // }
 
     let dummyFrame = dummyGames[0].frame;
-    while(dummyFrame < currentFrame) {
+    while (dummyFrame < currentFrame) {
       // tick each dummy game, taking timed actions from actionHistory
-      const frameResults = dummyGames.map((dummyGame, i): GameTickResult | undefined => {
-        // todo! optimize - don't search entire history on every frame!
-        //   eg. find the earliest action(s) in actionHistory which happen after the game's current frame
-        const frameActions = actionHistory[i].find(([aFrame]) => aFrame === dummyGame.frame);
-        // tick game, with or without actions, returning result
-        if(frameActions) {
-          // save (post-tick) game state to stateHistory if we have actions for this frame
-          const result = dummyGame.tick(frameActions[1]) || undefined;
-          // todo refactor to not need cloneDeep? (added this to fix a bug, details of which i dont recall)
-          stateHistory[i].push(cloneDeep(dummyGame.getState()));
-          return result;
+      const frameResults = dummyGames.map(
+        (dummyGame, i): GameTickResult | undefined => {
+          // todo! optimize - don't search entire history on every frame!
+          //   eg. find the earliest action(s) in actionHistory which happen after the game's current frame
+          const frameActions = actionHistory[i].find(([aFrame]) => aFrame === dummyGame.frame);
+          // tick game, with or without actions, returning result
+          if (frameActions) {
+            // save (post-tick) game state to stateHistory if we have actions for this frame
+            const result = dummyGame.tick(frameActions[1]) || undefined;
+            // todo refactor to not need cloneDeep? (added this to fix a bug, details of which i dont recall)
+            stateHistory[i].push(cloneDeep(dummyGame.getState()));
+            return result;
+          }
+          return dummyGame.tick() || undefined;
         }
-        return dummyGame.tick() || undefined;
-      });
+      );
 
       // process dummy game results
       // add any resulting actions to relevant games' actionHistory for next tick
       const nextFrameActions = this.processGameResults(frameResults);
-      for(let i = 0; i < nextFrameActions.length; i++) {
+      for (let i = 0; i < nextFrameActions.length; i++) {
         const nextAction = nextFrameActions[i];
-        if(nextAction) addTimedActionsTo([dummyFrame + 1, [nextAction]], actionHistory[i]);
+        if (nextAction) addTimedActionsTo([dummyFrame + 1, [nextAction]], actionHistory[i]);
       }
       // todo add to resultHistory or deprecate resultHistory?
       // todo!! handle case of LAST frame before current - should action go in futureActions??
@@ -870,7 +911,7 @@ export class GameController {
     }
     // done - dummyGames are at same frame as this.game, but have frameActions in their history
     // set our true state.games' Game states to the dummy game states
-    for(let i = 0; i < state.games.length; i++) {
+    for (let i = 0; i < state.games.length; i++) {
       state.games[i].setState(dummyGames[i].getState());
     }
   }
@@ -887,13 +928,46 @@ export class GameController {
     return dummyGame;
   }
 
+  protected getDummyGamesAtFrame(frame: number): Game[] {
+    const { state } = this;
+    assert(state.mode === GameControllerMode.Playing || state.mode === GameControllerMode.Paused);
+    assert(this.options.hasHistory, `Cannot rewind game, options.hasHistory is false`);
+    assert(frame <= state.frame, `Can't rewind game to a later frame (${frame} > ${state.frame})`);
+
+    const { games, stateHistory, initialGameStates } = state;
+
+    // find (in stateHistory) latest saved game state before `frame`
+    const dummyGames: Game[] = games.map((game, gameIndex) => {
+      let restoreState = findLast(stateHistory[gameIndex], gameState => gameState.frame <= frame);
+      if (!restoreState) {
+        restoreState = initialGameStates[gameIndex];
+      }
+      // make a new dummy Game with the saved state
+      const dummyGame = this.makeDummyGameCopy(game, restoreState);
+      // dummy game is now at last known state *before or at* `frame`, tick ahead to `frame`
+      // safe to ignore actions here because state should be saved on every frame with actions,
+      // so there shouldn't be any actions between restoreState and `frame`
+      while (dummyGame.frame < frame) {
+        game.tick(); // todo handle pass actions??!!
+        if(game.getState().mode === GameMode.Ended) break;
+      }
+    });
+    // games may actually be at an earlier frame *before* the given `frame`
+    // this is OK because there should be no actions between dummyGames.frame and `frame`
+    // just double check all dummyGames are on the same frame as one another
+    const restoredFrame = dummyGames[0].frame;
+    assert(dummyGames.every(game => game.frame === restoredFrame));
+
+    return dummyGames;
+  }
+
   protected rewindGameToFrame(gameIndex: number, game: Game, frame: number) {
     // use state history to "rewind" the state of the game to a given frame
     // may not have saved that exact frame, so find the nearest saved frame less tham or equal to the target,
     // start there, and tick forward through time until reaching the target frame
 
     const { state } = this;
-    assert(state.mode !== GameControllerMode.Setup);
+    assert(state.mode === GameControllerMode.Playing || state.mode === GameControllerMode.Paused);
     assert(this.options.hasHistory, `Cannot rewind game, options.hasHistory is false`);
 
     const { stateHistory, initialGameStates } = state;

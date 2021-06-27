@@ -1,19 +1,14 @@
 import { create as createSocket, SCClientSocket } from "socketcluster-client";
 import { defaults } from "lodash";
-
 // import Game from "mrdario-core/src/Game";
-import {
-  GameControllerMode,
-  GameControllerState,
-  KeyBindings,
-} from "mrdario-core/lib/game/types";
-
+import { GameControllerActionType, KeyBindings } from "mrdario-core/lib/game/types";
+import { GameController, GameControllerMode } from "mrdario-core/lib/game/controller/GameController2";
 
 import { GridObjectStringMap } from "./types";
 import { GRID_OBJECT_STRINGS, KEY_BINDINGS } from "./constants";
 import TerminalGameUi from "./TerminalGameUi";
 import TerminalKeyManager from "./TerminalKeyManager";
-import CLIGameController from "./CLIGameController";
+// import CLIGameController from "./CLIGameController";
 // import TerminalGameController from "./TerminalGameController";
 
 
@@ -30,7 +25,8 @@ export class CLIGameClient {
   ui: TerminalGameUi;
   options: CLIGameClientOptions;
   // gameController: TerminalGameController;
-  gameController: CLIGameController;
+  // gameController: CLIGameController;
+  gameController: GameController;
   lastGridStr: string;
   keyManager: TerminalKeyManager;
 
@@ -60,21 +56,35 @@ export class CLIGameClient {
 
     // this.gameController.play();
 
-    this.gameController = new CLIGameController({
-      screen: this.ui.screen,
-      render: (state: GameControllerState) => {
+    // this.gameController = new CLIGameController({
+    //   screen: this.ui.screen,
+    //   render: (state: GameControllerState) => {
+    //     this.ui.renderGame(state);
+    //   },
+    //   onWin: () => {
+    //     console.log("YOU WIN :)");
+    //     process.exit();
+    //   },
+    //   onLose: () => {
+    //     console.log("YOU LOSE :(");
+    //     process.exit();
+    //   },
+    //   keyManager: this.keyManager
+    // });
+
+    this.gameController = new GameController({
+      players: 1,
+      render: (state) => {
         this.ui.renderGame(state);
       },
-      onWin: () => {
-        console.log("YOU WIN :)");
-        process.exit();
-      },
-      onLose: () => {
-        console.log("YOU LOSE :(");
-        process.exit();
-      },
-      keyManager: this.keyManager
-    });
+      // onLocalAction: action => {console.log(action)},
+      inputManagers: [[this.keyManager]]
+    })
+    this.gameController.handleLocalAction({type: GameControllerActionType.Ready, player: 0, ready: true});
+
+
+
+
 
 
 
