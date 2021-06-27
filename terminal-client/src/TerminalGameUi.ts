@@ -1,7 +1,8 @@
 import * as blessed from "blessed";
 import chalk from "chalk";
 
-import { GameColor, GameControllerState, GameGridRow, GridObject } from "mrdario-core/lib/game/types";
+import { GameColor, GameGridRow, GridObject } from "mrdario-core/lib/game/types";
+import { GameControllerMode, GameControllerPublicState } from "mrdario-core/lib/game/controller/GameController2";
 import { hasColor } from "mrdario-core/lib/game/utils/guards";
 
 import { GRID_OBJECT_STRINGS } from "./constants";
@@ -73,20 +74,24 @@ export default class TerminalGameUi {
   render() {
     this.screen.render();
   }
-  renderGame(state: GameControllerState) {
-    const gridRowStrs = state.gameState.grid.map((row: GameGridRow) => {
-      const objStrs = row.map((obj: GridObject) => {
-        return renderObject(obj, GRID_OBJECT_STRINGS);
+  renderGame(state: GameControllerPublicState) {
+    if(state.mode === GameControllerMode.Playing) {
+      const gameState = state.gameStates[0];
+      const gridRowStrs = gameState.grid.map((row: GameGridRow) => {
+        const objStrs = row.map((obj: GridObject) => {
+          return renderObject(obj, GRID_OBJECT_STRINGS);
+        });
+        return objStrs.join("");
       });
-      return objStrs.join("");
-    });
-    const gridStr = gridRowStrs.join("\n");
-    if (gridStr !== this.lastGridStr) {
-      this.lastGridStr = gridStr;
-      this.gameBox.setContent(gridStr);
-      this.scoreBox.setContent(`Score\n${state.gameState.score}`);
-      this.screen.render();
+      const gridStr = gridRowStrs.join("\n");
+      if (gridStr !== this.lastGridStr) {
+        this.lastGridStr = gridStr;
+        this.gameBox.setContent(gridStr);
+        this.scoreBox.setContent(`Score\n${gameState.score}`);
+        this.screen.render();
+      }
     }
+
   }
 }
 

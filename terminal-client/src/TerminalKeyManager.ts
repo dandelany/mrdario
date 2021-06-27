@@ -2,13 +2,14 @@ import { EventEmitter } from "events";
 import * as blessed from "blessed";
 
 import {
-  GameControllerMode,
+  // GameControllerMode,
   GameInput,
   InputEventType,
   InputManager,
   KeyBindings,
   ModeKeyBindings
 } from "mrdario-core/lib/game/types";
+import {GameControllerMode} from "mrdario-core/src/game/controller/GameController2";
 
 
 export default class TerminalKeyManager extends EventEmitter implements InputManager {
@@ -38,8 +39,8 @@ export default class TerminalKeyManager extends EventEmitter implements InputMan
     this.mode = mode;
   }
   private handleInput(inputType: GameInput) {
-    super.emit(inputType, InputEventType.KeyDown);
-    super.emit(inputType, InputEventType.KeyUp);
+    super.emit("input", inputType, InputEventType.KeyDown);
+    super.emit("input", inputType, InputEventType.KeyUp);
   }
   private bindModeKeys(mode: GameControllerMode) {
     if (!this.keyBindings[mode]) return;
@@ -48,9 +49,12 @@ export default class TerminalKeyManager extends EventEmitter implements InputMan
       const inputType = inputTypeStr as GameInput;
       const keyStr = modeBindings[inputType] as string | string[];
 
-      const listener = this.handleInput.bind(this, inputType);
-      this.keyListeners[inputTypeStr] = { keyStr, listener };
+      // const listener = this.handleInput.bind(this, inputType);
+      const listener = () => {
+        this.handleInput.call(this, inputType)
+      }
 
+      this.keyListeners[inputTypeStr] = { keyStr, listener };
       this.screen.key(keyStr, listener);
     }
   }

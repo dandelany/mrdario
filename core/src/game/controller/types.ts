@@ -10,9 +10,10 @@ export enum GameControllerMode {
   Countdown = "Countdown",
   Playing = "Playing",
   Paused = "Paused",
-  Won = "Won",
-  Lost = "Lost",
-  Ended = "Ended"
+  // Won = "Won",
+  // Lost = "Lost",
+  Ended = "Ended",
+  Cancelled = "Cancelled"
 }
 
 export interface GameControllerState {

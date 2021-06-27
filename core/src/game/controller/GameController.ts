@@ -137,10 +137,10 @@ export class GameController {
       if (result) {
         tickResults.push([this.game.frame, result]);
         if (result.type === GameTickResultType.Win) {
-          this.fsm.go(GameControllerMode.Won);
+          this.fsm.go(GameControllerMode.Ended);
           break;
         } else if (result.type === GameTickResultType.Lose) {
-          this.fsm.go(GameControllerMode.Lost);
+          this.fsm.go(GameControllerMode.Ended);
           break;
         }
       }
@@ -271,9 +271,9 @@ export class GameController {
     // Resume
     fsm.from(GameControllerMode.Paused).to(GameControllerMode.Playing);
     // Win
-    fsm.from(GameControllerMode.Playing).to(GameControllerMode.Won);
+    fsm.from(GameControllerMode.Playing).to(GameControllerMode.Ended);
     // Lose
-    fsm.from(GameControllerMode.Playing).to(GameControllerMode.Lost);
+    // fsm.from(GameControllerMode.Playing).to(GameControllerMode.Lost);
     // Reset
     fsm.fromAny(GameControllerMode).to(GameControllerMode.Ready);
     // End
