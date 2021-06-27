@@ -1,0 +1,9 @@
+version: 2
+updates:
+
+  # yarn deps on typescript dev branch
+  - package-ecosystem: "yarn"
+    directory: "/"
+    schedule:
+      interval: "daily"
+    target-branch: "dev/typescript"
