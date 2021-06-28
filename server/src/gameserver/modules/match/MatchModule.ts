@@ -1,6 +1,6 @@
 import { constant, defaults, times } from "lodash";
 import { SCServer, SCServerSocket } from "socketcluster-server";
-import uuid from "uuid/v4";
+import { v4 as uuid } from "uuid";
 
 import { CreateMatchRequest, Match, TCreateMatchRequest, MatchEventType } from "mrdario-core/src/api/match";
 

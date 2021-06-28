@@ -1,5 +1,5 @@
 import { SCServerSocket } from "socketcluster-server";
-import uuid from "uuid/v4";
+import { v4 as uuid } from "uuid";
 // import randomWord from "random-word-by-length";
 
 import { AbstractServerModule, ServerModuleOptions } from "../../AbstractServerModule";

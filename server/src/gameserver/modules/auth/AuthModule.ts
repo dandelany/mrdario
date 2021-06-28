@@ -1,7 +1,7 @@
 import { SCServerSocket } from "socketcluster-server";
 import hashUtil from "tweetnacl-util";
 import { hash } from "tweetnacl";
-import uuid from "uuid/v4";
+import { v4 as uuid } from "uuid";
 
 import { AuthEventType, ClientAuthenticatedUser, LoginRequest, ServerUser } from "mrdario-core/src/api/auth";
 
