@@ -22,7 +22,7 @@
     "ts-jest": "^24.1.0",
     "ts-node": "^8.0.2",
     "tslint": "^5.12.1",
-    "typescript": "~3.7.2"
+    "typescript": "3.9.8"
   },
   "devDependencies": {}
 }

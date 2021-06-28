@@ -1,7 +1,7 @@
 import * as React from "react";
 import * as _ from "lodash";
 import { RouteComponentProps, withRouter } from "react-router-dom";
-import * as cx from "classnames";
+import cx from "classnames";
 
 import shallowEqual from "@/utils/shallowEqual";
 

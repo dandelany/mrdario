@@ -36,7 +36,7 @@
     "ts-jest": "^24.0.0",
     "tslint": "^5.12.1",
     "tslint-config-prettier": "^1.18.0",
-    "typescript": "~3.7.2"
+    "typescript": "3.9.8"
   },
   "dependencies": {
     "@ircam/sync": "^2.0.1",
