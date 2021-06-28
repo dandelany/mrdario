@@ -16,11 +16,13 @@ import {
   InputEventType,
   TimedGameActions,
   TimedGameTickResult,
-  TimedMoveActions
+  TimedMoveActions,
+  GameAction,
+  GameActionMove,
+  GameActionType
 } from "../types";
 import { isMoveAction, isMoveInput } from "../utils";
 import { DEFAULT_GAME_CONTROLLER_OPTIONS } from "./constants";
-import { GameAction, GameActionMove, GameActionType } from "../types/gameAction";
 
 // import { encodeTimedActions } from "../../encoding/action";
 

@@ -1,7 +1,7 @@
 import * as t from "io-ts";
 import { strEnumType } from "../../utils/io";
 import { InputManager } from "../input/types";
-import { GameOptions, GameState} from "../types/types";
+import { GameOptions, GameState} from "../types";
 import { TimedMoveActions, tTimedMoveActions } from "../types/gameAction";
 
 export enum GameControllerMode {
