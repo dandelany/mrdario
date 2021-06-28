@@ -20,7 +20,7 @@
   "devDependencies": {
     "@types/jest": "^24.0.19",
     "band-name": "github:dandelany/band-name#28d7e58",
-    "jest": "^24.9.0",
+    "jest": "^27.0.5",
     "ts-jest": "^24.1.0",
     "ts-node": "^8.0.2",
     "tslint": "^5.12.1",
