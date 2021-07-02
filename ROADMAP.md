@@ -10,7 +10,7 @@
     - `tick()` returns 
     
 
-### `GameController` class
+### `GameController` class - work in progress/refactoring
 * `GameController` responsibilities
     - Create & control `Game` object(s)
     - Run main game timer/clock, call `game.tick(actions)` ~60 times per second
@@ -22,8 +22,16 @@
         - To limit "glitching" due to time travel/replay, run remote games with a slight delay compared to local
         - Delay means we must also be able to queue up "future" game actions which arrive faster than the delay
         
-        
+## `Match` class (or interface?)
+* A Match is a set/collection of games
+    * Multiplayer - best 3 out of 5
+    - Multiplayer only, or is a set of single player games also a Match?
+* Instantiated before GameController, allows user to change game settings before games start
+* For multiplayer game, same settings are used for all (3-5) games
+
+
 ### `MatchController` class
+
     
     
 ### GameController rewrite
@@ -77,3 +85,26 @@
 // todo docs
 spec? dev guide?
 
+
+## API/protocol stories
+### Single player online match
+```
+Client creates MatchController
+User asks to start a new match
+    MC ---> create Match ---> server
+        Server creates match in SETUP mode
+    MC <--- OK here is your Match <--- server
+User creates Match from server info
+UI shows match settings page (level, speed)
+User changes settings on the Match
+    --> update Match settings
+        Server updates settings on Match
+    <-- OK these are the settings
+Ready to play, user clicks Play
+    --> Ready
+        Server Match settings are locked
+        Match goes to COUNTDOWN mode(?)
+        Server creates GameController(?)
+        Server decides game start time, sets countdown timer
+    <-- OK the game starts at 11:38:41
+```
