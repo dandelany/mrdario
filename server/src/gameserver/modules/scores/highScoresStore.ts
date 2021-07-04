@@ -92,6 +92,7 @@ export function getSingleHighScores2(
   level: number,
   count: number,
 ): Promise<[string, number][]> {
+  // get the key for the redis zset which holds the level's high scores
   const setKey = getSingleLevelHighScoresSetKey(level);
   return new Promise((resolve, reject) => {
     rClient.zrange(setKey, -Math.min(count, 1000), -1, "withscores", function(err, topScoreReplies) {

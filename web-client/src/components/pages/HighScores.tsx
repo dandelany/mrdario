@@ -10,7 +10,8 @@ import { GameClient } from "mrdario-core/lib/client";
 
 interface HighScoresState {
   level: number;
-  scoresForLevel: Map<string, HighScoresRow[]>;
+  // scoresForLevel: Map<string, HighScoresRow[]>;
+  scoresForLevel: {[level: string]: HighScoresRow[]};
 }
 
 interface HighScoresProps {
@@ -20,7 +21,8 @@ interface HighScoresProps {
 export default class HighScores extends React.Component<HighScoresProps, HighScoresState> {
   state: HighScoresState = {
     level: 0,
-    scoresForLevel: new Map<string, HighScoresRow[]>()
+    // scoresForLevel: new Map<string, HighScoresRow[]>()
+    scoresForLevel: {}
   };
 
   private _debouncedGetScoresForLevel(_level: number) {}
@@ -63,8 +65,9 @@ export default class HighScores extends React.Component<HighScoresProps, HighSco
   render() {
     const { level, scoresForLevel } = this.state;
     const levelStr = level + "";
+    
 
-    const levelScores = scoresForLevel.get(levelStr);
+    const levelScores = scoresForLevel[levelStr];
 
     return (
       <div>

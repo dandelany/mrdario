@@ -49,5 +49,16 @@ describe("Scores", () => {
     });
   });
 
-  // describe("Connect and test", () => {});
+  test("Saves and recalls a ridiculously high score", async () => {
+    const ridiculous = 1234567890123456789012345;
+    await expect(gameClient.sendSingleGameHighScore(9, "lio", ridiculous)).resolves.toEqual({
+      rank: 0,
+      scores: [["lio", ridiculous]]
+    });
+
+    await expect(gameClient.getHighScores(9)).resolves.toEqual({
+      level: 9, scores: [["lio", ridiculous]]
+    });
+  });
+
 });
