@@ -2,7 +2,17 @@ import { constant, defaults, times } from "lodash";
 import { SCServer, SCServerSocket } from "socketcluster-server";
 import { v4 as uuid } from "uuid";
 
-import { CreateMatchRequest, Match, TCreateMatchRequest, MatchEventType } from "mrdario-core/src/api/match";
+import {
+  CreateMatchRequest,
+  CreateSingleMatchRequest,
+  Match,
+  MatchEventType,
+  MatchMode,
+  SingleMatchInfo,
+  TCreateMatchRequest,
+  TCreateSingleMatchRequest
+} from "mrdario-core/src/api/match";
+
 
 import { authAndValidateRequest } from "../../utils";
 
@@ -22,6 +32,21 @@ export function createMatch(creatorId: string, options: CreateMatchRequest, play
     level: times(playerCount, constant(level)),
     baseSpeed: times(playerCount, constant(baseSpeed))
     // todo state?
+  };
+}
+
+function createSingleMatch(creatorId: string, options: CreateSingleMatchRequest): SingleMatchInfo {
+  const defaultOptions = { isPublic: true, level: 10, baseSpeed: 15 };
+  const fullOptions = defaults(options, defaultOptions);
+  const { isPublic, level, baseSpeed } = fullOptions;
+  return {
+    id: uuid(),
+    creatorId,
+    playerIds: [creatorId],
+    isPublic,
+    level,
+    baseSpeed,
+    mode: MatchMode.Setup
   };
 }
 
@@ -45,5 +70,21 @@ export class MatchModule {
         }
       )
     );
+
+    socket.on(
+      MatchEventType.CreateSingleMatch,
+      authAndValidateRequest<CreateSingleMatchRequest, SingleMatchInfo>(
+        socket,
+        TCreateSingleMatchRequest,
+        (request: CreateSingleMatchRequest, authToken, respond) => {
+          console.log(MatchEventType.CreateSingleMatch, request, authToken);
+          const matchInfo = createSingleMatch(authToken.id, request);
+          respond(null, matchInfo);
+
+          // this.scServer.exchange.subscribe()
+        }
+      )
+    );
+
   }
 }

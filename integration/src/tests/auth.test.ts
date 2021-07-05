@@ -28,7 +28,12 @@ describe("Auth", () => {
         {},
         TClientAuthenticatedUser
       )).rejects.toBeTruthy();
+    });
 
+    test('Can ping the server', async () => {
+      const pingTime = await gameClient.ping();
+      expect(pingTime).toBeGreaterThan(.0001);
+      // console.log("ping time", pingTime);
     });
 
     test.todo('Can reconnect with valid authToken and not need to login again');

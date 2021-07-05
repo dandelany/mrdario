@@ -889,7 +889,7 @@ export class GameController {
 
   protected rewindGameToFrame(gameIndex: number, game: Game, frame: number) {
     // use state history to "rewind" the state of the game to a given frame
-    // may not have saved that exact frame, so find the nearest saved frame less tham or equal to the target,
+    // may not have saved that exact frame, so find the nearest saved frame less than or equal to the target,
     // start there, and tick forward through time until reaching the target frame
 
     const { state } = this;

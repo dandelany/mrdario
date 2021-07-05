@@ -4,6 +4,11 @@ import { partialRight, remove, uniqBy } from "lodash";
 import { create as createSocket, SCClientSocket } from "socketcluster-client";
 
 import {
+  CreateSingleMatchRequest,
+  SingleMatchInfo,
+  // TCreateSingleMatchRequest,
+  TSingleMatchInfo,
+  //
   CreateMatchRequest,
   GameListItem,
   GetHighScoresResponse,
@@ -14,7 +19,7 @@ import {
   ScoresEventType,
   TGetHighScoresResponse,
   TMatch,
-  TSaveScoreResponse
+  TSaveScoreResponse, UpdateSingleMatchSettingsRequest
 } from "../api";
 
 import {
@@ -159,6 +164,7 @@ export class GameClient {
     this.socket.disconnect();
   }
 
+  /* --- AUTH  --- */
   public async login(name: string, id?: string, token?: string): Promise<ClientAuthenticatedUser> {
     return await emit<ClientAuthenticatedUser, LoginRequest>(
       this.socket,
@@ -167,7 +173,9 @@ export class GameClient {
       TClientAuthenticatedUser
     );
   }
+  /* --- END AUTH  --- */
 
+  /* --- LOBBY  --- */
   public async joinLobby(
     options: {
       onChangeLobbyUsers?: (lobbyUsers: LobbyJoinResponse) => any;
@@ -222,7 +230,9 @@ export class GameClient {
     };
     return await promisifySocketPublish(this.socket, LOBBY_CHANNEL_NAME, chatMessage);
   }
+  /* --- END LOBBY  --- */
 
+  /* --- SCORES --- */
   public async getHighScores(level: number): Promise<GetHighScoresResponse> {
     return await emit(this.socket, ScoresEventType.GetHighScores, level, TGetHighScoresResponse);
   }
@@ -231,7 +241,25 @@ export class GameClient {
     const request: SaveScoreRequest = [level, name, score];
     return emit(this.socket, ScoresEventType.SaveScore, request, TSaveScoreResponse);
   }
+  /* --- END SCORES --- */
 
+  /* --- MATCH --- */
+  public async createMatch(options: CreateMatchRequest = {}): Promise<Match> {
+    return await emit(this.socket, MatchEventType.CreateMatch, options, TMatch);
+  }
+
+  public async createSingleMatch(options: CreateSingleMatchRequest = {}): Promise<SingleMatchInfo> {
+    // emit a CreateSingleMatch socket message
+    return await emit(this.socket, MatchEventType.CreateSingleMatch, options, TSingleMatchInfo);
+  }
+  public async updateSingleMatchSettings(options: UpdateSingleMatchSettingsRequest = {}): Promise<SingleMatchInfo> {
+    return await emit(this.socket, MatchEventType.UpdateSingleMatchSettings, options, TSingleMatchInfo);
+  }
+  /* --- END MATCH --- */
+
+
+
+  /* --- GAME - EXPERIMENTAL/SOME OLD --- */
   public createSingleGame(level: number, baseSpeed: number): Promise<CreateSingleGameResponse> {
     return emit<CreateSingleGameResponse, CreateSingleGameRequest>(
       this.socket,
@@ -286,10 +314,6 @@ export class GameClient {
         handleMoves(decodeTimedActions(data));
       }
     });
-  }
-
-  public async createMatch(options: CreateMatchRequest = {}): Promise<Match> {
-    return await emit(this.socket, MatchEventType.CreateMatch, options, TMatch);
   }
 
   public ping(): Promise<number> {

@@ -65,7 +65,6 @@ export default class HighScores extends React.Component<HighScoresProps, HighSco
   render() {
     const { level, scoresForLevel } = this.state;
     const levelStr = level + "";
-    
 
     const levelScores = scoresForLevel[levelStr];
 
