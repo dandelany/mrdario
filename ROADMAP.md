@@ -118,6 +118,7 @@ Client can publish the following message types after the game has started:
 * {type: REPEAT, player, moveId} // request to repeat a missed move from player or seed from server
 * {type: CLAIM_WIN, frame, moveCount (or playerMoveCounts?)} // sent when the client believes it has won
 * {type: CLAIM_LOSE, frame, moveCount (or playerMoveCounts?)} // sent when the client believes it has lost
+* get_state, to rehydrate after disconnect/refresh?
 
 (...in addition to republishing above messages to other clients,)
 Server can publish the following message types after the game has started:
@@ -125,7 +126,8 @@ Server can publish the following message types after the game has started:
 * {type: SEED, frame, id} // server issues a new seed for the RNG
 * {type: REPEAT, player, moveId} // request (from server) to repeat a missed move from player
 * {type: END, winner} // the game is over, server has declared a winner
-
+* start game?
+* entire game state, in case user disconnects?
 
 
 ## GameController3 rewrite
@@ -135,7 +137,9 @@ client GameController should:
     * keep a timer, tick the game(s)
     * keep track of which is "my"/"user" game vs. "remote" game(s)
     * for My Game:
-        - handle inputs from InputManagers
-        - pass 
+        - handle inputs (moves) from InputManagers
+        - pass inputs into games
+        - publish move inputs on player channel 
+        
 GameController should not:
     * have a SETUP mode - move to MatchController
