@@ -1,8 +1,8 @@
-import { SaferChannelIn } from "./SaferChannels";
+import { decodeMsgId, encodeMsgId, SaferChannelIn } from "./SaferChannels";
 import { SCClientSocket } from "socketcluster-client";
 
+
 // import { assert } from "../../utils/assert";
-// import { encodeGameState } from "../../api/game/encoding";
 
 export function sleep(time: number): Promise<number> {
   return new Promise(resolve => setTimeout(resolve, time));
@@ -46,6 +46,22 @@ function getMockSocket() {
 
 const CHANNEL_NAME = "test-channel";
 
+describe("encodeMsgId/decodeMsgId", () => {
+  test("Encodes & decodes positive integers to/from a string", () => {
+    function testEncodeDecode(id: number) {
+      const encoded = encodeMsgId(id);
+      expect(typeof encoded).toBe('string');
+      const decoded = decodeMsgId(encoded);
+      expect(typeof decoded).toBe('number');
+      expect(decoded).toEqual(id);
+    }
+    testEncodeDecode(1);
+    testEncodeDecode(42);
+    testEncodeDecode(97265);
+    testEncodeDecode(182903812);
+  })
+});
+
 describe("SaferChannelIn", () => {
   let socket: MockSocketInterface;
   let channelIn: SaferChannelIn;
@@ -55,7 +71,9 @@ describe("SaferChannelIn", () => {
     socket = getMockSocket();
     channelIn = new SaferChannelIn({
       socket,
-      channelName: CHANNEL_NAME
+      channelName: CHANNEL_NAME,
+      sendRepeatRequest: jest.fn(),
+      handleRepeatRequest: jest.fn()
     });
   });
   afterEach(() => {
@@ -118,12 +136,36 @@ describe("SaferChannelIn", () => {
     socket.mockPublish(CHANNEL_NAME, dupeMsg);
     expect(handler).toHaveBeenCalledTimes(1);
     expect(handler).toHaveBeenCalledWith("two");
-    // handler should not be called again when dupes are received
+    // send two more of the same exact message
     socket.mockPublish(CHANNEL_NAME, dupeMsg);
     socket.mockPublish(CHANNEL_NAME, dupeMsg);
+    // handler should have only been called the first time
     expect(handler).toHaveBeenCalledTimes(1);
   });
 
-  test.todo("Passes incoming repeat request messages to `handleRepeatRequest` instead of normal message handlers");
+  test("Passes incoming repeat request messages to `handleRepeatRequest` instead of normal message handlers", () => {
+    const handler = jest.fn();
+    channelIn.watch(handler);
+
+    const {handleRepeatRequest} = channelIn.options;
+    expect(jest.isMockFunction(handleRepeatRequest)).toBe(true);
+    expect(handleRepeatRequest).not.toHaveBeenCalled();
+
+    const repeatRequestMsg = "12:R:8";
+    socket.mockPublish(CHANNEL_NAME, repeatRequestMsg);
+    expect(handleRepeatRequest).toHaveBeenCalledTimes(1);
+    expect(handleRepeatRequest).toHaveBeenCalledWith("8");
+    expect(handler).not.toHaveBeenCalled();
+
+    socket.mockPublish(CHANNEL_NAME, "13::thirteen");
+    socket.mockPublish(CHANNEL_NAME, "14:R:11");
+    expect(handler).toHaveBeenCalledTimes(1);
+    expect(handler).toHaveBeenCalledWith("thirteen");
+    expect(handleRepeatRequest).toHaveBeenCalledTimes(2);
+    expect(handleRepeatRequest).toHaveBeenCalledWith("11");
+
+  });
   test.todo("When missing messages are detected, repeat requests are created and passed to `sendRepeatRequest` ");
+  test.todo("expectedFirstId");
+
 });

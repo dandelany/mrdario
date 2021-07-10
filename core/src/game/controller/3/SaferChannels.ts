@@ -7,14 +7,16 @@ import { assert } from "../../../utils/assert";
 // the string returned by encodeMsgId MUST NEVER include this string
 export const SAFER_SEPARATOR = ":";
 // token used to identify repeat request messages
-export const REPEAT_TOKEN = "$RPT";
+export const REPEAT_TOKEN = "R";
 
-function encodeMsgId(id: number): string {
+// encode/decode a (positive integer) number as a string
+export function encodeMsgId(id: number): string {
   return id + "";
 }
-function decodeMsgId(idStr: string): number {
+export function decodeMsgId(idStr: string): number {
   return parseInt(idStr);
 }
+
 // function isRepeatRequest(message: string) {
 //   return;
 // }
@@ -56,6 +58,7 @@ function serializeMessage(message: { id: number; token: string; content: string 
 interface SaferChannelInOptions {
   socket: SCClientSocket;
   channelName: string;
+  handleRepeatRequest?: (req: any) => void;
   sendRepeatRequest?: (req: any) => void;
   ignoreDuplicates?: boolean;
   deliverInvalid?: boolean;
@@ -74,6 +77,7 @@ export class SaferChannelIn {
 
   constructor(optionsArg: SaferChannelInOptions) {
     const options = defaults({}, optionsArg, {
+      handleRepeatRequest: () => {},
       sendRepeatRequest: () => {},
       ignoreDuplicates: true,
       deliverInvalid: false,
@@ -98,7 +102,6 @@ export class SaferChannelIn {
   handleMessage = (message: string) => {
     // receive incoming messages
     // unwrap them and pass inner message content to subscribers
-
     let id: number | null;
     let token: string | undefined;
     let content: string;
@@ -119,15 +122,27 @@ export class SaferChannelIn {
       if (!addedToLog && this.options.ignoreDuplicates) return;
     }
 
-    if (token) console.log("Got token", token);
+    // todo: if the message is an incoming REPEAT message,
+    //  parse & pass it to the repeat request handler
+
+    // token denotes an internal SaferChannel network message,
+    // handled here & not delivered to subscribers
+    if (token) {
+      if(token === REPEAT_TOKEN) {
+        // message is an incoming request for repeat
+        // todo parse to numbers first?
+        this.options.handleRepeatRequest(content);
+      } else console.warn(`Unexpected token in SaferChannel message: ${token}`);
+      // return early, don't deliver internal messages to subscribers
+      return;
+    }
 
     // todo: check for missing messages
     //  if message(s) are missing from log,
     //  send REPEAT messages to request them
-    // todo: if the message is an incoming REPEAT message,
-    //  parse & pass it to the repeat request handler
     // todo: keep track of outgoing rpt requests, don't duplicate
-    // todo: wait for missing messages before sending rpt request
+    // todo: wait for missing messages before sending rpt request ?
+
 
     console.log(this.messageLog);
     this.handlers.forEach(handler => handler(content));
