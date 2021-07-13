@@ -1,0 +1,28 @@
+{
+  "name": "mrdario-integration",
+  "version": "1.0.0",
+  "description": "Integration tests for Mr. Dario",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest --config jest.config.js",
+    "test-watch": "jest --config jest.config.js --watch",
+    "build": "tsc",
+    "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
+    "start": "ts-node src/index.ts"
+  },
+  "author": "Dan Delany <dan.delany@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "@types/jest": "^24.0.19",
+    "fp-ts": "~2.1.1",
+    "io-ts": "~2.0.1",
+    "jest": "^26.6.3",
+    "mrdario-core": "2.0.0",
+    "redis": "^2.8.0",
+    "ts-jest": "^26.5.6",
+    "ts-node": "^8.0.2",
+    "tslint": "^5.12.1",
+    "typescript": "3.9.8"
+  },
+  "devDependencies": {}
+}

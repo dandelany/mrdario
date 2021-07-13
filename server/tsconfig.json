@@ -1,0 +1,15 @@
+{
+  "extends": "../tsconfig.json",
+  "include": ["src"],
+  "exclude": ["node_modules"],
+  "compilerOptions": {
+    "target": "es2018", // target Node 10
+    "module": "commonjs",
+    "outDir": "lib",
+    "rootDir": "src",
+    "esModuleInterop": true,
+    "incremental": true,
+    "resolveJsonModule": true,
+    "typeRoots": ["src/@types"]
+  }
+}

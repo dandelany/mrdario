@@ -1,0 +1,29 @@
+@import "../variables";
+
+%game-panel {
+  background-color: $beige;
+  border-radius: 16px;
+  font-size: 2.3vh;
+}
+.game-panel {
+  @extend %game-panel;
+}
+
+.gameDisplay {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+
+}
+
+
+.pillPreview {
+  @extend .game-panel;
+  position: absolute;
+  top: 30%;
+  transform: translate(100%, -50%);
+
+  h5 { margin: 0 0 0.2em; }
+}

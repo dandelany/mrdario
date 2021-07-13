@@ -1,0 +1,24 @@
+{
+  "extends": "./tsconfig.paths.json",
+  "compilerOptions": {
+    "outDir": "./build/",
+    "module": "commonjs",
+    "target": "es5",
+    "jsx": "preserve",
+    "suppressImplicitAnyIndexErrors": true,
+    "lib": [
+      "es6",
+      "dom",
+      "esnext"
+    ],
+    "incremental": true
+  },
+  "include": [
+    "./src/**/*"
+  ],
+  "awesomeTypescriptLoaderOptions": {
+    "reportFiles": [
+      "./src/**/*"
+    ]
+  }
+}

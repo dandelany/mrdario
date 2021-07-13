@@ -1,0 +1,30 @@
+{
+  "name": "mrdario-node-cli",
+  "version": "2.0.0",
+  "description": "",
+  "main": "src/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "tsc",
+    "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
+    "start": "ts-node src/index.ts"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "blessed": "^0.1.81",
+    "chalk": "^2.4.2",
+    "lodash": "^4.17.11",
+    "mrdario-core": "2.0.0",
+    "socketcluster-client": "^14.2.1"
+  },
+  "devDependencies": {
+    "@types/blessed": "^0.1.10",
+    "@types/chalk": "^2.2.0",
+    "@types/lodash": "^4.14.120",
+    "@types/socketcluster-client": "^13.0.0",
+    "ts-node": "^8.0.1",
+    "tslint": "^5.12.1",
+    "typescript": "3.9.8"
+  }
+}

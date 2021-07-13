@@ -1,0 +1,85 @@
+//%center-absolute {
+//  position: absolute;
+//  margin: 0 auto;
+//  left: 0;
+//  right: 0;
+//}
+
+.page-settings {
+  h2, h3, h4, h5 {
+    margin-bottom: 0.2em;
+  }
+
+  .settings-head, .settings-play {
+    @extend %center-absolute;
+  }
+  .settings-head {
+    top: 6%;
+
+    h2 {
+      margin: 0;
+      display: inline-block;
+      font-size: 8vh;
+      padding: 2vh 4vh;
+      background-color: rgba(255, 255, 255, 0.85);
+      border-radius: 20vh;
+      border: 6px solid black;
+    }
+  }
+
+  .settings-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    > div {
+      width: 400px;
+      max-width: 85vw;
+      display: inline-block;
+      padding: 10px 20px;
+      background: rgba(210, 207, 202, 0.96);
+      border-radius: 20px;
+    }
+
+    h3 input {
+      display: inline-block;
+      margin-left: 1em;
+      font-size: 2vh;
+      width: 10em;
+    }
+  }
+
+  .key-rect {
+    vertical-align: middle;
+    display: inline-block;
+    position: relative;
+    width: 6vh;
+    height: 6vh;
+    border: 1px solid #202020;
+    border-radius: 1vh;
+    font-size: 3vh;
+
+    .key-title {
+      position: absolute;
+      top: 53%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+
+      &.title-small {
+        font-size: 2.5vh;
+      }
+      &.title-large {
+        font-size: 5.5vh;
+      }
+    }
+  }
+  .key-controls-group {
+    margin: 1vh 1vh 2vh 1vh;
+  }
+
+  .settings-play {
+    top: 79%;
+    font-size: 6vh;
+  }
+}

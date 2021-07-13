@@ -1,0 +1,108 @@
+@import "../components/variables";
+
+
+%game-panel {
+  background-color: $beige;
+  border-radius: 16px;
+  font-size: 2.3vh;
+}
+.game-panel {
+  @extend %game-panel;
+}
+
+
+.game-display-container {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+
+}
+.game-playfield-container {
+  display: inline-block;
+  position: relative;
+}
+@media (orientation: portrait) {
+  .game-playfield-container {
+    margin-left: -20vw;
+  }
+}
+.game-explosions {
+  position: absolute;
+  top: 15px - 47px;
+  left: 15px;
+  z-index: 1;
+  background-color: $beige;
+  canvas {
+    background-color: $beige;
+  }
+}
+
+.score-panel {
+  @extend %game-panel;
+  position: absolute;
+  display: inline-block;
+  top: 53%;
+  padding: 12px 18px;
+  font-weight: bold;
+
+  h5 { margin: 0 0 0.2em; }
+}
+
+.pill-preview-panel {
+  @extend .game-panel;
+  position: absolute;
+
+  h5 { margin: 0 0 0.2em; }
+}
+
+.game-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  //background-color: #222;
+  color: #f0f0f0;
+  -webkit-transition: top 0.5s ease-in;
+  -moz-transition: top 0.5s ease-in;
+  -ms-transition: top 0.5s ease-in;
+  -o-transition: top 0.5s ease-in;
+  transition: top 0.5s ease-in;
+  z-index: 100;
+}
+.won-overlay-score {
+  color: black;
+  background: white;
+  display: inline-block;
+  padding: 12px 20px;
+  border-radius: 12px;
+  margin-bottom: 4vh;
+
+  max-height: 24vh;
+  overflow-y: scroll;
+}
+.won-overlay-high-scores {
+  .score-active {
+    color: crimson;
+  }
+}
+
+.win-lose-symbol {
+  margin: 7% 20%;
+  padding: 2vh 0;
+  border-radius: 4vh;
+  color: #202020;
+  border: 10px solid black;
+
+  h1, h2, h3, h4 {
+    margin-bottom: 0;
+  }
+}
+.lose-symbol {
+  background: #BE1E2D;
+}
+.win-symbol {
+  background: #009345;
+}

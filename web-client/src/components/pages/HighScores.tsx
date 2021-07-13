@@ -1,0 +1,128 @@
+import * as React from "react";
+import * as _ from "lodash";
+import { debounce } from "lodash";
+import { Link } from "react-router-dom";
+import Slider from "rc-slider";
+
+import MayaNumeral from "@/components/ui/MayaNumeral";
+import { GetHighScoresResponse, HighScoresRow } from "mrdario-core/lib/api/scores";
+import { GameClient } from "mrdario-core/lib/client";
+
+interface HighScoresState {
+  level: number;
+  // scoresForLevel: Map<string, HighScoresRow[]>;
+  scoresForLevel: {[level: string]: HighScoresRow[]};
+}
+
+interface HighScoresProps {
+  gameClient: GameClient;
+}
+
+export default class HighScores extends React.Component<HighScoresProps, HighScoresState> {
+  state: HighScoresState = {
+    level: 0,
+    // scoresForLevel: new Map<string, HighScoresRow[]>()
+    scoresForLevel: {}
+  };
+
+  private _debouncedGetScoresForLevel(_level: number) {}
+
+  constructor(props: HighScoresProps) {
+    super(props);
+    this._debouncedGetScoresForLevel = debounce(this._getScoresForLevel, 300);
+  }
+  componentWillMount() {
+    this._getScoresForLevel(this.state.level);
+  }
+
+  _getScoresForLevel(level: number) {
+    const { gameClient } = this.props;
+
+    gameClient
+      .getHighScores(level)
+      .then((data: GetHighScoresResponse) => {
+        const { level, scores } = data;
+        console.log("ok", scores);
+        this.setState({
+          scoresForLevel: {
+            ...this.state.scoresForLevel,
+            ...{ [level + ""]: scores }
+          }
+        });
+      })
+      .catch((err: Error) => {
+        console.error(err);
+      });
+  }
+
+  _onChangeLevel = (level: number) => {
+    this.setState({ level });
+    if (!_.has(this.state.scoresForLevel, level + "")) {
+      this._debouncedGetScoresForLevel(level);
+    }
+  };
+
+  render() {
+    const { level, scoresForLevel } = this.state;
+    const levelStr = level + "";
+
+    const levelScores = scoresForLevel[levelStr];
+
+    return (
+      <div>
+        <div className="high-scores">
+          <h3>Single Player</h3>
+
+          <h2>Level {level}</h2>
+
+          <Slider
+            min={0}
+            max={20}
+            value={this.state.level}
+            onChange={this._onChangeLevel}
+            // width={"40vh"}
+          />
+          <div style={{ marginTop: 15 }}>
+            <MayaNumeral value={level} size={40} />
+          </div>
+
+          <h3>High Scores</h3>
+
+          {levelScores ? (
+            levelScores.length ? (
+              <div>
+                <table>
+                  <tbody>
+                    {levelScores.map((row: HighScoresRow, i: number) => {
+                      return (
+                        <tr key={`score-${i}`}>
+                          <td>
+                            <strong>#{i + 1}</strong>
+                          </td>
+                          <td>
+                            <div className="score-name">{row[0]}</div>
+                          </td>
+                          <td>{row[1]}</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            ) : (
+              `No scores for level ${level}!`
+            )
+          ) : (
+            "Loading..."
+          )}
+        </div>
+
+        <div>
+          <Link to="/">
+            <span className="btn-white">Back to Menu</span>
+          </Link>
+        </div>
+      </div>
+    );
+  }
+}
