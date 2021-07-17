@@ -22,8 +22,6 @@ import {
 } from "../../types";
 import { Game } from "../../Game";
 import { isMoveInput } from "../../utils";
-import { SCClientSocket } from "socketcluster-client";
-import { SCChannel } from "@types/sc-channel";
 
 // ClientGameController
 // Starting point for GameController 3
@@ -64,15 +62,15 @@ export const DEFAULT_CLIENT_GAME_CONTROLLER_OPTIONS: GameController3Options = {
 
 
 
-export class SaferMessenger {
-  constructor(socket: SCClientSocket, channelsInfo: { key: string; in: boolean; out: boolean }[]) {
-    let inChannels = channelsInfo.filter(c => c.in).map(c => socket.subscribe(c.key));
-    inChannels.forEach((channel, i) => {
-      channel.watch(this.handleMessage.bind(this, i));
-    });
-  }
-  public handleMessage(message: any) {}
-}
+// export class SaferMessenger {
+//   constructor(socket: SCClientSocket, channelsInfo: { key: string; in: boolean; out: boolean }[]) {
+//     let inChannels = channelsInfo.filter(c => c.in).map(c => socket.subscribe(c.key));
+//     inChannels.forEach((channel, i) => {
+//       channel.watch(this.handleMessage.bind(this, i));
+//     });
+//   }
+//   public handleMessage(message: any) {}
+// }
 
 export class ClientGameController3 {
   public options: GameController3Options;

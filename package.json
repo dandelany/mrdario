@@ -15,5 +15,8 @@
     "server",
     "terminal-client",
     "web-client"
-  ]
+  ],
+  "devDependencies": {
+    "prettier": "^2.3.2"
+  }
 }

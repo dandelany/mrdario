@@ -13,6 +13,11 @@ module.exports = {
     "!**/node_modules/**",
     "!**/__tests__/**"
   ],
+  globals: {
+    'ts-jest': {
+      isolatedModules: true
+    },
+  },
 
   // collectCoverage: true
 };
