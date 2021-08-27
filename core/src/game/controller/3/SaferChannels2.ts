@@ -1,8 +1,10 @@
 import type { SCChannel } from "sc-channel";
+import type { SCExchange } from "sc-broker-cluster";
 import type { SCClientSocket } from "socketcluster-client";
 import type { SCServerSocket } from "socketcluster-server";
 import { defaults, remove, sortedIndex, times, pullAll, sortedIndexOf } from "lodash";
 import { assert } from "../../../utils/assert";
+import { SaferChannelIn, SaferChannelOut } from "./SaferChannels";
 
 /*
  * SaferChannels is a protocol & abstraction layer on top of SocketCluster channels which adds some
@@ -42,7 +44,7 @@ export const SAFER_SEPARATOR = ":";
 // unique token for Repeat request messages (sent by clients)
 export const REPEAT_TOKEN = "R";
 // unique token for rePublish request messages (sent by server)
-export const REPUBLISH_TOKEN = "T";
+export const REPUBLISH_TOKEN = "P";
 // unique token for reConnect notice (sent by client when client reconnects)
 export const RECONNECT_TOKEN = "C";
 
@@ -113,6 +115,52 @@ function serializeRepeatRequest(request: SaferRepeatRequest): string {
   return `${channelName}${SAFER_SEPARATOR}${msgIds.join(",")}`;
 }
 
+// given a list of numbers which is expected to be consecutive/sequential,
+// returns a list of numbers which are missing from the sequence
+// eg. [1,3,4,5,8] returns [2,6,7]
+// optional second argument defines the expected first number in sequence
+// eg. if called with ([2,3], 0) returns [0,1]
+function findGapsInSequence(sequence: number[], expectedFirst?: number | null): number[] {
+  if (!sequence.length) return sequence;
+  // if we have first use it, otherwise start with first number in sequence
+  const first = typeof expectedFirst === "number" && isFinite(expectedFirst) ? expectedFirst : sequence[0];
+  // console.log(`checking`, sequence, "for gaps starting with", first);
+
+  let lastNum = first - 1;
+  let missing: number[] = [];
+  for (let num of sequence) {
+    // find places where the difference btwn consecutive numbers is greater than 1 (gaps)
+    const diff = num - lastNum;
+    if (diff > 1) {
+      missing.push(...times(diff - 1, (i) => lastNum + i + 1));
+    }
+    lastNum = num;
+  }
+  return missing;
+}
+
+// base channel - shared channel things(?)
+
+export interface CommonSaferChannelOptions {}
+
+// clients pass socket, server passes exchange
+export interface BaseSaferClientChannelOptions extends CommonSaferChannelOptions {
+  socket: SCClientSocket;
+}
+export interface BaseSaferServerChannelOptions extends CommonSaferChannelOptions {
+  exchange: SCExchange;
+}
+export type BaseSaferChannelOptions = BaseSaferClientChannelOptions | BaseSaferServerChannelOptions;
+export class BaseSaferChannel {
+  options: Required<BaseSaferChannelOptions>;
+  constructor(optionsArg: BaseSaferClientChannelOptions) {
+    this.options = defaults({}, optionsArg, {   });
+    
+  }
+}
+
+/* --- CLIENT --- */
+
 /*
  * SaferClientChannelIn
  *  client channel listening for messages from another client or the server
@@ -131,7 +179,7 @@ function serializeRepeatRequest(request: SaferRepeatRequest): string {
  * todo: do anything on disconnect/reconnect?
  */
 
-interface SaferClientChannelInOptions {
+export interface SaferClientChannelInOptions {
   // socketcluster client socket object - maintains websocket connection
   socket: SCClientSocket;
   // unique name of the socketcluster channel we're listening to
@@ -141,6 +189,8 @@ interface SaferClientChannelInOptions {
   // callback function to call when we notice a missing message on the channel
   // passes a repeat request which will be sent to the server on an OutChannel
   sendRepeatRequest?: (request: SaferRepeatRequest) => void;
+  // callback function to call when we get a republish message from the server
+  handleRepublishRequest?: (request: SaferRepeatRequest) => void;
   // if true, calls message listeners even if the message is not a valid format
   deliverInvalid?: boolean;
   // the first message ID we expect to receive on the channel
@@ -209,11 +259,24 @@ export class SaferClientChannelIn {
     }
 
     // if message has no token, deliver it to listeners
-    // if it does have a token, it is a repeat request or republish request, ignore it
-    //  - repeat requests are handled by the server
-    //  - republish requests from server are sent on the ChannelOut
     if (!token) this.deliverMessage(content);
+    else if (token === REPUBLISH_TOKEN) {
+      // server is asking to republish a message it missed on a given channel
+      // pass to callback so it can be published on our OutChannel if necessary
+      let request: SaferRepeatRequest;
+      try {
+        request = parseRepeatRequest(content);
+        // todo queue this?
+        this.options.handleRepublishRequest(request);
+      } catch (e) {
+        console.warn(`Invalid SaferChannel republish request, skipping: "${messageStr}", ${e}`);
+        // return;
+      }
+    }
+    // ignore other tokens
+    //  - repeat requests are handled by the server
 
+    // check if the message is a repeat we previously requested
     const pendingRepeatRequestIndex = sortedIndexOf(this.pendingRepeatRequestIds, id);
     if (pendingRepeatRequestIndex > -1) {
       // message is a repeat we requested, remove it from the list of pending requests
@@ -247,12 +310,15 @@ export class SaferClientChannelIn {
   }
 
   private checkLogAndRequestRepeats() {
-    // check log for missing message IDs
-    let missingIds = this.getMissingLogIds();
+    const { messageIdLog, options, pendingRepeatRequestIds } = this;
+
+    // this.messageIdLog is a sorted ascending list of IDs all the messages we've received
+    // search the list looking for gaps ie. missing messages, so we can send repeat requests for them
+    const missingIds = findGapsInSequence(messageIdLog, options.expectedFirstId);
+
     // compare to list of pending rpt requests (ie. sent requests but haven't gotten repeat msg response yet)
     // remove any IDs which are already on the pending list so we don't send duplicate requests,
     // only send them for newly missing IDs
-    const { pendingRepeatRequestIds } = this;
     pullAll(missingIds, pendingRepeatRequestIds);
 
     if (missingIds.length) {
@@ -265,29 +331,6 @@ export class SaferClientChannelIn {
         pendingRepeatRequestIds.splice(insertIndex, 0, missingId);
       }
     }
-  }
-
-  private getMissingLogIds(): number[] {
-    // this.messageIdLog is a sorted ascending list of IDs all the messages we've received
-    // search the list looking for gaps ie. missing messages, so we can send repeat requests for them
-    const { messageIdLog, options } = this;
-    if (!messageIdLog.length) return [];
-    // if we have expectedFirstId use it, otherwise assume the 1st message in log was 1st expected
-    const expectedFirstId = options.expectedFirstId === null ? messageIdLog[0] : options.expectedFirstId;
-    // console.log(`checking`, messageIdLog, 'for gaps starting with', expectedFirstId);
-
-    let lastId = expectedFirstId - 1;
-    let missingIds = [];
-    for (let msgId of messageIdLog) {
-      // find places where the difference btwn consecutive IDs is greater than 1 (gaps)
-      const diff = msgId - lastId;
-      if (diff > 1) {
-        const missing = times(diff - 1, (i) => lastId + i + 1);
-        missingIds.push(...missing);
-      }
-      lastId = msgId;
-    }
-    return missingIds;
   }
 }
 
@@ -310,14 +353,14 @@ export class SaferClientChannelIn {
  *
  * */
 
-interface SaferChannelOutOptions {
+export interface SaferClientChannelOutOptions {
   socket: SCClientSocket;
   channelName: string;
   firstId?: number;
 }
 
 export class SaferClientChannelOut {
-  options: Required<SaferChannelOutOptions>;
+  options: Required<SaferClientChannelOutOptions>;
   socket: SCClientSocket;
   channel: SCChannel;
   // log of outgoing messages we've sent, by ID
@@ -325,7 +368,7 @@ export class SaferClientChannelOut {
   // ID for the next message to send
   private nextMsgId: number;
 
-  constructor(optionsArg: SaferChannelOutOptions) {
+  constructor(optionsArg: SaferClientChannelOutOptions) {
     this.options = defaults({}, optionsArg, {
       firstId: 0,
     });
@@ -336,65 +379,20 @@ export class SaferClientChannelOut {
     // subscribe to the channel & watch it for messages
     // other clients can't send on this channel, but the server sends republish requests
     this.channel = this.socket.subscribe(this.options.channelName);
-    this.channel.watch(this.handleMessage);
   }
   cleanup() {
-    this.channel.unwatch(this.handleMessage);
     this.socket.unsubscribe(this.options.channelName);
   }
 
   publish(content: string) {
     this.publishNewMsg(content);
   }
-
-  private _publish(messageStr: string) {
-    this.socket.publish(this.options.channelName, messageStr, (err: Error, _ackData: any) => {
-      console.error(err);
-      // todo handle this error
-      // retry the message
-    });
+  publishRepeatRequest(request: SaferRepeatRequest) {
+    // publish a repeat request message to ask for a repeat message from another channel
+    const content = serializeRepeatRequest(request);
+    this.publishNewMsg(content, REPEAT_TOKEN);
   }
-  private handleMessage = (messageStr: string) => {
-    let message: SaferMessage;
-    try {
-      message = parseMessage(messageStr);
-    } catch (e) {
-      console.warn(`Invalid SaferChannel message format, skipping parse. Msg: ${messageStr}, error: ${e}`);
-      return;
-    }
-    let { token, content } = message;
-
-    if (token === REPUBLISH_TOKEN) {
-      // server is asking us to republish a message it missed on this channel
-      let request: SaferRepeatRequest;
-      try {
-        request = parseRepeatRequest(content);
-      } catch (e) {
-        console.warn(`Invalid SaferChannel republish request, skipping: "${messageStr}", ${e}`);
-        return;
-      }
-      // republish the messages with the requested message ids
-      // todo queue this?
-      if(request.channelName === this.options.channelName)
-        this.republish(request.msgIds);
-    }
-  };
-
-  private publishNewMsg(content: string, token?: string) {
-    // create message object with next ID
-    const id = this.nextMsgId;
-    const messageStr = serializeMessage({ id, content, token });
-
-    // add message to the log and increment next message ID
-    this.messageLog[id + ""] = messageStr;
-    this.nextMsgId += 1;
-
-    this._publish(messageStr);
-    // console.log('published', messageStr, "to", channelName)
-    // todo handle errors from socket.publish, retry on failure
-  }
-
-  private republish(msgIds: number[]) {
+  republish(msgIds: number[]) {
     // look up past outgoing message ID(s) in the message log and publish the messages again
     for (let msgId of msgIds) {
       const msgIdStr = msgId + "";
@@ -408,14 +406,180 @@ export class SaferClientChannelOut {
       this._publish(messageStr);
     }
   }
+
+  private _publish(messageStr: string) {
+    // this.socket.publish(this.options.channelName, messageStr, (err: Error, _ackData: any) => {
+    //   if(err) console.error(err);
+    //   // todo handle this error?
+    //   // retry on failure?
+    // });
+    this.socket.publish(this.options.channelName, messageStr);
+  }
+  private publishNewMsg(content: string, token?: string) {
+    // create message object with next ID
+    const id = this.nextMsgId;
+    const messageStr = serializeMessage({ id, content, token });
+
+    // add message to the log and increment next message ID
+    this.messageLog[id + ""] = messageStr;
+    this.nextMsgId += 1;
+
+    this._publish(messageStr);
+    // console.log('published', messageStr, "to", channelName)
+  }
 }
+
+/**
+ * SaferChannelsClient manages a set of client In and Out channels
+ */
+
+export interface SaferChannelsClientOptions {
+  socket: SCClientSocket;
+  channelsIn: (Partial<SaferClientChannelInOptions> & { channelName: string })[];
+  channelOut: Partial<SaferClientChannelOutOptions> & { channelName: string };
+}
+export class SaferChannelsClient {
+  channelsIn: { [channelName: string]: SaferClientChannelIn };
+  channelOut: SaferClientChannelOut;
+
+  constructor(options: SaferChannelsClientOptions) {
+    const { socket } = options;
+    this.channelsIn = {};
+    for (let channelInConfig of options.channelsIn) {
+      this.channelsIn[channelInConfig.channelName] = new SaferClientChannelIn({
+        ...channelInConfig,
+        socket,
+        handleRepublishRequest: this.handleRepublishRequest,
+        sendRepeatRequest: this.publishRepeatRequest,
+      });
+    }
+    // create output channel
+    this.channelOut = new SaferClientChannelOut({
+      ...options.channelOut,
+      socket,
+    });
+  }
+  cleanup() {
+    Object.values(this.channelsIn).forEach((channel) => channel.cleanup());
+    this.channelOut.cleanup();
+  }
+  publish(messageContent: string) {
+    // todo pass second handler arg?
+    this.channelOut.publish(messageContent);
+  }
+  watch(channelName: string, handler: (msgContent: string) => void) {
+    assert(channelName in this.channelsIn, `${channelName} not defined in channelsIn`);
+    this.channelsIn[channelName].watch(handler);
+  }
+  unwatch(channelName: string, handler: (msgContent: string) => void) {
+    assert(channelName in this.channelsIn, `${channelName} not defined in channelsIn`);
+    this.channelsIn[channelName].unwatch(handler);
+  }
+
+  handleRepublishRequest = (request: SaferRepeatRequest) => {
+    // handler called by SaferChannelIn when a repeat request message is received
+    // publish a repeat if the request was addressed to our channelOut, else ignore it
+    console.log("got request", request);
+    const { channelName, msgIds } = request;
+    if (channelName === this.channelOut.options.channelName) {
+      this.channelOut.republish(msgIds);
+    }
+    // console.log('got repeat request', request);
+  };
+  publishRepeatRequest = (request: SaferRepeatRequest) => {
+    // handler called by SaferChannelIn when messages are missing,
+    // to ask SaferChannelOut to publish requests for repeat
+    // publish the request on our channelOut
+    this.channelOut.publishRepeatRequest(request);
+  };
+}
+
+/* --- SERVER --- */
 
 /**
  * SaferServerChannelIn
  *  channel on which server receives messages sent
  *  also keeps track of sending repeats
+ **/
+
+export interface SaferServerChannelInOptions {
+  socket: SCServerSocket;
+  exchange: SCExchange;
+  channelName: string;
+  onMessage?: ((messageContent: string) => void) | null;
+}
+export class SaferServerChannelIn {
+  options: Required<SaferServerChannelInOptions>;
+  socket: SCServerSocket;
+  private listeners: ((data: any) => void)[];
+  private channel: SCChannel;
+  // log of outgoing messages we've received, by ID
+  private messageLog: { [msgId: string]: string };
+
+  constructor(optionsArg: SaferServerChannelInOptions) {
+    this.options = defaults({}, optionsArg, {
+      onMessage: null,
+      deliverInvalid: false,
+      expectedFirstId: null,
+    });
+    this.socket = this.options.socket;
+    this.messageLog = {};
+
+    this.listeners = this.options.onMessage ? [this.options.onMessage] : [];
+
+    // subscribe to the channel & watch it for messages
+    this.channel = this.options.exchange.subscribe(this.options.channelName);
+    this.channel.watch(this.handleMessage);
+  }
+  watch(listener: (data: any) => void) {
+    this.listeners.push(listener);
+  }
+  unwatch(listener: (data: any) => void) {
+    remove(this.listeners, (h) => h === listener);
+  }
+  cleanup() {
+    this.channel.unwatch(this.handleMessage);
+    this.options.exchange.unsubscribe(this.options.channelName);
+  }
+  deliverMessage(messageContent: string) {
+    // deliver message to all listeners (watch functions)
+    this.listeners.forEach((listener) => listener(messageContent));
+  }
+
+  private handleMessage = (messageStr: string) => {
+    // received incoming message on the channel - parse it into a SaferMessage object
+    let message: SaferMessage;
+    try {
+      message = parseMessage(messageStr);
+    } catch (e) {
+      console.warn(`Invalid SaferChannel message format, skipping parse. Msg: ${messageStr}, error: ${e}`);
+      // if (this.options.deliverInvalid) this.deliverMessage(messageStr);
+      return;
+    }
+    let { id, token, content } = message;
+
+    // add message to log, return early if duplicate message
+    const addedToLog = this.addMessageToLog(message);
+    if (!addedToLog) return;
+
+    // if message has no token, deliver it to listeners
+    if (!token) this.deliverMessage(content);
+    // todo...
+    // check for gaps
+    // send repeats
+  };
+
+  private addMessageToLog(message: SaferMessage): boolean {
+    // todo
+    console.log(message);
+    return true;
+  }
+}
+
+/**
+ *
  * SaferServerChannelOut
  *
+ * SaferChannelsServer
+ *
  */
-
-/// OLD!

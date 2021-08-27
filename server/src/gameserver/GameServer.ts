@@ -50,6 +50,23 @@ export class GameServer {
       channels: {}
     };
 
+    this.scServer.addMiddleware("publishOut", (req: SCServer.PublishOutRequest, next) => {
+      // console.log(req);
+      console.log(req.socket.authToken);
+      console.log(req.socket.id);
+      console.log(req.channel);
+      console.log(req.data);
+      next(); // Allow
+      // next(err); // Block with notice
+      // next(true); // Block quietly (without raising a warning on the server-side)
+    });
+
+    // let msgI = 0;
+    // setInterval(() => {
+    //   this.scServer.exchange.publish("test-out-1", `1:T:test-out-1:${msgI}`);
+    //   msgI++;
+    // }, 2300);
+
     // modules - the parts which actually handle requests and do things
     const moduleOpts = {scServer, rClient};
     this.modules = {

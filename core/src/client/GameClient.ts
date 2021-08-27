@@ -9,17 +9,18 @@ import {
   // TCreateSingleMatchRequest,
   TSingleMatchInfo,
   //
-  CreateMatchRequest,
+  // CreateMatchRequest,
   GameListItem,
   GetHighScoresResponse,
-  Match,
+  // Match,
   MatchEventType,
   SaveScoreRequest,
   SaveScoreResponse,
   ScoresEventType,
   TGetHighScoresResponse,
-  TMatch,
-  TSaveScoreResponse, UpdateSingleMatchSettingsRequest
+  // TMatch,
+  TSaveScoreResponse,
+  UpdateMatchSettingsRequest,
 } from "../api";
 
 import {
@@ -28,7 +29,7 @@ import {
   ClientAuthenticatedUser,
   isAuthToken,
   LoginRequest,
-  TClientAuthenticatedUser
+  TClientAuthenticatedUser,
 } from "../api/auth";
 
 import {
@@ -42,14 +43,14 @@ import {
   LobbyUser,
   TLobbyJoinResponse,
   TLobbyLeaveResponse,
-  TLobbyMessage
+  TLobbyMessage,
 } from "../api/lobby";
 
 import {
   CreateSingleGameRequest,
   CreateSingleGameResponse,
   GameEventType,
-  TCreateSingleGameResponse
+  TCreateSingleGameResponse,
 } from "../api/game";
 
 import { decodeTimedActions, encodeTimedActions } from "../api/game/encoding/action";
@@ -57,8 +58,8 @@ import { encodeGrid } from "../api/game/encoding/grid";
 import { GameControllerMode, GameGrid, TimedGameActions, TimedMoveActions } from "../game/types";
 import { promisifySocketPublish, promisifySocketRequest as emit, validatedChannel } from "./utils";
 import { isRight } from "fp-ts/lib/Either";
+import { SaferClientChannelOut } from "../game/controller/3/SaferChannels2";
 // import { setupSyncClient } from "./SyncClient";
-
 
 interface ClientSocketWithValidAuthToken extends SCClientSocket {
   authToken: AppAuthToken;
@@ -108,7 +109,7 @@ export class GameClient {
     const socket = createSocket({
       port: 8000,
       ...(options.socketOptions || {}),
-      autoConnect: false
+      autoConnect: false,
     });
     // this.syncClient = new SyncClient(getTimeFunction);
 
@@ -199,16 +200,29 @@ export class GameClient {
             if (message.type === LobbyMessageType.Join) {
               this.lobbyUsers.push(message.payload);
               this.lobbyUsers = uniqBy(this.lobbyUsers, (user: LobbyUser) => user.id);
-              if (onChangeLobbyUsers) { onChangeLobbyUsers(this.lobbyUsers.slice()); }
+              if (onChangeLobbyUsers) {
+                onChangeLobbyUsers(this.lobbyUsers.slice());
+              }
             } else if (message.type === LobbyMessageType.Leave) {
               remove(this.lobbyUsers, (user: LobbyUser) => user.id === message.payload.id);
-              if (onChangeLobbyUsers) { onChangeLobbyUsers(this.lobbyUsers.slice()); }
+              if (onChangeLobbyUsers) {
+                onChangeLobbyUsers(this.lobbyUsers.slice());
+              }
             } else if (message.type === LobbyMessageType.ChatOut && onChatMessage) {
               console.log("call chat callback", message);
               onChatMessage(message);
             }
           }
         });
+
+        // // hack to test saferchannels
+        // const channelOut = new SaferClientChannelOut({
+        //   socket: this.socket,
+        //   channelName: 'test-out-1'
+        // });
+        // setInterval(() => {
+        //   channelOut.publish(String(Date.now()));
+        // }, 2000);
 
         console.table(lobbyResponse);
         return lobbyResponse;
@@ -226,7 +240,7 @@ export class GameClient {
   public async sendLobbyChat(message: string): Promise<undefined> {
     const chatMessage: LobbyChatMessageIn = {
       type: LobbyMessageType.ChatIn,
-      payload: message
+      payload: message,
     };
     return await promisifySocketPublish(this.socket, LOBBY_CHANNEL_NAME, chatMessage);
   }
@@ -244,27 +258,31 @@ export class GameClient {
   /* --- END SCORES --- */
 
   /* --- MATCH --- */
-  public async createMatch(options: CreateMatchRequest = {}): Promise<Match> {
-    return await emit(this.socket, MatchEventType.CreateMatch, options, TMatch);
-  }
+  // public async createMatch(options: CreateMatchRequest = {}): Promise<Match> {
+  //   return await emit(this.socket, MatchEventType.CreateMatch, options, TMatch);
+  // }
 
-  public async createSingleMatch(options: CreateSingleMatchRequest = {}): Promise<SingleMatchInfo> {
+  public async createMatch(options: CreateSingleMatchRequest = {}): Promise<SingleMatchInfo> {
     // emit a CreateSingleMatch socket message
     return await emit(this.socket, MatchEventType.CreateSingleMatch, options, TSingleMatchInfo);
   }
-  public async updateSingleMatchSettings(options: UpdateSingleMatchSettingsRequest = {}): Promise<SingleMatchInfo> {
-    return await emit(this.socket, MatchEventType.UpdateSingleMatchSettings, options, TSingleMatchInfo);
+  public async updateMatchSettings(
+    options: UpdateMatchSettingsRequest
+  ): Promise<SingleMatchInfo> {
+    return await emit(this.socket, MatchEventType.UpdateMatchSettings, options, TSingleMatchInfo);
   }
+  public async getMatch(id: string): Promise<SingleMatchInfo> {
+    return await emit(this.socket, MatchEventType.GetMatch, id, TSingleMatchInfo);
+  }
+
   /* --- END MATCH --- */
-
-
 
   /* --- GAME - EXPERIMENTAL/SOME OLD --- */
   public createSingleGame(level: number, baseSpeed: number): Promise<CreateSingleGameResponse> {
     return emit<CreateSingleGameResponse, CreateSingleGameRequest>(
       this.socket,
       GameEventType.CreateSingle,
-      {level, baseSpeed},
+      { level, baseSpeed },
       TCreateSingleGameResponse
     );
   }

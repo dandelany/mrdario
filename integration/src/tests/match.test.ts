@@ -1,5 +1,5 @@
 import { GameClient } from "mrdario-core/lib/client";
-import { ClientAuthenticatedUser, TSingleMatchInfo } from "mrdario-core/src/api";
+import { ClientAuthenticatedUser, MatchMode, SingleMatchInfo, TSingleMatchInfo } from "mrdario-core/src/api";
 import { connectGameClient } from "../utils";
 import { toDecodeWith } from "mrdario-core/src/utils/jest";
 
@@ -22,32 +22,78 @@ describe("Match", () => {
     });
     afterEach(() => gameClient.disconnect());
 
-    test("Can create single match", async () => {
-      const matchInfo = await gameClient.createSingleMatch({
-        isPublic: false,
-        level: 18,
-        baseSpeed: 9
+    test("Creates a match with options", async () => {
+      const createdMatchInfo = await gameClient.createMatch({
+        isPublic: true,
+        level: 3,
+        baseSpeed: 8,
       });
-      console.log("match info", matchInfo);
+      expect(createdMatchInfo).toDecodeWith(TSingleMatchInfo);
 
-      expect(matchInfo).toDecodeWith(TSingleMatchInfo);
-
-      expect(matchInfo).toMatchObject({
+      let expectedMatch: SingleMatchInfo = {
         id: expect.any(String),
+        mode: MatchMode.Setup,
         creatorId: user.id,
         playerIds: [user.id],
-        isPublic: false,
-        level: 18,
-        baseSpeed: 9
-      });
-      expect(matchInfo.id.length).toBeGreaterThan(1);
-      // expect(matchInfo.level).toEqual(18);
-      // expect(matchInfo.baseSpeed).toEqual(9);
-      // expect(matchInfo.creatorId).toEqual(user.id);
-
-      console.log("single match");
-
-      return true;
+        gamesOptions: [{
+          level: 3,
+          baseSpeed: 8,
+        }],
+        isPublic: true,
+      };
+      expect(createdMatchInfo).toMatchObject(expectedMatch);
+      expect(createdMatchInfo.id.length).toBeGreaterThan(1);
     });
+
+    describe("Create Match and test", () => {
+      let createdMatchInfo: SingleMatchInfo;
+
+      beforeEach(async () => {
+        createdMatchInfo = await gameClient.createMatch({
+          isPublic: true,
+          level: 7,
+          baseSpeed: 9,
+        });
+        console.log('created', createdMatchInfo);
+      });
+      afterEach(() => { /* todo: destroy match */ });
+
+      test("getMatch gets the created Match", async () => {
+        // use getMatch API to get match details - should give the same result as when we created it
+        const matchInfoFromGet = await gameClient.getMatch(createdMatchInfo.id);
+        expect(matchInfoFromGet).toEqual(createdMatchInfo);
+        console.log('got', matchInfoFromGet);
+      });
+
+      test("Update single match", async () => {
+        // modify the match settings
+        await gameClient.updateMatchSettings({
+          matchId: createdMatchInfo.id,
+          gameIndex: 0,
+          gameOptions: {
+            baseSpeed: 11
+          }
+        });
+
+        const updatedMatchInfo = await gameClient.getMatch(createdMatchInfo.id);
+        console.log(updatedMatchInfo);
+
+        let expectedMatch: SingleMatchInfo = {
+          id: createdMatchInfo.id,
+          mode: MatchMode.Setup,
+          creatorId: user.id,
+          playerIds: [user.id],
+          gamesOptions: [{
+            level: 7,
+            baseSpeed: 11,
+          }],
+          isPublic: true,
+        };
+        expect(updatedMatchInfo).toMatchObject(expectedMatch);
+
+        return true;
+      });
+    });
+
   });
 });

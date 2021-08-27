@@ -149,6 +149,16 @@ export class ClientGameController3 {
     this.state.games.forEach(game => game.tick());
   };
 
+  protected attachInputEvents(): void {
+    const { inputManagers } = this.options;
+    for (let i = 0; i < inputManagers.length; i++) {
+      const gameInputManagers = inputManagers[i];
+      for (const manager of gameInputManagers) {
+        manager.on("input", this.handleInput.bind(this, i));
+      }
+    }
+  }
+
   protected handleInput = (gameIndex: number, input: GameInput, eventType: InputEventType) => {
     console.log("GameController input", input);
     console.log(isMoveInput(input));
@@ -156,6 +166,7 @@ export class ClientGameController3 {
     if (isMoveInput(input)) {
       this.handleMoveInput(gameIndex, input, eventType);
     }
+    // todo send move message with game client?
   };
 
   protected handleMoveInput = (gameIndex: number, input: GameInputMove, eventType: InputEventType) => {
@@ -175,15 +186,7 @@ export class ClientGameController3 {
     console.log("handled moves", action.moves);
   };
 
-  protected attachInputEvents(): void {
-    const { inputManagers } = this.options;
-    for (let i = 0; i < inputManagers.length; i++) {
-      const gameInputManagers = inputManagers[i];
-      for (const manager of gameInputManagers) {
-        manager.on("input", this.handleInput.bind(this, i));
-      }
-    }
-  }
+
 
   protected detachInputEvents() {
     // cleanup, unbind inputmanager listeners

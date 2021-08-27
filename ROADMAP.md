@@ -110,6 +110,14 @@ Ready to play, user clicks Play
 
 ```
 
+### Server Match handling
+#### Single player
+* Create match
+* Update match settings
+
+#### Multi player
+
+
 ## Multiplayer Game Protocol
 
 Client can publish the following message types after the game has started:

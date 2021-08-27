@@ -10,6 +10,7 @@ export enum GameMode {
   // Destruction: lines are being destroyed
   Destruction = "Destruction",
   // Ended: game has ended
+  // todo: should be Won and Lost instead of ended?
   Ended = "Ended"
 }
 
