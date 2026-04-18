@@ -59,12 +59,12 @@ export default class SVGShimmerFills extends React.Component<SVGShimmerFillsProp
     });
   }
 
-  componentWillReceiveProps(newProps: SVGShimmerFillsProps) {
+  componentDidUpdate(prevProps: SVGShimmerFillsProps) {
     if (!this._hasLoaded) return;
-    const hasChanged = (key: keyof SVGShimmerFillsProps) => !_.isEqual(newProps[key], this.props[key]);
+    const hasChanged = (key: keyof SVGShimmerFillsProps) => !_.isEqual(this.props[key], prevProps[key]);
     if (hasChanged("transition")) this._setShapeTransitions();
-    if (hasChanged("colors")) this._startAnimation(newProps);
-    else this.props.onFinish(newProps.colors);
+    if (hasChanged("colors")) this._startAnimation(this.props);
+    else this.props.onFinish(this.props.colors);
   }
 
   componentWillUnmount() {

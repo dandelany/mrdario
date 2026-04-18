@@ -43,8 +43,9 @@ export default class SVGShimmerCycler extends React.Component<SVGShimmerCyclerPr
   componentWillUnmount() {
     this._stopCycle();
   }
-  componentWillReceiveProps(newProps: SVGShimmerCyclerProps) {
-    if (!_.isEqual(newProps.colorSets, this.props.colorSets)) {
+
+  componentDidUpdate(prevProps: SVGShimmerCyclerProps) {
+    if (!_.isEqual(this.props.colorSets, prevProps.colorSets)) {
       const resetColorSetIndex = { colorSetIndex: 0 };
       if (this._isTransitioning) this._queuedState = resetColorSetIndex;
       else this.setState(resetColorSetIndex);

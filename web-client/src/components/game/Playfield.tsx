@@ -155,26 +155,26 @@ export default class Playfield extends React.Component<PlayfieldProps> {
     return sprite;
   }
 
-  componentWillReceiveProps(nextProps: PlayfieldProps) {
+  componentDidUpdate(prevProps: PlayfieldProps) {
     const { pixiApp } = this;
-    const { grid } = nextProps;
+    const { grid } = this.props;
     // let spriteGrid: Pixi.Sprite[][];
 
     if (!pixiApp) return;
 
-    if (nextProps.cellSize !== this.props.cellSize) {
-      const { width, height } = this._getSize(nextProps);
+    if (this.props.cellSize !== prevProps.cellSize) {
+      const { width, height } = this._getSize(this.props);
       console.log("resizing to ", width, height);
       pixiApp.renderer.resize(width, height);
     }
 
-    if (!this.spriteGrid || !this.lastGrid || nextProps.cellSize !== this.props.cellSize) {
-      console.log("removing children...", nextProps.cellSize);
+    if (!this.spriteGrid || !this.lastGrid || this.props.cellSize !== prevProps.cellSize) {
+      console.log("removing children...", this.props.cellSize);
       pixiApp.stage.removeChildren();
       this.lastGrid = grid;
       this.spriteGrid = grid.map((row: GameGridRow, rowIndex: number) => {
         return row.map((obj: MaybeGridObject, colIndex) => {
-          const sprite = this.getSpriteForGridObject(obj, rowIndex, colIndex, nextProps.cellSize);
+          const sprite = this.getSpriteForGridObject(obj, rowIndex, colIndex, this.props.cellSize);
           if (sprite) {
             pixiApp.stage.addChild(sprite);
           }
@@ -194,7 +194,7 @@ export default class Playfield extends React.Component<PlayfieldProps> {
           if (gridObj === lastGridRow[colIndex]) continue;
           const lastSprite = this.spriteGrid[rowIndex][colIndex];
           if (lastSprite) lastSprite.destroy();
-          const sprite = this.getSpriteForGridObject(gridObj, rowIndex, colIndex, nextProps.cellSize);
+          const sprite = this.getSpriteForGridObject(gridObj, rowIndex, colIndex, this.props.cellSize);
           if (sprite) {
             pixiApp.stage.addChild(sprite);
           }
@@ -230,16 +230,11 @@ export default class Playfield extends React.Component<PlayfieldProps> {
       pixiApp.render();
     }
   }
-  componentDidUpdate() {}
 
   shouldComponentUpdate(nextProps: PlayfieldProps) {
-    // return false;
-    return nextProps.cellSize !== this.props.cellSize;
+    return nextProps.cellSize !== this.props.cellSize || nextProps.grid !== this.props.grid;
   }
-  // shouldComponentUpdate(newProps: PlayfieldProps) {
-  //   return !shallowEqual(newProps, this.props);
-  // }
-
+  
   componentDidMount() {
     const canvas = this.canvasRef.current;
     if (canvas) {
