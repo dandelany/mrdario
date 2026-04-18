@@ -10,11 +10,11 @@
 
 
 ##  Dev Setup
-* Run `yarn` in the project root to install dependencies
+* Run `npm install` in the project root to install dependencies
 * At a minimum, run the following three processes:
-    * `cd server && yarn start`
-    * `cd web-client && yarn start`
-    * `cd core && yarn watch`
+    * `cd server && npm start`
+    * `cd web-client && npm start`
+    * `cd core && npm run watch`
 * Go to [http://localhost:6868](http://localhost:6868)
 
 

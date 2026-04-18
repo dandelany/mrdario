@@ -258,6 +258,71 @@ TSConfig cleanup completed:
 Validation status:
 
 - `yarn workspace mrdario-core build` passes.
+
+## 2026-04-18 Node 20 / TS 6 Follow-Up
+
+Completed:
+
+- Repo baseline moved to Node `20` via `.nvmrc`.
+- Root `package.json` now declares `packageManager: "yarn@1.22.22"`.
+- `web-client` is now on TypeScript `6.0.3`.
+- `core` is now on TypeScript `6.0.3`.
+
+Important fixes needed to make TS 6 sane in `web-client`:
+
+- Use the actual workspace TypeScript binary; root `./node_modules/.bin/tsc` was still `4.9.5` and gave misleading diagnostics.
+- Keep `moduleResolution: "bundler"` with `module: "esnext"` in `web-client`.
+- Exclude `*.test.ts(x)` from the main app tsconfig.
+- Add `typeRoots: ["./node_modules/@types"]`.
+- Force the repo onto one React type universe via root `resolutions` for `@types/react` and `@types/react-dom`.
+- Remove redundant `@types/react-redux` from `web-client` because `react-redux@7` already ships its own types.
+- Add `children?: React.ReactNode` to `AppContainer` props.
+- Accept `skipLibCheck: true` in `web-client` as the pragmatic answer to stale third-party type sludge (`pixi-particles`, `rc-tooltip`).
+
+Important fix needed to make TS 6 sane in `core`:
+
+- Move `types: ["jest"]` into `compilerOptions` in `core/tsconfig.json`; the old top-level placement was being ignored by TS 6 and broke test globals during `tsc`.
+
+Node 20 validation sweep:
+
+- `yarn workspace mrdario-core build` passes.
+- `yarn workspace mrdario-server build` passes.
+- `yarn workspace mrdario-integration build` passes.
+- `yarn workspace mrdario-node-cli build` passes.
+- `yarn workspace mrdario-bots build` passes.
+- `yarn workspace mrdario-client-web build` passes.
+- `yarn workspace mrdario-client-web lint` passes.
+- `yarn workspace mrdario-client-web test --runInBand` passes.
+
+Remaining caveat:
+
+- `core` tests still have the old async/timer leak behavior in `ClientGameController3` land and spam `Cannot log after tests are done` from `console.log("tick")`.
+- This still looks pre-existing. It does not appear to be a Node 20 or TS 6 regression, but it makes `core` test output grotesque and potentially non-terminating enough to be worth cleaning up separately.
+
+## 2026-04-18 npm Workspaces Migration
+
+Completed:
+
+- Replaced root Yarn metadata with npm metadata:
+  - `packageManager` is now `npm@10.8.2`
+  - root `resolutions` became npm `overrides`
+- Generated a root `package-lock.json`.
+- Removed `yarn.lock`.
+- Updated package scripts in `core` and `web-client` to use `npm run ...` instead of `yarn run ...`.
+- Updated `README.md` and `docs/status.md` to stop telling lies about Yarn.
+
+Validation status under Node 20 with npm workspace commands:
+
+- `npm run build -w mrdario-core` passes.
+- `npm test -w mrdario-core -- --runInBand` passes.
+- `npm run build -w mrdario-client-web` passes.
+- `npm test -w mrdario-client-web -- --runInBand` passes.
+- `npm run build -w mrdario-server` passes.
+
+Important outcome:
+
+- The repo no longer appears to need Yarn for anything essential.
+- npm workspace commands are now the canonical way to build/test/install.
 - `yarn workspace mrdario-client-web lint` passes.
 - `yarn workspace mrdario-client-web build` passes.
 

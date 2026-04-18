@@ -11,9 +11,9 @@
     "build": "tsc",
     "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
     "lint": "eslint \"src/**/*.{ts,js}\" --fix",
-    "watch-changed": "yarn run build && echo 'OK'",
-    "watch": "onchange -i 'src/**/*.ts' 'src/**/*.js' -- yarn run watch-changed",
-    "release": "yarn run lint && yarn run format && yarn run test && yarn run clean && yarn run build"
+    "watch-changed": "npm run build && echo 'OK'",
+    "watch": "onchange -i 'src/**/*.ts' 'src/**/*.js' -- npm run watch-changed",
+    "release": "npm run lint && npm run format && npm run test && npm run clean && npm run build"
   },
   "author": "Dan Delany <dan.delany@gmail.com>",
   "license": "MIT",

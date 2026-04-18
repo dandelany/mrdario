@@ -8,6 +8,7 @@ This repo is being revived carefully. The immediate goal is to modernize the sta
 - The most durable asset in the codebase is the core game simulation in `core/src/game/Game.ts`.
 - Core tests are green.
 - The repo now targets Node 20 via `.nvmrc`.
+- The repo now uses npm workspaces with a root `package-lock.json`.
 
 ## Recent Changes
 
@@ -18,8 +19,9 @@ This repo is being revived carefully. The immediate goal is to modernize the sta
 
 ## Known Repo Constraints
 
-- This is a Yarn workspaces repo. Validation should be done with workspace-aware commands.
-- Root dependency installs may still surface stale transitive dependency warnings, but the main workspaces have been modernized substantially.
+- This is now an npm workspaces repo. Validation should be done with workspace-aware npm commands.
+- Root dependency installs should go through `npm install` at repo root.
+- Root overrides are used for shared dependency alignment (for example React type packages).
 - The remaining higher-risk runtime/tooling area is the old socketcluster-era server stack.
 - Some non-core workspaces still have older lint/test tooling that has not been fully modernized yet.
 
