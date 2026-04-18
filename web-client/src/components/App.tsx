@@ -18,9 +18,7 @@ export default class App extends React.Component<AppProps> {
     return (
       <Provider store={store}>
         <Router>
-          <div>
-            <AppContainer>{routes}</AppContainer>
-          </div>
+          <AppContainer>{routes}</AppContainer>
         </Router>
       </Provider>
     );

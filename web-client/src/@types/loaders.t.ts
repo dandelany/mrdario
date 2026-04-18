@@ -1,14 +1,14 @@
-declare module "!raw-loader!*" {
+declare module "*.svg?raw" {
   const contents: string;
-  export = contents;
+  export default contents;
 }
 
 declare module "*.svg" {
   const contents: string;
-  export = contents;
+  export default contents;
 }
 
 declare module "*.png" {
   const contents: string;
-  export = contents;
+  export default contents;
 }

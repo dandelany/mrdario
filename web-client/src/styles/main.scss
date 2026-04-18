@@ -3,6 +3,13 @@
 @use 'settings';
 @use 'game';
 
+html,
+body,
+#container {
+  width: 100%;
+  height: 100%;
+}
+
 body {
   font-family: 'Coustard', 'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, serif;
   margin: 0;

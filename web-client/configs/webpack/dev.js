@@ -1,6 +1,5 @@
 // development config
-const merge = require('webpack-merge');
-const webpack = require('webpack');
+const { merge } = require('webpack-merge');
 const commonConfig = require('./common');
 const {resolve} = require('path');
 
@@ -13,9 +12,7 @@ module.exports = merge(commonConfig, {
     './index.tsx' // the entry point of our app
   ],
   devServer: {
-    // hot: true, // enable HMR on the server
     port: 6869,
-
     historyApiFallback: {
       rewrites: [
         { from: /^\/$/, to: '/views/landing.html' },
@@ -23,7 +20,9 @@ module.exports = merge(commonConfig, {
         { from: /./, to: '/views/404.html' }
       ]
     },
-    clientLogLevel: "info",
+    client: {
+      logging: "info",
+    },
     proxy: {
       'ws://localhost:3000': {
         target: 'ws://localhost:8000',
@@ -36,9 +35,6 @@ module.exports = merge(commonConfig, {
     path: resolve(__dirname, '../../build'),
     publicPath: '/',
   },
-  devtool: 'cheap-module-eval-source-map',
-  plugins: [
-    // new webpack.HotModuleReplacementPlugin(), // enable HMR globally
-    new webpack.NamedModulesPlugin(), // prints more readable module names in the browser console on HMR updates
-  ],
+  devtool: 'eval-cheap-module-source-map',
+  plugins: [],
 });

@@ -1,5 +1,4 @@
 import * as React from "react";
-import makeReactSvg from "@/utils/makeReactSvg";
 
 import {
   GridObjectType,
@@ -8,22 +7,22 @@ import {
   GridObjectPillHalfType
 } from "mrdario-core/lib/game/types";
 
-import * as pillHalfOrange from "!raw-loader!@/svg/pill_half_orange.svg";
-import * as pillHalfPurple from "!raw-loader!@/svg/pill_half_purple.svg";
-import * as pillHalfGreen from "!raw-loader!@/svg/pill_half_green.svg";
-import * as pillSegmentOrange from "!raw-loader!@/svg/pill_segment_orange.svg";
-import * as pillSegmentPurple from "!raw-loader!@/svg/pill_segment_purple.svg";
-import * as pillSegmentGreen from "!raw-loader!@/svg/pill_segment_green.svg";
+import pillHalfOrange from "@/svg2/pill_half_orange.svg";
+import pillHalfPurple from "@/svg2/pill_half_purple.svg";
+import pillHalfGreen from "@/svg2/pill_half_green.svg";
+import pillSegmentOrange from "@/svg2/pill_segment_orange.svg";
+import pillSegmentPurple from "@/svg2/pill_segment_purple.svg";
+import pillSegmentGreen from "@/svg2/pill_segment_green.svg";
 
-type PillPartSVGByColor = { [C in GameColor]: string };
+type PillPartAssetByColor = { [C in GameColor]: string };
 
-const pillHalves: PillPartSVGByColor = {
+const pillHalves: PillPartAssetByColor = {
   [GameColor.Color1]: pillHalfOrange,
   [GameColor.Color2]: pillHalfPurple,
   [GameColor.Color3]: pillHalfGreen
 };
 
-const pillSegments: PillPartSVGByColor = {
+const pillSegments: PillPartAssetByColor = {
   [GameColor.Color1]: pillSegmentOrange,
   [GameColor.Color2]: pillSegmentPurple,
   [GameColor.Color3]: pillSegmentGreen
@@ -43,7 +42,7 @@ interface PillPartProps {
   gProps: {
     transform?: string;
   };
-  svgProps: object;
+  svgProps: React.SVGProps<SVGImageElement>;
 }
 
 export default class PillPart extends React.Component<PillPartProps> {
@@ -57,19 +56,30 @@ export default class PillPart extends React.Component<PillPartProps> {
   render() {
     const { type, color, cellSize, svgProps } = this.props;
     let { gProps } = this.props;
-    let svgString;
+    let assetUrl;
 
     if (type === GridObjectType.PillSegment) {
-      svgString = pillSegments[color];
+      assetUrl = pillSegments[color];
     } else {
-      svgString = pillHalves[color];
+      assetUrl = pillHalves[color];
       gProps = {
         ...gProps,
-        transform: `${gProps.transform || ""} rotate(${pillHalfRotations[type] || 0} ${cellSize /
-          2} ${cellSize / 2})`
+        transform: `${gProps.transform || ""} rotate(${pillHalfRotations[type] || 0} ${cellSize / 2} ${cellSize / 2})`
       };
     }
 
-    return svgString ? makeReactSvg(svgString, gProps, svgProps) : null;
+    if (!assetUrl) return null;
+
+    return (
+      <g {...gProps}>
+        <image
+          {...svgProps}
+          href={assetUrl}
+          xlinkHref={assetUrl}
+          width={cellSize}
+          height={cellSize}
+        />
+      </g>
+    );
   }
 }

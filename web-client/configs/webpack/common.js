@@ -10,6 +10,10 @@ module.exports = {
 
   resolve: {
     extensions: ['.ts', '.tsx', '.js', '.jsx'],
+    fallback: {
+      path: require.resolve('path-browserify'),
+      url: require.resolve('url/'),
+    },
     plugins: [
       new TsConfigPathsPlugin()
     ]
@@ -20,11 +24,11 @@ module.exports = {
     publicPath: '/',
   },
   devServer: {
-    // hot: true, // enable HMR on the server
     port: 6868,
-
     historyApiFallback: true,
-    clientLogLevel: "info",
+    client: {
+      logging: "info",
+    },
     // proxy: {
     //   'ws://localhost:3000': {
     //     target: 'ws://localhost:8000',
@@ -33,7 +37,7 @@ module.exports = {
     //   },
     // }
   },
-  devtool: 'cheap-module-eval-source-map',
+  devtool: 'eval-cheap-module-source-map',
   module: {
     rules: [
       {
@@ -59,34 +63,49 @@ module.exports = {
       {
         test: /\.scss$/,
         exclude: /\.module\.scss$/,
-        loaders: [
+        use: [
           'style-loader',
           { loader: 'css-loader', options: { importLoaders: 1 } },
-          'sass-loader',
+          {
+            loader: 'sass-loader',
+            options: {
+              implementation: require('sass'),
+              api: 'modern',
+            }
+          },
         ],
       },
       {
         test: /\.module\.scss$/,
-        loaders : [
+        use : [
           {
-            loader: "style-loader"
+            loader: "style-loader",
+            options: {
+              esModule: false,
+            }
           },
           {
             loader: "css-loader",
             options: {
+              esModule: false,
               sourceMap: true,
-              modules: true,
-              localIdentName: "[local]___[hash:base64:5]"
+              modules: {
+                localIdentName: "[local]___[hash:base64:5]"
+              }
             }
           },
           {
-            loader: "sass-loader"
+            loader: "sass-loader",
+            options: {
+              implementation: require('sass'),
+              api: 'modern',
+            }
           }
         ]
       },
       {
         test: /\.less/,
-        loaders: [
+        use: [
           'style-loader',
           { loader: 'css-loader', options: { importLoaders: 1 } },
           'less-loader',
@@ -94,13 +113,17 @@ module.exports = {
       },
       {
         test: /\.svg$/,
+        resourceQuery: /raw/,
+        type: 'asset/source',
+      },
+      {
+        test: /\.svg$/,
+        resourceQuery: { not: [/raw/] },
+        type: 'asset/resource',
+        generator: {
+          filename: 'svg/[name].[hash:7][ext]'
+        },
         use: [
-          {
-            loader: 'file-loader',
-            options: {
-              name: 'svg/[name].[hash:7].[ext]'
-            }
-          },
           {
             loader: 'svgo-loader',
             options: {
@@ -113,8 +136,11 @@ module.exports = {
       },
       {
         test: /\.(jpe?g|png|gif)$/i,
-        loaders: [
-          'file-loader?hash=sha512&digest=hex&name=img/[hash].[ext]',
+        type: 'asset/resource',
+        generator: {
+          filename: 'img/[contenthash][ext]'
+        },
+        use: [
           'image-webpack-loader?bypassOnDebug&optipng.optimizationLevel=7&gifsicle.interlaced=false',
         ],
       },

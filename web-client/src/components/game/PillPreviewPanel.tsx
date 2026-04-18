@@ -1,7 +1,26 @@
 import * as React from "react";
 
-import { GridObjectType, PillColors } from "mrdario-core/src/game/types";
-import PillPart from "./PillPart";
+import { GameColor, PillColors } from "mrdario-core/lib/game/types";
+
+import * as pillHalfOrange from "@/svg2/pill_half_orange.svg";
+import * as pillHalfPurple from "@/svg2/pill_half_purple.svg";
+import * as pillHalfGreen from "@/svg2/pill_half_green.svg";
+
+type ImportedAsset = string | { default: string };
+type PillHalfAssetByColor = { [key: string]: string };
+
+function resolveAssetUrl(asset: ImportedAsset): string {
+  return typeof asset === "string" ? asset : asset.default;
+}
+
+const pillHalfAssets: PillHalfAssetByColor = {
+  [GameColor.Color1]: resolveAssetUrl(pillHalfOrange),
+  [GameColor.Color2]: resolveAssetUrl(pillHalfPurple),
+  [GameColor.Color3]: resolveAssetUrl(pillHalfGreen),
+  Color1: resolveAssetUrl(pillHalfOrange),
+  Color2: resolveAssetUrl(pillHalfPurple),
+  Color3: resolveAssetUrl(pillHalfGreen)
+};
 
 export interface PillPreviewPanelProps {
   cellSize: number;
@@ -31,21 +50,22 @@ export default class PillPreviewPanel extends React.Component<PillPreviewPanelPr
       <div className={className} style={style}>
         <h5>NEXT</h5>
 
-        <svg width={cellSize * 2} height={cellSize}>
-          <PillPart
-            type={GridObjectType.PillLeft}
-            color={pill[0]}
-            cellSize={cellSize}
-            svgProps={{ width: cellSize, height: cellSize }}
+        <div style={{ display: "flex", width: cellSize * 2, height: cellSize }}>
+          <img
+            src={pillHalfAssets[String(pill[0])]}
+            width={cellSize}
+            height={cellSize}
+            alt=""
+            style={{ display: "block", transform: "rotate(270deg)" }}
           />
-          <PillPart
-            type={GridObjectType.PillRight}
-            color={pill[1]}
-            cellSize={cellSize}
-            gProps={{ transform: `translate(${cellSize},0)` }}
-            svgProps={{ width: cellSize, height: cellSize }}
+          <img
+            src={pillHalfAssets[String(pill[1])]}
+            width={cellSize}
+            height={cellSize}
+            alt=""
+            style={{ display: "block", transform: "rotate(90deg)" }}
           />
-        </svg>
+        </div>
 
         {name === "BEA" ? (
           <div>

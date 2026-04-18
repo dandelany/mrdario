@@ -1,5 +1,4 @@
 import * as React from "react";
-import ContainerDimensions, { Dimensions } from "react-container-dimensions";
 
 import { GameGrid, GameOptions, PillColors } from "mrdario-core";
 import { GameControllerMode } from "mrdario-core/lib/game/controller";
@@ -91,27 +90,78 @@ interface ResponsiveGameDisplayProps extends Omit<GameDisplayProps, "cellSize"> 
   gridHeightPercent: number;
   padding: number;
 }
+
+interface MeasuredSize {
+  height: number;
+  width: number;
+}
+
+function getViewportSize(): MeasuredSize {
+  if (typeof window === "undefined") {
+    return { height: 0, width: 0 };
+  }
+
+  return {
+    height: window.innerHeight,
+    width: window.innerWidth
+  };
+}
+
 export class ResponsiveGameDisplay extends React.Component<ResponsiveGameDisplayProps> {
   static defaultProps = {
     gridHeightPercent: 0.85,
     padding: 0.35
   };
-  protected getCellSize = ({ height }: Dimensions): number => {
+
+  protected containerRef: React.RefObject<HTMLDivElement> = React.createRef();
+
+  state: MeasuredSize = getViewportSize();
+
+  protected getCellSize = ({ height }: MeasuredSize): number => {
     // todo handle width
     const { gridHeightPercent, padding, grid } = this.props;
     if (!grid) return 0;
     const cellSize = Math.floor((height * gridHeightPercent) / (grid.length - 1 + 2 * padding));
-    return cellSize;
+    return cellSize || 5;
   };
-  render() {
-    return (
-      <ContainerDimensions>
-        {(dimensions: Dimensions): React.ReactNode => {
-          if (dimensions.height <= 0) return null;
 
-          return <GameDisplay {...this.props} cellSize={this.getCellSize(dimensions)} />;
-        }}
-      </ContainerDimensions>
+  componentDidMount() {
+    this.measure();
+    window.addEventListener("resize", this.measure);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener("resize", this.measure);
+  }
+
+  protected measure = () => {
+    const element = this.containerRef.current;
+    const viewportSize = getViewportSize();
+
+    if (!element) {
+      if (viewportSize.height !== this.state.height || viewportSize.width !== this.state.width) {
+        this.setState(viewportSize);
+      }
+      return;
+    }
+
+    const nextState = {
+      height: element.clientHeight || viewportSize.height,
+      width: element.clientWidth || viewportSize.width
+    };
+
+    if (nextState.height !== this.state.height || nextState.width !== this.state.width) {
+      this.setState(nextState);
+    }
+  };
+
+  render() {
+    const cellSize = this.getCellSize(this.state);
+
+    return (
+      <div ref={this.containerRef} style={{ width: "100%", height: "100%" }}>
+        {cellSize > 0 ? <GameDisplay {...this.props} cellSize={cellSize} /> : null}
+      </div>
     );
   }
 }
