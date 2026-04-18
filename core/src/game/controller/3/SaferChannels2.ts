@@ -77,7 +77,7 @@ function parseMessage(messageStr: string): SaferMessage {
   assert(id >= 0 && isFinite(id), `Invalid numeric ID: ${id} (${msgIdStr})`);
 
   // get repeat token if it exists ie. "42:[R]:message"
-  let msgRemaining = messageStr.substring(sepIndex + 1);
+  const msgRemaining = messageStr.substring(sepIndex + 1);
   const sepIndex2 = msgRemaining.indexOf(SAFER_SEPARATOR);
   assert(sepIndex2 >= 0, `Missing 2nd separator (${SAFER_SEPARATOR})`);
   const token = msgRemaining.substring(0, sepIndex2);
@@ -127,8 +127,8 @@ function findGapsInSequence(sequence: number[], expectedFirst?: number | null): 
   // console.log(`checking`, sequence, "for gaps starting with", first);
 
   let lastNum = first - 1;
-  let missing: number[] = [];
-  for (let num of sequence) {
+  const missing: number[] = [];
+  for (const num of sequence) {
     // find places where the difference btwn consecutive numbers is greater than 1 (gaps)
     const diff = num - lastNum;
     if (diff > 1) {
@@ -248,7 +248,7 @@ export class SaferClientChannelIn {
       if (this.options.deliverInvalid) this.deliverMessage(messageStr);
       return;
     }
-    let { id, token, content } = message;
+    const { id, token, content } = message;
 
     // add message id to the log. if not added to log,
     // it's a duplicate (already received) message, return early
@@ -326,7 +326,7 @@ export class SaferClientChannelIn {
       this.options.sendRepeatRequest({ channelName: this.options.channelName, msgIds: missingIds });
 
       // add the new missing message IDs to the pending list
-      for (let missingId of missingIds) {
+      for (const missingId of missingIds) {
         const insertIndex = sortedIndex(pendingRepeatRequestIds, missingId);
         pendingRepeatRequestIds.splice(insertIndex, 0, missingId);
       }
@@ -394,7 +394,7 @@ export class SaferClientChannelOut {
   }
   republish(msgIds: number[]) {
     // look up past outgoing message ID(s) in the message log and publish the messages again
-    for (let msgId of msgIds) {
+    for (const msgId of msgIds) {
       const msgIdStr = msgId + "";
       if (!(msgIdStr in this.messageLog)) {
         console.warn(`Bad republish request for msg ${msgId} - latest: ${this.nextMsgId - 1}. Skipping.`);
@@ -445,7 +445,7 @@ export class SaferChannelsClient {
   constructor(options: SaferChannelsClientOptions) {
     const { socket } = options;
     this.channelsIn = {};
-    for (let channelInConfig of options.channelsIn) {
+    for (const channelInConfig of options.channelsIn) {
       this.channelsIn[channelInConfig.channelName] = new SaferClientChannelIn({
         ...channelInConfig,
         socket,
@@ -556,7 +556,7 @@ export class SaferServerChannelIn {
       // if (this.options.deliverInvalid) this.deliverMessage(messageStr);
       return;
     }
-    let { id, token, content } = message;
+    const { id, token, content } = message;
 
     // add message to log, return early if duplicate message
     const addedToLog = this.addMessageToLog(message);

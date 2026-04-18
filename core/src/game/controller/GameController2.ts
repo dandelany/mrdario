@@ -444,7 +444,7 @@ export class GameController {
     assert(state.mode === GameControllerMode.Playing);
 
     const nextFrame = state.frame + 1;
-    let results = [];
+    const results = [];
     for (let i = 0; i < state.games.length; i++) {
       const result = this.tickGame(i) || undefined;
       results.push(result);
@@ -688,7 +688,7 @@ export class GameController {
       return findIndex(results, res => !!res && res.type === resultType);
     }
     function findAllResultIndices(resultType: GameTickResultType): number[] {
-      let resultIndices = [] as number[];
+      const resultIndices = [] as number[];
       for (let i = 0; i < results.length; i++) {
         const maybeResult = results[i];
         if(!!maybeResult && maybeResult.type === resultType)
@@ -717,11 +717,11 @@ export class GameController {
     }
 
     // default - no results, no actions
-    let nextActions =  times<undefined | GameAction>(gameCount, () => undefined);
+    const nextActions =  times<undefined | GameAction>(gameCount, () => undefined);
 
     // if any player(s) get combo, another player gets garbage
     const comboIndices = findAllResultIndices(GameTickResultType.Combo);
-    for(let comboIndex of comboIndices) {
+    for(const comboIndex of comboIndices) {
       const comboResult = results[comboIndex];
       assert(comboResult && comboResult.type === GameTickResultType.Combo);
       // give garbage to next player, use % to wraparound
@@ -823,7 +823,7 @@ export class GameController {
           iFirstActionAfterFrame,
           curGameActionHistory.length - iFirstActionAfterFrame
         );
-        for (let timedActions of actionsAfterFrame) {
+        for (const timedActions of actionsAfterFrame) {
           const [actFrame, actions] = timedActions;
           const externalActions = actions.filter(isExternalGameAction);
           if (externalActions.length) curGameActionHistory.push([actFrame, externalActions]);

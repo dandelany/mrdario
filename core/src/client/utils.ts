@@ -22,7 +22,7 @@ export function validatedChannel<MessageType>(
   codec: t.Type<MessageType>,
   shouldThrow: boolean = true
 ): ValidatedSCChannel<MessageType> {
-  const watchHandlerMap = new Map<Function, (data: any) => void>();
+  const watchHandlerMap = new Map<(data: MessageType) => void, (data: unknown) => void>();
   return new Proxy(channel, {
     get(target, propKey) {
       // replace channel.watch method with one which validates incoming messages

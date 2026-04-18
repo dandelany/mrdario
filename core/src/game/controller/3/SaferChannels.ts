@@ -77,7 +77,7 @@ function parseMessage(messageStr: string): SaferMessage {
   assert(id >= 0 && isFinite(id), `Invalid numeric ID: ${id} (${msgIdStr})`);
 
   // get repeat token if it exists ie. "42:[R]:message"
-  let msgRemaining = messageStr.substring(sepIndex + 1);
+  const msgRemaining = messageStr.substring(sepIndex + 1);
   const sepIndex2 = msgRemaining.indexOf(SAFER_SEPARATOR);
   assert(sepIndex2 >= 0, `Missing 2nd separator (${SAFER_SEPARATOR})`);
   const token = msgRemaining.substring(0, sepIndex2);
@@ -240,7 +240,7 @@ export class SaferChannelIn {
 
   private checkLogAndRequestRepeats() {
     // check log for missing message IDs
-    let missingIds = this.getMissingLogIds();
+    const missingIds = this.getMissingLogIds();
     // compare to list of pending rpt requests (ie. sent requests but haven't gotten repeat msg response yet)
     // remove any IDs which are already on the pending list so we don't send duplicate requests,
     // only send them for newly missing IDs
@@ -252,7 +252,7 @@ export class SaferChannelIn {
       this.options.sendRepeatRequest({ channelName: this.options.channelName, msgIds: missingIds });
 
       // add the new missing message IDs to the pending list
-      for (let missingId of missingIds) {
+      for (const missingId of missingIds) {
         const insertIndex = sortedIndex(pendingRepeatRequestIds, missingId);
         pendingRepeatRequestIds.splice(insertIndex, 0, missingId);
       }
@@ -275,8 +275,8 @@ export class SaferChannelIn {
     // console.log(`checking`, messageIdLog, 'for gaps starting with', expectedFirstId);
 
     let lastId = expectedFirstId - 1;
-    let missingIds = [];
-    for (let msgId of messageIdLog) {
+    const missingIds = [];
+    for (const msgId of messageIdLog) {
       // look for places in the list where the difference btwn consecutive IDs is greater than 1 (gaps)
       const diff = msgId - lastId;
       if (diff > 1) {
@@ -316,7 +316,7 @@ export class SaferChannelOut {
 
   publishRepeats(msgIds: number[]) {
     // look up past outgoing message ID(s) in the message log and publish the messages again
-    for (let msgId of msgIds) {
+    for (const msgId of msgIds) {
       const msgIdStr = msgId + "";
       if (!(msgIdStr in this.messageLog)) {
         console.warn(
@@ -369,7 +369,7 @@ export class SaferChannels {
     const { socket } = options;
     // create input channels
     this.channelsIn = {};
-    for (let channelInConfig of options.channelsIn) {
+    for (const channelInConfig of options.channelsIn) {
       const channelIn = new SaferChannelIn({
         ...channelInConfig,
         socket,
