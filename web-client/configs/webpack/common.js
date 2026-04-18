@@ -141,7 +141,18 @@ module.exports = {
           filename: 'img/[contenthash][ext]'
         },
         use: [
-          'image-webpack-loader?bypassOnDebug&optipng.optimizationLevel=7&gifsicle.interlaced=false',
+          {
+            loader: 'image-webpack-loader',
+            options: {
+              bypassOnDebug: true,
+              optipng: {
+                optimizationLevel: 7,
+              },
+              gifsicle: {
+                interlaced: false,
+              },
+            }
+          },
         ],
       },
     ],
