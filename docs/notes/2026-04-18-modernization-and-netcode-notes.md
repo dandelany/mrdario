@@ -258,6 +258,37 @@ TSConfig cleanup completed:
 Validation status:
 
 - `yarn workspace mrdario-core build` passes.
+## 2026-04-18 Node 20 / npm / Audit Follow-Up
+
+Completed:
+
+- Repo is now using npm workspaces with `package-lock.json` as the canonical lockfile.
+- Node 20 is the intended repo baseline via `.nvmrc`.
+- `bots` and `integration` were moved off the old Jest 26 / ts-jest 26 island onto Jest 29 / ts-jest 29.
+- Added dedicated `tsconfig.jest.json` files for `bots` and `integration` using explicit `node16` module/moduleResolution for TS 6 compatibility.
+- Fixed `integration/tsconfig.json` by adding explicit `rootDir: "./src"`.
+- Fixed `web-client`'s `image-webpack-loader` crash on Node 20 / webpack 5 by replacing the legacy query-string loader syntax with explicit loader `options` while preserving the image optimization settings.
+- Fixed `ClientGameController3` test cleanup so timer/listener leaks no longer continue after the test finishes.
+
+Important lessons / guardrails:
+
+- Always run repo package-manager commands under `nvm use` from the repo root; do not trust the ambient shell node version.
+- Build/output optimization is behavior. Treat image/svg optimization changes as behavioral changes, not disposable cleanup.
+- If TypeScript deprecates something, prefer fixing the real cause over adding `ignoreDeprecations`.
+
+Audit status snapshot:
+
+- The easiest critical class (`@babel/traverse` via old Jest 26 pockets) was addressed by the `bots` / `integration` Jest upgrades.
+- After that, the remaining criticals are in the SocketCluster / legacy server ecosystem.
+- There are also high/moderate findings in old loader/dev-server/redis/server dependencies, but the SocketCluster stack is the main genuinely invasive remaining audit problem.
+
+Current migration reality:
+
+- `server/src/server.ts` and `server/src/broker.ts` are still very close to old SocketCluster generator/boilerplate structure.
+- Most actual application logic lives below that thin shell:
+  - `server/src/worker.ts`
+  - `server/src/gameserver/**`
+- This makes a future “generate fresh SocketCluster boilerplate, then transplant app logic” strategy plausible.
 
 ## 2026-04-18 Node 20 / TS 6 Follow-Up
 

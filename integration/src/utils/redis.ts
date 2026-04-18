@@ -5,8 +5,27 @@ export const REDIS_TEST_DB = 15;
 
 let redisClient: RedisClient;
 export function getRedisClient() {
-  if(redisClient) return redisClient;
-  else return redis.createClient({db: REDIS_TEST_DB});
+  if (redisClient) {
+    return redisClient;
+  }
+
+  redisClient = redis.createClient({db: REDIS_TEST_DB});
+  return redisClient;
+}
+
+export async function closeRedisClient(): Promise<void> {
+  if (!redisClient) {
+    return;
+  }
+
+  const clientToClose = redisClient;
+  redisClient = undefined as any;
+
+  await new Promise<void>((resolve) => {
+    clientToClose.quit(() => {
+      resolve();
+    });
+  });
 }
 
 export async function clearRedisTestDB(rClient: RedisClient): Promise<string> {
@@ -68,5 +87,4 @@ export async function backupRedis(rClient: RedisClient) {
 
   return dumpFilePath;
 }
-
 
