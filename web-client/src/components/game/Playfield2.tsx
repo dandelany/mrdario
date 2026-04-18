@@ -123,15 +123,15 @@ export default class Playfield extends React.Component<PlayfieldProps> {
     if (!obj || obj.type === GridObjectType.Empty) return null;
     const { cellSize } = this.props;
     let sprite = null;
-    if (hasColor(obj)) {
+    if (isDestroyed(obj)) {
+      sprite = new Pixi.Sprite(this.destroyedTexture);
+    } else if (hasColor(obj)) {
       if (obj.type === GridObjectType.Virus) {
         sprite = new Pixi.Sprite(this.virusTextures[obj.color]);
       } else if (obj.type === GridObjectType.PillSegment) {
         sprite = new Pixi.Sprite(this.pillSegmentTextures[obj.color]);
       } else if (isPillHalf(obj)) {
         sprite = new Pixi.Sprite(this.pillHalfTextures[obj.color]);
-      } else if (isDestroyed(obj)) {
-        sprite = new Pixi.Sprite(this.destroyedTexture);
       }
     }
     if (sprite) {

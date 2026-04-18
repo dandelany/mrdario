@@ -80,7 +80,7 @@ const particlesConfig = {
   blendMode: "normal",
   frequency: 0.001,
   emitterLifetime: 1,
-  maxParticles: 30,
+  maxParticles: 20,
   pos: {
     x: 0,
     y: 0
@@ -129,15 +129,15 @@ export default class Playfield extends React.Component<PlayfieldProps> {
   ): Pixi.Sprite | null {
     if (!obj || obj.type === GridObjectType.Empty) return null;
     let sprite = null;
-    if (hasColor(obj)) {
+    if (isDestroyed(obj)) {
+      sprite = new Pixi.Sprite(this.destroyedTexture);
+    } else if (hasColor(obj)) {
       if (obj.type === GridObjectType.Virus) {
         sprite = new Pixi.Sprite(this.virusTextures[obj.color]);
       } else if (obj.type === GridObjectType.PillSegment) {
         sprite = new Pixi.Sprite(this.pillSegmentTextures[obj.color]);
       } else if (isPillHalf(obj)) {
         sprite = new Pixi.Sprite(this.pillHalfTextures[obj.color]);
-      } else if (isDestroyed(obj)) {
-        sprite = new Pixi.Sprite(this.destroyedTexture);
       }
     }
     if (sprite) {
