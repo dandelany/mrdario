@@ -40,7 +40,7 @@ export const tJSONString = <C extends t.Mixed>(tCodec: C) => {
         try {
           return t.success(JSON.parse(jsonStr));
         } catch (e) {
-          return t.failure(input, context, e.toString());
+          return t.failure(input, context, e instanceof Error ? e.toString() : String(e));
         }
       });
       return either.chain(stringAndJson, (parsed: any) => {

@@ -214,7 +214,6 @@ export class Game extends EventEmitter {
     // this requires a complete game state, and always completely rewrites game state
 
     // reset state machine mode
-    delete this.fsm;
     this.fsm = this.initStateMachine(state.mode);
     // set input repeater state
     this.inputRepeater.setState({
