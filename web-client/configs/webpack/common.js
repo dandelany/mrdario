@@ -1,7 +1,7 @@
 // shared config (dev and prod)
 const {resolve} = require('path');
-const {CheckerPlugin, TsConfigPathsPlugin} = require('awesome-typescript-loader');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const TsConfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 
 module.exports = {
   mode: 'development',
@@ -38,12 +38,19 @@ module.exports = {
     rules: [
       {
         test: /\.js$/,
-        use: ['babel-loader', 'source-map-loader'],
+        use: ['source-map-loader'],
         exclude: /node_modules/,
       },
       {
         test: /\.tsx?$/,
-        use: ['babel-loader', 'awesome-typescript-loader'],
+        use: [
+          {
+            loader: 'ts-loader',
+            options: {
+              transpileOnly: true,
+            }
+          }
+        ],
       },
       {
         test: /\.css$/,
@@ -114,7 +121,6 @@ module.exports = {
     ],
   },
   plugins: [
-    new CheckerPlugin(),
     new HtmlWebpackPlugin({template: 'index.html.ejs',}),
   ],
   performance: {
