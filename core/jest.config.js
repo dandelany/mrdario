@@ -3,7 +3,9 @@ module.exports = {
     "<rootDir>/src"
   ],
   transform: {
-    "^.+\\.(t|j)sx?$": "ts-jest"
+    "^.+\\.(t|j)sx?$": ["ts-jest", {
+      tsconfig: "<rootDir>/tsconfig.jest.json"
+    }]
   },
   verbose: true,
   testRegex: "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",
@@ -13,11 +15,6 @@ module.exports = {
     "!**/node_modules/**",
     "!**/__tests__/**"
   ],
-  globals: {
-    'ts-jest': {
-      isolatedModules: true
-    },
-  },
 
   // collectCoverage: true
 };

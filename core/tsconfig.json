@@ -10,11 +10,9 @@
     "esModuleInterop": true,
     "incremental": true,
     "noUnusedLocals": false,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "types": ["jest"]
   },
-  "types": [
-    "jest"
-  ],
   "include": ["src"],
   "exclude": ["node_modules"]
 }
