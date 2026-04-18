@@ -7,7 +7,7 @@ This repo is being revived carefully. The immediate goal is to modernize the sta
 - The project is a Dr. Mario clone with a strong separation between game simulation and rendering.
 - The most durable asset in the codebase is the core game simulation in `core/src/game/Game.ts`.
 - Core tests are green.
-- The repo expects Node 14 via `.nvmrc`.
+- The repo now targets Node 20 via `.nvmrc`.
 
 ## Recent Changes
 
@@ -19,9 +19,9 @@ This repo is being revived carefully. The immediate goal is to modernize the sta
 ## Known Repo Constraints
 
 - This is a Yarn workspaces repo. Validation should be done with workspace-aware commands.
-- Root dependency installs can still fail because some other workspaces are on very old tooling.
-- In particular, old `node-sass` / Python 2 era baggage still exists outside `core`.
-- Other workspaces still use TSLint.
+- Root dependency installs may still surface stale transitive dependency warnings, but the main workspaces have been modernized substantially.
+- The remaining higher-risk runtime/tooling area is the old socketcluster-era server stack.
+- Some non-core workspaces still have older lint/test tooling that has not been fully modernized yet.
 
 ## Near-Term Direction
 
