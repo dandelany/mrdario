@@ -207,7 +207,7 @@ export default class Playfield extends React.Component<PlayfieldProps> {
 
             colorGroupIndex += 1;
 
-            let emitter = new particles.Emitter(
+            const emitter = new particles.Emitter(
               pixiApp.stage,
               [PIXI.Texture.fromImage(particle)],
               {
