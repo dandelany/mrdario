@@ -90,7 +90,7 @@ class SinglePlayerGame extends React.Component<SinglePlayerGameProps, SinglePlay
 
   shouldComponentUpdate(newProps: SinglePlayerGameProps, newState: SinglePlayerGameState) {
     const hasChanged =
-      !_.every(newState, (value, key) => shallowEqual(value, this.state[key])) ||
+      (Object.keys(newState) as Array<keyof SinglePlayerGameState>).some(key => !shallowEqual(newState[key], this.state[key])) ||
       !shallowEqual(newProps, this.props);
 
     return hasChanged;

@@ -92,7 +92,7 @@ class SingleRemoteGame extends React.Component<SingleRemoteGameProps, SingleRemo
 
   shouldComponentUpdate(newProps: SingleRemoteGameProps, newState: SingleRemoteGameState) {
     const hasChanged =
-      !_.every(newState, (value, key) => shallowEqual(value, this.state[key])) ||
+      (Object.keys(newState) as Array<keyof SingleRemoteGameState>).some(key => !shallowEqual(newState[key], this.state[key])) ||
       !shallowEqual(newProps, this.props);
 
     return hasChanged;
@@ -128,7 +128,7 @@ class SingleRemoteGame extends React.Component<SingleRemoteGameProps, SingleRemo
           timeBonus: timeBonus
         };
         const { state } = this;
-        if (!_.every(nextState, (value, key) => shallowEqual(value, state[key]))) {
+        if ((Object.keys(nextState) as Array<keyof typeof nextState>).some(key => !shallowEqual(nextState[key], state[key]))) {
           this.setState(nextState);
         }
 

@@ -112,7 +112,7 @@ class MirrorGame extends React.Component<MirrorGameProps, MirrorGameState> {
 
   shouldComponentUpdate(newProps: MirrorGameProps, newState: MirrorGameState) {
     const hasChanged =
-      !_.every(newState, (value, key) => shallowEqual(value, this.state[key])) ||
+      (Object.keys(newState) as Array<keyof MirrorGameState>).some(key => !shallowEqual(newState[key], this.state[key])) ||
       !shallowEqual(newProps, this.props);
 
     return hasChanged;

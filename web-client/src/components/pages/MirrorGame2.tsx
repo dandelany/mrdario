@@ -116,7 +116,7 @@ class MirrorGame extends React.Component<MirrorGameProps, MirrorGameState> {
 
   shouldComponentUpdate(newProps: MirrorGameProps, newState: MirrorGameState) {
     const hasChanged =
-      !_.every(newState, (value, key) => shallowEqual(value, this.state[key])) ||
+      (Object.keys(newState) as Array<keyof MirrorGameState>).some(key => !shallowEqual(newState[key], this.state[key])) ||
       !shallowEqual(newProps, this.props);
 
     return hasChanged;
@@ -168,7 +168,7 @@ class MirrorGame extends React.Component<MirrorGameProps, MirrorGameState> {
           timeBonus
         };
         const {state} = this;
-        if(!_.every(nextState, (value, key) => shallowEqual(value, state[key]))) {
+        if ((Object.keys(nextState) as Array<keyof typeof nextState>).some(key => !shallowEqual(nextState[key], state[key]))) {
           // scoreGameState(gameState);
 
           this.setState(nextState);
@@ -204,7 +204,7 @@ class MirrorGame extends React.Component<MirrorGameProps, MirrorGameState> {
           mirrorTimeBonus: timeBonus
         };
         const {state} = this;
-        if(!_.every(nextState, (value, key) => shallowEqual(value, state[key]))) {
+        if ((Object.keys(nextState) as Array<keyof typeof nextState>).some(key => !shallowEqual(nextState[key], state[key]))) {
           this.setState(nextState);
         }
 
