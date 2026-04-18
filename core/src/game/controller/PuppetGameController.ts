@@ -1,6 +1,6 @@
 import { TimedGameTickResult } from "../types";
 import { GameController } from "./GameController";
-import { GameControllerState } from "./types";
+import { GameControllerMode, GameControllerState } from "./types";
 
 
 export class PuppetGameController extends GameController {
@@ -18,6 +18,11 @@ export class PuppetGameController extends GameController {
   }
 
   public tick(): TimedGameTickResult[] {
+    if (!this.fsm.is(GameControllerMode.Playing)) {
+      this.options.render(this.getState());
+      return [];
+    }
+
     const results = this.tickToFrame(this.game.frame + 1);
     this.options.render(this.getState());
     return results;

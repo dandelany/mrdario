@@ -31,7 +31,8 @@ export default class HighScores extends React.Component<HighScoresProps, HighSco
     super(props);
     this._debouncedGetScoresForLevel = debounce(this._getScoresForLevel, 300);
   }
-  componentWillMount() {
+
+  componentDidMount() {
     this._getScoresForLevel(this.state.level);
   }
 

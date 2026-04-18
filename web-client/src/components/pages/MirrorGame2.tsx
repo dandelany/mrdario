@@ -75,39 +75,39 @@ class MirrorGame extends React.Component<MirrorGameProps, MirrorGameState> {
   gamepadManager?: GamepadManager;
   touchManager?: SwipeManager;
 
-  componentWillMount() {
+  componentDidMount() {
     const gameOptions = this.getGameOptions(this.props);
     const { level, baseSpeed } = gameOptions;
 
-
     this.props.gameClient.createSingleGame(level, baseSpeed).then((response: CreateSingleGameResponse) => {
-      this.setState({
-        gameId: response.id,
-        gameOptions: response.gameOptions
-      });
-      console.log('game id:', response.id);
-      this._initGame(this.props);
+      this.setState(
+        {
+          gameId: response.id,
+          gameOptions: response.gameOptions
+        },
+        () => {
+          console.log("game id:", response.id);
+          this._initGame(this.props);
+        }
+      );
     });
   }
-  componentDidMount() {
-    // mode means won or lost, no mode = playing
-    // if (!this.props.match.params.mode) this._initGame(this.props);
-  }
+
   componentWillUnmount() {
     // this.props.socket.off('singleHighScores', this._highScoreHandler);
     if (this.game && this.game.cleanup) this.game.cleanup();
   }
 
-  componentWillReceiveProps(newProps: MirrorGameProps) {
-    const params: GameRouteParams = this.props.match.params;
-    const nextParams: GameRouteParams = newProps.match.params;
+  componentDidUpdate(prevProps: MirrorGameProps) {
+    const params: GameRouteParams = prevProps.match.params;
+    const nextParams: GameRouteParams = this.props.match.params;
 
     const shouldInitGame =
       params.level !== nextParams.level ||
       params.speed !== nextParams.speed ||
       (params.mode !== nextParams.mode && !nextParams.mode);
 
-    if (shouldInitGame) this._initGame(newProps);
+    if (shouldInitGame) this._initGame(this.props);
 
     if (!params.mode && this.state.pendingMode) {
       this.setState({ pendingMode: undefined });
