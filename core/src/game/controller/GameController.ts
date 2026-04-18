@@ -1,9 +1,9 @@
 import { cloneDeep, defaults, findIndex, findLast, findLastIndex, isEqual, isFunction, omitBy } from "lodash";
-import { invariant } from "ts-invariant";
 import { TypeState } from "typestate";
 
 import { InputManager } from "../input/types";
 import { GameControllerMode, GameControllerOptions, GameControllerState } from "./types";
+import { assert } from "../../utils/assert";
 
 import { defaultGameOptions, Game } from "../Game";
 import {
@@ -129,7 +129,7 @@ export class GameController {
   public tickToFrame(toFrame: number): TimedGameTickResult[] {
     const frameDiff = toFrame - this.game.frame;
     const tickResults: TimedGameTickResult[] = [];
-    invariant(
+    assert(
       frameDiff >= 0,
       `tickToFrame cannot tick to an earlier frame (game frame ${this.game.frame}, toFrame ${toFrame})`
     );
@@ -223,7 +223,7 @@ export class GameController {
       // action(s) are in past (or present) tick
       // update the game state by rewriting game history to include the past actions
       console.log("action happened in past frame:", frame);
-      invariant(this.options.hasHistory, `Action happened in the past and hasHistory is false`);
+      assert(this.options.hasHistory, `Action happened in the past and hasHistory is false`);
       this.rewriteHistoryWithActions(frameActions);
     }
     // this.actionHistory.map(encodeTimedActions);
@@ -399,7 +399,7 @@ export class GameController {
     return dummyGame;
   }
   protected rewindGameToFrame(game: Game, frame: number) {
-    invariant(this.options.hasHistory, `Cannot rewind game, options.hasHistory is false`);
+    assert(this.options.hasHistory, `Cannot rewind game, options.hasHistory is false`);
     // console.log('history length', this.stateHistory.length, this.actionHistory.length);
     // use state history to "rewind" the state of the game to a given frame
     // may not have saved that exact frame, so find the nearest saved frame less tham or equal to the target,
@@ -417,7 +417,7 @@ export class GameController {
 
   protected rewriteHistoryWithActions(frameActions: TimedGameActions) {
     // const stateHistory = this.stateHistory;
-    invariant(this.options.hasHistory, `Cannot rewrite history, options.hasHistory is false`);
+    assert(this.options.hasHistory, `Cannot rewrite history, options.hasHistory is false`);
     const [frame] = frameActions;
     const currentFrame = this.game.frame;
     // make a dummy game with the last saved state before timedActions

@@ -1,6 +1,5 @@
-import { invariant } from "ts-invariant";
-// import * as t from "io-ts";
 import { isRight } from "fp-ts/lib/Either";
+import { assert } from "../../../utils/assert";
 
 import { TimedGameActions } from "../../../game/types";
 import { isMoveAction } from "../../../game/utils";
@@ -59,7 +58,7 @@ export function encodeTimedActions(timedActions: TimedGameActions): EncodedTimed
 }
 export function decodeTimedActions(encodedTimedActions: EncodedTimedActions): TimedGameActions {
   const splitArr = encodedTimedActions.split(":");
-  invariant(splitArr.length === 2, `Invalid EncodedTimedActions: ${encodedTimedActions}`);
+  assert(splitArr.length === 2, `Invalid EncodedTimedActions: ${encodedTimedActions}`);
   const decodedFrame = tEncodedInt.decode(splitArr[0]);
   if (isRight(decodedFrame)) {
     const frame = decodedFrame.right;

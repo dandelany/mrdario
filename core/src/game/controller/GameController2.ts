@@ -12,7 +12,6 @@ import {
   omitBy,
   times
 } from "lodash";
-import { invariant } from "ts-invariant";
 
 import { InputManager } from "../input/types";
 
@@ -429,7 +428,7 @@ export class GameController {
     assert(state.mode === GameControllerMode.Playing, "tickToFrame can't be called when not Playing");
 
     const frameDiff = toFrame - state.frame;
-    invariant(
+    assert(
       frameDiff >= 0,
       `tickToFrame can't tick to an earlier frame (this.frame ${state.frame}, toFrame ${toFrame})`
     );

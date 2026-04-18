@@ -44,17 +44,16 @@
     "@ircam/sync": "^2.0.1",
     "driftless": "^2.0.3",
     "events": "^3.0.0",
-    "fp-ts": "~2.1.1",
+    "fp-ts": "^2.16.11",
     "gamepad-plus": "^1.0.14",
     "hammerjs": "^2.0.8",
     "immer": "~5.0.0",
-    "io-ts": "~2.0.1",
+    "io-ts": "^2.2.22",
     "lodash": "^4.17.11",
     "mousetrap": "^1.6.2",
     "seedrandom": "~3.0.5",
     "socketcluster": "^14.3.3",
     "socketcluster-server": "^14.4.0",
-    "ts-invariant": "^0.4.4",
     "typestate": "^1.0.6"
   }
 }

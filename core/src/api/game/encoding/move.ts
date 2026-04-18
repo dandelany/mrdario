@@ -1,5 +1,5 @@
 import { invert } from "lodash";
-import { invariant } from "ts-invariant";
+import { assert } from "../../../utils/assert";
 
 import { GameInput, GameInputMove, InputEventType, MoveInputEvent } from "../../../game/types";
 
@@ -41,9 +41,9 @@ export function decodeMoveInputEvent(encodedStr: EncodedMoveInputEvent): MoveInp
   const moveInputCode: number = encoded & 0b000111;
   const eventTypeCode: number = encoded & 0b100000;
 
-  invariant(moveInputCode + "" in moveInputDecodingMap, "Invalid move code");
+  assert(moveInputCode + "" in moveInputDecodingMap, "Invalid move code");
   const input: GameInputMove = moveInputDecodingMap[moveInputCode + ""] as GameInputMove;
-  invariant(eventTypeCode + "" in inputEventTypeDecodingMap, "Invalid event type code");
+  assert(eventTypeCode + "" in inputEventTypeDecodingMap, "Invalid event type code");
   const eventType: InputEventType = inputEventTypeDecodingMap[eventTypeCode + ""] as InputEventType;
 
   return { input, eventType };

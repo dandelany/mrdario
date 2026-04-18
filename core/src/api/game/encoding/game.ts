@@ -1,5 +1,4 @@
 import * as t from "io-ts";
-import { invariant } from "ts-invariant";
 
 import { MovingCounters } from "../../../game/InputRepeater";
 import {
@@ -13,6 +12,7 @@ import {
 } from "../../../game/types";
 
 import { decodeOrThrow, numEnumType, strEnumType } from "../../../utils/io";
+import { assert } from "../../../utils/assert";
 import { decodeGrid, encodeGrid } from "./grid";
 import { either } from "fp-ts/lib/Either";
 
@@ -88,7 +88,7 @@ export function encodeGameOptions(options: EncodableGameOptions): string {
 }
 export function decodeGameOptions(encoded: string): EncodableGameOptions {
   const optionStrs = encoded.split(",");
-  invariant(optionStrs.length === 4, "Invalid game options");
+  assert(optionStrs.length === 4, "Invalid game options");
   const optionsArr = optionStrs.map(decodeInt);
   const [width, height, level, baseSpeed] = optionsArr;
   return { width, height, level, baseSpeed };
@@ -161,4 +161,3 @@ export function decodeGameControllerState(stateStr: string) {
   const parsed = JSON.parse(stateStr);
   return { ...parsed, gameState: decodeGameState(parsed.gameState) };
 }
-
