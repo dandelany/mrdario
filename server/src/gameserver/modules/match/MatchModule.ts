@@ -52,7 +52,7 @@ export class MatchModule {
 
             // this.scServer.exchange.subscribe()
           } catch (err) {
-            respond(err, null);
+            respond(err instanceof Error ? err : String(err), null);
           }
         }
       )
@@ -72,7 +72,7 @@ export class MatchModule {
             const matchInfo = await getMatch(request);
             respond(null, matchInfo);
           } catch (err) {
-            respond(err, null);
+            respond(err instanceof Error ? err : String(err), null);
           }
         }
       )
@@ -102,7 +102,7 @@ export class MatchModule {
             const updatedMatch = await updateMatchGameOptions(match, gameIndex, gameOptions);
             respond(null, updatedMatch);
           } catch (err) {
-            respond(err, null);
+            respond(err instanceof Error ? err : String(err), null);
           }
         }
       )

@@ -11,7 +11,7 @@ class GameBot {
     this.authToken = null;
   }
   async connect() {
-    return await new Promise(async (resolve, reject) => {
+    return await new Promise<void>(async (resolve, reject) => {
       try {
         await this.gameClient.connect();
         await this.gameClient.login("DanBot");

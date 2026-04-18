@@ -1,6 +1,8 @@
 import * as blessed from "blessed";
 
-import { Game, GameActionType, GameTickResultType } from "mrdario-core/lib/Game";
+import { Game } from "mrdario-core/lib/game/Game";
+import { GameActionType } from "mrdario-core/lib/game/types/gameAction";
+import { GameTickResultType } from "mrdario-core/lib/game/types";
 import {
   GameControllerMode,
   GameControllerState,

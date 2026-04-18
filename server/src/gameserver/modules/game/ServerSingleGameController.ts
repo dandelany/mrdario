@@ -6,7 +6,6 @@ export class ServerSingleGameController extends GameController {
 
   public setState(state: GameControllerState) {
     // reset state machine mode
-    delete this.fsm;
     this.fsm = this.initStateMachine(state.mode);
     // set game state
     this.game.setState(state.gameState);

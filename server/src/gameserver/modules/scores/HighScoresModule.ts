@@ -30,7 +30,7 @@ export class HighScoresModule extends AbstractServerModule {
           const scores = await getSingleHighScores2(this.rClient, level, 50);
           respond(null, { level: level, scores: scores });
         } catch (err) {
-          if (err) respond(err, null);
+          if (err) respond(err instanceof Error ? err : String(err), null);
         }
       }
     });
@@ -46,7 +46,7 @@ export class HighScoresModule extends AbstractServerModule {
           respond(null, { rank, scores });
           logHighScore(scoreInfo, rank);
         } catch (err) {
-          respond(err, null);
+          respond(err instanceof Error ? err : String(err), null);
         }
       }
     });

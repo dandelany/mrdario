@@ -8,3 +8,4 @@ dump.rdb
 Thumbs.db
 
 .codex
+*.tsbuildinfo
