@@ -218,3 +218,50 @@ What to revisit later:
 - Revisit the old raw SVG helper path only if there is a clear benefit.
 - Simplify responsive sizing further now that the root height contract is repaired.
 - Audit remaining webpack 5 loader/config compatibility choices with less time pressure.
+
+## 2026-04-18 Router / Lifecycle / TSConfig Cleanup
+
+Completed:
+
+- Upgraded `web-client` routing from `react-router-dom` 4 to 5.
+- Moved several legacy class lifecycles off deprecated APIs:
+  - `HighScores` now uses `componentDidMount`
+  - `MirrorGame2` now uses `componentDidMount` / `componentDidUpdate`
+  - `Playfield` now uses `componentDidUpdate`
+  - `SVGShimmerCycler` and `SVGShimmerFills` now use `componentDidUpdate`
+- Fixed `Playfield` update behavior so pixi grid changes are still allowed through `shouldComponentUpdate`.
+- Fixed destroyed-cell rendering in `Playfield` / `Playfield2`; particles came back with it.
+- Removed dead `Playfield2` after confirming it was unused.
+
+Important findings:
+
+- Most of the scary old React lifecycle usage was not conceptually hard to migrate; it was mostly mount-time init or prop-change side effects.
+- `Playfield` was the one nontrivial case because its imperative pixi diff path depended on update-gating behavior.
+- Router warnings were mostly dependency-age warnings, not evidence that the app needed a framework rewrite.
+
+Asset / module interop landing spot:
+
+- `web-client` TypeScript module output is now `esnext`.
+- This was necessary to make webpack 5 asset-module behavior and default asset imports behave sanely.
+- The clean default-import path for SVG / PNG assets is now working again.
+- `SingleRemoteGame` was corrected to import `PuppetGameController` from `mrdario-core/lib/...` instead of reaching into `mrdario-core/src/...`.
+
+TSConfig cleanup completed:
+
+- Removed the temporary `ignoreDeprecations` workaround.
+- Root shared TypeScript target moved from `es5` to `es2015`.
+- `web-client` TypeScript target moved from `es5` to `es2015`.
+- Removed deprecated `baseUrl` usage from `web-client/tsconfig.paths.json`.
+- Replaced it with explicit `paths` entries (`"./src/*"`).
+- Added explicit `rootDir` in `core` and `web-client`.
+
+Validation status:
+
+- `yarn workspace mrdario-core build` passes.
+- `yarn workspace mrdario-client-web lint` passes.
+- `yarn workspace mrdario-client-web build` passes.
+
+Notes for later:
+
+- If more asset-import weirdness appears, prefer fixing config/module alignment over piling on import-shape hacks.
+- `web-client` is now in a much healthier place for a later move off Yarn classic / Node 14 assumptions.

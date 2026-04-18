@@ -43,9 +43,11 @@ export default class SVGShimmerFills extends React.Component<SVGShimmerFillsProp
   _hasLoaded: boolean = false;
   _animation: number | undefined;
   _animIndex: number = 0;
+  svgRef = React.createRef<HTMLObjectElement>();
 
   componentDidMount() {
-    const svgEl = this.refs.svg as HTMLObjectElement;
+    const svgEl = this.svgRef.current;
+    if (!svgEl) return;
 
     svgEl.addEventListener("load", () => {
       if (!svgEl.contentDocument) return;
@@ -118,7 +120,7 @@ export default class SVGShimmerFills extends React.Component<SVGShimmerFillsProp
   render() {
     return (
       <object
-        ref="svg"
+        ref={this.svgRef}
         data={this.props.svgPath}
         width={this.props.width}
         height={this.props.height}
