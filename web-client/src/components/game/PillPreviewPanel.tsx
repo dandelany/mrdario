@@ -2,24 +2,19 @@ import * as React from "react";
 
 import { GameColor, PillColors } from "mrdario-core/lib/game/types";
 
-import * as pillHalfOrange from "@/svg2/pill_half_orange.svg";
-import * as pillHalfPurple from "@/svg2/pill_half_purple.svg";
-import * as pillHalfGreen from "@/svg2/pill_half_green.svg";
+import pillHalfOrange from "@/svg2/pill_half_orange.svg";
+import pillHalfPurple from "@/svg2/pill_half_purple.svg";
+import pillHalfGreen from "@/svg2/pill_half_green.svg";
 
-type ImportedAsset = string | { default: string };
 type PillHalfAssetByColor = { [key: string]: string };
 
-function resolveAssetUrl(asset: ImportedAsset): string {
-  return typeof asset === "string" ? asset : asset.default;
-}
-
 const pillHalfAssets: PillHalfAssetByColor = {
-  [GameColor.Color1]: resolveAssetUrl(pillHalfOrange),
-  [GameColor.Color2]: resolveAssetUrl(pillHalfPurple),
-  [GameColor.Color3]: resolveAssetUrl(pillHalfGreen),
-  Color1: resolveAssetUrl(pillHalfOrange),
-  Color2: resolveAssetUrl(pillHalfPurple),
-  Color3: resolveAssetUrl(pillHalfGreen)
+  [GameColor.Color1]: pillHalfOrange,
+  [GameColor.Color2]: pillHalfPurple,
+  [GameColor.Color3]: pillHalfGreen,
+  Color1: pillHalfOrange,
+  Color2: pillHalfPurple,
+  Color3: pillHalfGreen
 };
 
 export interface PillPreviewPanelProps {

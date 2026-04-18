@@ -7,17 +7,17 @@ import { hasColor, isDestroyed, isPillHalf } from "mrdario-core/lib/game/utils";
 
 const styles = require("./Playfield.module.scss");
 
-import * as virusOrange from "@/svg2/virus_orange.svg";
-import * as virusPurple from "@/svg2/virus_purple.svg";
-import * as virusGreen from "@/svg2/virus_green.svg";
-import * as pillHalfOrange from "@/svg2/pill_half_orange.svg";
-import * as pillHalfPurple from "@/svg2/pill_half_purple.svg";
-import * as pillHalfGreen from "@/svg2/pill_half_green.svg";
-import * as pillSegmentOrange from "@/svg2/pill_segment_orange.svg";
-import * as pillSegmentPurple from "@/svg2/pill_segment_purple.svg";
-import * as pillSegmentGreen from "@/svg2/pill_segment_green.svg";
-import * as destroyed from "@/svg2/destroyed.svg";
-import * as particle from "@/img/Pixel25px.png";
+import virusOrange from "@/svg2/virus_orange.svg";
+import virusPurple from "@/svg2/virus_purple.svg";
+import virusGreen from "@/svg2/virus_green.svg";
+import pillHalfOrange from "@/svg2/pill_half_orange.svg";
+import pillHalfPurple from "@/svg2/pill_half_purple.svg";
+import pillHalfGreen from "@/svg2/pill_half_green.svg";
+import pillSegmentOrange from "@/svg2/pill_segment_orange.svg";
+import pillSegmentPurple from "@/svg2/pill_segment_purple.svg";
+import pillSegmentGreen from "@/svg2/pill_segment_green.svg";
+import destroyed from "@/svg2/destroyed.svg";
+import particle from "@/img/Pixel25px.png";
 
 type SpriteGrid = (Pixi.Sprite | null)[][];
 
