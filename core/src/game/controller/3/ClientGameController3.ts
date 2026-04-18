@@ -142,10 +142,11 @@ export class ClientGameController3 {
   }
   public cleanup() {
     this.clearTimer();
+    this.detachInputEvents();
   }
 
   public tick = () => {
-    console.log("tick");
+    // console.log("tick");
     this.state.games.forEach(game => game.tick());
   };
 

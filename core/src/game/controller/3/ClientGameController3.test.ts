@@ -22,10 +22,10 @@ describe("GameController", () => {
   describe("One-Player Game", () => {
     let controller: ClientGameController3 | undefined;
 
-    // afterEach(() => {
-    //   if (controller) controller.cleanup();
-    //   controller = undefined;
-    // });
+    afterEach(() => {
+      if (controller) controller.cleanup();
+      controller = undefined;
+    });
 
     test("Constructed as 1-player game by default", () => {
       controller = new ClientGameController3();
