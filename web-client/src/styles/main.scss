@@ -1,6 +1,7 @@
 //@import './rc-slider.less';
-@import 'settings';
-@import 'game';
+@use 'shared' as *;
+@use 'settings';
+@use 'game';
 
 body {
   font-family: 'Coustard', 'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, serif;
@@ -81,12 +82,6 @@ span.btn-white {
   text-align: center;
 }
 
-%center-absolute {
-  position: absolute;
-  margin: 0 auto;
-  left: 0;
-  right: 0;
-}
 .center-absolute {
   @extend %center-absolute;
 }

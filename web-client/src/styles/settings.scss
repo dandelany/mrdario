@@ -1,9 +1,4 @@
-//%center-absolute {
-//  position: absolute;
-//  margin: 0 auto;
-//  left: 0;
-//  right: 0;
-//}
+@use 'shared' as *;
 
 .page-settings {
   h2, h3, h4, h5 {

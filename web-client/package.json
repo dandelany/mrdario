@@ -65,7 +65,7 @@
     "jest": "^26.6.3",
     "less": "^3.9.0",
     "less-loader": "^4.1.0",
-    "node-sass": "^4.14.1",
+    "sass": "^1.77.8",
     "raw-loader": "^1.0.0",
     "react-hot-loader": "^4.13.0",
     "sass-loader": "^7.1.0",
