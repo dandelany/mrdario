@@ -43,7 +43,7 @@ import {
 import { isMoveAction, isMoveInput } from "../utils";
 import { GameAction, GameActionMove } from "../types/gameAction";
 import { assert } from "../../utils/assert";
-import produce from "immer";
+import { produce } from "immer";
 
 export interface GameControllerOptions {
   // number of players (ie. number of games)
