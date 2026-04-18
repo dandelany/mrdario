@@ -4,6 +4,7 @@
     "target": "es2016",
     "module": "commonjs",
     "declaration": true,
+    "rootDir": "./src",
     "outDir": "./lib",
     "strict": true,
     "esModuleInterop": true,

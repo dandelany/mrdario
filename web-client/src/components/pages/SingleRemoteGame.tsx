@@ -12,7 +12,7 @@ import { CreateSingleGameResponse } from "mrdario-core/lib/api/game";
 
 import { ResponsiveGameDisplay } from "@/components/game/GameDisplay";
 import { GameOptions } from "mrdario-core";
-import { PuppetGameController } from "mrdario-core/src/game/controller/PuppetGameController";
+import { PuppetGameController } from "mrdario-core/lib/game/controller/PuppetGameController";
 
 const styles = require("./MirrorGame.module.scss");
 
