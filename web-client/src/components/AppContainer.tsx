@@ -13,7 +13,9 @@ function getWindowSize() {
   return { windowWidth: window.innerWidth, windowHeight: window.innerHeight };
 }
 
-interface AppContainerOwnProps extends RouteComponentProps {}
+interface AppContainerOwnProps extends RouteComponentProps {
+  children?: React.ReactNode;
+}
 
 interface AppContainerDispatchProps {
   initGameClient: (options: Partial<GameClientOptions>) => GameClient;
