@@ -1,7 +1,7 @@
-import * as blessed from "blessed";
+import blessed from "blessed";
 
-import { Game } from "mrdario-core/game/Game";
-import { GameActionType } from "mrdario-core/game/types/gameAction";
+import { Game } from "mrdario-core/game";
+import { GameActionType } from "mrdario-core/game/types";
 import { GameTickResultType } from "mrdario-core/game/types";
 import {
   GameControllerMode,
@@ -12,7 +12,7 @@ import {
   MoveInputEvent
 } from "mrdario-core/game/types";
 
-import TerminalKeyManager from "./TerminalKeyManager";
+import TerminalKeyManager from "./TerminalKeyManager.js";
 
 interface CLIGameControllerOptions {
   screen: blessed.Widgets.Screen;

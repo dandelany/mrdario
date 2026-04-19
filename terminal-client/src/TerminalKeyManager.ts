@@ -1,5 +1,5 @@
 import { EventEmitter } from "events";
-import * as blessed from "blessed";
+import blessed from "blessed";
 
 import {
   GameControllerMode,

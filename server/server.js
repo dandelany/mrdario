@@ -44,7 +44,6 @@ if (process.env.SOCKETCLUSTER_OPTIONS) {
 
 agOptions = {
   path: '/socketcluster/',
-  protocolVersion: 1,
   wsEngine: SOCKETCLUSTER_WS_ENGINE,
   socketChannelLimit: SOCKETCLUSTER_SOCKET_CHANNEL_LIMIT,
   ...agOptions

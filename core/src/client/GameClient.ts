@@ -23,7 +23,7 @@ import {
   UpdateMatchSettingsRequest,
 } from "../api/index.js";
 
-const { partialRight, remove, uniqBy } = lodash;
+const { remove, uniqBy } = lodash;
 
 import {
   AppAuthToken,
@@ -65,6 +65,33 @@ import { SaferClientChannelOut } from "../game/controller/3/SaferChannels2.js";
 
 interface ClientSocketWithValidAuthToken extends SCClientSocket {
   authToken: AppAuthToken;
+}
+
+type SocketEventName =
+  | "connecting"
+  | "connect"
+  | "connectAbort"
+  | "disconnect"
+  | "close"
+  | "error"
+  | "authenticate"
+  | "deauthenticate"
+  | "authStateChange";
+
+function getEventError(event: any): Error {
+  if (event instanceof Error) return event;
+  if (event?.error instanceof Error) return event.error;
+  if (typeof event?.error === "string") return new Error(event.error);
+  if (typeof event?.reason === "string") return new Error(event.reason);
+  return new Error("socketcluster event failed");
+}
+
+function listenToSocketEvent(socket: SCClientSocket, eventName: SocketEventName, handler: (event: any) => void) {
+  void (async () => {
+    for await (const event of socket.listener(eventName)) {
+      handler(event);
+    }
+  })();
 }
 
 export function hasValidAuthToken(socket: SCClientSocket): socket is ClientSocketWithValidAuthToken {
@@ -116,31 +143,39 @@ export class GameClient {
     // this.syncClient = new SyncClient(getTimeFunction);
 
     if (options.onConnecting) {
-      socket.on("connecting", partialRight(options.onConnecting, socket));
+      listenToSocketEvent(socket, "connecting", () => options.onConnecting!(socket));
     }
     if (options.onConnect) {
-      socket.on("connect", partialRight(options.onConnect, socket));
+      listenToSocketEvent(socket, "connect", (status: any) => options.onConnect!(status, () => {}, socket));
     }
     if (options.onConnectAbort) {
-      socket.on("connectAbort", partialRight(options.onConnectAbort, socket));
+      listenToSocketEvent(socket, "connectAbort", (event: any) =>
+        options.onConnectAbort!(event?.code, event?.reason ?? event, socket)
+      );
     }
     if (options.onDisconnect) {
-      socket.on("disconnect", partialRight(options.onDisconnect, socket));
+      listenToSocketEvent(socket, "disconnect", (event: any) =>
+        options.onDisconnect!(event?.code, event?.reason ?? event, socket)
+      );
     }
     if (options.onClose) {
-      socket.on("close", partialRight(options.onClose, socket));
+      listenToSocketEvent(socket, "close", (event: any) =>
+        options.onClose!(event?.code, event?.reason ?? event, socket)
+      );
     }
     if (options.onError) {
-      socket.on("error", partialRight(options.onError, socket));
+      listenToSocketEvent(socket, "error", (event: any) => options.onError!(getEventError(event), socket));
     }
     if (options.onAuthenticate) {
-      socket.on("authenticate", partialRight(options.onAuthenticate, socket));
+      listenToSocketEvent(socket, "authenticate", () => options.onAuthenticate!(socket.signedAuthToken ?? null, socket));
     }
     if (options.onDeauthenticate) {
-      socket.on("deauthenticate", partialRight(options.onDeauthenticate, socket));
+      listenToSocketEvent(socket, "deauthenticate", (event: any) =>
+        options.onDeauthenticate!(event?.oldSignedAuthToken ?? event?.oldAuthToken ?? null, socket)
+      );
     }
     if (options.onAuthStateChange) {
-      socket.on("authStateChange", partialRight(options.onAuthStateChange, socket));
+      listenToSocketEvent(socket, "authStateChange", (event: any) => options.onAuthStateChange!(event, socket));
     }
 
     this.socket = socket;
@@ -150,16 +185,10 @@ export class GameClient {
   public connect() {
     // todo handle case when connect is called after already connected
     return new Promise<SCClientSocket>((resolve, reject) => {
+      void this.socket.listener("connect").once().then(() => resolve(this.socket));
+      void this.socket.listener("error").once().then(event => reject(getEventError(event)));
+      void this.socket.listener("connectAbort").once().then(event => reject(getEventError(event)));
       this.socket.connect();
-      this.socket.on("connect", () => {
-        // console.log("Socket connected - OK");
-        // this.syncClient = setupSyncClient(this.socket, getTimeFunction);
-        resolve(this.socket);
-      });
-      this.socket.on("error", (err: Error) => {
-        console.error("Socket error - " + err);
-        reject(err);
-      });
     });
   }
 
@@ -233,9 +262,8 @@ export class GameClient {
   }
 
   public async leaveLobby(): Promise<null> {
-    // todo have to unwatch also?
+    this.socket.channel(LOBBY_CHANNEL_NAME).close?.();
     this.socket.unsubscribe(LOBBY_CHANNEL_NAME);
-    this.socket.unwatch(LOBBY_CHANNEL_NAME);
     return await emit(this.socket, LobbyEventType.Leave, null, TLobbyLeaveResponse);
   }
 
@@ -290,33 +318,34 @@ export class GameClient {
   }
 
   public sendSingleGameMoves(moveActions: TimedMoveActions): void {
-    this.socket.emit(GameEventType.SingleMove, encodeTimedActions(moveActions));
+    this.socket.transmit(GameEventType.SingleMove, encodeTimedActions(moveActions));
   }
   public sendSingleGameModeChange(nextMode: GameControllerMode): void {
-    this.socket.emit(GameEventType.SingleModeChange, nextMode);
+    this.socket.transmit(GameEventType.SingleModeChange, nextMode);
   }
 
   public sendInfoStartGame(name: string, level: number, speed: number, callback?: any) {
-    this.socket.emit("infoStartGame", [name, level, speed], callback);
+    if (callback) {
+      void this.socket.invoke("infoStartGame", [name, level, speed]).then(callback);
+    } else {
+      this.socket.transmit("infoStartGame", [name, level, speed]);
+    }
   }
   public sendInfoLostGame(name: string, level: number, speed: number, score: number, callback?: any) {
-    this.socket.emit("infoLostGame", [name, level, speed, score], callback);
+    if (callback) {
+      void this.socket.invoke("infoLostGame", [name, level, speed, score]).then(callback);
+    } else {
+      this.socket.transmit("infoLostGame", [name, level, speed, score]);
+    }
   }
 
   public createSimpleGame(level: number, speed: number) {
-    return new Promise<GameListItem>((resolve, reject) => {
-      this.socket.emit("createSimpleGame", [level, speed], (err: Error, game: GameListItem) => {
-        if (err) {
-          reject(err);
-        }
-        resolve(game);
-      });
-    });
+    return this.socket.invoke("createSimpleGame", [level, speed]) as Promise<GameListItem>;
   }
 
   public publishSimpleGameState(gameId: string, grid: GameGrid) {
     const encodedGrid = encodeGrid(grid);
-    this.socket.publish(`game-${gameId}`, encodedGrid);
+    this.socket.transmitPublish(`game-${gameId}`, encodedGrid);
   }
   public publishSimpleGameActions(gameId: string, timedActions: TimedGameActions) {
     const encodedActions = encodeTimedActions(timedActions);
@@ -324,27 +353,22 @@ export class GameClient {
       console.log(this.syncClient.getSyncTime());
     }
     console.log("publish", encodedActions);
-    this.socket.publish(`game-${gameId}`, encodedActions);
+    this.socket.transmitPublish(`game-${gameId}`, encodedActions);
   }
 
   public watchSimpleGameMoves(gameId: string, handleMoves?: (actions: TimedGameActions) => void) {
     const gameChannel = this.socket.subscribe(`game-${gameId}`);
-    gameChannel.watch((data: string) => {
-      if (handleMoves) {
-        handleMoves(decodeTimedActions(data));
+    void (async () => {
+      for await (const data of gameChannel) {
+        if (handleMoves) {
+          handleMoves(decodeTimedActions(data as string));
+        }
       }
-    });
+    })();
   }
 
   public ping(): Promise<number> {
     const start = performance.now();
-    return new Promise<number>((resolve, reject) => {
-      this.socket.emit("ping", null, (err: Error) => {
-        if (err) {
-          reject(err);
-        }
-        resolve(performance.now() - start);
-      });
-    });
+    return this.socket.invoke("ping", null).then(() => performance.now() - start);
   }
 }

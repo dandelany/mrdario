@@ -1,11 +1,11 @@
 import * as t from "io-ts";
 import { PathReporter } from "io-ts/lib/PathReporter.js";
-import * as SCChannel from "sc-channel";
-import { SCClientSocket } from "socketcluster-client";
+import { AGClientChannel, SCClientSocket } from "socketcluster-client";
 import { isRight } from "fp-ts/lib/Either.js";
 
-export type ValidatedSCChannel<MessageType> = Omit<SCChannel.SCChannel, "watch"> & {
+export type ValidatedSCChannel<MessageType> = Omit<AGClientChannel<MessageType>, "watch" | "unwatch"> & {
   watch: (handler: (data: MessageType) => void) => void;
+  unwatch: (handler?: (data: MessageType) => void) => void;
 };
 
 /**
@@ -18,16 +18,36 @@ export type ValidatedSCChannel<MessageType> = Omit<SCChannel.SCChannel, "watch">
  * @param shouldThrow
  */
 export function validatedChannel<MessageType>(
-  channel: SCChannel.SCChannel,
+  channel: AGClientChannel,
   codec: t.Type<MessageType>,
   shouldThrow: boolean = true
 ): ValidatedSCChannel<MessageType> {
   const watchHandlerMap = new Map<(data: MessageType) => void, (data: unknown) => void>();
+  let consumer: (AsyncIterable<unknown> & { return?(): any }) | undefined;
+
+  const ensureConsumer = () => {
+    if (consumer) return;
+    consumer = channel.createConsumer();
+    void (async () => {
+      for await (const data of consumer!) {
+        for (const handler of watchHandlerMap.values()) {
+          handler(data);
+        }
+      }
+    })();
+  };
+
+  const resetConsumerIfUnused = () => {
+    if (!watchHandlerMap.size && consumer?.return) {
+      consumer.return();
+      consumer = undefined;
+    }
+  };
+
   return new Proxy(channel, {
     get(target, propKey) {
       // replace channel.watch method with one which validates incoming messages
       if (propKey === "watch") {
-        const origWatch = target[propKey];
         return function(origHandler: (data: MessageType) => void): void {
           // wrap user-provided handler with a func that validates data against codec
           const wrappedHandler = function(data: any) {
@@ -43,20 +63,17 @@ export function validatedChannel<MessageType>(
           };
           // save original handler in map so we can unwatch
           watchHandlerMap.set(origHandler, wrappedHandler);
-          // call original channel.watch function with our wrapped (validated) handler
-          origWatch.call(channel, wrappedHandler);
+          ensureConsumer();
         };
       } else if (propKey === "unwatch") {
-        const origUnwatch = target[propKey];
         return function(origHandler?: (data: MessageType) => void): void {
           // look up the originally-passed handler in map to find the wrapped handler that's actually bound
           if (origHandler && watchHandlerMap.has(origHandler)) {
-            const wrappedHandler = watchHandlerMap.get(origHandler);
             watchHandlerMap.delete(origHandler);
-            origUnwatch(wrappedHandler);
           } else {
-            origUnwatch(origHandler);
+            watchHandlerMap.clear();
           }
+          resetConsumerIfUnused();
         };
       }
       // todo type?
@@ -64,7 +81,7 @@ export function validatedChannel<MessageType>(
       return target[propKey];
     }
     // todo proxy publish
-  });
+  }) as unknown as ValidatedSCChannel<MessageType>;
 }
 
 export async function promisifySocketRequest<ResponseType, RequestType = any>(
@@ -73,20 +90,12 @@ export async function promisifySocketRequest<ResponseType, RequestType = any>(
   requestData: RequestType,
   TResponseType: t.Type<ResponseType>
 ): Promise<ResponseType> {
-  return await new Promise<ResponseType>(function(resolve, reject) {
-    socket.emit(eventName, requestData, (err: string | undefined, data: any) => {
-      if (err) {
-        reject(new Error(err));
-      }
-      const decoded = TResponseType.decode(data);
-      if (isRight(decoded)) {
-        resolve(decoded.right);
-      } else {
-        reject(new Error(PathReporter.report(decoded)[0]));
-      }
-      resolve(data);
-    });
-  });
+  const data = await socket.invoke(eventName, requestData);
+  const decoded = TResponseType.decode(data);
+  if (isRight(decoded)) {
+    return decoded.right;
+  }
+  throw new Error(PathReporter.report(decoded)[0]);
 }
 
 export async function promisifySocketPublish<AckDataType = undefined>(
@@ -94,10 +103,5 @@ export async function promisifySocketPublish<AckDataType = undefined>(
   channelName: string,
   data: any
 ): Promise<AckDataType> {
-  return new Promise((resolve, reject) => {
-    socket.publish(channelName, data, (err: Error, ackData: AckDataType) => {
-      if (err) { reject(err); }
-      else { resolve(ackData); }
-    });
-  });
+  return await socket.invokePublish(channelName, data) as AckDataType;
 }

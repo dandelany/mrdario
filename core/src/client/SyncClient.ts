@@ -14,25 +14,27 @@ export function setupSyncClient(
     const request = [pingId, clientPingTime];
     console.log(`[ping] - id: ${pingId}, pingTime: ${clientPingTime}`);
 
-    socket.emit("sPing", request);
+    socket.transmit("sPing", request);
   };
 
   const syncReceive: SyncClient.ReceiveFunction = callback => {
-    socket.on("sPong", (response: any) => {
-      if (response) {
-        const [pingId, clientPingTime, serverPingTime, serverPongTime] = response;
+    void (async () => {
+      for await (const response of socket.receiver("sPong")) {
+        if (response) {
+          const [pingId, clientPingTime, serverPingTime, serverPongTime] = response as any[];
 
-        console.log(
-          `[pong] - id: %s, clientPingTime: %s, serverPingTime: %s, serverPongTime: %s`,
-          pingId,
-          clientPingTime,
-          serverPingTime,
-          serverPongTime
-        );
+          console.log(
+            `[pong] - id: %s, clientPingTime: %s, serverPingTime: %s, serverPongTime: %s`,
+            pingId,
+            clientPingTime,
+            serverPingTime,
+            serverPongTime
+          );
 
-        callback(pingId, clientPingTime, serverPingTime, serverPongTime);
+          callback(pingId, clientPingTime, serverPingTime, serverPongTime);
+        }
       }
-    });
+    })();
   };
 
   const syncReport: SyncClient.ReportFunction = report => {

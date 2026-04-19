@@ -1,7 +1,6 @@
-import type { SCChannel } from "sc-channel";
 import type { SCExchange } from "sc-broker-cluster";
 import type { SCClientSocket } from "socketcluster-client";
-import type { SCServerSocket } from "socketcluster-server";
+import type { AGServerSocket } from "socketcluster-server";
 import lodash from "lodash";
 import { assert } from "../../../utils/assert.js";
 import { SaferChannelIn, SaferChannelOut } from "./SaferChannels.js";
@@ -50,8 +49,13 @@ export const REPUBLISH_TOKEN = "P";
 // unique token for reConnect notice (sent by client when client reconnects)
 export const RECONNECT_TOKEN = "C";
 
-export function isServerSocket(socket: SCServerSocket | SCClientSocket): socket is SCServerSocket {
+export function isServerSocket(socket: AGServerSocket | SCClientSocket): socket is AGServerSocket {
   return "exchange" in socket;
+}
+
+interface WatchableChannel {
+  watch(handler: (data: any) => void): void;
+  unwatch(handler: (data: any) => void): void;
 }
 
 // utils - encode/decode an ID (positive integer number) as a string
@@ -204,7 +208,7 @@ export interface SaferClientChannelInOptions {
 export class SaferClientChannelIn {
   options: Required<SaferClientChannelInOptions>;
   socket: SCClientSocket;
-  channel: SCChannel;
+  channel: WatchableChannel;
 
   private listeners: ((data: any) => void)[];
   private messageIdLog: number[];
@@ -225,7 +229,7 @@ export class SaferClientChannelIn {
     this.pendingRepeatRequestIds = [];
 
     // subscribe to the channel & watch it for messages
-    this.channel = this.socket.subscribe(this.options.channelName);
+    this.channel = this.socket.subscribe(this.options.channelName) as unknown as WatchableChannel;
     this.channel.watch(this.handleMessage);
   }
 
@@ -364,7 +368,7 @@ export interface SaferClientChannelOutOptions {
 export class SaferClientChannelOut {
   options: Required<SaferClientChannelOutOptions>;
   socket: SCClientSocket;
-  channel: SCChannel;
+  channel: WatchableChannel;
   // log of outgoing messages we've sent, by ID
   private messageLog: { [msgId: string]: string };
   // ID for the next message to send
@@ -380,7 +384,7 @@ export class SaferClientChannelOut {
 
     // subscribe to the channel & watch it for messages
     // other clients can't send on this channel, but the server sends republish requests
-    this.channel = this.socket.subscribe(this.options.channelName);
+    this.channel = this.socket.subscribe(this.options.channelName) as unknown as WatchableChannel;
   }
   cleanup() {
     this.socket.unsubscribe(this.options.channelName);
@@ -415,7 +419,7 @@ export class SaferClientChannelOut {
     //   // todo handle this error?
     //   // retry on failure?
     // });
-    this.socket.publish(this.options.channelName, messageStr);
+    this.socket.publish!(this.options.channelName, messageStr);
   }
   private publishNewMsg(content: string, token?: string) {
     // create message object with next ID
@@ -505,16 +509,16 @@ export class SaferChannelsClient {
  **/
 
 export interface SaferServerChannelInOptions {
-  socket: SCServerSocket;
+  socket: AGServerSocket;
   exchange: SCExchange;
   channelName: string;
   onMessage?: ((messageContent: string) => void) | null;
 }
 export class SaferServerChannelIn {
   options: Required<SaferServerChannelInOptions>;
-  socket: SCServerSocket;
+  socket: AGServerSocket;
   private listeners: ((data: any) => void)[];
-  private channel: SCChannel;
+  private channel: WatchableChannel;
   // log of outgoing messages we've received, by ID
   private messageLog: { [msgId: string]: string };
 
@@ -530,7 +534,12 @@ export class SaferServerChannelIn {
     this.listeners = this.options.onMessage ? [this.options.onMessage] : [];
 
     // subscribe to the channel & watch it for messages
-    this.channel = this.options.exchange.subscribe(this.options.channelName);
+    // socketcluster 20 changed server-side channel semantics: exchange subscriptions are now
+    // modeled as AGChannel async iterables instead of the older SCChannel-style watch/unwatch API.
+    // this file is legacy protocol experimentation code and only needs the watchable subset, so we
+    // intentionally narrow the type here rather than drag the whole abstraction over to the new
+    // async iterator model.
+    this.channel = this.options.exchange.subscribe(this.options.channelName) as unknown as WatchableChannel;
     this.channel.watch(this.handleMessage);
   }
   watch(listener: (data: any) => void) {

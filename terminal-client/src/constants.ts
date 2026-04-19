@@ -1,5 +1,5 @@
 import { GameControllerMode, GameInput, GridObjectType, KeyBindings } from "mrdario-core/game";
-import { GridObjectStringMap } from "./types";
+import { GridObjectStringMap } from "./types.js";
 
 export const GRID_OBJECT_STRINGS: GridObjectStringMap = {
   // [GridObjectType.Empty]: '░░',

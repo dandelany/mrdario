@@ -1,16 +1,14 @@
-import { create as createSocket, SCClientSocket } from "socketcluster-client";
-
 import {
   GameControllerMode,
   GameControllerState,
   KeyBindings,
 } from "mrdario-core/game/types";
 
-import { GridObjectStringMap } from "./types";
-import { GRID_OBJECT_STRINGS, KEY_BINDINGS } from "./constants";
-import TerminalGameUi from "./TerminalGameUi";
-import TerminalKeyManager from "./TerminalKeyManager";
-import CLIGameController from "./CLIGameController";
+import { GridObjectStringMap } from "./types.js";
+import { GRID_OBJECT_STRINGS, KEY_BINDINGS } from "./constants.js";
+import TerminalGameUi from "./TerminalGameUi.js";
+import TerminalKeyManager from "./TerminalKeyManager.js";
+import CLIGameController from "./CLIGameController.js";
 
 export interface CLIGameClientOptions {
   gridObjectStrings: GridObjectStringMap;
@@ -72,22 +70,6 @@ export class CLIGameClient {
         setTimeout(this.cleanExit, 3000);
       },
       keyManager: this.keyManager
-    });
-
-
-
-    let socket: SCClientSocket = createSocket({ port: 8000 });
-
-    socket.on("error", (_err: Error) => {
-      // this.debugStr = err.message
-      // console.log(err);
-    });
-
-    socket.on("connect", () => {
-      console.log("Socket connected - OK");
-      // this.debugStr = "CONNECTED"
-
-      // socket.emit('sampleClientEvent', 0);
     });
   }
   cleanExit = () => {

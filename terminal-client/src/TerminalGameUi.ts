@@ -1,11 +1,11 @@
-import * as blessed from "blessed";
+import blessed from "blessed";
 import chalk from "chalk";
 
 import { GameColor, GameControllerState, GameGridRow, GridObject } from "mrdario-core/game/types";
 import { hasColor } from "mrdario-core/game/utils/guards";
 
-import { GRID_OBJECT_STRINGS } from "./constants";
-import { GridObjectStringMap } from "./types";
+import { GRID_OBJECT_STRINGS } from "./constants.js";
+import { GridObjectStringMap } from "./types.js";
 
 
 export default class TerminalGameUi {
@@ -107,13 +107,11 @@ function renderObject(obj: GridObject, objStrings: GridObjectStringMap): string 
 }
 
 function renderWithColor(str: string, color: GameColor): string {
+  const colorize = chalk as any;
   if (color === GameColor.Color1) {
-    return chalk.redBright(str);
+    return colorize.red(str);
   } else if (color === GameColor.Color2) {
-    return chalk.yellowBright(str);
+    return colorize.yellow(str);
   }
-  return chalk.blueBright(str);
+  return colorize.blue(str);
 }
-
-
-

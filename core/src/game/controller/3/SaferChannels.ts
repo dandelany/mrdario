@@ -1,6 +1,5 @@
-import type { SCChannel } from "sc-channel";
 import type { SCClientSocket } from "socketcluster-client";
-import type { SCServerSocket } from "socketcluster-server";
+import type { AGServerSocket } from "socketcluster-server";
 import lodash from "lodash";
 import { assert } from "../../../utils/assert.js";
 
@@ -44,8 +43,13 @@ export const SAFER_SEPARATOR = ":";
 // token used to identify repeat request messages
 export const REPEAT_TOKEN = "R";
 
-export function isServerSocket(socket: SCServerSocket | SCClientSocket): socket is SCServerSocket {
+export function isServerSocket(socket: AGServerSocket | SCClientSocket): socket is AGServerSocket {
   return "exchange" in socket;
+}
+
+interface WatchableChannel {
+  watch(handler: (data: any) => void): void;
+  unwatch(handler: (data: any) => void): void;
 }
 //
 // function assertIsString(val: any): asserts val is string {
@@ -120,7 +124,7 @@ function serializeRepeatRequest(request: SaferRepeatRequest): string {
 /* SaferChannelIn */
 
 interface SaferChannelInOptions {
-  socket: SCClientSocket | SCServerSocket;
+  socket: SCClientSocket | AGServerSocket;
   channelName: string;
   handleMessage?: (messageContent: string) => void | null;
   handleRepeatRequest?: (req: any) => void;
@@ -133,8 +137,8 @@ interface SaferChannelInOptions {
 
 export class SaferChannelIn {
   options: Required<SaferChannelInOptions>;
-  socket: SCClientSocket | SCServerSocket;
-  channel: SCChannel;
+  socket: SCClientSocket | AGServerSocket;
+  channel: WatchableChannel;
 
   private handlers: ((data: any) => void)[];
   private messageIdLog: number[];
@@ -158,9 +162,15 @@ export class SaferChannelIn {
     // if('exchange' in this.socket) {
     // this.socket.exchange.
     // }
+    // old socketcluster server channels behaved enough like client SCChannel objects that this
+    // experiment could treat both sides as "watchable" subscriptions. in modern socketcluster,
+    // server exchange subscriptions are typed as async-iterable AGChannel instances instead of the
+    // old watch/unwatch shape. runtime behavior here still matches the legacy usage we depend on,
+    // but the types no longer line up naturally, so we pin this code to the narrower contract it
+    // actually uses instead of pretending the full client/server channel APIs are the same.
     this.channel = isServerSocket(this.socket)
-      ? this.socket.exchange.subscribe(this.options.channelName)
-      : this.socket.subscribe(this.options.channelName);
+      ? this.socket.exchange.subscribe(this.options.channelName) as unknown as WatchableChannel
+      : this.socket.subscribe(this.options.channelName) as unknown as WatchableChannel;
 
     this.channel.watch(this.handleMessage);
   }
@@ -331,9 +341,7 @@ export class SaferChannelOut {
 
       // todo queue these or call with setTimeout so that regular publishes are sent out w/ higher priority?
       // todo handle errors from socket.publish, retry on failure!
-      isServerSocket(socket) ?
-        socket.exchange.publish(channelName, messageStr) :
-        socket.publish(channelName, messageStr);
+      socket.publish!(channelName, messageStr);
     }
   }
   publishRepeatRequest(request: SaferRepeatRequest) {
@@ -350,9 +358,7 @@ export class SaferChannelOut {
     this.nextMsgId += 1;
 
     const { socket, channelName } = this.options;
-    isServerSocket(socket) ?
-      socket.exchange.publish(channelName, messageStr) :
-      socket.publish(channelName, messageStr);
+    socket.publish!(channelName, messageStr);
     // console.log('published', messageStr, "to", channelName)
     // todo handle errors from socket.publish, retry on failure
   }
