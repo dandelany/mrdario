@@ -7,12 +7,12 @@ import {
   GridObjectPillHalfType
 } from "mrdario-core/game/types";
 
-import pillHalfOrange from "@/svg2/pill_half_orange.svg";
-import pillHalfPurple from "@/svg2/pill_half_purple.svg";
-import pillHalfGreen from "@/svg2/pill_half_green.svg";
-import pillSegmentOrange from "@/svg2/pill_segment_orange.svg";
-import pillSegmentPurple from "@/svg2/pill_segment_purple.svg";
-import pillSegmentGreen from "@/svg2/pill_segment_green.svg";
+import pillHalfOrange from "@/svg2/pill_half_orange.svg?inline";
+import pillHalfPurple from "@/svg2/pill_half_purple.svg?inline";
+import pillHalfGreen from "@/svg2/pill_half_green.svg?inline";
+import pillSegmentOrange from "@/svg2/pill_segment_orange.svg?inline";
+import pillSegmentPurple from "@/svg2/pill_segment_purple.svg?inline";
+import pillSegmentGreen from "@/svg2/pill_segment_green.svg?inline";
 
 type PillPartAssetByColor = { [C in GameColor]: string };
 

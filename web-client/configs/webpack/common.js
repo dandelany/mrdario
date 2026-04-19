@@ -118,7 +118,22 @@ module.exports = {
       },
       {
         test: /\.svg$/,
-        resourceQuery: { not: [/raw/] },
+        resourceQuery: /inline/,
+        type: 'asset/inline',
+        use: [
+          {
+            loader: 'svgo-loader',
+            options: {
+              plugins: [
+                {removeViewBox: false}
+              ]
+            }
+          }
+        ]
+      },
+      {
+        test: /\.svg$/,
+        resourceQuery: { not: [/raw/, /inline/] },
         type: 'asset/resource',
         generator: {
           filename: 'svg/[name].[hash:7][ext]'

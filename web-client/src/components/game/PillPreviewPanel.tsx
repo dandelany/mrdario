@@ -2,9 +2,9 @@ import * as React from "react";
 
 import { GameColor, PillColors } from "mrdario-core/game/types";
 
-import pillHalfOrange from "@/svg2/pill_half_orange.svg";
-import pillHalfPurple from "@/svg2/pill_half_purple.svg";
-import pillHalfGreen from "@/svg2/pill_half_green.svg";
+import pillHalfOrange from "@/svg2/pill_half_orange.svg?inline";
+import pillHalfPurple from "@/svg2/pill_half_purple.svg?inline";
+import pillHalfGreen from "@/svg2/pill_half_green.svg?inline";
 
 type PillHalfAssetByColor = { [key: string]: string };
 

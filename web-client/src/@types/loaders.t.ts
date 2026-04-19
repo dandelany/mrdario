@@ -3,6 +3,11 @@ declare module "*.svg?raw" {
   export default contents;
 }
 
+declare module "*.svg?inline" {
+  const contents: string;
+  export default contents;
+}
+
 declare module "*.svg" {
   const contents: string;
   export default contents;
