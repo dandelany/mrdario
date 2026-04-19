@@ -1,7 +1,7 @@
 
-import { COLORS, GameColor, GameInput, GameMode, GameState, PillColors } from "../../../game";
-import { decodeGrid, decodeInt, encodeGameState, encodeInt, tEncodedInt, tPillColorsCodec } from "./index";
-import { isRight } from "fp-ts/lib/Either";
+import { COLORS, GameColor, GameInput, GameMode, GameState, PillColors } from "../../../game/index.js";
+import { decodeGrid, decodeInt, encodeGameState, encodeInt, tEncodedInt, tPillColorsCodec } from "./index.js";
+import { isRight } from "fp-ts/lib/Either.js";
 
 describe("Game Encoding", () => {
   describe("Integer Encoding with tEncodedInt", () => {

@@ -1,18 +1,19 @@
-import * as _ from "lodash";
+import lodash from "lodash";
+import { jest } from "@jest/globals";
 
-import { GameClient } from "mrdario-core/lib/client";
+import { GameClient } from "mrdario-core/client";
 import {
   LobbyChatMessageOut,
   LobbyJoinResponse,
   LobbyMessageType,
   TLobbyJoinResponse,
   TLobbyLeaveResponse
-} from "mrdario-core/lib/api/lobby";
-import { ClientAuthenticatedUser } from "mrdario-core/lib/api/auth";
-import { expectToRejectNotAuthenticated, sleep, A_JIFFY, connectGameClient } from "../utils";
-import { toDecodeWith } from "mrdario-core/src/utils/jest";
-import { promisifySocketPublish } from "mrdario-core/lib/client/utils";
-import { LOBBY_CHANNEL_NAME } from "mrdario-core/lib/api/lobby";
+} from "mrdario-core/api/lobby";
+import { ClientAuthenticatedUser } from "mrdario-core/api/auth";
+import { expectToRejectNotAuthenticated, sleep, A_JIFFY, connectGameClient } from "../utils/index.js";
+import { toDecodeWith } from "mrdario-core/utils/jest";
+import { promisifySocketPublish } from "mrdario-core/client/utils";
+import { LOBBY_CHANNEL_NAME } from "mrdario-core/api/lobby";
 
 expect.extend({ toDecodeWith });
 
@@ -120,7 +121,7 @@ describe("Lobby", () => {
       await sleep(A_JIFFY);
       expect(changeSpy).toHaveBeenCalled();
 
-      expect(_.last(changeSpy.mock.calls)).toMatchObject([
+      expect(lodash.last(changeSpy.mock.calls)).toMatchObject([
         [
           {
             name: user.name,

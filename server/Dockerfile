@@ -1,12 +1,12 @@
-FROM node:8-slim
+FROM node:18.15.0-slim
 
 LABEL maintainer="Jonathan Gros-Dubois"
-LABEL version="14.3.2"
+LABEL version="20.0.2"
 LABEL description="Docker file for SocketCluster with support for clustering."
 
 RUN mkdir -p /usr/src/
 WORKDIR /usr/src/
-COPY server2 /usr/src/
+COPY . /usr/src/
 
 RUN npm install .
 

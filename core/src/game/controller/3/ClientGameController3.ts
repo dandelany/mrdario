@@ -4,10 +4,10 @@ import {
   GameController3PublicState,
   GameController3State,
   GameController3TimerType
-} from "./types";
-import { getGetTime } from "../../../utils/time";
-import { defaults, get, noop, omit, times } from "lodash";
-import { assert } from "../../../utils/assert";
+} from "./types.js";
+import { getGetTime } from "../../../utils/time.js";
+import lodash from "lodash";
+import { assert } from "../../../utils/assert.js";
 import {
   GameActionType,
   GameControllerActionType,
@@ -19,9 +19,11 @@ import {
   InputEventType,
   TimedGameActions,
   TimedGameTickResult
-} from "../../types";
-import { Game } from "../../Game";
-import { isMoveInput } from "../../utils";
+} from "../../types/index.js";
+import { Game } from "../../Game.js";
+import { isMoveInput } from "../../utils/index.js";
+
+const { defaults, get, noop, omit, times } = lodash;
 
 // ClientGameController
 // Starting point for GameController 3

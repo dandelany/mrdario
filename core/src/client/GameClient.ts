@@ -1,6 +1,6 @@
 // import { partial } from "lodash";
 import SyncClient from "@ircam/sync/client";
-import { partialRight, remove, uniqBy } from "lodash";
+import lodash from "lodash";
 import { create as createSocket, SCClientSocket } from "socketcluster-client";
 
 import {
@@ -21,7 +21,9 @@ import {
   // TMatch,
   TSaveScoreResponse,
   UpdateMatchSettingsRequest,
-} from "../api";
+} from "../api/index.js";
+
+const { partialRight, remove, uniqBy } = lodash;
 
 import {
   AppAuthToken,
@@ -30,7 +32,7 @@ import {
   isAuthToken,
   LoginRequest,
   TClientAuthenticatedUser,
-} from "../api/auth";
+} from "../api/auth/index.js";
 
 import {
   LOBBY_CHANNEL_NAME,
@@ -44,22 +46,22 @@ import {
   TLobbyJoinResponse,
   TLobbyLeaveResponse,
   TLobbyMessage,
-} from "../api/lobby";
+} from "../api/lobby/index.js";
 
 import {
   CreateSingleGameRequest,
   CreateSingleGameResponse,
   GameEventType,
   TCreateSingleGameResponse,
-} from "../api/game";
+} from "../api/game/index.js";
 
-import { decodeTimedActions, encodeTimedActions } from "../api/game/encoding/action";
-import { encodeGrid } from "../api/game/encoding/grid";
-import { GameControllerMode, GameGrid, TimedGameActions, TimedMoveActions } from "../game/types";
-import { promisifySocketPublish, promisifySocketRequest as emit, validatedChannel } from "./utils";
-import { isRight } from "fp-ts/lib/Either";
-import { SaferClientChannelOut } from "../game/controller/3/SaferChannels2";
-// import { setupSyncClient } from "./SyncClient";
+import { decodeTimedActions, encodeTimedActions } from "../api/game/encoding/action.js";
+import { encodeGrid } from "../api/game/encoding/grid.js";
+import { GameControllerMode, GameGrid, TimedGameActions, TimedMoveActions } from "../game/types/index.js";
+import { promisifySocketPublish, promisifySocketRequest as emit, validatedChannel } from "./utils.js";
+import { isRight } from "fp-ts/lib/Either.js";
+import { SaferClientChannelOut } from "../game/controller/3/SaferChannels2.js";
+// import { setupSyncClient } from "./SyncClient.js";
 
 interface ClientSocketWithValidAuthToken extends SCClientSocket {
   authToken: AppAuthToken;

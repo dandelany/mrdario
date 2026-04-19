@@ -1,5 +1,5 @@
-import { times } from "lodash";
-import { decodeGrid } from "../api/game/encoding";
+import lodash from "lodash";
+import { decodeGrid } from "../api/game/encoding/index.js";
 import {
   Game,
   GameActionType,
@@ -10,7 +10,9 @@ import {
   GameState,
   GameTickResultType,
   GRAVITY_TABLE
-} from "./index";
+} from "./index.js";
+
+const { times } = lodash;
 
 /*
 Y = Destroyed

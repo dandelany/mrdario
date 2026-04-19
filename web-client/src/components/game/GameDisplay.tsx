@@ -1,7 +1,7 @@
 import * as React from "react";
 
 import { GameGrid, GameOptions, PillColors } from "mrdario-core";
-import { GameControllerMode } from "mrdario-core/lib/game/controller";
+import { GameControllerMode } from "mrdario-core/game/controller";
 
 import Playfield from "@/components/game/Playfield";
 import PillPreviewPanel from "@/components/game/PillPreviewPanel";

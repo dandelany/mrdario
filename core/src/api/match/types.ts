@@ -1,5 +1,5 @@
 import * as t from "io-ts";
-import { strEnumType } from "../../utils/io";
+import { strEnumType } from "../../utils/io.js";
 
 export enum MatchMode {
   Setup = "Setup",

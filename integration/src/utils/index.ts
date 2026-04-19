@@ -1,7 +1,7 @@
-import { GameClient } from "mrdario-core/lib/client";
+import { GameClient } from "mrdario-core/client";
 
-export * from "./jest";
-export * from "./redis";
+export * from "./jest.js";
+export * from "./redis.js";
 
 export const A_JIFFY = 25;
 export const TWO_SHAKES = 100;
@@ -23,4 +23,3 @@ export async function connectGameClient(): Promise<GameClient> {
 export function sleep(time: number): Promise<number> {
   return new Promise(resolve => setTimeout(resolve, time));
 }
-

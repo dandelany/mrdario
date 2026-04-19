@@ -2,9 +2,9 @@ import { ActionCreator, Dispatch } from "redux";
 import { ThunkAction, ThunkDispatch } from "redux-thunk";
 import { SCClientSocket } from "socketcluster-client";
 
-import { GameClient, GameClientOptions } from "mrdario-core/lib/client";
-import { AppAuthToken, ClientAuthenticatedUser } from "mrdario-core/lib/api/auth";
-import { GetHighScoresResponse } from "mrdario-core/lib/api/scores";
+import { GameClient, GameClientOptions } from "mrdario-core/client";
+import { AppAuthToken, ClientAuthenticatedUser } from "mrdario-core/api/auth";
+import { GetHighScoresResponse } from "mrdario-core/api/scores";
 
 import {
   AppAction,

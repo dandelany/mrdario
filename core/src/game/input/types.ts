@@ -1,5 +1,5 @@
-import { GameControllerMode } from "../controller";
-import { GameInput, InputEventType, ModeKeyBindings } from "../types";
+import { GameControllerMode } from "../controller/index.js";
+import { GameInput, InputEventType, ModeKeyBindings } from "../types/index.js";
 
 export interface InputManager {
   setMode: (mode: GameControllerMode) => any;

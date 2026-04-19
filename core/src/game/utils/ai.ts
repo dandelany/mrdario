@@ -1,6 +1,8 @@
-import { unzip } from "lodash";
-import { GameColor, GameState, GridObjectType } from "../types";
-import { hasColor } from "./guards";
+import lodash from "lodash";
+import { GameColor, GameState, GridObjectType } from "../types/index.js";
+import { hasColor } from "./guards.js";
+
+const { unzip } = lodash;
 
 const VIRUS_SCORE = -1000;
 const NEW_COL_RUN_SCORE = -150;

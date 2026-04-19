@@ -1,9 +1,9 @@
 import * as t from "io-ts";
-import { PathReporter } from "io-ts/lib/PathReporter";
+import { PathReporter } from "io-ts/lib/PathReporter.js";
 
-import { numEnumType, strEnumType, tJSONString } from "./io";
-import { expectToDecodeWithAndEqual, toDecodeWith } from "./jest";
-import { isLeft } from "fp-ts/lib/Either";
+import { numEnumType, strEnumType, tJSONString } from "./io.js";
+import { expectToDecodeWithAndEqual, toDecodeWith } from "./jest.js";
+import { isLeft } from "fp-ts/lib/Either.js";
 
 expect.extend({ toDecodeWith });
 

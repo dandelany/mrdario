@@ -2,10 +2,10 @@ import * as React from "react";
 import { connect } from "react-redux";
 import { Redirect, RouteComponentProps, withRouter } from "react-router-dom";
 
-import { GameClient } from "mrdario-core/lib/client";
+import { GameClient } from "mrdario-core/client";
 
 import { AppThunkDispatch, login } from "@/store/actions/creators";
-import { AppAuthToken } from "mrdario-core/lib/api/auth";
+import { AppAuthToken } from "mrdario-core/api/auth";
 import { AppState } from "@/store/state";
 
 const styles = require("./LoginPage.module.scss");

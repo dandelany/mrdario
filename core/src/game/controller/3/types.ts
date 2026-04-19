@@ -1,11 +1,11 @@
 import * as t from "io-ts";
 
-import { strEnumType } from "../../../utils/io";
+import { strEnumType } from "../../../utils/io.js";
 
-import { GameOptions, GameState, TimedGameActions, TimedGameTickResult } from "../../types";
-import { Game } from "../../Game";
-import { InputManager } from "../../input/types";
-import { tTimedMoveActions } from "../../types/gameAction";
+import { GameOptions, GameState, TimedGameActions, TimedGameTickResult } from "../../types/index.js";
+import { Game } from "../../Game.js";
+import { InputManager } from "../../input/types.js";
+import { tTimedMoveActions } from "../../types/gameAction.js";
 
 
 export enum GameController3Mode {

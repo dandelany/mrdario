@@ -1,8 +1,8 @@
 import { Action } from "redux";
 import { SCClientSocket } from "socketcluster-client";
 
-import { GetHighScoresResponse } from "mrdario-core/lib/api/scores";
-import { AppAuthToken, ClientAuthenticatedUser, LoginRequest } from "mrdario-core/lib/api/auth";
+import { GetHighScoresResponse } from "mrdario-core/api/scores";
+import { AppAuthToken, ClientAuthenticatedUser, LoginRequest } from "mrdario-core/api/auth";
 
 // master list of app action type strings
 export enum AppActionType {

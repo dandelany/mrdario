@@ -1,4 +1,4 @@
-import { AppAuthToken } from "./types";
+import { AppAuthToken } from "./types.js";
 
 export function isAuthToken(authToken?: { [K in string]: any } | null): authToken is AppAuthToken {
   return (

@@ -1,6 +1,6 @@
 import * as t from "io-ts";
-import { either, isRight } from "fp-ts/lib/Either";
-import { PathReporter } from "io-ts/lib/PathReporter";
+import { either, isRight } from "fp-ts/lib/Either.js";
+import { PathReporter } from "io-ts/lib/PathReporter.js";
 
 /**
  * Creates an io-ts Type from a string enum

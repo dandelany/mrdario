@@ -3,9 +3,11 @@ import {
   GameController,
   GameControllerMode,
   GameControllerPublicState
-} from "./GameController2";
-import { GameOptions, InputManager, TimedMoveActions } from "../types";
-import { defaults, noop } from "lodash";
+} from "./GameController2.js";
+import { GameOptions, InputManager, TimedMoveActions } from "../types/index.js";
+import lodash from "lodash";
+
+const { defaults, noop } = lodash;
 
 
 export const DEFAULT_SINGLE_GAME_CONTROLLER_OPTIONS: SingleGameControllerOptions = {

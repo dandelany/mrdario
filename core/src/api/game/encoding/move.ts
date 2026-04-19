@@ -1,7 +1,9 @@
-import { invert } from "lodash";
-import { assert } from "../../../utils/assert";
+import lodash from "lodash";
+import { assert } from "../../../utils/assert.js";
 
-import { GameInput, GameInputMove, InputEventType, MoveInputEvent } from "../../../game/types";
+import { GameInput, GameInputMove, InputEventType, MoveInputEvent } from "../../../game/types/index.js";
+
+const { invert } = lodash;
 
 // binary encodings for move inputs
 

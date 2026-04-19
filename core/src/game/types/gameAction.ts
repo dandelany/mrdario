@@ -1,7 +1,7 @@
 import * as t from "io-ts";
 
-import { tGameColor, tGameInputMove, tInputEventType } from "./types";
-import { strEnumType } from "../../utils/io";
+import { tGameColor, tGameInputMove, tInputEventType } from "./types.js";
+import { strEnumType } from "../../utils/io.js";
 
 // GameActions represent events from the "outside world" which affect game state
 // these include our player's move inputs, as well as actions caused by other players

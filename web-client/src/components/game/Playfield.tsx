@@ -3,7 +3,7 @@ import * as Pixi from "pixi.js";
 import * as particles from "pixi-particles";
 
 import { GameGrid, GameGridRow, GridObjectPillHalfType, GridObjectType, MaybeGridObject } from "mrdario-core";
-import { hasColor, isDestroyed, isPillHalf } from "mrdario-core/lib/game/utils";
+import { hasColor, isDestroyed, isPillHalf } from "mrdario-core/game/utils";
 
 const styles = require("./Playfield.module.scss");
 

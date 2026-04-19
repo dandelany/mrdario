@@ -1,7 +1,7 @@
-import { GameClient, promisifySocketRequest as emit } from "mrdario-core/lib/client";
-import { AuthEventType } from "mrdario-core/lib/api/auth";
-import { TClientAuthenticatedUser } from "mrdario-core/lib/api/auth";
-import { connectGameClient } from "../utils";
+import { GameClient, promisifySocketRequest as emit } from "mrdario-core/client";
+import { AuthEventType } from "mrdario-core/api/auth";
+import { TClientAuthenticatedUser } from "mrdario-core/api/auth";
+import { connectGameClient } from "../utils/index.js";
 
 describe("Auth", () => {
   describe("Connect and test", () => {

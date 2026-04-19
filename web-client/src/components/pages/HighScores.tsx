@@ -5,8 +5,8 @@ import { Link } from "react-router-dom";
 import Slider from "rc-slider";
 
 import MayaNumeral from "@/components/ui/MayaNumeral";
-import { GetHighScoresResponse, HighScoresRow } from "mrdario-core/lib/api/scores";
-import { GameClient } from "mrdario-core/lib/client";
+import { GetHighScoresResponse, HighScoresRow } from "mrdario-core/api/scores";
+import { GameClient } from "mrdario-core/client";
 
 interface HighScoresState {
   level: number;

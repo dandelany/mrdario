@@ -1,4 +1,4 @@
-export * from "./GameClient";
-export { promisifySocketRequest } from "./utils";
-export { validatedChannel } from "./utils";
-export { ValidatedSCChannel } from "./utils";
+export * from "./GameClient.js";
+export { promisifySocketRequest } from "./utils.js";
+export { validatedChannel } from "./utils.js";
+export { ValidatedSCChannel } from "./utils.js";

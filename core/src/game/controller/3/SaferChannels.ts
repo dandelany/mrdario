@@ -1,8 +1,10 @@
 import type { SCChannel } from "sc-channel";
 import type { SCClientSocket } from "socketcluster-client";
 import type { SCServerSocket } from "socketcluster-server";
-import { defaults, remove, sortedIndex, times, pullAll } from "lodash";
-import { assert } from "../../../utils/assert";
+import lodash from "lodash";
+import { assert } from "../../../utils/assert.js";
+
+const { defaults, remove, sortedIndex, times, pullAll } = lodash;
 
 /*
 * SaferChannels is a protocol & abstraction layer on top of SocketCluster channels which adds some

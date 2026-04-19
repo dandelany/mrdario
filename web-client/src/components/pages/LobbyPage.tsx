@@ -1,8 +1,8 @@
 import { connect } from "react-redux";
 
-import { LobbyChatMessageOut, LobbyJoinResponse, LobbyUser } from "mrdario-core/lib/api/lobby";
-import { AppAuthToken } from "mrdario-core/lib/api/auth";
-import { GameClient } from "mrdario-core/lib/client";
+import { LobbyChatMessageOut, LobbyJoinResponse, LobbyUser } from "mrdario-core/api/lobby";
+import { AppAuthToken } from "mrdario-core/api/auth";
+import { GameClient } from "mrdario-core/client";
 
 import * as React from "react";
 

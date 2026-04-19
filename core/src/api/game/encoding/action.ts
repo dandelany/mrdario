@@ -1,11 +1,11 @@
-import { isRight } from "fp-ts/lib/Either";
-import { assert } from "../../../utils/assert";
+import { isRight } from "fp-ts/lib/Either.js";
+import { assert } from "../../../utils/assert.js";
 
-import { TimedGameActions } from "../../../game/types";
-import { isMoveAction } from "../../../game/utils";
-import { tEncodedInt } from "./game";
-import { decodeMoveInputEvent, encodeMoveInputEvent } from "./move";
-import { GameAction, GameActionMove, GameActionType } from "../../../game/types/gameAction";
+import { TimedGameActions } from "../../../game/types/index.js";
+import { isMoveAction } from "../../../game/utils/index.js";
+import { tEncodedInt } from "./game.js";
+import { decodeMoveInputEvent, encodeMoveInputEvent } from "./move.js";
+import { GameAction, GameActionMove, GameActionType } from "../../../game/types/gameAction.js";
 
 export type ActionTypeEncodingMap = { [I in GameActionType]: string };
 

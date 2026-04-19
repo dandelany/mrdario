@@ -5,7 +5,7 @@ import {
   GameColor,
   GridObjectPillPartType,
   GridObjectPillHalfType
-} from "mrdario-core/lib/game/types";
+} from "mrdario-core/game/types";
 
 import pillHalfOrange from "@/svg2/pill_half_orange.svg";
 import pillHalfPurple from "@/svg2/pill_half_purple.svg";

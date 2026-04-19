@@ -1,4 +1,4 @@
-import { flatten, range } from "lodash";
+import lodash from "lodash";
 
 import {
   GameColor,
@@ -10,7 +10,7 @@ import {
   GridDirection,
   GridObject,
   MaybeGridObject
-} from "../types";
+} from "../types/index.js";
 
 import {
   hasColor,
@@ -21,7 +21,9 @@ import {
   isPillRight,
   isPillTop,
   isVirus
-} from "./guards";
+} from "./guards.js";
+
+const { flatten, range } = lodash;
 
 // these are pure stateless functions which contain the majority of the game logic
 // they use Immutable objects to represent the grid and return new objects on 'mutation'

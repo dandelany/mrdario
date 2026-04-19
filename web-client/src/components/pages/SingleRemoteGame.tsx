@@ -3,16 +3,16 @@ import * as _ from "lodash";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 
 import shallowEqual from "@/utils/shallowEqual";
-import { GameControllerMode, GameControllerState } from "mrdario-core/lib/game/controller";
-import { GameGrid, PillColors } from "mrdario-core/lib/game/types";
+import { GameControllerMode, GameControllerState } from "mrdario-core/game/controller";
+import { GameGrid, PillColors } from "mrdario-core/game/types";
 
-import { decodeGameControllerState } from "mrdario-core/lib/api/game/encoding";
-import { GameClient } from "mrdario-core/lib/client/GameClient";
-import { CreateSingleGameResponse } from "mrdario-core/lib/api/game";
+import { decodeGameControllerState } from "mrdario-core/api/game/encoding";
+import { GameClient } from "mrdario-core/client/GameClient";
+import { CreateSingleGameResponse } from "mrdario-core/api/game";
 
 import { ResponsiveGameDisplay } from "@/components/game/GameDisplay";
 import { GameOptions } from "mrdario-core";
-import { PuppetGameController } from "mrdario-core/lib/game/controller/PuppetGameController";
+import { PuppetGameController } from "mrdario-core/game/controller/PuppetGameController";
 
 const styles = require("./MirrorGame.module.scss");
 

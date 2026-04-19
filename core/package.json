@@ -2,13 +2,125 @@
   "name": "mrdario-core",
   "version": "2.0.0",
   "description": "Core game code for Mr. Dario",
-  "main": "lib/index.js",
-  "types": "lib/index.d.ts",
+  "type": "module",
+  "main": "./lib/esm/index.js",
+  "types": "./lib/esm/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./lib/esm/index.d.ts",
+      "import": "./lib/esm/index.js"
+    },
+    "./api": {
+      "types": "./lib/esm/api/index.d.ts",
+      "import": "./lib/esm/api/index.js"
+    },
+    "./api/auth": {
+      "types": "./lib/esm/api/auth/index.d.ts",
+      "import": "./lib/esm/api/auth/index.js"
+    },
+    "./api/auth/*": {
+      "types": "./lib/esm/api/auth/*.d.ts",
+      "import": "./lib/esm/api/auth/*.js"
+    },
+    "./api/game": {
+      "types": "./lib/esm/api/game/index.d.ts",
+      "import": "./lib/esm/api/game/index.js"
+    },
+    "./api/game/*": {
+      "types": "./lib/esm/api/game/*.d.ts",
+      "import": "./lib/esm/api/game/*.js"
+    },
+    "./api/game/encoding": {
+      "types": "./lib/esm/api/game/encoding/index.d.ts",
+      "import": "./lib/esm/api/game/encoding/index.js"
+    },
+    "./api/game/encoding/*": {
+      "types": "./lib/esm/api/game/encoding/*.d.ts",
+      "import": "./lib/esm/api/game/encoding/*.js"
+    },
+    "./api/lobby": {
+      "types": "./lib/esm/api/lobby/index.d.ts",
+      "import": "./lib/esm/api/lobby/index.js"
+    },
+    "./api/lobby/*": {
+      "types": "./lib/esm/api/lobby/*.d.ts",
+      "import": "./lib/esm/api/lobby/*.js"
+    },
+    "./api/match": {
+      "types": "./lib/esm/api/match/index.d.ts",
+      "import": "./lib/esm/api/match/index.js"
+    },
+    "./api/match/*": {
+      "types": "./lib/esm/api/match/*.d.ts",
+      "import": "./lib/esm/api/match/*.js"
+    },
+    "./api/scores": {
+      "types": "./lib/esm/api/scores/index.d.ts",
+      "import": "./lib/esm/api/scores/index.js"
+    },
+    "./api/scores/*": {
+      "types": "./lib/esm/api/scores/*.d.ts",
+      "import": "./lib/esm/api/scores/*.js"
+    },
+    "./client": {
+      "types": "./lib/esm/client/index.d.ts",
+      "import": "./lib/esm/client/index.js"
+    },
+    "./client/*": {
+      "types": "./lib/esm/client/*.d.ts",
+      "import": "./lib/esm/client/*.js"
+    },
+    "./game": {
+      "types": "./lib/esm/game/index.d.ts",
+      "import": "./lib/esm/game/index.js"
+    },
+    "./game/*": {
+      "types": "./lib/esm/game/*.d.ts",
+      "import": "./lib/esm/game/*.js"
+    },
+    "./game/controller": {
+      "types": "./lib/esm/game/controller/index.d.ts",
+      "import": "./lib/esm/game/controller/index.js"
+    },
+    "./game/controller/*": {
+      "types": "./lib/esm/game/controller/*.d.ts",
+      "import": "./lib/esm/game/controller/*.js"
+    },
+    "./game/input/web": {
+      "types": "./lib/esm/game/input/web/index.d.ts",
+      "import": "./lib/esm/game/input/web/index.js"
+    },
+    "./game/input/web/*": {
+      "types": "./lib/esm/game/input/web/*.d.ts",
+      "import": "./lib/esm/game/input/web/*.js"
+    },
+    "./game/types": {
+      "types": "./lib/esm/game/types/index.d.ts",
+      "import": "./lib/esm/game/types/index.js"
+    },
+    "./game/types/*": {
+      "types": "./lib/esm/game/types/*.d.ts",
+      "import": "./lib/esm/game/types/*.js"
+    },
+    "./game/utils": {
+      "types": "./lib/esm/game/utils/index.d.ts",
+      "import": "./lib/esm/game/utils/index.js"
+    },
+    "./game/utils/*": {
+      "types": "./lib/esm/game/utils/*.d.ts",
+      "import": "./lib/esm/game/utils/*.js"
+    },
+    "./utils/*": {
+      "types": "./lib/esm/utils/*.d.ts",
+      "import": "./lib/esm/utils/*.js"
+    },
+    "./package.json": "./package.json"
+  },
   "scripts": {
-    "test": "jest --config jest.config.js --coverage",
-    "test-watch": "jest --config jest.config.js --watch",
+    "test": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --config jest.config.cjs --coverage",
+    "test-watch": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --config jest.config.cjs --watch",
     "clean": "rimraf lib/",
-    "build": "tsc",
+    "build": "npm run clean && tsc -p tsconfig.build.esm.json",
     "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
     "lint": "eslint \"src/**/*.{ts,js}\" --fix",
     "watch-changed": "npm run build && echo 'OK'",

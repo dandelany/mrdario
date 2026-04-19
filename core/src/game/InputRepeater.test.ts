@@ -1,6 +1,8 @@
-import { times } from "lodash";
-import { GameActionType, GameInput, INPUT_REPEAT_INTERVALS, InputEventType } from "../index";
-import { InputRepeater } from "./InputRepeater";
+import lodash from "lodash";
+import { GameActionType, GameInput, INPUT_REPEAT_INTERVALS, InputEventType } from "../index.js";
+import { InputRepeater } from "./InputRepeater.js";
+
+const { times } = lodash;
 
 describe("InputRepeater", () => {
   test("Can be constructed with correct initial state", () => {

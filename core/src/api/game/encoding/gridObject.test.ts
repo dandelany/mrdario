@@ -1,6 +1,8 @@
-import { uniq, values } from "lodash";
-import { GridObjectType } from "../../../game";
-import { colorEncodingMap, gridObjectTypeEncodingMap, tGridObjectCodec } from "./gridObject";
+import lodash from "lodash";
+import { GridObjectType } from "../../../game/index.js";
+import { colorEncodingMap, gridObjectTypeEncodingMap, tGridObjectCodec } from "./gridObject.js";
+
+const { uniq, values } = lodash;
 
 function hasDuplicates(arr: Array<string | number>): boolean {
   const strArr: string[] = arr.map((d: string | number) => d + "");

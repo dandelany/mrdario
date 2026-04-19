@@ -1,10 +1,12 @@
 import { EventEmitter } from "events";
 import { GamepadPlusAxisEvent, GamepadPlusButtonEvent, GamepadPlusEvent, Gamepads } from "gamepad-plus";
-import { inRange } from "lodash";
+import lodash from "lodash";
 // import Gamepads from "gamepad-plus/src";
 
-import { GameControllerMode } from "../../controller";
-import { GameInput, InputEventType } from "../../types";
+import { GameControllerMode } from "../../controller/index.js";
+import { GameInput, InputEventType } from "../../types/index.js";
+
+const { inRange } = lodash;
 
 const gamepadConfig = {
   axisThreshold: 0,

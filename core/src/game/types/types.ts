@@ -1,8 +1,8 @@
 import * as t from "io-ts";
 
-import { numEnumType, strEnumType } from "../../utils/io";
-import { GameColor, GameInput, GameMode, GridDirection, GridObjectType, InputEventType, SpeedLevel } from "../enums";
-import { MovingCounters } from "../InputRepeater";
+import { numEnumType, strEnumType } from "../../utils/io.js";
+import { GameColor, GameInput, GameMode, GridDirection, GridObjectType, InputEventType, SpeedLevel } from "../enums.js";
+import { MovingCounters } from "../InputRepeater.js";
 
 export const tGameColor = numEnumType<GameColor>(GameColor, "GameColor");
 export const tGameInput = strEnumType<GameInput>(GameInput, "GameInput");

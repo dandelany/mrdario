@@ -1,8 +1,8 @@
-import { GameController, GameControllerMode } from "./GameController2";
-import { GameControllerActionType } from "./types";
-import { assert } from "../../utils/assert";
-// import { encodeGameState } from "../../api/game/encoding";
-import { GameMode } from "../enums";
+import { GameController, GameControllerMode } from "./GameController2.js";
+import { GameControllerActionType } from "./types.js";
+import { assert } from "../../utils/assert.js";
+// import { encodeGameState } from "../../api/game/encoding/index.js";
+import { GameMode } from "../enums.js";
 
 describe("GameController", () => {
   describe("One-Player Game", () => {

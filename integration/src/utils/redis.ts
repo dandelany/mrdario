@@ -30,10 +30,10 @@ export async function closeRedisClient(): Promise<void> {
 
 export async function clearRedisTestDB(rClient: RedisClient): Promise<string> {
   return new Promise((resolve, reject) => {
-    rClient.select(REDIS_TEST_DB, (err) => {
+    rClient.select(REDIS_TEST_DB, (err: any) => {
       if(err) reject(err);
       else {
-        rClient.flushdb((err, flushReply) => {
+        rClient.flushdb((err: any, flushReply: string) => {
           if(err) reject(err);
           else resolve(flushReply)
         })
@@ -44,8 +44,8 @@ export async function clearRedisTestDB(rClient: RedisClient): Promise<string> {
 
 export async function getRedisDumpPath(rClient: RedisClient): Promise<string> {
   return new Promise((resolve, reject) => {
-    rClient.config("get", "dir", (err, dir) => {
-      rClient.config("get", "dbfilename", (err2, dbfilename) => {
+    rClient.config("get", "dir", (err: any, dir: string[]) => {
+      rClient.config("get", "dbfilename", (err2: any, dbfilename: string[]) => {
         if (err) reject(err);
         else if (err2) reject(err2);
         else {
@@ -61,7 +61,7 @@ export async function getRedisDumpPath(rClient: RedisClient): Promise<string> {
 
 export async function redisSave(rClient: RedisClient): Promise<string> {
   return new Promise((resolve, reject) => {
-    rClient.save((err, reply) => {
+    rClient.save((err: any, reply: string) => {
       if (err) reject(err);
       else resolve(reply);
     });
@@ -87,4 +87,3 @@ export async function backupRedis(rClient: RedisClient) {
 
   return dumpFilePath;
 }
-

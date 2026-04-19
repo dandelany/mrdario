@@ -361,3 +361,56 @@ Notes for later:
 
 - If more asset-import weirdness appears, prefer fixing config/module alignment over piling on import-shape hacks.
 - `web-client` is now in a much healthier place for a later move off Yarn classic / Node 14 assumptions.
+
+## 2026-04-18 `server2` SocketCluster 20 Migration Spike
+
+Completed:
+
+- Created a new `server2/` based on fresh SocketCluster 20 boilerplate, leaving the old `server/` untouched.
+- Preserved the modern SocketCluster 20 single-process shell in `server2/server.js`.
+- Added a thin transitional compatibility layer in `server2/legacy-compat.js` so the old game-server logic could mount without rewriting every module immediately.
+- Copied the old `gameserver` logic into `server2/gameserver/`.
+- Moved `server2` away from the failed runtime `ts-node`/ESM hack:
+  - `server2/gameserver` now compiles to `server2/dist/gameserver`
+  - `server2/server.js` imports the built output instead of requiring `.ts` at runtime
+- Added `server2/tsconfig.json` and a `server2/gameserver/package.json` boundary so the copied game-server code can build as CommonJS while the outer server shell remains ESM.
+- Rewrote copied `server2/gameserver` imports to use `mrdario-core/lib/...` instead of `mrdario-core/src/...` where runtime JS resolution mattered.
+
+What the compat layer currently does:
+
+- Adapts SocketCluster 20 `agServer` to enough of the old `SCServer` surface for the copied `GameServer` to run:
+  - `scServer.on("connection", ...)`
+  - `scServer.addMiddleware("publishIn" | "publishOut", ...)`
+  - `scServer.exchange.publish(...)`
+- Adapts `AGServerSocket` to enough of the old `SCServerSocket` surface for the copied modules to run:
+  - `socket.on(...)`
+  - `socket.off(...)`
+  - `socket.emit(...)`
+  - `socket.setAuthToken(...)`
+  - `socket.deauthenticate()`
+- Bridges old callback-style request handlers onto SocketCluster 20 procedure streams.
+- Gives non-RPC transmitted events a harmless no-op responder so old auth/validation wrappers do not explode when they blindly call `respond(...)`.
+
+Important reality:
+
+- This works as a transitional canary bridge.
+- It is not the clean end state.
+- The module boundary (`server2` ESM shell + built CommonJS `gameserver`) is pragmatic, not elegant.
+- The compat layer is intentionally ugly: it exists to preserve behavior long enough to prove where the real SocketCluster 20 mismatches are.
+
+Validation status:
+
+- `cd server2 && npm run build` passes under Node 20.
+- `node server2/server.js` gets past the old ESM/CJS import failure.
+- Full runtime validation inside Codex sandbox is not possible because the sandbox forbids:
+  - listening on server ports
+  - connecting to Redis
+- So meaningful canary validation needs to happen in the real local shell, ideally using the existing integration suite as the behavioral check.
+
+Likely next cleanup direction:
+
+- Reduce or delete the compat layer by porting `server2/gameserver` to native SocketCluster 20 APIs directly.
+- Collapse the ESM/CJS split by deciding on one module strategy for `server2`:
+  - either real ESM all the way down
+  - or a deliberate CommonJS server package
+- Keep using the integration suite as the first serious canary for transport/protocol regressions during that cleanup.

@@ -1,11 +1,11 @@
 import * as t from "io-ts";
-import { isLeft } from "fp-ts/lib/Either";
+import { isLeft } from "fp-ts/lib/Either.js";
 
-import { PathReporter } from "io-ts/lib/PathReporter";
-import { COLORS } from "../../../game/constants";
-import { GameGrid, GameGridRow, GridObject, GridObjectType } from "../../../game/types";
-import { hasColor } from "../../../game/utils";
-import { EncodedGridObject, encodeGridObject, tGridObjectCodec } from "./gridObject";
+import { PathReporter } from "io-ts/lib/PathReporter.js";
+import { COLORS } from "../../../game/constants.js";
+import { GameGrid, GameGridRow, GridObject, GridObjectType } from "../../../game/types/index.js";
+import { hasColor } from "../../../game/utils/index.js";
+import { EncodedGridObject, encodeGridObject, tGridObjectCodec } from "./gridObject.js";
 
 export type EncodedGrid = string;
 

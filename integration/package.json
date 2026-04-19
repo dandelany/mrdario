@@ -2,13 +2,14 @@
   "name": "mrdario-integration",
   "version": "1.0.0",
   "description": "Integration tests for Mr. Dario",
+  "type": "module",
   "main": "index.js",
   "scripts": {
-    "test": "jest --config jest.config.js",
-    "test-watch": "jest --config jest.config.js --watch",
+    "test": "npm run build && node --experimental-vm-modules ./node_modules/jest/bin/jest.js --config jest.config.cjs",
+    "test-watch": "npm run build && node --experimental-vm-modules ./node_modules/jest/bin/jest.js --config jest.config.cjs --watch",
     "build": "tsc",
     "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
-    "start": "ts-node src/index.ts"
+    "start": "node --loader ts-node/esm src/index.ts"
   },
   "author": "Dan Delany <dan.delany@gmail.com>",
   "license": "MIT",

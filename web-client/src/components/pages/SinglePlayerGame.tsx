@@ -3,20 +3,20 @@ import * as _ from "lodash";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 import shallowEqual from "@/utils/shallowEqual";
 
-import { DEFAULT_KEYS } from "mrdario-core/lib/game/controller/constants";
-import { GameControllerMode, GameControllerState } from "mrdario-core/lib/game/controller";
-import { GameGrid, PillColors } from "mrdario-core/lib/game/types";
+import { DEFAULT_KEYS } from "mrdario-core/game/controller/constants";
+import { GameControllerMode, GameControllerState } from "mrdario-core/game/controller";
+import { GameGrid, PillColors } from "mrdario-core/game/types";
 
-import { encodeGameState } from "mrdario-core/lib/api/game/encoding";
-import { GameClient } from "mrdario-core/lib/client/GameClient";
-// import { LocalWebGameController } from "mrdario-core/lib/game/controller/web";
+import { encodeGameState } from "mrdario-core/api/game/encoding";
+import { GameClient } from "mrdario-core/client/GameClient";
+// import { LocalWebGameController } from "mrdario-core/game/controller/web";
 
 import { GameOptions } from "mrdario-core";
-import { getGetTime } from "mrdario-core/lib/utils/time";
-import { GameController } from "mrdario-core/lib/game/controller/GameController";
-import { GamepadManager, KeyManager, SwipeManager } from "mrdario-core/lib/game/input/web";
-import { SaveScoreResponse } from "mrdario-core/lib/api/scores";
-import { LobbyJoinResponse } from "mrdario-core/lib/api/lobby";
+import { getGetTime } from "mrdario-core/utils/time";
+import { GameController } from "mrdario-core/game/controller/GameController";
+import { GamepadManager, KeyManager, SwipeManager } from "mrdario-core/game/input/web";
+import { SaveScoreResponse } from "mrdario-core/api/scores";
+import { LobbyJoinResponse } from "mrdario-core/api/lobby";
 
 import { GameRouteParams } from "@/types";
 import responsiveGame from "@/components/responsiveGame";

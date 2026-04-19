@@ -1,6 +1,6 @@
 import * as t from "io-ts";
 
-import { MovingCounters } from "../../../game/InputRepeater";
+import { MovingCounters } from "../../../game/InputRepeater.js";
 import {
   EncodableGameOptions,
   GameColor,
@@ -9,12 +9,12 @@ import {
   GameState,
   PillColors,
   tPillColors
-} from "../../../game/types";
+} from "../../../game/types/index.js";
 
-import { decodeOrThrow, numEnumType, strEnumType } from "../../../utils/io";
-import { assert } from "../../../utils/assert";
-import { decodeGrid, encodeGrid } from "./grid";
-import { either } from "fp-ts/lib/Either";
+import { decodeOrThrow, numEnumType, strEnumType } from "../../../utils/io.js";
+import { assert } from "../../../utils/assert.js";
+import { decodeGrid, encodeGrid } from "./grid.js";
+import { either } from "fp-ts/lib/Either.js";
 
 export type EncodedGameState = string;
 

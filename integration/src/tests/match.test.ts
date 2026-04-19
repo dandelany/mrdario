@@ -1,7 +1,7 @@
-import { GameClient } from "mrdario-core/lib/client";
-import { ClientAuthenticatedUser, MatchMode, SingleMatchInfo, TSingleMatchInfo } from "mrdario-core/src/api";
-import { connectGameClient } from "../utils";
-import { toDecodeWith } from "mrdario-core/src/utils/jest";
+import { GameClient } from "mrdario-core/client";
+import { ClientAuthenticatedUser, MatchMode, SingleMatchInfo, TSingleMatchInfo } from "mrdario-core/api";
+import { connectGameClient } from "../utils/index.js";
+import { toDecodeWith } from "mrdario-core/utils/jest";
 
 expect.extend({ toDecodeWith });
 

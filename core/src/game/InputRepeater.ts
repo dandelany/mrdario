@@ -1,6 +1,6 @@
-import { INPUT_REPEAT_INTERVALS } from "./constants";
-import { GameInputMove, InputEventType, MoveInputNumberMap } from "./types";
-import { GameActionMove } from "./types/gameAction";
+import { INPUT_REPEAT_INTERVALS } from "./constants.js";
+import { GameInputMove, InputEventType, MoveInputNumberMap } from "./types/index.js";
+import { GameActionMove } from "./types/gameAction.js";
 
 export type MovingCounters = Partial<Record<GameInputMove, number>>;
 export interface InputRepeaterState {

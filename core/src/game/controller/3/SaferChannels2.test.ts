@@ -1,6 +1,6 @@
-import { SaferClientChannelIn, SaferChannelsClient, SaferClientChannelOut } from "./SaferChannels2";
+import { SaferClientChannelIn, SaferChannelsClient, SaferClientChannelOut } from "./SaferChannels2.js";
 import { SCClientSocket } from "socketcluster-client";
-import { SaferChannelIn, SaferChannelOut, SaferChannels } from "./SaferChannels";
+import { SaferChannelIn, SaferChannelOut, SaferChannels } from "./SaferChannels.js";
 
 export function sleep(time: number): Promise<number> {
   return new Promise((resolve) => setTimeout(resolve, time));

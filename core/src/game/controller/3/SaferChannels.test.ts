@@ -1,7 +1,7 @@
-import { decodeMsgId, encodeMsgId, SaferChannelIn, SaferChannelOut, SaferChannels } from "./SaferChannels";
+import { decodeMsgId, encodeMsgId, SaferChannelIn, SaferChannelOut, SaferChannels } from "./SaferChannels.js";
 import { SCClientSocket } from "socketcluster-client";
 
-// import { assert } from "../../utils/assert";
+// import { assert } from "../../utils/assert.js";
 
 export function sleep(time: number): Promise<number> {
   return new Promise(resolve => setTimeout(resolve, time));

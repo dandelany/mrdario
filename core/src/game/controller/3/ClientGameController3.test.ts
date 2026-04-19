@@ -1,10 +1,10 @@
-import { ClientGameController3 } from "./ClientGameController3";
-import { GameController3Mode } from "./types";
-import { GameInput, InputEventType, InputManager } from "../..";
+import { ClientGameController3 } from "./ClientGameController3.js";
+import { GameController3Mode } from "./types.js";
+import { GameInput, InputEventType, InputManager } from "../../index.js";
 import { EventEmitter } from "events";
-import { encodeGameState } from "../../../api/game/encoding";
-// import { assert } from "../../utils/assert";
-// import { encodeGameState } from "../../api/game/encoding";
+import { encodeGameState } from "../../../api/game/encoding/index.js";
+// import { assert } from "../../utils/assert.js";
+// import { encodeGameState } from "../../api/game/encoding.js";
 
 export function sleep(time: number): Promise<number> {
   return new Promise(resolve => setTimeout(resolve, time));

@@ -9,10 +9,10 @@ import {
   GridObjectPillPart,
   GridObjectPillPartType,
   GridObjectType
-} from "../types";
-import { makeDestroyed, makeEmpty } from "./generators";
-import { getInGrid } from "./grid";
-import { isPillHalf } from "./guards";
+} from "../types/index.js";
+import { makeDestroyed, makeEmpty } from "./generators.js";
+import { getInGrid } from "./grid.js";
+import { isPillHalf } from "./guards.js";
 
 // simple setter functions which update the Grid (or a GridObject)
 // all are immutable & return a new object, leaving the original intact

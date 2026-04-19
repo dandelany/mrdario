@@ -1,7 +1,9 @@
-import { countBy, includes, mean, range, sortBy } from "lodash";
+import lodash from "lodash";
 
-import { COLORS, GameColor } from "../game";
-import { seedRandom, seedRandomColor, seedRandomInt, seedShuffle } from "./random";
+import { COLORS, GameColor } from "../game/index.js";
+import { seedRandom, seedRandomColor, seedRandomInt, seedShuffle } from "./random.js";
+
+const { countBy, includes, mean, range, sortBy } = lodash;
 
 describe("Seeded Pseudo-Random Number Generators", () => {
   describe("seedRandom()", () => {
@@ -79,5 +81,4 @@ describe("Seeded Pseudo-Random Number Generators", () => {
     });
   });
 });
-
 

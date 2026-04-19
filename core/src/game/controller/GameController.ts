@@ -1,11 +1,11 @@
-import { cloneDeep, defaults, findIndex, findLast, findLastIndex, isEqual, isFunction, omitBy } from "lodash";
+import lodash from "lodash";
 import { TypeState } from "typestate";
 
-import { InputManager } from "../input/types";
-import { GameControllerMode, GameControllerOptions, GameControllerState } from "./types";
-import { assert } from "../../utils/assert";
+import { InputManager } from "../input/types.js";
+import { GameControllerMode, GameControllerOptions, GameControllerState } from "./types.js";
+import { assert } from "../../utils/assert.js";
 
-import { defaultGameOptions, Game } from "../Game";
+import { defaultGameOptions, Game } from "../Game.js";
 import {
   GameInput,
   GameInputMove,
@@ -20,11 +20,13 @@ import {
   GameAction,
   GameActionMove,
   GameActionType
-} from "../types";
-import { isMoveAction, isMoveInput } from "../utils";
-import { DEFAULT_GAME_CONTROLLER_OPTIONS } from "./constants";
+} from "../types/index.js";
+import { isMoveAction, isMoveInput } from "../utils/index.js";
+import { DEFAULT_GAME_CONTROLLER_OPTIONS } from "./constants.js";
 
-// import { encodeTimedActions } from "../../encoding/action";
+const { cloneDeep, defaults, findIndex, findLast, findLastIndex, isEqual, isFunction, omitBy } = lodash;
+
+// import { encodeTimedActions } from "../../encoding/action.js";
 
 // game controller class
 // controls the frame timing and must tick the Game object once per frame

@@ -1,16 +1,15 @@
 {
-  "extends": "../tsconfig.json",
-  "include": ["src"],
-  "exclude": ["node_modules"],
   "compilerOptions": {
-    "target": "es2018", // target Node 10
-    "module": "commonjs",
-    "outDir": "lib",
-    "rootDir": "src",
+    "target": "es2020",
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "rootDir": ".",
+    "outDir": "./dist",
+    "types": ["node"],
+    "strict": false,
     "esModuleInterop": true,
-    "incremental": true,
-    "resolveJsonModule": true,
-    "skipLibCheck": true,
-    "typeRoots": ["src/@types"]
-  }
+    "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true
+  },
+  "include": ["gameserver/**/*.ts", "gameserver/**/*.d.ts"]
 }

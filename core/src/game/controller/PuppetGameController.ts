@@ -1,6 +1,6 @@
-import { TimedGameTickResult } from "../types";
-import { GameController } from "./GameController";
-import { GameControllerMode, GameControllerState } from "./types";
+import { TimedGameTickResult } from "../types/index.js";
+import { GameController } from "./GameController.js";
+import { GameControllerMode, GameControllerState } from "./types.js";
 
 
 export class PuppetGameController extends GameController {

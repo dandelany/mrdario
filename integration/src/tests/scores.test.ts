@@ -1,5 +1,5 @@
-import { GameClient } from "mrdario-core/lib/client";
-import { clearRedisTestDB, connectGameClient, getRedisClient } from "../utils";
+import { GameClient } from "mrdario-core/client";
+import { clearRedisTestDB, connectGameClient, getRedisClient } from "../utils/index.js";
 import { RedisClient } from "redis";
 
 describe("Scores", () => {

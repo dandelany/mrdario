@@ -1,8 +1,8 @@
 import { EventEmitter } from "events";
-import { defaults, includes } from "lodash";
+import lodash from "lodash";
 import { TypeState } from "typestate";
 
-import { InputRepeater } from "./InputRepeater";
+import { InputRepeater } from "./InputRepeater.js";
 
 import {
   ACCELERATE_INTERVAL,
@@ -12,7 +12,7 @@ import {
   GRAVITY_TABLE,
   PLAYFIELD_HEIGHT,
   PLAYFIELD_WIDTH
-} from "./constants";
+} from "./constants.js";
 import {
   GameColor,
   GameGrid,
@@ -27,7 +27,7 @@ import {
   PillColors,
   PillLocation,
   RotateDirection
-} from "./types";
+} from "./types/index.js";
 import {
   clearTopRow,
   destroyLines,
@@ -45,10 +45,12 @@ import {
   removeDestroyed,
   rotatePill,
   slamPill
-} from "./utils";
-import { GameAction, GameActionMove, GameActionType } from "./types/gameAction";
+} from "./utils/index.js";
+import { GameAction, GameActionMove, GameActionType } from "./types/gameAction.js";
 
-// import { encodeMoveAction } from "../encoding/action";
+const { defaults, includes } = lodash;
+
+// import { encodeMoveAction } from "../encoding/action.js";
 
 function gravityFrames(speed: number): number {
   return GRAVITY_TABLE[Math.min(speed, GRAVITY_TABLE.length - 1)];

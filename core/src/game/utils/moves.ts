@@ -1,4 +1,4 @@
-import { flatten, range, uniqBy } from "lodash";
+import lodash from "lodash";
 
 import {
   GameColor,
@@ -13,10 +13,10 @@ import {
   PillColors,
   PillLocation,
   RotateDirection
-} from "../types";
+} from "../types/index.js";
 
-import { seedShuffle } from "../../utils/random";
-import { makeEmpty, makePillLeft, makePillRight, makePillSegment } from "./generators";
+import { seedShuffle } from "../../utils/random.js";
+import { makeEmpty, makePillLeft, makePillRight, makePillSegment } from "./generators.js";
 import {
   canMoveCell,
   deltaRowCol,
@@ -25,7 +25,7 @@ import {
   getCellNeighbors,
   getInGrid,
   isPillVertical
-} from "./grid";
+} from "./grid.js";
 import {
   hasColor,
   isDestroyed,
@@ -35,7 +35,9 @@ import {
   isPillSegment,
   isPillTop,
   isVirus
-} from "./guards";
+} from "./guards.js";
+
+const { flatten, range, uniqBy } = lodash;
 import {
   destroyCells,
   removeCell,
@@ -43,7 +45,7 @@ import {
   setInGrid,
   setPillPartType,
   setPillSegments
-} from "./setters";
+} from "./setters.js";
 
 // Pure functions which perform updates on the
 // Immutable game grid/cell objects, returning the updated objects.

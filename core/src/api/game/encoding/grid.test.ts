@@ -1,11 +1,13 @@
-import { flatten, sample, times } from "lodash";
+import lodash from "lodash";
 
-import { GameColor, GameGrid, GridObject, GridObjectType } from "../../../game/types";
-import { getGridEncodingDictionary, tGameGridCodec } from "./grid";
-import { tGridObjectCodec } from "./gridObject";
-import { toDecodeWith } from "../../../utils/jest";
-import { isRight } from "fp-ts/lib/Either";
-import { decodeOrThrow } from "../../../utils/io";
+import { GameColor, GameGrid, GridObject, GridObjectType } from "../../../game/types/index.js";
+import { getGridEncodingDictionary, tGameGridCodec } from "./grid.js";
+import { tGridObjectCodec } from "./gridObject.js";
+import { toDecodeWith } from "../../../utils/jest.js";
+import { isRight } from "fp-ts/lib/Either.js";
+import { decodeOrThrow } from "../../../utils/io.js";
+
+const { flatten, sample, times } = lodash;
 
 expect.extend({ toDecodeWith });
 

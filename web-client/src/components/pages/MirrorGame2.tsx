@@ -5,21 +5,21 @@ import cx from "classnames";
 
 import shallowEqual from "@/utils/shallowEqual";
 
-import { DEFAULT_KEYS } from "mrdario-core/lib/game/controller/constants";
-import { GameController, GameControllerMode, GameControllerState } from "mrdario-core/lib/game/controller";
-import { GameGrid, PillColors, TimedMoveActions } from "mrdario-core/lib/game/types";
+import { DEFAULT_KEYS } from "mrdario-core/game/controller/constants";
+import { GameController, GameControllerMode, GameControllerState } from "mrdario-core/game/controller";
+import { GameGrid, PillColors, TimedMoveActions } from "mrdario-core/game/types";
 
-import { decodeGameControllerState, encodeGameState } from "mrdario-core/lib/api/game/encoding";
-import { GameClient } from "mrdario-core/lib/client/GameClient";
-import { GamepadManager, KeyManager, SwipeManager } from "mrdario-core/lib/game/input/web";
-import { CreateSingleGameResponse } from "mrdario-core/lib/api/game";
-import { SaveScoreResponse } from "mrdario-core/lib/api/scores";
+import { decodeGameControllerState, encodeGameState } from "mrdario-core/api/game/encoding";
+import { GameClient } from "mrdario-core/client/GameClient";
+import { GamepadManager, KeyManager, SwipeManager } from "mrdario-core/game/input/web";
+import { CreateSingleGameResponse } from "mrdario-core/api/game";
+import { SaveScoreResponse } from "mrdario-core/api/scores";
 
 import { GameRouteParams } from "@/types";
 import { ResponsiveGameDisplay } from "@/components/game/GameDisplay";
 import { GameOptions } from "mrdario-core";
-import { encodeTimedActions } from "mrdario-core/lib/api";
-import { PuppetGameController } from "mrdario-core/lib/game/controller/PuppetGameController";
+import { encodeTimedActions } from "mrdario-core/api";
+import { PuppetGameController } from "mrdario-core/game/controller/PuppetGameController";
 
 const styles = require("./MirrorGame.module.scss");
 

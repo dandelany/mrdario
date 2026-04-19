@@ -1,6 +1,6 @@
-export * from "./Game";
-export * from "./constants";
-export * from "./enums";
-export * from "./types";
+export * from "./Game.js";
+export * from "./constants.js";
+export * from "./enums.js";
+export * from "./types/index.js";
 
-export * from "./controller";
+export * from "./controller/index.js";

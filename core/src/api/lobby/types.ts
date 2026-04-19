@@ -1,6 +1,6 @@
 import * as t from "io-ts";
 
-import {LobbyMessageType} from './enums';
+import {LobbyMessageType} from './enums.js';
 
 // Types associated with the Lobby API
 

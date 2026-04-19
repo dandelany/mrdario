@@ -1,6 +1,6 @@
-import { decodeGrid, encodeGrid } from "../../api/game/encoding";
-import { GameColor, GridDirection, RotateDirection } from "../enums";
-import { GameGrid } from "../index";
+import { decodeGrid, encodeGrid } from "../../api/game/encoding/index.js";
+import { GameColor, GridDirection, RotateDirection } from "../enums.js";
+import { GameGrid } from "../index.js";
 import {
   clearTopRow,
   destroyLines,
@@ -12,7 +12,7 @@ import {
   removeDestroyed,
   rotatePill,
   slamPill
-} from "./moves";
+} from "./moves.js";
 
 /*
 Y = Destroyed

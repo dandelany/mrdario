@@ -1,8 +1,8 @@
 import * as blessed from "blessed";
 import chalk from "chalk";
 
-import { GameColor, GameControllerState, GameGridRow, GridObject } from "mrdario-core/lib/game/types";
-import { hasColor } from "mrdario-core/lib/game/utils/guards";
+import { GameColor, GameControllerState, GameGridRow, GridObject } from "mrdario-core/game/types";
+import { hasColor } from "mrdario-core/game/utils/guards";
 
 import { GRID_OBJECT_STRINGS } from "./constants";
 import { GridObjectStringMap } from "./types";

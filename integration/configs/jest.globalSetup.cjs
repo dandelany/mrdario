@@ -9,8 +9,7 @@ const ERR_FILE = path.join(__dirname, '.jest-server.err.log');
 const REPO_ROOT = path.resolve(__dirname, '../..');
 const SOCKET_ROOT = path.join(REPO_ROOT, 'integration', '.socketcluster');
 const PORT = 8118;
-const ENV_CMD = path.join(REPO_ROOT, 'node_modules/.bin/env-cmd');
-const TS_NODE = path.join(REPO_ROOT, 'node_modules/.bin/ts-node');
+const NPM_EXEC_PATH = process.env.npm_execpath || null;
 
 function waitForPort(port, timeoutMs) {
   const start = Date.now();
@@ -43,9 +42,13 @@ module.exports = async () => {
   fs.mkdirSync(SOCKET_ROOT, { recursive: true });
   const out = fs.openSync(LOG_FILE, 'w');
   const err = fs.openSync(ERR_FILE, 'w');
+  const command = NPM_EXEC_PATH ? process.execPath : 'npm';
+  const args = NPM_EXEC_PATH
+    ? [NPM_EXEC_PATH, 'run', 'start:test', '-w', 'mrdario-server']
+    : ['run', 'start:test', '-w', 'mrdario-server'];
   const child = spawn(
-    process.execPath,
-    [ENV_CMD, '-f', 'server/.test.env', TS_NODE, 'server/src/server.ts'],
+    command,
+    args,
     {
       cwd: REPO_ROOT,
       detached: true,

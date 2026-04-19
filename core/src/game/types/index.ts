@@ -1,6 +1,6 @@
-export * from "./types";
-export * from "./gameAction";
+export * from "./types.js";
+export * from "./gameAction.js";
 
-export * from "../enums";
-export * from "../input/types";
-export * from "../controller/types";
+export * from "../enums.js";
+export * from "../input/types.js";
+export * from "../controller/types.js";

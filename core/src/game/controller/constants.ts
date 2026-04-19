@@ -1,10 +1,12 @@
-import { noop } from "lodash";
-import { getGetTime } from "../../utils/time";
-import { PLAYFIELD_HEIGHT, PLAYFIELD_WIDTH } from "../constants";
-import { GameInput } from "../enums";
+import lodash from "lodash";
+import { getGetTime } from "../../utils/time.js";
+import { PLAYFIELD_HEIGHT, PLAYFIELD_WIDTH } from "../constants.js";
+import { GameInput } from "../enums.js";
 // options that can be passed to control game parameters
-import { KeyBindings } from "../input/types";
-import { GameControllerMode, GameControllerOptions } from "./types";
+import { KeyBindings } from "../input/types.js";
+import { GameControllerMode, GameControllerOptions } from "./types.js";
+
+const { noop } = lodash;
 
 export const DEFAULT_GAME_CONTROLLER_OPTIONS: GameControllerOptions = {
   gameOptions: {

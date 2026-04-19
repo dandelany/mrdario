@@ -1,5 +1,5 @@
 import * as t from "io-ts";
-import { invert } from "lodash";
+import lodash from "lodash";
 
 import {
   GameColor,
@@ -7,8 +7,10 @@ import {
   GridObjectType,
   GridObjectWithColor,
   tGridObjectType
-} from "../../../game/types";
-import { hasColor } from "../../../game/utils";
+} from "../../../game/types/index.js";
+import { hasColor } from "../../../game/utils/index.js";
+
+const { invert } = lodash;
 
 export type EncodedGridObject = string;
 export type GridObjectTypeBinaryEncodingMap = { [T in GridObjectType]: number };

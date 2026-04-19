@@ -1,8 +1,8 @@
 import * as blessed from "blessed";
 
-import { Game } from "mrdario-core/lib/game/Game";
-import { GameActionType } from "mrdario-core/lib/game/types/gameAction";
-import { GameTickResultType } from "mrdario-core/lib/game/types";
+import { Game } from "mrdario-core/game/Game";
+import { GameActionType } from "mrdario-core/game/types/gameAction";
+import { GameTickResultType } from "mrdario-core/game/types";
 import {
   GameControllerMode,
   GameControllerState,
@@ -10,7 +10,7 @@ import {
   GameInputMove,
   InputEventType,
   MoveInputEvent
-} from "mrdario-core/lib/game/types";
+} from "mrdario-core/game/types";
 
 import TerminalKeyManager from "./TerminalKeyManager";
 

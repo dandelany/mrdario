@@ -1,4 +1,4 @@
-import { GridObjectType } from "mrdario-core/src/game/types";
+import { GridObjectType } from "mrdario-core/game/types";
 
 export type GridObjectStringMap = {[T in GridObjectType]: string};
 

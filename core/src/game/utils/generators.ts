@@ -1,4 +1,4 @@
-import { times, values } from "lodash";
+import lodash from "lodash";
 
 import {
   GameColor,
@@ -16,13 +16,15 @@ import {
   MaybeGridObject,
   OneOrMore,
   PillColors
-} from "../types";
+} from "../types/index.js";
 
-import { seedRandomColor, seedRandomInt } from "../../utils/random";
-import { MIN_VIRUS_ROW_TABLE, VIRUS_COUNT_TABLE } from "../constants";
-import { getCellNeighbors, getInGrid } from "./grid";
-import { hasColor, isColor, isEmpty } from "./guards";
-import { setInGrid } from "./setters";
+import { seedRandomColor, seedRandomInt } from "../../utils/random.js";
+import { MIN_VIRUS_ROW_TABLE, VIRUS_COUNT_TABLE } from "../constants.js";
+import { getCellNeighbors, getInGrid } from "./grid.js";
+import { hasColor, isColor, isEmpty } from "./guards.js";
+import { setInGrid } from "./setters.js";
+
+const { times, values } = lodash;
 
 export function makeEmpty(): GridObjectEmpty {
   return { type: GridObjectType.Empty };

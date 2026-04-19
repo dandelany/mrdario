@@ -6,7 +6,7 @@ import {
   GridObjectPillRight,
   GridObjectType,
   GridObjectVirus
-} from "../types";
+} from "../types/index.js";
 import {
   makeDestroyed,
   makeEmpty,
@@ -15,7 +15,7 @@ import {
   makePillLeft,
   makePillRight,
   makeVirus
-} from "./index";
+} from "./index.js";
 
 describe("Generators", () => {
   test("makeEmpty", () => {

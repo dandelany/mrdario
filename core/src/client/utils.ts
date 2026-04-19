@@ -1,8 +1,8 @@
 import * as t from "io-ts";
-import { PathReporter } from "io-ts/lib/PathReporter";
+import { PathReporter } from "io-ts/lib/PathReporter.js";
 import * as SCChannel from "sc-channel";
 import { SCClientSocket } from "socketcluster-client";
-import { isRight } from "fp-ts/lib/Either";
+import { isRight } from "fp-ts/lib/Either.js";
 
 export type ValidatedSCChannel<MessageType> = Omit<SCChannel.SCChannel, "watch"> & {
   watch: (handler: (data: MessageType) => void) => void;

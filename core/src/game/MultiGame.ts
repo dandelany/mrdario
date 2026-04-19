@@ -1,5 +1,5 @@
 import { EventEmitter } from "events";
-import { defaults, includes } from "lodash";
+import lodash from "lodash";
 import { TypeState } from "typestate";
 
 import {
@@ -16,7 +16,9 @@ import {
   PillColors,
   PillLocation,
   RotateDirection
-} from "./types";
+} from "./types/index.js";
+
+const { defaults, includes } = lodash;
 
 export class MultiGame extends EventEmitter {
 

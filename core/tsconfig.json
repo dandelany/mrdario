@@ -1,11 +1,10 @@
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
-    "target": "es2016",
-    "module": "commonjs",
-    "declaration": true,
+    "target": "es2020",
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
     "rootDir": "./src",
-    "outDir": "./lib",
     "strict": true,
     "esModuleInterop": true,
     "incremental": true,

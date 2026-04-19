@@ -1,22 +1,9 @@
-import {
-  cloneDeep,
-  defaults,
-  every,
-  findIndex,
-  findLast,
-  findLastIndex,
-  get,
-  isFunction,
-  noop,
-  omit,
-  omitBy,
-  times
-} from "lodash";
+import lodash from "lodash";
 
-import { InputManager } from "../input/types";
+import { InputManager } from "../input/types.js";
 
-import { getGetTime } from "../../utils/time";
-import { Game } from "../Game";
+import { getGetTime } from "../../utils/time.js";
+import { Game } from "../Game.js";
 import {
   GameActionType,
   GameControllerAction,
@@ -39,11 +26,13 @@ import {
   TimedGameActions,
   TimedGameTickResult,
   TimedMoveActions
-} from "../types";
-import { isMoveAction, isMoveInput } from "../utils";
-import { GameAction, GameActionMove } from "../types/gameAction";
-import { assert } from "../../utils/assert";
+} from "../types/index.js";
+import { isMoveAction, isMoveInput } from "../utils/index.js";
+import { GameAction, GameActionMove } from "../types/gameAction.js";
+import { assert } from "../../utils/assert.js";
 import { produce } from "immer";
+
+const { cloneDeep, defaults, every, findIndex, findLast, findLastIndex, get, isFunction, noop, omit, omitBy, times } = lodash;
 
 export interface GameControllerOptions {
   // number of players (ie. number of games)
@@ -126,7 +115,7 @@ export type GameControllerPublicInitializedState = Omit<GameControllerInitialize
 };
 export type GameControllerPublicState = GameControllerSetupState | GameControllerPublicInitializedState;
 
-// import { encodeTimedActions } from "../../encoding/action";
+// import { encodeTimedActions } from "../../encoding/action.js";
 
 // game controller class
 // controls the frame timing and must tick the Game object once per frame
