@@ -1,0 +1,40 @@
+{
+  "name": "socketcluster-sample",
+  "description": "A sample SocketCluster app",
+  "version": "1.0.1",
+  "type": "module",
+  "contributors": [
+    {
+      "name": "Jonathan Gros-Dubois",
+      "email": "grosjona@yahoo.com.au"
+    }
+  ],
+  "dependencies": {
+    "eetase": "^7.0.1",
+    "express": "^4.16.3",
+    "morgan": "^1.7.0",
+    "nodemon": "^3.1.10",
+    "redis": "^2.8.0",
+    "scc-broker-client": "^9.2.1",
+    "serve-static": "^1.13.2",
+    "socketcluster-client": "^20.0.1",
+    "socketcluster-server": "^20.0.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^6.0.3",
+    "uuid": "^9.0.1"
+  },
+  "keywords": [
+    "websocket",
+    "server",
+    "realtime",
+    "cluster",
+    "scalable"
+  ],
+  "readmeFilename": "README.md",
+  "scripts": {
+    "build": "tsc -p tsconfig.json && mkdir -p dist/gameserver && cp gameserver/package.json dist/gameserver/package.json",
+    "start": "npm run build && node server.js",
+    "start:watch": "./node_modules/nodemon/bin/nodemon.js server.js",
+    "start:docker": "./node_modules/nodemon/bin/nodemon.js /usr/src/app/server.js"
+  }
+}

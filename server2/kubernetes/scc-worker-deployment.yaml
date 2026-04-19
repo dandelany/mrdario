@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scc-worker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: scc-worker
+  template:
+    metadata:
+      labels:
+        component: scc-worker
+    spec:
+      containers:
+        -
+          name: scc-worker
+          image: 'socketcluster/socketcluster:v20.0.2'
+          ports:
+            -
+              name: scc-worker
+              containerPort: 8000
+          env:
+            -
+              name: SCC_STATE_SERVER_HOST
+              value: scc-state
+            -
+              name: SCC_INSTANCE_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            -
+              name: ENV
+              value: prod
+          readinessProbe:
+            httpGet:
+              path: /health-check
+              port: scc-worker
+            initialDelaySeconds: 5
+            timeoutSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /health-check
+              port: scc-worker
+            initialDelaySeconds: 15
+            timeoutSeconds: 20
+          volumeMounts:
+            -
+              mountPath: /usr/src/app
+              name: app-src-volume
+      volumes:
+        -
+          name: app-src-volume
+          emptyDir: {}
+      initContainers:
+        -
+          name: app-src-container
+          image: ""
+          volumeMounts:
+            -
+              mountPath: /usr/dest
+              name: app-src-volume
+          command:
+            - cp
+            - '-a'
+            - /usr/src/.
+            - /usr/dest/
