@@ -34,5 +34,7 @@ describe("TitlePage", () => {
     expect(container.textContent).toContain("Single Player");
     expect(container.textContent).toContain("Play Online");
     expect(container.textContent).toContain("High Scores");
+    expect(container.querySelector('a[href="/login"]')).toBeNull();
+    expect(container.querySelector(".btn-white.disabled")?.textContent).toContain("Play Online");
   });
 });

@@ -17,9 +17,7 @@ export default class TitlePage extends React.Component<{}> {
           </div>
 
           <div className="title-game-option">
-            <Link to="/login">
-              <span className="btn-white">Play Online</span>
-            </Link>
+            <span className="btn-white disabled">Play Online</span>
           </div>
 
           <div className="title-game-option">

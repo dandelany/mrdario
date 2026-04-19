@@ -70,16 +70,16 @@ class SinglePlayerGame extends React.Component<SinglePlayerGameProps, SinglePlay
     if (this.game && this.game.cleanup) this.game.cleanup();
   }
 
-  componentWillReceiveProps(newProps: SinglePlayerGameProps) {
-    const params: GameRouteParams = this.props.match.params;
-    const nextParams: GameRouteParams = newProps.match.params;
+  componentDidUpdate(prevProps: SinglePlayerGameProps) {
+    const params: GameRouteParams = prevProps.match.params;
+    const nextParams: GameRouteParams = this.props.match.params;
 
     const shouldInitGame =
       params.level !== nextParams.level ||
       params.speed !== nextParams.speed ||
       (params.mode !== nextParams.mode && !nextParams.mode);
 
-    if (shouldInitGame) this._initGame(newProps);
+    if (shouldInitGame) this._initGame(this.props);
 
     if (!params.mode && this.state.pendingMode) {
       this.setState({ pendingMode: undefined });
