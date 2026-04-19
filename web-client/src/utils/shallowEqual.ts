@@ -11,7 +11,7 @@
  * @flow
  */
 
-/*eslint-disable no-self-compare */
+ 
 
 "use strict";
 

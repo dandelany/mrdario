@@ -1,6 +1,6 @@
 import { SaferClientChannelIn, SaferChannelsClient, SaferClientChannelOut } from "./SaferChannels2.js";
 import { SCClientSocket } from "socketcluster-client";
-import { SaferChannelIn, SaferChannelOut, SaferChannels } from "./SaferChannels.js";
+import { SaferChannelIn } from "./SaferChannels.js";
 
 export function sleep(time: number): Promise<number> {
   return new Promise((resolve) => setTimeout(resolve, time));
@@ -39,6 +39,7 @@ class MockSocket {
 }
 
 interface MockSocketInterface extends SCClientSocket {
+  channels: { [key: string]: MockChannel };
   mockPublish: (channelName: string, message: string) => void;
 }
 

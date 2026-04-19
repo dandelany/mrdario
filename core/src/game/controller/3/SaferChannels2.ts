@@ -2,7 +2,7 @@ import type { SCClientSocket } from "socketcluster-client";
 import type { AGServerSocket } from "socketcluster-server";
 import lodash from "lodash";
 import { assert } from "../../../utils/assert.js";
-import { SaferChannelIn, SaferChannelOut } from "./SaferChannels.js";
+// import { SaferChannelIn, SaferChannelOut } from "./SaferChannels.js";
 
 const { defaults, remove, sortedIndex, times, pullAll, sortedIndexOf } = lodash;
 
@@ -573,7 +573,7 @@ export class SaferServerChannelIn {
       // if (this.options.deliverInvalid) this.deliverMessage(messageStr);
       return;
     }
-    const { id, token, content } = message;
+    const { token, content } = message;
 
     // add message to log, return early if duplicate message
     const addedToLog = this.addMessageToLog(message);

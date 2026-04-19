@@ -60,7 +60,7 @@ import { encodeGrid } from "../api/game/encoding/grid.js";
 import { GameControllerMode, GameGrid, TimedGameActions, TimedMoveActions } from "../game/types/index.js";
 import { promisifySocketPublish, promisifySocketRequest as emit, validatedChannel } from "./utils.js";
 import { isRight } from "fp-ts/lib/Either.js";
-import { SaferClientChannelOut } from "../game/controller/3/SaferChannels2.js";
+// import { SaferClientChannelOut } from "../game/controller/3/SaferChannels2.js";
 // import { setupSyncClient } from "./SyncClient.js";
 
 interface ClientSocketWithValidAuthToken extends SCClientSocket {
