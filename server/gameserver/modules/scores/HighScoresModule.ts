@@ -9,79 +9,45 @@ import {
 } from "mrdario-core/api";
 
 import { logWithTime } from "../../utils/index.js";
-import { AbstractServerModule } from "../../AbstractServerModule.js";
+import { defineServerModule } from "../../runtime/types.js";
 import {
   getSingleHighScores2,
   handleSingleScore2,
   SingleScoreDataObj
 } from "./highScoresStore.js";
-import { LegacyCompatSocket } from "../../compat.js";
 
-export class HighScoresModule extends AbstractServerModule {
-  public handleConnect(socket: LegacyCompatSocket) {
-
-    this.bindNoAuthListener<GetHighScoresRequest, GetHighScoresResponse>(socket, {
-      eventType: ScoresEventType.GetHighScores,
-      codec: TGetHighScoresRequest,
-      listener: async (level, respond) => {
-        console.log('get', level);
-        try {
-          const scores = await getSingleHighScores2(this.rClient, level, 50);
-          respond(null, { level: level, scores: scores });
-        } catch (err) {
-          if (err) respond(err instanceof Error ? err : String(err), null);
+export function createHighScoresModule() {
+  return defineServerModule({
+    name: "highScores",
+    procedures: [
+      {
+        auth: "none",
+        eventType: ScoresEventType.GetHighScores,
+        codec: TGetHighScoresRequest,
+        async handler({ services }, level: GetHighScoresRequest): Promise<GetHighScoresResponse> {
+          const scores = await getSingleHighScores2(services.redisClient, level, 50);
+          return { level, scores };
         }
-      }
-    });
-
-    this.bindNoAuthListener<SaveScoreRequest, SaveScoreResponse>(socket, {
-      eventType: ScoresEventType.SaveScore,
-      codec: TSaveScoreRequest,
-      listener: async (data, respond) => {
-        try {
-          const scoreInfo = await handleSingleScore2(this.rClient, data);
-          const {level, rank} = scoreInfo;
-          const scores = await getSingleHighScores2(this.rClient, level, 15);
-          respond(null, { rank, scores });
+      },
+      {
+        auth: "none",
+        eventType: ScoresEventType.SaveScore,
+        codec: TSaveScoreRequest,
+        async handler({ services }, data: SaveScoreRequest): Promise<SaveScoreResponse> {
+          const scoreInfo = await handleSingleScore2(services.redisClient, data);
+          const { level, rank } = scoreInfo;
+          const scores = await getSingleHighScores2(services.redisClient, level, 15);
           logHighScore(scoreInfo, rank);
-        } catch (err) {
-          respond(err instanceof Error ? err : String(err), null);
+          return { rank, scores };
         }
       }
-    });
-    //
-    // // todo type respond correctly
-    // //@ts-ignore
-    // socket.on("getSingleHighScores", (level: number, respond: any) => {
-    //   console.log("getSingleHighScores", level);
-    //   getSingleHighScores(this.rClient, level, 50, (err, scores) => {
-    //     const response: GetHighScoresResponse = { level: level, scores: scores };
-    //     respond(err, response);
-    //   });
-    // });
-    //
-    // // @ts-ignore
-    // socket.on("singleGameScore", (data: any, res: any) => {
-    //   handleSingleScore(this.rClient, data, (err, rank, scoreInfo) => {
-    //     if (err) {
-    //       res(err);
-    //       return;
-    //     }
-    //     if (scoreInfo) {
-    //       getSingleHighScores(this.rClient, scoreInfo.level, 15, (err, scores) => {
-    //         logHighScore(scoreInfo, rank);
-    //         res(err, { rank: rank, scores: scores });
-    //       });
-    //     }
-    //   });
-    // });
-  }
+    ]
+  });
 }
 
 export function logHighScore(scoreInfo: SingleScoreDataObj, rank: number): void {
   logWithTime(
     `${scoreInfo.name} won on level ${scoreInfo.level}! Score: ${scoreInfo.score} (high score #${rank + 1})`,
-    // bell character to wake up anyone tailing the logs :)
     "\u0007"
   );
 }

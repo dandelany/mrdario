@@ -1,5 +1,6 @@
 import SyncServerModule, { ReceiveFunction, SendFunction } from "@ircam/sync/server/index.js";
-import { LegacyCompatServer, LegacyCompatSocket } from "../../compat.js";
+
+import { defineServerModule } from "../../runtime/types.js";
 
 const SyncServer = (SyncServerModule as any).default ?? SyncServerModule;
 
@@ -9,34 +10,32 @@ export const getTimeFunction = () => {
   return now[0] + now[1] * 1e-9;
 };
 
-// Module which maintains a synchronized clock between the client and server
-// using @ircam/sync library
-// todo - be less aggressive, don't send as many messages.
+const syncServer = new SyncServer(getTimeFunction);
 
-export class SyncModule {
-  public syncServer: any;
-  scServer: LegacyCompatServer;
+export function createSyncModule() {
+  return defineServerModule({
+    name: "sync",
+    onConnect: ctx => {
+      const syncReceive: ReceiveFunction = callback => {
+        ctx.connection.on("sPing", (data: [number, number]) => {
+          const [pingId, clientPingTime] = data;
+          console.log(`[ping] - pingid: %s, clientpingtime: %s`, clientPingTime);
+          callback(pingId, clientPingTime);
+        });
+      };
 
-  constructor(scServer: LegacyCompatServer) {
-    this.scServer = scServer;
-    this.syncServer = new SyncServer(getTimeFunction);
-  }
-  public handleConnect(socket: LegacyCompatSocket) {
-    const syncReceive: ReceiveFunction = callback => {
-      //@ts-ignore
-      socket.on('sPing', (data: [number, number]) => {
-        const [pingId, clientPingTime] = data;
-        console.log(`[ping] - pingId: %s, clientPingTime: %s`, clientPingTime);
-        callback(pingId, clientPingTime);
-      });
-    };
+      const syncSend: SendFunction = (pingId, clientPingTime, serverPingTime, serverPongTime) => {
+        console.log(
+          `[pong] - id: %s, clientpingtime: %s, serverpingtime: %s, serverpongtime: %s`,
+          pingId,
+          clientPingTime,
+          serverPingTime,
+          serverPongTime
+        );
+        ctx.connection.send("sPong", [pingId, clientPingTime, serverPingTime, serverPongTime]);
+      };
 
-    const syncSend: SendFunction = (pingId, clientPingTime, serverPingTime, serverPongTime) => {
-      console.log(`[pong] - id: %s, clientPingTime: %s, serverPingTime: %s, serverPongTime: %s`,
-        pingId, clientPingTime, serverPingTime, serverPongTime);
-      socket.emit('sPong', [pingId, clientPingTime, serverPingTime, serverPongTime]);
-    };
-
-    this.syncServer.start(syncSend, syncReceive);
-  }
+      syncServer.start(syncSend, syncReceive);
+    }
+  });
 }

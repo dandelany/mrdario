@@ -258,6 +258,94 @@ TSConfig cleanup completed:
 Validation status:
 
 - `yarn workspace mrdario-core build` passes.
+
+## 2026-04-18 Server Transport / Module Refactor Checkpoint
+
+Completed:
+
+- Promoted the old `server2` experiment into the real `server` workspace and removed the old legacy server tree.
+- Migrated `server` to ESM end-to-end.
+- Replaced the old class/inheritance module pattern with declarative server module definitions.
+- Added a runtime abstraction layer under `server/gameserver/runtime/`.
+- Ported all server modules onto the new module definition shape:
+  - `auth`
+  - `scores`
+  - `lobby`
+  - `match`
+  - `game`
+  - `sync`
+- Deleted `AbstractServerModule`.
+- Replaced the old fake socketcluster-14 compatibility wrapper with a real socketcluster transport adapter:
+  - deleted `server/legacy-compat.js`
+  - deleted `server/gameserver/compat.ts`
+  - added `server/gameserver/runtime/socketcluster.ts`
+- `GameServer` now depends on `TransportRuntime`, not a pretend legacy server surface.
+- Topic middleware now binds through `services.transport` rather than using hidden compat backdoors.
+
+Important design landing spot:
+
+- Module intent is now expressed as:
+  - procedures
+  - topics
+  - `onConnect`
+- Transport concerns are concentrated in the runtime/adapter layer.
+- This is a materially better shape for a future socket.io adapter.
+
+Single-game hardening completed after the transport rewrite:
+
+- `ServerSingleGameController.setState()` now resets timing/history state rather than only swapping FSM/game state.
+- `game` module state is now keyed by connection instead of relying on one ambient `serverGame`.
+- Stale or invalid single-game moves are ignored when:
+  - the controller is not in `Playing`
+  - the move frame is already in the past
+
+Why this mattered:
+
+- Continuing after a win could wedge the server into a bad state because stale move input was being replayed against a controller whose history/timing state had not actually been reset.
+- When that happened, later `Game:CreateSingle` requests could time out and frontend reconnect behavior would look like a transport failure even though the real fault was server-side game-state corruption.
+
+Current validation status:
+
+- `npm run build -w mrdario-server` passes under Node 20.
+- `npm run build -w mrdario-integration` passes under Node 20.
+- Basic server flows appear to work again after the adapter swap, but there is still some expected post-refactor “ghost hunting” risk in low-traffic paths.
+
+What is cleaner now:
+
+- No more fake legacy socketcluster server object.
+- No more `AbstractServerModule`.
+- No more hidden `__compatServer` escape hatch inside runtime registration.
+- The architectural seam between:
+  - modules
+  - runtime
+  - concrete transport adapter
+  is now real.
+
+What is still not fully clean:
+
+- `runtime/socketcluster.ts` still does multiple jobs:
+  - socket wrapping
+  - listener/procedure bridging
+  - middleware stream bridging
+  - responder normalization
+- `ClientConnection.on(...)` is still a very permissive old-world abstraction which blurs:
+  - fire-and-forget events
+  - request/response procedures
+  - local socket lifecycle events
+- Dynamic game topics like `game-${id}` are still published ad hoc rather than through a more semantic room/topic abstraction.
+- Some old server/game behavior remains intentionally tolerated rather than properly modeled, especially around single-player continuation flows.
+
+Recommended next abstraction steps:
+
+1. Split `runtime/socketcluster.ts` into smaller transport-adapter pieces:
+   - connection binding
+   - request/procedure binding
+   - middleware/topic plumbing
+   - error normalization
+2. Make procedures/events first-class runtime concepts instead of relying on generic `connection.on(...)` for everything.
+3. Introduce a more semantic topic/room abstraction for dynamic channels such as `game-${id}`.
+4. Decide whether single-game state should become an explicit server-side session concept instead of “current game for this connection”.
+5. Once the runtime shape is stable, design a parallel socket.io adapter against the same runtime contract as a reality check.
 ## 2026-04-18 Node 20 / npm / Audit Follow-Up
 
 Completed:
@@ -414,3 +502,93 @@ Likely next cleanup direction:
   - either real ESM all the way down
   - or a deliberate CommonJS server package
 - Keep using the integration suite as the first serious canary for transport/protocol regressions during that cleanup.
+
+## 2026-04-18 `server2` Promotion to Real `server`
+
+Completed:
+
+- Promoted the SocketCluster 20 spike into the real `server/` workspace.
+- Deleted the old legacy server code after parity was good enough locally.
+- `server` is now the canonical `mrdario-server` workspace package; there is no longer a split between `server` and `server2`.
+
+Important structural changes:
+
+- `server` now builds and runs as ESM end-to-end.
+- The old CommonJS shim inside `gameserver/` was removed:
+  - deleted `server/gameserver/package.json`
+  - deleted the old "inner CommonJS / outer ESM" behavior
+- `server/server.js` now imports built ESM directly from `./dist/gameserver/GameServer.js`.
+- `server/tsconfig.json` is on `module: "nodenext"` / `moduleResolution: "nodenext"` and includes local ambient declarations.
+
+Important compatibility work needed to make this run:
+
+- Added `server/gameserver/compat.ts` as the type-level description of the legacy SocketCluster compatibility wrapper surface.
+- Added `server/gameserver/ambient.d.ts` for `@ircam/sync/server`.
+- Updated `server/gameserver` imports for Node ESM:
+  - explicit `.js` relative imports
+  - explicit package file imports where older packages pretend to be modern ESM but are not
+- Cleaned up runtime CJS interop footguns in server code:
+  - `lodash`
+  - `tweetnacl`
+  - `@ircam/sync`
+  - `io-ts`
+  - `fp-ts`
+
+Important outcome:
+
+- `npm run build -w mrdario-server` passes under Node 20.
+- `npm run start -w mrdario-server` now gets past the old module-format/runtime import failures.
+- Remaining server cleanup is now architectural, not module-system triage.
+
+Open design debt:
+
+- `server/legacy-compat.js` still exists and is intentionally transitional.
+- The runtime behavior is preserved through the compat layer, but it is not the desired end state.
+- Next meaningful cleanup is to port `gameserver` modules directly to native SocketCluster 20 semantics and delete the compat layer in slices.
+
+## 2026-04-18 `integration` ESM + Jest Recovery
+
+Completed:
+
+- `integration` is now aligned with the repo's ESM direction:
+  - `integration/package.json` has `"type": "module"`
+  - `integration/tsconfig.json` is on `module: "nodenext"` / `moduleResolution: "nodenext"`
+- Updated local relative imports in `integration/src` to use explicit `.js` targets for built ESM output.
+- Fixed `integration` package build:
+  - proper Node/Jest types in tsconfig
+  - tiny local `redis` ambient declaration
+  - strict-mode callback typing cleanup in `src/utils/redis.ts`
+
+Most important Jest decision:
+
+- Stopped using `ts-jest` for running integration tests.
+- `integration` tests now run against built JS in `integration/lib/`, not live TypeScript transforms.
+- This avoids the persistent `ts-jest` / TS 6 `moduleResolution=node10` ghost that kept reappearing despite correct visible config.
+
+Current Jest shape:
+
+- `npm test` in `integration` now does:
+  1. `npm run build`
+  2. `node --experimental-vm-modules ... jest --config jest.config.cjs`
+- `integration/jest.config.cjs` now points roots at `lib/`.
+- `integration/configs/jest.setupAfterEnv.mjs` closes the Redis singleton from built JS.
+- The brittle npm CLI lookup in `integration/configs/jest.globalSetup.cjs` was replaced with a simpler "use `npm_execpath` if present, else spawn `npm`" strategy.
+
+Behavioral outcome:
+
+- The old `Cannot find module 'mrdario-core/...'` Jest failures are gone.
+- The old `Must use import to load ES Module` setup-hook failures are gone.
+- The old `moduleResolution=node10` TS 6 deprecation failure is gone by construction because tests no longer pass through `ts-jest`.
+
+Local verification outcome:
+
+- On the real local shell, `integration` tests are back to running and mostly passing.
+- One lingering ESM Jest cleanup was needed:
+  - `integration/src/tests/lobby.test.ts` now imports `jest` explicitly from `@jest/globals`
+  - `lodash` interop there was normalized to a default import
+
+Role of the suite going forward:
+
+- `integration` is once again a credible canary for server/socket/protocol regressions.
+- This is especially important now that `server` is the SocketCluster 20 port.
+- If future changes break auth, lobby, match, or single-game request flows, this suite should be one of the first places it squeals.

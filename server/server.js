@@ -9,8 +9,8 @@ import { v4 as uuidv4 } from 'uuid';
 import sccBrokerClient from 'scc-broker-client';
 import redis from 'redis';
 import { fileURLToPath } from 'url';
-import { createCompatServer } from './legacy-compat.js';
 import { GameServer } from './dist/gameserver/GameServer.js';
+import { createSocketClusterTransport } from './dist/gameserver/runtime/socketcluster.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -52,7 +52,7 @@ agOptions = {
 
 let httpServer = eetase(http.createServer());
 let agServer = socketClusterServer.attach(httpServer, agOptions);
-let compatServer = createCompatServer(agServer);
+let transport = createSocketClusterTransport(agServer);
 
 let expressApp = express();
 if (ENVIRONMENT === 'dev') {
@@ -81,7 +81,7 @@ rClient.on('error', (error) => {
   console.error(error);
 });
 
-new GameServer(compatServer, rClient);
+new GameServer(transport, rClient);
 
 httpServer.listen(SOCKETCLUSTER_PORT);
 

@@ -2,7 +2,7 @@ import hashUtil from "tweetnacl-util";
 import nacl from "tweetnacl";
 import { v4 as uuid } from "uuid";
 
-import { AuthEventType, ClientAuthenticatedUser, LoginRequest, ServerUser } from "mrdario-core/api/auth";
+import { AuthEventType, ClientAuthenticatedUser, LoginRequest, ServerUser, TLoginRequest } from "mrdario-core/api/auth";
 
 import {
   AppAuthToken,
@@ -10,85 +10,72 @@ import {
   hasAuthToken,
   hasValidAuthToken,
   isAuthToken,
-  logWithTime,
-  SocketResponder
+  logWithTime
 } from "../../utils/index.js";
-import { AbstractServerModule } from "../../AbstractServerModule.js";
-import { LegacyCompatSocket, ServerModuleOptions } from "../../compat.js";
+import { defineServerModule } from "../../runtime/types.js";
 
 const { hash } = nacl;
 
 type ServerUsers = { [K in string]: ServerUser };
 
-interface AuthModuleState {
-  users: ServerUsers;
-}
+export function createAuthModule() {
+  const users: ServerUsers = {};
 
-export class AuthModule extends AbstractServerModule {
-  state: AuthModuleState;
-
-  constructor(options: ServerModuleOptions) {
-    super(options);
-    this.state = {
-      users: {}
-    };
-  }
-  public handleConnect(socket: LegacyCompatSocket) {
-    if (hasAuthToken(socket)) {
-      // revoke auth token if badly formatted, or if user is not in users collection
-      if (!isAuthToken(socket.authToken) || !(socket.authToken.id in this.state.users)) {
-        socket.deauthenticate();
-      } else {
-        logWithTime(`Welcome back, ${socket.authToken.name}`);
-      }
-    }
-
-    socket.on("disconnect", () => {
-      logWithTime("Disconnected: ", getClientIpAddress(socket));
-      if (hasValidAuthToken(socket) && socket.authToken.id in this.state.users) {
-        logWithTime("Goodbye, ", socket.authToken.name);
-        delete this.state.users[socket.authToken.id].socketId;
-      }
-    });
-
-    socket.on(
-      // @ts-ignore
-      AuthEventType.Login,
-      (request: LoginRequest, respond: SocketResponder<ClientAuthenticatedUser>): void => {
-        // todo properly validate requests here
-        if (!request.name || !request.name.length) {
-          respond("Login requires a name", null);
-          return;
-        }
-
-        const { id, token, name } = request;
-        let clientUser: ClientAuthenticatedUser;
-        if (id && token && authenticateUser(id, token, this.state.users)) {
-          // user is authenticated
-          // allow setting name at login
-          const serverUser = this.state.users[id];
-          if (name != serverUser.name) {
-            this.state.users[id].name = name;
-            this.state.users[id].socketId = socket.id;
-          }
-          clientUser = { id, token, name };
+  return defineServerModule({
+    name: "auth",
+    onConnect({ connection }) {
+      if (hasAuthToken(connection.socket)) {
+        if (!isAuthToken(connection.socket.authToken) || !(connection.socket.authToken.id in users)) {
+          connection.clearAuthToken();
         } else {
-          // authentication failed,
-          // or no id/token provided, create a new user
-          const created = createUser(name);
-          clientUser = created.clientUser;
-          const serverUser = created.serverUser;
-          this.state.users[serverUser.id] = serverUser;
-          this.state.users[serverUser.id].socketId = socket.id;
+          logWithTime(`Welcome back, ${connection.socket.authToken.name}`);
         }
-        respond(null, clientUser);
-        const authToken: AppAuthToken = { id: clientUser.id, name: clientUser.name };
-        socket.setAuthToken(authToken);
-        logWithTime(`${clientUser.name} logged in. (${clientUser.id})`);
-        console.table(Object.values(this.state.users));
       }
-    );
-  }
+
+      connection.on("disconnect", () => {
+        logWithTime("Disconnected: ", getClientIpAddress(connection.socket));
+        if (hasValidAuthToken(connection.socket) && connection.socket.authToken.id in users) {
+          logWithTime("Goodbye, ", connection.socket.authToken.name);
+          delete users[connection.socket.authToken.id].socketId;
+        }
+      });
+    },
+    procedures: [
+      {
+        auth: "none",
+        eventType: AuthEventType.Login,
+        codec: TLoginRequest,
+        handler({ connection }, request: LoginRequest): ClientAuthenticatedUser {
+          if (!request.name || !request.name.length) {
+            throw new Error("Login requires a name");
+          }
+
+          const { id, token, name } = request;
+          let clientUser: ClientAuthenticatedUser;
+          if (id && token && authenticateUser(id, token, users)) {
+            const serverUser = users[id];
+            if (name != serverUser.name) {
+              users[id].name = name;
+              users[id].socketId = connection.id;
+            }
+            clientUser = { id, token, name };
+          } else {
+            const created = createUser(name);
+            clientUser = created.clientUser;
+            const serverUser = created.serverUser;
+            users[serverUser.id] = serverUser;
+            users[serverUser.id].socketId = connection.id;
+          }
+
+          const authToken: AppAuthToken = { id: clientUser.id, name: clientUser.name };
+          connection.setAuthToken(authToken);
+          logWithTime(`${clientUser.name} logged in. (${clientUser.id})`);
+          console.table(Object.values(users));
+          return clientUser;
+        }
+      }
+    ]
+  });
 }
 
 function createUser(name: string): { clientUser: ClientAuthenticatedUser; serverUser: ServerUser } {

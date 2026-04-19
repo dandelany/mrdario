@@ -1,7 +1,7 @@
 import * as t from "io-ts";
-import { LegacyCompatSocket } from "../compat.js";
 import { SocketResponder } from "./index.js";
 import { respondInvalidData, validateSocketData } from "./io.js";
+import { TransportSocket } from "../runtime/types.js";
 
 export const TAppAuthToken = t.type({
   id: t.string,
@@ -9,19 +9,19 @@ export const TAppAuthToken = t.type({
 });
 export type AppAuthToken = t.TypeOf<typeof TAppAuthToken>;
 
-interface ServerSocketWithAuth extends LegacyCompatSocket {
+interface ServerSocketWithAuth extends TransportSocket {
   authToken: any;
 }
 
-interface ServerSocketWithValidAuthToken extends LegacyCompatSocket {
+interface ServerSocketWithValidAuthToken extends TransportSocket {
   authToken: AppAuthToken;
 }
 
-export function hasAuthToken(socket: LegacyCompatSocket): socket is ServerSocketWithAuth {
+export function hasAuthToken(socket: TransportSocket): socket is ServerSocketWithAuth {
   return socket.authState === socket.AUTHENTICATED && !!socket.authToken;
 }
 
-export function hasValidAuthToken(socket: LegacyCompatSocket): socket is ServerSocketWithValidAuthToken {
+export function hasValidAuthToken(socket: TransportSocket): socket is ServerSocketWithValidAuthToken {
   return hasAuthToken(socket) && isAuthToken(socket.authToken);
 }
 
@@ -41,7 +41,7 @@ export function respondNotAuthenticated(respond: SocketResponder<any>): void {
 }
 
 export function requireAuth(
-  socket: LegacyCompatSocket,
+  socket: TransportSocket,
   respond: SocketResponder<any>,
   successCallback: (authToken: AppAuthToken, respond: SocketResponder<any>) => void,
   failureCallback: (respond: SocketResponder<any>) => void = respondNotAuthenticated
@@ -54,7 +54,7 @@ export function requireAuth(
 }
 
 export function authAndValidateRequest<RequestType, ResponseType>(
-  socket: LegacyCompatSocket,
+  socket: TransportSocket,
   TCodec: t.Type<RequestType>,
   successCallback: (
     data: RequestType,

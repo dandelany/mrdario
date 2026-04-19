@@ -4,18 +4,18 @@ import type { RedisClient } from "redis";
 import { GameListItem } from "mrdario-core/api/game";
 
 import { getClientIpAddress, socketInfoStr, logWithTime } from "./utils/index.js";
+import { attachModule, createModuleContext, registerModuleTopics } from "./runtime/register.js";
+import type { ClientConnection, ServerModuleDefinition, ServerServices, TransportRuntime } from "./runtime/types.js";
+import { createHighScoresModule } from "./modules/scores/index.js";
+import { createAuthModule } from "./modules/auth/index.js";
+import { createLobbyModule } from "./modules/lobby/index.js";
+import { createMatchModule } from "./modules/match/MatchModule.js";
+import { createGameModule } from "./modules/game/GameModule.js";
+import { createSyncModule } from "./modules/sync/index.js";
 
-import { AbstractServerModule } from "./AbstractServerModule.js";
-import { HighScoresModule } from "./modules/scores/index.js";
-import { LobbyModule } from "./modules/lobby/index.js";
-import { AuthModule } from "./modules/auth/index.js";
-import { SyncModule } from "./modules/sync/index.js";
-import { MatchModule } from "./modules/match/MatchModule.js";
-import { GameModule } from "./modules/game/GameModule.js";
-import { LegacyCompatServer, LegacyCompatSocket } from "./compat.js";
-
-// in-memory state, for now...
-// todo put this in redis where appropriate?
+// top-level server orchestration.
+// the point of this class is to wire shared services + transport into the module layer,
+// not to own a bunch of socketcluster-specific behavior directly.
 
 interface GameServerState {
   games: { [K in string]: GameListItem };
@@ -26,31 +26,28 @@ interface ConnectionState {
   game?: string;
 }
 
-interface ServerModule extends AbstractServerModule {};
-
 export class GameServer {
-  scServer: LegacyCompatServer;
   rClient: RedisClient;
   // todo store in redis?
   state: GameServerState;
+  services: ServerServices;
 
-  modules: {[k in string]: ServerModule};
+  modularModules: ServerModuleDefinition[];
 
-  // highScores: HighScoresModule;
-  // lobby: LobbyModule;
-  auth: AuthModule;
-  sync: SyncModule;
-  match: MatchModule;
-
-  constructor(scServer: LegacyCompatServer, rClient: RedisClient) {
-    this.scServer = scServer;
+  constructor(transport: TransportRuntime, rClient: RedisClient) {
     this.rClient = rClient;
     this.state = {
       games: {},
       channels: {}
     };
+    this.services = {
+      redisClient: rClient,
+      transport
+    };
 
-    this.scServer.addMiddleware("publishOut", (req: any, next) => {
+    this.services.transport.onPublishOut((req: any, next) => {
+      // temporary transport-level logging while the new adapter settles down.
+      // this should eventually be replaced by more intentional diagnostics.
       // console.log(req);
       console.log(req.socket.authToken);
       console.log(req.socket.id);
@@ -67,36 +64,34 @@ export class GameServer {
     //   msgI++;
     // }, 2300);
 
-    // modules - the parts which actually handle requests and do things
-    const moduleOpts = {scServer, rClient};
-    this.modules = {
-      highScores: new HighScoresModule(moduleOpts),
-      lobby: new LobbyModule(moduleOpts),
-      game: new GameModule(moduleOpts)
-    };
-    // this.highScores = new HighScoresModule({scServer, rClient});
-    // this.lobby = new LobbyModule({scServer, rClient});
-    this.auth = new AuthModule(moduleOpts);
-    this.sync = new SyncModule(scServer);
-    this.match = new MatchModule(scServer);
+    // modules declare procedures/topics in a transport-agnostic shape.
+    // registration happens centrally so we can swap transports without rewriting module code.
+    this.modularModules = [
+      createHighScoresModule(),
+      createAuthModule(),
+      createLobbyModule(),
+      createMatchModule(),
+      createGameModule(),
+      createSyncModule()
+    ];
+    this.modularModules.forEach(module => {
+      registerModuleTopics(module, this.services);
+    });
 
-    scServer.on("connection", this.handleConnect);
+    transport.onConnection(this.handleConnect);
   }
 
-  protected handleConnect = (socket: LegacyCompatSocket) => {
+  protected handleConnect = (connection: ClientConnection) => {
     const connectionState: ConnectionState = {};
+    const moduleContext = createModuleContext(connection, this.services);
+    const socket = connection.socket;
     logWithTime("Connected: ", getClientIpAddress(socket));
     logWithTime(socketInfoStr(socket));
 
-    Object.values(this.modules).forEach(module => {
-      module.handleConnect(socket);
+    // attach all declared module behavior for this connection.
+    this.modularModules.forEach(module => {
+      attachModule(module, moduleContext);
     });
-
-    // this.highScores.handleConnect(socket);
-    // this.lobby.handleConnect(socket);
-    this.auth.handleConnect(socket);
-    this.sync.handleConnect(socket);
-    this.match.handleConnect(socket);
 
     socket.on("disconnect", () => {
       // temporary - remove below
