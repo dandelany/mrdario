@@ -6,6 +6,11 @@ const LOG_FILE = path.join(__dirname, '.jest-server.log');
 const ERR_FILE = path.join(__dirname, '.jest-server.err.log');
 
 module.exports = async () => {
+  try {
+    const { closeRedisClient } = await import('../lib/utils/redis.js');
+    await closeRedisClient();
+  } catch (_) {}
+
   if (!fs.existsSync(PID_FILE)) {
     return;
   }

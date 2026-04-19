@@ -117,8 +117,8 @@
     "./package.json": "./package.json"
   },
   "scripts": {
-    "test": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --config jest.config.cjs --coverage",
-    "test-watch": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --config jest.config.cjs --watch",
+    "test": "node --experimental-vm-modules ../node_modules/jest/bin/jest.js --config jest.config.cjs --coverage",
+    "test-watch": "node --experimental-vm-modules ../node_modules/jest/bin/jest.js --config jest.config.cjs --watch",
     "clean": "rimraf lib/",
     "build": "npm run clean && tsc -p tsconfig.build.esm.json",
     "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",

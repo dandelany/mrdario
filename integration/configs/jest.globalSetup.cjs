@@ -62,6 +62,11 @@ module.exports = async () => {
     }
   );
 
+  // the child keeps its own copies of these file descriptors; close the
+  // parent's copies so jest doesn't retain open handles for the whole run.
+  fs.closeSync(out);
+  fs.closeSync(err);
+
   child.unref();
   fs.writeFileSync(PID_FILE, String(child.pid));
 

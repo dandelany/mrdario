@@ -1,6 +1,8 @@
 import { GameClient } from "mrdario-core/client/GameClient";
 import { AppAuthToken } from "mrdario-core/api/auth";
-import { generate } from "band-name";
+// import { generate } from "band-name";
+
+const generate = () => { "test" }
 
 class GameBot {
   gameClient: GameClient;

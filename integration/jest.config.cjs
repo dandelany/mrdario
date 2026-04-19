@@ -5,7 +5,7 @@ module.exports = {
   globalSetup: "<rootDir>/configs/jest.globalSetup.cjs",
   globalTeardown: "<rootDir>/configs/jest.globalTeardown.cjs",
   setupFilesAfterEnv: [
-    "<rootDir>/configs/jest.setupAfterEnv.mjs"
+    "<rootDir>/configs/jest.setupAfterEnv.cjs"
   ],
   verbose: true,
   testRegex: "(/__tests__/.*|(\\.|/)(test|spec))\\.(jsx?|tsx?)$",

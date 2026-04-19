@@ -5,11 +5,11 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "test": "npm run build && node --experimental-vm-modules ./node_modules/jest/bin/jest.js --config jest.config.cjs",
-    "test-watch": "npm run build && node --experimental-vm-modules ./node_modules/jest/bin/jest.js --config jest.config.cjs --watch",
+    "test": "npm run build && NODE_OPTIONS=--experimental-vm-modules jest --config jest.config.cjs --detectOpenHandles",
+    "test-watch": "npm run build && NODE_OPTIONS=--experimental-vm-modules jest --config jest.config.cjs --watch",
     "build": "tsc",
     "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
-    "start": "node --loader ts-node/esm src/index.ts"
+    "start": "npm run test"
   },
   "author": "Dan Delany <dan.delany@gmail.com>",
   "license": "MIT",

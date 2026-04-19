@@ -1,4 +1,3 @@
-import { SCChannel } from "sc-channel";
 import type { RedisClient } from "redis";
 
 import { GameListItem } from "mrdario-core/api/game";
@@ -19,7 +18,7 @@ import { createSyncModule } from "./modules/sync/index.js";
 
 interface GameServerState {
   games: { [K in string]: GameListItem };
-  channels: { [K in string]: SCChannel };
+  channels: { [K in string]: any };
 }
 
 interface ConnectionState {

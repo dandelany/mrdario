@@ -1,4 +1,3 @@
-import type { SCExchange } from "sc-broker-cluster";
 import type { SCClientSocket } from "socketcluster-client";
 import type { AGServerSocket } from "socketcluster-server";
 import lodash from "lodash";
@@ -56,6 +55,13 @@ export function isServerSocket(socket: AGServerSocket | SCClientSocket): socket 
 interface WatchableChannel {
   watch(handler: (data: any) => void): void;
   unwatch(handler: (data: any) => void): void;
+}
+
+// this experiment only needs the tiny broker-exchange surface below, not the full historical
+// `sc-broker-cluster` type package.
+interface SaferChannelExchange {
+  subscribe(channelName: string): unknown;
+  unsubscribe(channelName: string): void;
 }
 
 // utils - encode/decode an ID (positive integer number) as a string
@@ -154,7 +160,7 @@ export interface BaseSaferClientChannelOptions extends CommonSaferChannelOptions
   socket: SCClientSocket;
 }
 export interface BaseSaferServerChannelOptions extends CommonSaferChannelOptions {
-  exchange: SCExchange;
+  exchange: SaferChannelExchange;
 }
 export type BaseSaferChannelOptions = BaseSaferClientChannelOptions | BaseSaferServerChannelOptions;
 export class BaseSaferChannel {
@@ -510,7 +516,7 @@ export class SaferChannelsClient {
 
 export interface SaferServerChannelInOptions {
   socket: AGServerSocket;
-  exchange: SCExchange;
+  exchange: SaferChannelExchange;
   channelName: string;
   onMessage?: ((messageContent: string) => void) | null;
 }
