@@ -25,19 +25,30 @@ const defaultStyles: MayaNumeralStyles = {
 
 interface MayaNumeralZeroProps {
   symbol: string;
-  size: number;
+  size: number | string;
   color: string;
   style: object;
 }
+
+const toCssSize = (size: number | string): string => (typeof size === "number" ? `${size}px` : size);
+
+const scaleSize = (size: number | string, multiplier: number): string =>
+  typeof size === "number" ? `${Math.ceil(size * multiplier)}px` : `calc(${size} * ${multiplier})`;
+
+const divideSize = (size: number | string, divisor: number): string =>
+  typeof size === "number" ? `${Math.ceil(size / divisor)}px` : `calc(${size} / ${divisor})`;
+
 const MayaNumeralZero: React.FunctionComponent<MayaNumeralZeroProps> = props => {
   const { symbol, size, color } = props;
-  const fontSize = size + "px";
-  const lineHeight = Math.ceil(size * 0.5) + "px";
-  const style = _.defaults({}, props.style, { lineHeight, fontSize, color });
+  const fontSize = scaleSize(size, 1.8);
+  const lineHeight = scaleSize(size, 0.75);
+  const fontFamily =  "Noto Sans Symbols 2, serif";
+  const style = _.defaults({}, props.style, { lineHeight, fontSize, color, fontFamily });
 
   return (
     <div className="mayan-numeral-zero" style={style}>
-      {symbol || "\u2205"}
+      {/* this zero glyph dates to 31 BC */}
+      {symbol ?? "𝋠"}
     </div>
   );
 };
@@ -45,14 +56,14 @@ const MayaNumeralZero: React.FunctionComponent<MayaNumeralZeroProps> = props => 
 interface MayaNumeralDotsProps {
   count: number;
   symbol: string;
-  size: number;
+  size: number | string;
   color: string;
   style: object;
 }
 const MayaNumeralDots: React.FunctionComponent<MayaNumeralDotsProps> = props => {
   const { count, symbol, size, color } = props;
-  const fontSize = size + "px";
-  const lineHeight = Math.ceil(size * 0.5) + "px";
+  const fontSize = toCssSize(size);
+  const lineHeight = scaleSize(size, 0.5);
   const style = _.defaults({}, props.style, { lineHeight, fontSize, color });
 
   return (
@@ -63,16 +74,16 @@ const MayaNumeralDots: React.FunctionComponent<MayaNumeralDotsProps> = props => 
 };
 
 interface MayaNumeralBarProps {
-  size: number;
+  size: number | string;
   color: string;
   style: object;
 }
 const MayaNumeralBar: React.FunctionComponent<MayaNumeralBarProps> = props => {
   const { size, color } = props;
   const style = _.defaults({}, props.style, {
-    width: size * 2,
-    borderBottom: `${Math.ceil(size / 4)}px solid ${color}`,
-    margin: `${Math.ceil(size / 12)}px auto`
+    width: typeof size === "number" ? size * 2 : `calc(${size} * 2)`,
+    borderBottom: `${divideSize(size, 4)} solid ${color}`,
+    margin: `${divideSize(size, 12)} auto`
   });
 
   return <div className="mayan-numeral-bar" style={style} />;
@@ -81,7 +92,7 @@ const MayaNumeralBar: React.FunctionComponent<MayaNumeralBarProps> = props => {
 interface MayaNumeralDigitProps {
   value: number;
   i: number;
-  size: number;
+  size: number | string;
   color: string;
   dotSymbol: string;
   zeroSymbol: string;
@@ -92,7 +103,7 @@ const MayaNumeralDigit: React.FunctionComponent<MayaNumeralDigitProps> = props =
   const dots = Math.round(((value / 5) % 1) * 5);
   const bars = Math.floor(value / 5);
   const style = _.defaults({}, styles.digit, {
-    marginTop: i === 0 ? 0 : `${Math.ceil(size / 2)}px`
+    marginTop: i === 0 ? 0 : divideSize(size, 2)
   });
 
   const children =
@@ -116,7 +127,7 @@ const MayaNumeralDigit: React.FunctionComponent<MayaNumeralDigitProps> = props =
 
 interface MayaNumeralProps {
   value: number;
-  size: number;
+  size: number | string;
   color: string;
   dotSymbol: string;
   zeroSymbol: string;
@@ -127,7 +138,7 @@ export default class MayaNumeral extends React.Component<MayaNumeralProps> {
     size: 10,
     color: "black",
     dotSymbol: "\u2022",
-    zeroSymbol: "\u2205",
+    zeroSymbol: "𝋠",
     styles: {}
   };
 

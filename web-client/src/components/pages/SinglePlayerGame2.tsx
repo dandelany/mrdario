@@ -165,7 +165,7 @@ class SinglePlayerGame extends React.Component<SinglePlayerGameProps, SinglePlay
         gameClient.sendSingleGameModeChange(toMode);
         if (_.includes([GameControllerMode.Lost, GameControllerMode.Won], toMode)) {
           this.setState({ pendingMode: toMode });
-          if (toMode === GameControllerMode.Won) this._handleWin();
+          if (toMode === GameControllerMode.Won) this._handleWin(this.game?.getState().gameState.score);
           if (toMode === GameControllerMode.Lost) this._handleLose();
         }
         if (this.props.onChangeMode) this.props.onChangeMode(toMode);
@@ -178,9 +178,9 @@ class SinglePlayerGame extends React.Component<SinglePlayerGameProps, SinglePlay
     this._initGame(this.props);
   };
 
-  _handleWin = () => {
-    if (this.state.score !== undefined) {
-      const score = this.state.score;
+  _handleWin = (finalScore = this.state.score) => {
+    if (finalScore !== undefined) {
+      const score = finalScore;
       const level = parseInt(this.props.match.params.level);
       const name = getName();
 

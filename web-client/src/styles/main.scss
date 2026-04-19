@@ -54,9 +54,9 @@ span.btn-white {
   color: #101010;
   background-color: rgba(255, 255, 255, 0.85);
   display: inline-block;
-  padding: 8px 12px;
-  border-radius: 12px;
-  margin-bottom: 10px;
+  padding: 0.3em 0.6em;
+  border-radius: 0.6em;
+  margin-bottom: 0.5em;
   cursor: pointer;
   font-weight: bold;
   box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
@@ -112,8 +112,8 @@ span.btn-white {
   }
 
   .title-game-options {
-    top: 65%;
-    font-size: 16pt;
+    bottom: 6%;
+    font-size: 3.5vh;
   }
 }
 

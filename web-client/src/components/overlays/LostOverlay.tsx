@@ -20,7 +20,7 @@ const LostOverlay: React.FunctionComponent<LostOverlayProps> = props => {
   return (
     <div className="game-overlay" style={style}>
       <div className="win-lose-symbol lose-symbol">
-        <MayaNumeral value={level} size={40} />
+        <MayaNumeral value={level} size={'5vh'} />
         <h2>GAME OVER</h2>
       </div>
 

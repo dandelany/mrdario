@@ -16,7 +16,6 @@ import { getGetTime } from "mrdario-core/utils/time";
 import { GameController } from "mrdario-core/game/controller/GameController";
 import { GamepadManager, KeyManager, SwipeManager } from "mrdario-core/game/input/web";
 import { SaveScoreResponse } from "mrdario-core/api/scores";
-import { LobbyJoinResponse } from "mrdario-core/api/lobby";
 
 import { GameRouteParams } from "@/types";
 import responsiveGame from "@/components/responsiveGame";
@@ -45,8 +44,6 @@ export interface SinglePlayerGameState {
   highScores?: [string, number][];
   rank?: number;
   pendingMode?: GameControllerMode;
-
-  gameId?: string;
   gameOptions?: Partial<GameOptions> & { level: number; baseSpeed: number };
 }
 
@@ -97,14 +94,6 @@ class SinglePlayerGame extends React.Component<SinglePlayerGameProps, SinglePlay
     return hasChanged;
   }
 
-  componentDidUpdate() {
-    const { grid, gameId } = this.state;
-    if (grid && gameId) {
-      // console.log('send', this.state.gameId, this.state.grid);
-      this.props.gameClient.publishSimpleGameState(gameId, grid);
-    }
-  }
-
   protected getGameOptions = (props: SinglePlayerGameProps) => {
     const { params } = props.match;
     const level = parseInt(params.level) || 0;
@@ -115,21 +104,9 @@ class SinglePlayerGame extends React.Component<SinglePlayerGameProps, SinglePlay
   _initGame = (props: SinglePlayerGameProps) => {
     if (this.game && this.game.cleanup) this.game.cleanup();
 
-    const { gameClient } = props;
     const gameOptions = this.getGameOptions(props);
     this.setState({ gameOptions });
     const { level, baseSpeed } = gameOptions;
-
-    gameClient.sendInfoStartGame(getName(), level, baseSpeed);
-
-    gameClient
-      .joinLobby()
-      .then((data: LobbyJoinResponse) => {
-        console.log("OK", data);
-      })
-      .catch((err: Error) => {
-        console.error(err);
-      });
 
     // input managers controlling keyboard and touch events
     this.keyManager = new KeyManager(DEFAULT_KEYS);
@@ -166,7 +143,7 @@ class SinglePlayerGame extends React.Component<SinglePlayerGameProps, SinglePlay
         console.log("onchangemode", fromMode, toMode);
         if (_.includes([GameControllerMode.Lost, GameControllerMode.Won], toMode)) {
           this.setState({ pendingMode: toMode });
-          if (toMode === GameControllerMode.Won) this._handleWin();
+          if (toMode === GameControllerMode.Won) this._handleWin(this.game?.getState().gameState.score);
           if (toMode === GameControllerMode.Lost) this._handleLose();
         }
         if (this.props.onChangeMode) this.props.onChangeMode(toMode);
@@ -179,9 +156,9 @@ class SinglePlayerGame extends React.Component<SinglePlayerGameProps, SinglePlay
     this._initGame(this.props);
   };
 
-  _handleWin = () => {
-    if (this.state.score !== undefined) {
-      const score = this.state.score;
+  _handleWin = (finalScore = this.state.score) => {
+    if (finalScore !== undefined) {
+      const score = finalScore;
       const level = parseInt(this.props.match.params.level);
       const name = getName();
 
@@ -202,13 +179,7 @@ class SinglePlayerGame extends React.Component<SinglePlayerGameProps, SinglePlay
   };
 
   _handleLose() {
-    if (this.state.score !== undefined) {
-      const level = parseInt(this.props.match.params.level);
-      const speed = parseInt(this.props.match.params.speed);
-      const score = this.state.score;
-
-      this.props.gameClient.sendInfoLostGame(getName(), level, speed, score);
-    }
+    // local single-player currently does not need to notify the server on loss.
   }
 
   render() {
