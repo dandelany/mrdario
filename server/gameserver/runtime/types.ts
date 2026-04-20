@@ -1,4 +1,4 @@
-import type { RedisClient } from "redis";
+import type { RedisClientType } from "redis";
 import type * as t from "io-ts";
 import type { AppAuthToken } from "mrdario-core/api";
 
@@ -65,7 +65,7 @@ export interface TransportRuntime {
 }
 
 export interface ServerServices {
-  redisClient: RedisClient;
+  redisClient: RedisClientType;
   transport: TransportRuntime;
 }
 

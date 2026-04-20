@@ -1,11 +1,11 @@
 import { GameClient } from "mrdario-core/client";
 import { clearRedisTestDB, connectGameClient, getRedisClient } from "../utils/index.js";
-import { RedisClient } from "redis";
+import type { RedisClientType } from "redis";
 
 describe("Scores", () => {
-  let rClient: RedisClient;
+  let rClient: RedisClientType;
   beforeAll(async () => {
-    rClient = getRedisClient();
+    rClient = await getRedisClient();
     await clearRedisTestDB(rClient);
   });
 

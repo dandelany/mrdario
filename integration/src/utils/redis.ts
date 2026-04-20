@@ -1,15 +1,16 @@
-import redis, { RedisClient } from "redis";
+import { createClient, type RedisClientType } from "redis";
 import fs from "fs";
 
 export const REDIS_TEST_DB = 15;
 
-let redisClient: RedisClient;
-export function getRedisClient() {
+let redisClient: RedisClientType | undefined;
+export async function getRedisClient(): Promise<RedisClientType> {
   if (redisClient) {
     return redisClient;
   }
 
-  redisClient = redis.createClient({db: REDIS_TEST_DB});
+  redisClient = createClient({ database: REDIS_TEST_DB });
+  await redisClient.connect();
   return redisClient;
 }
 
@@ -19,53 +20,25 @@ export async function closeRedisClient(): Promise<void> {
   }
 
   const clientToClose = redisClient;
-  redisClient = undefined as any;
-
-  await new Promise<void>((resolve) => {
-    clientToClose.quit(() => {
-      resolve();
-    });
-  });
+  redisClient = undefined;
+  await clientToClose.quit();
 }
 
-export async function clearRedisTestDB(rClient: RedisClient): Promise<string> {
-  return new Promise((resolve, reject) => {
-    rClient.select(REDIS_TEST_DB, (err: any) => {
-      if(err) reject(err);
-      else {
-        rClient.flushdb((err: any, flushReply: string) => {
-          if(err) reject(err);
-          else resolve(flushReply)
-        })
-      }
-    })
-  });
+export async function clearRedisTestDB(rClient: RedisClientType): Promise<string> {
+  await rClient.select(REDIS_TEST_DB);
+  return rClient.flushDb();
 }
 
-export async function getRedisDumpPath(rClient: RedisClient): Promise<string> {
-  return new Promise((resolve, reject) => {
-    rClient.config("get", "dir", (err: any, dir: string[]) => {
-      rClient.config("get", "dbfilename", (err2: any, dbfilename: string[]) => {
-        if (err) reject(err);
-        else if (err2) reject(err2);
-        else {
-          //@ts-ignore
-          const path = `${dir[1]}/${dbfilename[1]}`;
-          console.log(path);
-          resolve(path);
-        }
-      });
-    });
-  });
+export async function getRedisDumpPath(rClient: RedisClientType): Promise<string> {
+  const dir = await rClient.configGet("dir");
+  const dbfilename = await rClient.configGet("dbfilename");
+  const path = `${dir.dir}/${dbfilename.dbfilename}`;
+  console.log(path);
+  return path;
 }
 
-export async function redisSave(rClient: RedisClient): Promise<string> {
-  return new Promise((resolve, reject) => {
-    rClient.save((err: any, reply: string) => {
-      if (err) reject(err);
-      else resolve(reply);
-    });
-  });
+export async function redisSave(rClient: RedisClientType): Promise<string> {
+  return rClient.sendCommand<string>(["SAVE"]);
 }
 
 export async function asyncCopyFile(src: fs.PathLike, dest: fs.PathLike): Promise<null> {
@@ -77,7 +50,7 @@ export async function asyncCopyFile(src: fs.PathLike, dest: fs.PathLike): Promis
   });
 }
 
-export async function backupRedis(rClient: RedisClient) {
+export async function backupRedis(rClient: RedisClientType) {
   const dumpFilePath = await getRedisDumpPath(rClient);
   const saved = await redisSave(rClient);
 

@@ -1,7 +1,7 @@
 import lodash from "lodash";
-import type { RedisClient} from "redis";
+import type { RedisClientType } from "redis";
 
-const { chunk, isFinite } = lodash;
+const { isFinite } = lodash;
 
 type SingleScoreDataRow = [number, string, number];
 export interface SingleScoreDataObj {
@@ -16,10 +16,8 @@ export interface SingleScoreDataObj {
 //   (error: null, scoreObj: SingleScoreDataObj): void;
 // }
 
-type ScoreDBRow = [string, number];
-
 export async function handleSingleScore2(
-  rClient: RedisClient,
+  rClient: RedisClientType,
   row: SingleScoreDataRow,
 ): Promise<SingleScoreDataObj> {
   const [level, name, score] = row;
@@ -49,39 +47,31 @@ function getHighScoreNameKey(name: string): string {
 
 
 function addSingleScore2(
-  rClient: RedisClient,
+  rClient: RedisClientType,
   level: number,
   nameKey: string,
   score: number
 ): Promise<number> {
   const setKey = getSingleLevelHighScoresSetKey(level);
-  return new Promise((resolve, reject) => {
-    rClient.zadd(setKey, score, nameKey, (err, data) => {
-      if(err) reject(err);
-      else resolve(data);
-    });
-  });
+  return rClient.zAdd(setKey, { score, value: nameKey });
 }
 
 function getHighScoreNameKeyRank2(
-  rClient: RedisClient,
+  rClient: RedisClientType,
   level: number,
   nameKey: string
 ): Promise<number | null> {
   const setKey = getSingleLevelHighScoresSetKey(level);
-  return new Promise(((resolve, reject) => {
-    rClient.zrevrank(setKey, nameKey, (err, data) => {
-      if(err) reject(err);
-      else resolve(data);
-    });
-  }));
+  return rClient.zRevRank(setKey, nameKey).then(rank => {
+    return typeof rank === "number" ? rank : null;
+  });
 }
 
-function parseHighScores(rawScores: string[]): [string, number][] {
-  return (chunk(rawScores, 2) as ScoreDBRow[])
-    .map((scoreArr): [string, number] => {
-      const name = scoreArr[0] || "Anonymous";
-      const score = scoreArr[1] || 0;
+function parseHighScores(rawScores: { value: string; score: number }[]): [string, number][] {
+  return rawScores
+    .map((scoreRow): [string, number] => {
+      const name = scoreRow.value || "Anonymous";
+      const score = scoreRow.score || 0;
       return [name.split("__&&__")[0], Math.floor(score)];
     })
     .reverse();
@@ -89,16 +79,13 @@ function parseHighScores(rawScores: string[]): [string, number][] {
 
 
 export function getSingleHighScores2(
-  rClient: RedisClient,
+  rClient: RedisClientType,
   level: number,
   count: number,
 ): Promise<[string, number][]> {
   // get the key for the redis zset which holds the level's high scores
   const setKey = getSingleLevelHighScoresSetKey(level);
-  return new Promise((resolve, reject) => {
-    rClient.zrange(setKey, -Math.min(count, 1000), -1, "withscores", function(err, topScoreReplies) {
-      if(err) reject(err);
-      else resolve(parseHighScores(topScoreReplies));
-    });
-  });
+  return rClient
+    .zRangeWithScores(setKey, -Math.min(count, 1000), -1)
+    .then(parseHighScores);
 }

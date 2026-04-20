@@ -14,7 +14,7 @@
     "lodash": "^4.17.21",
     "morgan": "^1.7.0",
     "mrdario-core": "2.0.0",
-    "redis": "^2.8.0",
+    "redis": "^5.12.1",
     "scc-broker-client": "^9.2.1",
     "serve-static": "^1.13.2",
     "socketcluster-client": "^20.0.1",

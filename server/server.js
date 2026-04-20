@@ -7,7 +7,7 @@ import path from 'path';
 import morgan from 'morgan';
 import { v4 as uuidv4 } from 'uuid';
 import sccBrokerClient from 'scc-broker-client';
-import redis from 'redis';
+import { createClient } from 'redis';
 import { fileURLToPath } from 'url';
 import { GameServer } from './dist/gameserver/GameServer.js';
 import { createSocketClusterTransport } from './dist/gameserver/runtime/socketcluster.js';
@@ -75,10 +75,12 @@ expressApp.get('/health-check', (req, res) => {
 
 // SocketCluster/WebSocket connection handling loop.
 const redisDB = process.env.TEST_ENV ? 15 : 0;
-const rClient = redis.createClient({ db: redisDB });
+const rClient = createClient({ database: redisDB });
 rClient.on('error', (error) => {
   console.error(error);
 });
+
+await rClient.connect();
 
 new GameServer(transport, rClient);
 

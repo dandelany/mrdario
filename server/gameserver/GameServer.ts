@@ -1,4 +1,4 @@
-import type { RedisClient } from "redis";
+import type { RedisClientType } from "redis";
 
 import { GameListItem } from "mrdario-core/api/game";
 
@@ -26,14 +26,14 @@ interface ConnectionState {
 }
 
 export class GameServer {
-  rClient: RedisClient;
+  rClient: RedisClientType;
   // todo store in redis?
   state: GameServerState;
   services: ServerServices;
 
   modularModules: ServerModuleDefinition[];
 
-  constructor(transport: TransportRuntime, rClient: RedisClient) {
+  constructor(transport: TransportRuntime, rClient: RedisClientType) {
     this.rClient = rClient;
     this.state = {
       games: {},

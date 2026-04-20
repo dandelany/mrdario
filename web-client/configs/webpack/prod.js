@@ -14,22 +14,5 @@ module.exports = merge(commonConfig, {
     publicPath: '/',
   },
   devtool: 'source-map',
-  optimization: {
-    minimizer: [
-      '...',
-      new ImageMinimizerPlugin({
-        test: /\.(jpe?g|png|gif)$/i,
-        minimizer: {
-          implementation: ImageMinimizerPlugin.imageminMinify,
-          options: {
-            plugins: [
-              ['imagemin-gifsicle', { interlaced: false }],
-              ['imagemin-optipng', { optimizationLevel: 7 }],
-            ],
-          },
-        },
-      }),
-    ],
-  },
   plugins: [],
 });
