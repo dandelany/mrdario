@@ -259,6 +259,209 @@ Validation status:
 
 - `yarn workspace mrdario-core build` passes.
 
+## 2026-04-19 ESM / Transport / Single-Player Checkpoint
+
+This is the current practical landing spot after the more recent migration pass. The repo is in much better shape than the earlier Node 14 / Yarn-era baseline, but it is still not "finished". The important thing is that the remaining rough edges are much more localized and understandable.
+
+### Overall repo state
+
+Completed:
+
+- Root workflow is now Node 20 + npm workspaces rather than the old Yarn / Node 14 assumptions.
+- `core` is ESM-first with explicit package exports.
+- `server` is running on SocketCluster 20 without the old protocol downgrade shim.
+- `web-client` and `terminal-client` are also on `socketcluster-client` 20.
+- `integration` tests are back to running against built JS rather than the older ts-jest / mixed-module swamp.
+
+Important framing:
+
+- The repo is no longer dominated by build-tool necromancy.
+- Most remaining issues are now either:
+  - real architecture debt
+  - real package/dependency debt
+  - or a small number of lifecycle/runtime bugs
+
+### Server architecture state
+
+Completed:
+
+- Removed the old `AbstractServerModule` inheritance model.
+- Converted the active game server modules to the newer runtime/module-definition style:
+  - `auth`
+  - `scores`
+  - `lobby`
+  - `match`
+  - `game`
+  - `sync`
+- Replaced the fake old SocketCluster compatibility layer with a direct SocketCluster transport adapter:
+  - `server/gameserver/runtime/socketcluster.ts`
+- `server` now builds and runs as native ESM.
+
+Why this matters:
+
+- The module boundary now better reflects the original intent:
+  - pluggable modules
+  - centralized registration
+  - transport concerns pushed below the module layer
+- The architecture is now plausibly adaptable to another transport later (e.g. Socket.IO) without preserving the old fake-SocketCluster surface forever.
+
+What still needs work:
+
+- `server/gameserver/runtime/socketcluster.ts` is still too big and still mixes multiple concerns:
+  - connection wrapping
+  - lifecycle listeners
+  - request/event binding
+  - topic middleware
+  - error normalization
+- Runtime concepts are still a bit mushy:
+  - procedure vs event vs lifecycle registration should become more explicit over time
+- Some server-side types are still transitional / pragmatic rather than cleanly modeled.
+
+### Single-player / merge-checkpoint status
+
+Completed:
+
+- Restored the normal local single-player flow as the default user path instead of the mirror experiment.
+- `SinglePlayerGame` is back to acting like the old local game:
+  - local gameplay in browser
+  - high score submission on win
+- The "play online" button on the title page is now visibly disabled rather than routing into incomplete multiplayer flow.
+- High score submission bug around stale pre-time-bonus score was fixed.
+
+Important product decision:
+
+- The current merge target should be:
+  - stable single-player
+  - high scores working
+  - mirror experiment not being the default path
+- Server-authoritative anti-cheat single-player should be treated as follow-on work, not the merge gate.
+
+### Playfield / asset pipeline findings
+
+Important result:
+
+- The giant blown-up background-sprite glitch was traced to the modern asset-loading path rather than random PIXI insanity in general.
+- Game sprite SVGs are now imported through `?inline`, which avoids one-request-per-sprite behavior and reduces the bad async timing surface.
+
+Important caution:
+
+- There was a failed attempt to "fix" remount issues by changing PIXI teardown / gating behavior in `Playfield`.
+- That change path was reverted.
+- The lesson is that lifecycle and rendering issues in the game view should be treated carefully; not every visual bug is a texture-race bug.
+
+### Integration / test harness state
+
+Current status:
+
+- `integration` now behaves as a built-JS Jest harness rather than a ts-jest ESM labyrinth.
+- `integration` test scripts were cleaned up to use `jest` through npm script PATH with `NODE_OPTIONS=--experimental-vm-modules`.
+- The old fake `start` entry was removed in spirit by making `start` just run tests; `integration` is not a runtime app.
+- The open-handle noise was improved:
+  - detached server setup now closes parent log file descriptors
+  - Redis cleanup is handled in `setupFilesAfterEnv` and `globalTeardown`
+
+Known caveat:
+
+- The current `integration` setup works, but it is still not elegant.
+- The user preference is to eventually move toward writing TS tests and running them as natively as possible, rather than maintaining a brittle ts-jest / Jest-module shim stack.
+- That preference should guide future test-runner work.
+
+### Jest / lint / tooling state
+
+Completed:
+
+- `core` and `web-client` were moved to ESLint 9 flat config.
+- The TypeScript-aware lint rules are now configured correctly enough that:
+  - base JS rules do not falsely flag TS constructs
+  - TypeScript-specific unused-vars can still surface as warnings
+
+Important lesson:
+
+- The correct TypeScript lint model is:
+  - disable base `no-unused-vars` / `no-redeclare` / `no-undef` on TS files
+  - use the `@typescript-eslint` extension rules where appropriate
+- Earlier false positives around exported enums, type parameters, ambient declarations, etc. came from base ESLint rules touching TS syntax.
+
+Current compromise:
+
+- `@typescript-eslint/no-unused-vars` is set to `warn` rather than `error`.
+- This avoids destructive cleanup pressure in old experimental code while still surfacing likely dead imports / vars.
+
+Jest status:
+
+- The repo is now on Jest 30 package versions.
+- However, the remaining npm deprecation warnings are largely upstream:
+  - `ts-jest` still pulls `test-exclude -> glob@7 -> inflight`
+  - current Jest 30 internals still pull `glob@10.5.0`, which is itself deprecated
+
+Practical conclusion:
+
+- A truly clean npm install with zero remaining deprecation warnings is not achievable while keeping both:
+  - current Jest 30 internals
+  - `ts-jest`
+- The next real cleanup there is not another patchwork version bump; it is likely a migration away from `ts-jest`.
+
+### Terminal client state
+
+Completed:
+
+- `terminal-client` was modernized to ESM and SocketCluster 20.
+- It now builds and runs again as a proper CLI client.
+
+Notes:
+
+- This is useful as a proof that the repo's core gameplay path still works outside the browser.
+- It is also a nice canary for whether client-side protocol / API changes are actually coherent.
+
+### Current dependency-cleanup picture
+
+Completed recently:
+
+- Upgraded active SVG optimization stack toward modern `svgo`.
+- Replaced direct old `rc-slider` line with a newer version.
+- Upgraded direct ESLint packages to current lines.
+- Upgraded direct SocketCluster packages to 20 where applicable.
+
+What is still noisy:
+
+- Remaining npm warnings are now mostly:
+  - Jest / `ts-jest`
+  - `glob` transitive warnings from those stacks
+
+What not to do:
+
+- Do not casually remove optimization paths like SVG/image optimization without first deciding how that optimization is supposed to be preserved.
+- There was already one bad example of overreaching cleanup here. Keep future dependency cleanup focused on "replace with equivalent" rather than "delete and hope".
+
+## Where The Project Is Now
+
+The repo is in a much healthier state than it was before this pass.
+
+What feels solid:
+
+- `core` package shape
+- server ESM/runtime architecture direction
+- restored single-player default flow
+- working terminal client
+- much cleaner understanding of where the real transport and test debt lives
+
+What still feels transitional:
+
+- SocketCluster adapter internals in `server`
+- integration/Jest ergonomics
+- dependency-tree cleanliness around Jest / `ts-jest`
+- some old experiments (`controller/3`, `MultiGame`, mirror/multiplayer branches) still living beside the now-canonical paths
+
+Best next moves after this checkpoint:
+
+1. Finish the single-player merge checkpoint and merge this branch once the user-facing flow feels boring/stable again.
+2. If more npm-warning cleanup is desired, focus on replacing `ts-jest`, not random lockfile whack-a-mole.
+3. Later, return to server runtime cleanup:
+   - split `runtime/socketcluster.ts`
+   - clarify runtime API concepts
+   - reduce transitional types
+4. Only after that, revisit multiplayer / server-authoritative work with a cleaner head.
+
 ## 2026-04-18 Server Transport / Module Refactor Checkpoint
 
 Completed:

@@ -2,6 +2,7 @@
 const {resolve} = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const TsConfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
+const svgoConfigFile = resolve(__dirname, '../svgo.config.cjs');
 
 module.exports = {
   mode: 'development',
@@ -124,9 +125,7 @@ module.exports = {
           {
             loader: 'svgo-loader',
             options: {
-              plugins: [
-                {removeViewBox: false}
-              ]
+              configFile: svgoConfigFile,
             }
           }
         ]
@@ -142,9 +141,7 @@ module.exports = {
           {
             loader: 'svgo-loader',
             options: {
-              plugins: [
-                {removeViewBox: false}
-              ]
+              configFile: svgoConfigFile,
             }
           }
         ]
@@ -154,21 +151,7 @@ module.exports = {
         type: 'asset/resource',
         generator: {
           filename: 'img/[contenthash][ext]'
-        },
-        use: [
-          {
-            loader: 'image-webpack-loader',
-            options: {
-              bypassOnDebug: true,
-              optipng: {
-                optimizationLevel: 7,
-              },
-              gifsicle: {
-                interlaced: false,
-              },
-            }
-          },
-        ],
+        }
       },
     ],
   },

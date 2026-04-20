@@ -10,6 +10,6 @@
   "license": "ISC",
   "dependencies": {
     "lodash": "^4.17.11",
-    "svgo": "^1.1.1"
+    "svgo": "^4.0.0"
   }
 }

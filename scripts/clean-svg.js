@@ -1,13 +1,7 @@
 var fs = require('fs');
 var _ = require('lodash');
-var SVGO = require('svgo');
-
-var svgo  = new SVGO({
-  plugins: [
-    // remove width and height so svg can be responsive using viewBox
-    // {removeDimensions: true}
-  ]
-});
+var { optimize } = require('svgo');
+var svgoConfig = require('./svgo.config.cjs');
 
 var spritesDir = '../assets/sprite';
 var outDir = '../web-client/src/svg2';
@@ -22,14 +16,16 @@ filenames.forEach((filename) => {
     const outPath = `${outDir}/${filename.replace('mrdario_','')}`;
     console.log(outPath)
 
-    svgo.optimize(data).then((optimized) => {
-      console.log(`optimized ${filename}`);
+    const optimized = optimize(data, {
+      path: outPath,
+      ...svgoConfig,
+    });
+    console.log(`optimized ${filename}`);
 
-      // ...and save to output directory
-      fs.writeFile(outPath, optimized.data, (err) => {
-        if(err) throw err;
-        console.log(`saved ${outPath}`);
-      });
+    // ...and save to output directory
+    fs.writeFile(outPath, optimized.data, (err) => {
+      if(err) throw err;
+      console.log(`saved ${outPath}`);
     });
 
   });
