@@ -1,0 +1,26 @@
+{
+  "extends": "./tsconfig.paths.json",
+  "compilerOptions": {
+    "rootDir": "./src",
+    "outDir": "./build/",
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "target": "es2015",
+    "jsx": "react",
+    "typeRoots": ["./node_modules/@types"],
+    "skipLibCheck": true,
+    "lib": [
+      "es6",
+      "dom",
+      "esnext"
+    ],
+    "incremental": true
+  },
+  "include": [
+    "./src/**/*"
+  ],
+  "exclude": [
+    "./src/**/*.test.ts",
+    "./src/**/*.test.tsx"
+  ]
+}

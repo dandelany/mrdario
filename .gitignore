@@ -1,9 +1,11 @@
 node_modules
 npm-debug.log
+dump.rdb
 
 .idea/
 *.sublime-*
 .DS_Store
 Thumbs.db
 
-src/frontend/node_modules
+.codex
+*.tsbuildinfo

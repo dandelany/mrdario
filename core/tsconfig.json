@@ -1,0 +1,17 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "target": "es2020",
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "rootDir": "./src",
+    "strict": true,
+    "esModuleInterop": true,
+    "incremental": true,
+    "noUnusedLocals": false,
+    "skipLibCheck": true,
+    "types": ["jest"]
+  },
+  "include": ["src"],
+  "exclude": ["node_modules"]
+}

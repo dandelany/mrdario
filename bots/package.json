@@ -1,0 +1,28 @@
+{
+  "name": "mrdario-bots",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest --config jest.config.js",
+    "test-watch": "jest --config jest.config.js --watch",
+    "build": "tsc",
+    "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
+    "start": "ts-node src/index.ts"
+  },
+  "author": "Dan Delany <dan.delany@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "fp-ts": "^2.16.11",
+    "io-ts": "^2.2.22",
+    "mrdario-core": "2.0.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.14",
+    "@types/node": "^18.19.39",
+    "jest": "^30.0.0",
+    "ts-jest": "^29.4.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^6.0.3"
+  }
+}

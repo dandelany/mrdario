@@ -1,0 +1,10 @@
+node_modules
+npm-debug.log
+
+**/.tsbuildinfo
+.idea/
+*.sublime-*
+.DS_Store
+Thumbs.db
+
+build/

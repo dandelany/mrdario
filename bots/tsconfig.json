@@ -1,0 +1,19 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "target": "es6",
+    "module": "commonjs",
+    "declaration": true,
+    "outDir": "lib",
+    "rootDir": "src",
+    "strict": true,
+    "preserveSymlinks": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true
+  },
+  "types": [
+    "jest"
+  ],
+  "include": ["src"],
+  "exclude": ["node_modules"]
+}

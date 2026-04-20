@@ -1,0 +1,9 @@
+/lib
+
+node_modules
+npm-debug.log
+
+.idea/
+*.sublime-*
+.DS_Store
+Thumbs.db
