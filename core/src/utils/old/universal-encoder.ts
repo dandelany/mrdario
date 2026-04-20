@@ -10,6 +10,10 @@ enum PresetName {
   base64url = "base64url"
 }
 
+function isPresetName(value: string): value is PresetName {
+  return Object.values(PresetName).includes(value as PresetName);
+}
+
 export class BaseConverter {
   protected inputSymbols: string | null;
   protected inputBase: number | null;
@@ -113,12 +117,12 @@ export class BaseConverter {
 
   prepAndGetStatus(value: string | null = null) {
     if (this.inputPreset) {
-      if (!this.symbolPresets[this.inputPreset]) return this.statusStrings.no_preset;
+      if (!isPresetName(this.inputPreset)) return this.statusStrings.no_preset;
       this.inputBase = this.symbolPresets[this.inputPreset].base;
       this.inputSymbols = this.symbolPresets[this.inputPreset].symbols;
     }
     if (this.outputPreset) {
-      if (!this.symbolPresets[this.outputPreset]) return this.statusStrings.no_preset;
+      if (!isPresetName(this.outputPreset)) return this.statusStrings.no_preset;
       this.outputBase = this.symbolPresets[this.outputPreset].base;
       this.outputSymbols = this.symbolPresets[this.outputPreset].symbols;
     }
