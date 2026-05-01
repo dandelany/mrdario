@@ -142,7 +142,7 @@
     "eslint-config-prettier": "^10.1.8",
     "globals": "^16.4.0",
     "jest": "^30.0.0",
-    "onchange": "~6.1.0",
+    "onchange": "~7.1.0",
     "prettier": "2.8.8",
     "rimraf": "^4.4.1",
     "socketcluster-client": "^20.0.1",
