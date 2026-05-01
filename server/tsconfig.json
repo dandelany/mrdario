@@ -5,6 +5,7 @@
     "moduleResolution": "nodenext",
     "rootDir": ".",
     "outDir": "./dist",
+    "sourceMap": true,
     "types": ["node"],
     "strict": false,
     "esModuleInterop": true,

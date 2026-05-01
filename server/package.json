@@ -27,6 +27,7 @@
     "clean": "rm -rf dist",
     "build": "npm run clean && tsc -p tsconfig.json",
     "start": "npm run build && node server.js",
+    "start:debug": "npm run build && node --inspect=9229 server.js",
     "start:test": "npm run build && env-cmd -f .test.env node server.js",
     "start:watch": "./node_modules/nodemon/bin/nodemon.js server.js",
     "start:docker": "./node_modules/nodemon/bin/nodemon.js /usr/src/app/server.js"
