@@ -8,7 +8,7 @@
   "dependencies": {
     "@ircam/sync": "^2.1.0",
     "eetase": "^7.0.1",
-    "express": "^4.16.3",
+    "express": "^5.2.1",
     "fp-ts": "^2.16.11",
     "io-ts": "^2.2.22",
     "lodash": "^4.17.21",
