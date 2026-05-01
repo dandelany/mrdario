@@ -3,7 +3,7 @@ import * as React from "react";
 
 import SVGShimmerCycler from "@/components/ui/SVGShimmerCycler";
 
-const aztecCalendar: string = require("@/img/aztec_small.svg");
+import aztecCalendar from "@/img/aztec_small.svg?raw";
 
 const oranges = ["#BE1E2D", "#F05A28", "#F6921E"];
 const greens = ["#009345", "#006838", "#8BC53F", "#37B34A"];
@@ -62,7 +62,7 @@ export default class AztecCalendar extends React.Component<AztecCalendarProps> {
     return (
       <div className="aztec-calendar">
         <SVGShimmerCycler
-          svgPath={aztecCalendar}
+          svgContent={aztecCalendar}
           shapesPerFrame={6}
           {...{ width, height, ...shimmerProps }}
         />

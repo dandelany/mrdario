@@ -4,7 +4,7 @@ import * as React from "react";
 import SVGShimmerFills from "./SVGShimmerFills";
 
 interface SVGShimmerCyclerProps {
-  svgPath: string;
+  svgContent: string;
   width: number;
   height: number;
   colorSets: Array<Array<string> | undefined>;
@@ -82,13 +82,13 @@ export default class SVGShimmerCycler extends React.Component<SVGShimmerCyclerPr
   };
 
   render() {
-    const { svgPath, width, height, colorSets, shapesPerFrame } = this.props;
+    const { svgContent, width, height, colorSets, shapesPerFrame } = this.props;
     const colors = colorSets[this.state.colorSetIndex % colorSets.length];
 
     return (
       <SVGShimmerFills
         onFinish={this._onFinishShimmer}
-        svgPath={svgPath}
+        svgContent={svgContent}
         shapesPerFrame={shapesPerFrame}
         colors={colors}
         width={width}

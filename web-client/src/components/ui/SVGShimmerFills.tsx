@@ -1,21 +1,26 @@
 import * as _ from "lodash";
 import * as React from "react";
 
-function findSvgShapes(svg: Document, tags = ["path", "circle", "rect"]): SVGElement[] {
-  if (!svg) return [];
-  const elLists = tags.map(tag => svg.getElementsByTagName(tag) || []);
-  return _.flatten(elLists.map(_.toArray));
+function findSvgShapes(root: ParentNode, tags = ["path", "circle", "rect"]): SVGElement[] {
+  const elLists = tags.map(tag => Array.from(root.querySelectorAll<SVGElement>(tag)));
+  return _.flatten(elLists);
 }
 
 function getFillShapes(shapes: SVGElement[]): SVGElement[] {
-  return shapes.filter(shape => {
-    const fill = shape.getAttribute("fill");
-    return fill && fill.length;
-  });
+  return shapes.filter(shape => Boolean(getShapeFill(shape)));
+}
+
+function getShapeFill(shape: SVGElement): string | null {
+  return shape.style.fill || shape.getAttribute("fill");
+}
+
+function setShapeFill(shape: SVGElement, fill: string) {
+  if (shape.style.fill) shape.style.fill = fill;
+  else shape.setAttribute("fill", fill);
 }
 
 export interface SVGShimmerFillsProps {
-  svgPath: string;
+  svgContent: string;
   colors?: Array<string>;
   // shuffle: boolean;
   width: number;
@@ -40,31 +45,22 @@ export default class SVGShimmerFills extends React.Component<SVGShimmerFillsProp
 
   _fillShapes: SVGElement[] = [];
   _trueColors: (string | null)[] = [];
-  _hasLoaded: boolean = false;
+  _hasInitialized: boolean = false;
   _animation: number | undefined;
   _animIndex: number = 0;
-  svgRef = React.createRef<HTMLObjectElement>();
+  svgRef = React.createRef<HTMLDivElement>();
 
   componentDidMount() {
-    const svgEl = this.svgRef.current;
-    if (!svgEl) return;
-
-    svgEl.addEventListener("load", () => {
-      if (!svgEl.contentDocument) return;
-      const shapes = findSvgShapes(svgEl.contentDocument);
-      this._fillShapes = getFillShapes(shapes);
-      this._trueColors = this._fillShapes.map(shape => shape.getAttribute("fill"));
-      this._hasLoaded = true;
-
-      this._setShapeTransitions();
-      if (this.props.colors) this._startAnimation(this.props);
-    });
+    this._initSvg();
   }
 
   componentDidUpdate(prevProps: SVGShimmerFillsProps) {
-    if (!this._hasLoaded) return;
+    if (this.props.svgContent !== prevProps.svgContent) this._initSvg(true);
+    if (!this._hasInitialized) return;
+
     const hasChanged = (key: keyof SVGShimmerFillsProps) => !_.isEqual(this.props[key], prevProps[key]);
     if (hasChanged("transition")) this._setShapeTransitions();
+    if (hasChanged("width") || hasChanged("height")) this._setSvgSize();
     if (hasChanged("colors")) this._startAnimation(this.props);
     else this.props.onFinish(this.props.colors);
   }
@@ -73,8 +69,36 @@ export default class SVGShimmerFills extends React.Component<SVGShimmerFillsProp
     this._stopAnimation();
   }
 
+  _initSvg = (force: boolean = false) => {
+    if (this._hasInitialized && !force) return;
+
+    const rootEl = this.svgRef.current;
+    if (!rootEl) return;
+
+    this._stopAnimation();
+
+    const shapes = findSvgShapes(rootEl);
+    this._fillShapes = getFillShapes(shapes);
+    this._trueColors = this._fillShapes.map(getShapeFill);
+    this._hasInitialized = true;
+
+    this._setSvgSize();
+    this._setShapeTransitions();
+    if (this.props.colors) this._startAnimation(this.props);
+  };
+
+  _setSvgSize = () => {
+    if (!this.svgRef.current) return;
+
+    const svg = this.svgRef.current.querySelector("svg");
+    if (!svg) return;
+
+    svg.setAttribute("width", String(this.props.width));
+    svg.setAttribute("height", String(this.props.height));
+  };
+
   _setShapeTransitions = () => {
-    if (!this._hasLoaded || !this._fillShapes) return;
+    if (!this._hasInitialized || !this._fillShapes) return;
     this._fillShapes.forEach(shape => (shape.style.transition = this.props.transition));
   };
 
@@ -102,14 +126,14 @@ export default class SVGShimmerFills extends React.Component<SVGShimmerFillsProp
         const shapeIndices = shapeIndexChunks[this._animIndex];
         if (!colors) {
           // animate to original colors
-          shapeIndices.forEach((i: number) => fillShapes[i].setAttribute("fill", trueColors[i] || ""));
+          shapeIndices.forEach((i: number) => setShapeFill(fillShapes[i], trueColors[i] || ""));
         } else {
           // animate to target colors
           shapeIndices.forEach((i: number) => {
             // if the shape's true (original) color is in the list of target colors, use its true color
             const trueColor = trueColors[i];
             const newColor = _.includes(colors, trueColor) ? trueColor : _.sample(colors);
-            fillShapes[i].setAttribute("fill", newColor || "");
+            setShapeFill(fillShapes[i], newColor || "");
           });
         }
       }
@@ -119,12 +143,10 @@ export default class SVGShimmerFills extends React.Component<SVGShimmerFillsProp
 
   render() {
     return (
-      <object
+      <div
         ref={this.svgRef}
-        data={this.props.svgPath}
-        width={this.props.width}
-        height={this.props.height}
-        type="image/svg+xml"
+        style={{ width: this.props.width, height: this.props.height }}
+        dangerouslySetInnerHTML={{ __html: this.props.svgContent }}
       />
     );
   }
