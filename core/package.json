@@ -86,6 +86,14 @@
       "types": "./lib/esm/game/controller/*.d.ts",
       "import": "./lib/esm/game/controller/*.js"
     },
+    "./game/runner": {
+      "types": "./lib/esm/game/runner/index.d.ts",
+      "import": "./lib/esm/game/runner/index.js"
+    },
+    "./game/runner/*": {
+      "types": "./lib/esm/game/runner/*.d.ts",
+      "import": "./lib/esm/game/runner/*.js"
+    },
     "./game/input/web": {
       "types": "./lib/esm/game/input/web/index.d.ts",
       "import": "./lib/esm/game/input/web/index.js"
