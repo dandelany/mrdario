@@ -25,6 +25,12 @@ export default class TitlePage extends React.Component<{}> {
               <span className="btn-white">High Scores</span>
             </Link>
           </div>
+
+          <div className="title-game-option">
+            <Link to="dev">
+              <span className="btn-white">Dev</span>
+            </Link>
+          </div>
         </div>
       </div>
     );

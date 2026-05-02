@@ -1,7 +1,7 @@
 //@import './rc-slider.less';
-@use 'shared' as *;
-@use 'settings';
-@use 'game';
+@use "shared" as *;
+@use "settings";
+@use "game";
 
 html,
 body,
@@ -11,7 +11,7 @@ body,
 }
 
 body {
-  font-family: 'Coustard', 'Palatino Linotype', 'Book Antiqua', Palatino, FreeSerif, serif;
+  font-family: "Coustard", "Palatino Linotype", "Book Antiqua", Palatino, FreeSerif, serif;
   margin: 0;
   padding: 0;
   overflow: hidden;
@@ -46,8 +46,8 @@ body {
   height: 6px;
   border-radius: 10px;
   border: 2px solid rgba(0, 0, 0, 0);
-  background-color: rgba(0,0,0,.5);
-  -webkit-box-shadow: 0 0 1px rgba(255,255,255,.5);
+  background-color: rgba(0, 0, 0, 0.5);
+  -webkit-box-shadow: 0 0 1px rgba(255, 255, 255, 0.5);
 }
 
 span.btn-white {
@@ -75,7 +75,6 @@ span.btn-white {
   }
 }
 
-
 .aztec-calendar {
   position: absolute;
   z-index: 0;
@@ -94,7 +93,8 @@ span.btn-white {
 }
 
 .page-title {
-  .title-head, .title-game-options {
+  .title-head,
+  .title-game-options {
     @extend %center-absolute;
   }
 
@@ -117,7 +117,26 @@ span.btn-white {
   }
 }
 
+.page-dev {
+  display: inline-block;
+  margin-top: 12vh;
+  padding: 4vh;
+  background-color: rgba(255, 255, 255, 0.85);
+  border: 1.2vh solid black;
+  border-radius: 3vh;
 
+  h2 {
+    margin-top: 0;
+    font-size: 5vh;
+  }
+
+  .dev-options {
+    display: grid;
+    gap: 1vh;
+    margin-bottom: 2vh;
+    font-size: 3vh;
+  }
+}
 
 .high-scores {
   display: inline-block;
@@ -128,8 +147,10 @@ span.btn-white {
   max-height: 68vh;
   overflow-y: scroll;
   text-align: center;
-  
-  h1, h2, h3 {
+
+  h1,
+  h2,
+  h3 {
     line-height: 1em;
     margin: 0.5em 0;
     &:first-child {
