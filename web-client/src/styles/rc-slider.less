@@ -36,10 +36,15 @@
   border-radius: @border-radius-base;
   background-color: #ccc;
   box-shadow: inset 0 0 4px rgba(0,0,0,0.6);
+  cursor: grab;
   //border-radius: @border-radius-base;
   //background-color: #e9e9e9;
 
   .borderBox();
+
+  &:active {
+    cursor: grabbing;
+  }
 
   &-track {
     position: absolute;
@@ -47,12 +52,16 @@
     height: @sliderHeight;
     border-radius: @border-radius-base;
     background-color: tint(@primary-color, 60%);
+    cursor: grab;
+    transition: width 90ms ease-out;
     z-index: 1;
   }
 
   &-handle {
     position: absolute;
-    margin-left: -(@sliderWidth / 2);
+    // rc-slider already centers horizontal handles with transform: translateX(-50%).
+    // keep the visual range inset by half a handle, but do not double-offset it.
+    margin-left: 0;
     //margin-top: -8px;
     width: @sliderWidth;
     height: @sliderHeight;
@@ -63,18 +72,29 @@
     text-align: center;
     background-color: black;
     color: white;
-    cursor: pointer;
-    border-radius: 33.33%;
+    cursor: grab;
+    border-radius: @border-radius-base;
+    transition: left 90ms ease-out;
 
     &:hover {
       border-color: tint(@primary-color, 20%);
     }
+    &:active {
+      cursor: grabbing;
+    }
     &-active {
+      cursor: grabbing;
+
       &:active {
         border-color: tint(@primary-color, 20%);
         box-shadow: 0 0 5px tint(@primary-color, 20%);
       }
     }
+  }
+
+  &:active &-track,
+  &:active &-handle {
+    cursor: grabbing;
   }
 
   &-mark {
