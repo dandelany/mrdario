@@ -14,6 +14,12 @@ export default class DevPage extends React.Component {
           <Link to="/dev/local-multi/level/5/speed/15">
             <span className="btn-white">local multi lvl 5</span>
           </Link>
+          <Link to="/dev/local-bot/level/0/speed/15">
+            <span className="btn-white">vs bot</span>
+          </Link>
+          <Link to="/dev/local-bot/level/5/speed/15">
+            <span className="btn-white">vs bot lvl 5</span>
+          </Link>
           <Link to="/settings">
             <span className="btn-white">single player</span>
           </Link>

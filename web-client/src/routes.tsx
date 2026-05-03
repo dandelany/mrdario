@@ -50,6 +50,12 @@ export default [
     key="dev-local-multi"
     component={LocalMultiGame}
   />,
+  <PropsRoute
+    path="/dev/local-bot/level/:level/speed/:speed"
+    key="dev-local-bot"
+    component={LocalMultiGame}
+    botPlayer={1}
+  />,
   <PropsRoute path="/watch/:gameId" key="single-remote" component={SingleRemoteGame} />,
   <PropsRoute path="/settings" key="settings" component={GameSettings} />,
   <PropsRoute path="/login" key="login" component={LoginPage} />,

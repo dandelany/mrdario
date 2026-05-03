@@ -2,7 +2,7 @@ import * as React from "react";
 import cx from "classnames";
 import { Link, RouteComponentProps, withRouter } from "react-router-dom";
 
-import { GameOptions, GameInput, InputEventType, MultiGameResultType } from "mrdario-core/game";
+import { GameOptions, GameInput, InputEventType, MultiGameResultType, PillBot } from "mrdario-core/game";
 import { GameActionType } from "mrdario-core/game/types";
 import { GameControllerMode } from "mrdario-core/game/controller";
 import { KeyManager } from "mrdario-core/game/input/web";
@@ -41,15 +41,20 @@ const playerTwoKeys: KeyBindings = {
   },
 };
 
+interface LocalMultiGameProps extends RouteComponentProps<GameRouteParams> {
+  botPlayer?: number;
+}
+
 interface LocalMultiGameState {
   runnerState?: MultiGameRunnerState;
   gameOptions?: Partial<GameOptions> & { level: number; baseSpeed: number };
 }
 
-class LocalMultiGame extends React.Component<RouteComponentProps<GameRouteParams>, LocalMultiGameState> {
+class LocalMultiGame extends React.Component<LocalMultiGameProps, LocalMultiGameState> {
   state: LocalMultiGameState = {};
 
   protected runner?: MultiGameRunner;
+  protected bot?: PillBot;
   protected keyManagers: KeyManager[] = [];
   protected cleanupObserver?: () => void;
   protected timer?: ReturnType<typeof window.setInterval>;
@@ -92,6 +97,7 @@ class LocalMultiGame extends React.Component<RouteComponentProps<GameRouteParams
     });
 
     this.runner = runner;
+    this.bot = this.props.botPlayer === undefined ? undefined : new PillBot({ actionDelayFrames: 3 });
     this.cleanupObserver = runner.observe({
       onState: (runnerState) => this.setState({ runnerState }),
       onTick: this.logTickResult,
@@ -100,6 +106,7 @@ class LocalMultiGame extends React.Component<RouteComponentProps<GameRouteParams
 
     this.keyManagers = [new KeyManager(playerOneKeys), new KeyManager(playerTwoKeys)];
     for (let player = 0; player < this.keyManagers.length; player++) {
+      if (player === this.props.botPlayer) continue;
       const keyManager = this.keyManagers[player];
       keyManager.setMode(GameControllerMode.Playing);
       keyManager.on("input", (input: GameInput, eventType: InputEventType) => {
@@ -107,7 +114,7 @@ class LocalMultiGame extends React.Component<RouteComponentProps<GameRouteParams
       });
     }
 
-    this.timer = window.setInterval(() => this.runner?.tick(), frameMs);
+    this.timer = window.setInterval(this.tick, frameMs);
     this.setState({ gameOptions, runnerState: runner.getState() });
   };
 
@@ -126,7 +133,27 @@ class LocalMultiGame extends React.Component<RouteComponentProps<GameRouteParams
       keyManager.removeAllListeners();
     }
     this.keyManagers = [];
+    this.bot = undefined;
     this.runner = undefined;
+  };
+
+  protected tick = () => {
+    // feed the bot before advancing, so its batch lands on the next frame
+    this.queueBotAction();
+    this.runner?.tick();
+  };
+
+  protected queueBotAction = () => {
+    // optional dev bot controls one player in the same runner as human input
+    const runner = this.runner;
+    const bot = this.bot;
+    const botPlayer = this.props.botPlayer;
+    if (!runner || !bot || botPlayer === undefined) return;
+
+    const batch = bot.getNextBatch(runner.getState(), botPlayer);
+    if (batch) {
+      runner.addPlayerActions(botPlayer, batch);
+    }
   };
 
   protected handleInput = (player: number, input: GameInput, eventType: InputEventType) => {
@@ -181,6 +208,7 @@ class LocalMultiGame extends React.Component<RouteComponentProps<GameRouteParams
           <span className="btn-white" onClick={this.initGame}>
             reset
           </span>
+          {this.props.botPlayer !== undefined && <span className="btn-white">bot p{this.props.botPlayer + 1}</span>}
           <span className={styles.status}>{runnerState?.mode || "loading"}</span>
         </div>
 

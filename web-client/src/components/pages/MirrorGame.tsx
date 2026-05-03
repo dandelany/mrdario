@@ -73,17 +73,31 @@ class MirrorGame extends React.Component<MirrorGameProps, MirrorGameState> {
     const gameOptions = this.getGameOptions(this.props);
     const { level, baseSpeed } = gameOptions;
 
-    this.props.gameClient.createSimpleGame(level, baseSpeed).then((game: GameListItem) => {
-      this.setState({
-        gameId: game.id,
-        gameOptions: {
-          level: game.level,
-          baseSpeed: game.speed,
-          initialSeed: game.initialSeed
-        }
+    this.props.gameClient
+      .createSimpleGame(level, baseSpeed)
+      .then((game: GameListItem) => {
+        this.setState({
+          gameId: game.id,
+          gameOptions: {
+            level: game.level,
+            baseSpeed: game.speed,
+            initialSeed: game.initialSeed
+          }
+        });
+        this._initGame(this.props);
+      })
+      .catch((err: Error) => {
+        console.warn("failed to create mirror game", err);
+        this.setState({
+          gameId: `local-${Date.now()}`,
+          gameOptions: {
+            level,
+            baseSpeed,
+            initialSeed: `local-${Date.now()}`
+          }
+        });
+        this._initGame(this.props);
       });
-      this._initGame(this.props);
-    });
   }
   componentDidMount() {
     // mode means won or lost, no mode = playing

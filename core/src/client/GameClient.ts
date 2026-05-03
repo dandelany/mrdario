@@ -339,8 +339,19 @@ export class GameClient {
     }
   }
 
-  public createSimpleGame(level: number, speed: number) {
-    return this.socket.invoke("createSimpleGame", [level, speed]) as Promise<GameListItem>;
+  public async createSimpleGame(level: number, speed: number): Promise<GameListItem> {
+    try {
+      return await (this.socket.invoke("createSimpleGame", [level, speed]) as Promise<GameListItem>);
+    } catch (err) {
+      console.warn("createSimpleGame failed; falling back to local mirror game", err);
+      return {
+        id: `local-${Date.now()}`,
+        creator: "local",
+        initialSeed: `local-${Date.now()}`,
+        level,
+        speed
+      };
+    }
   }
 
   public publishSimpleGameState(gameId: string, grid: GameGrid) {
